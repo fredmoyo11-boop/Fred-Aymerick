@@ -1,0 +1,2 @@
+rootProject.name = 'SEP-Drive Gruppe P'
+include 'backend', 'frontend'

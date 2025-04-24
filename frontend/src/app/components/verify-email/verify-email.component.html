@@ -1,0 +1,10 @@
+<div class="container">
+  <div class="content">
+    @if (verified) {
+      <h1>Verified email successfully!</h1>
+      <button mat-button (click)="continue()">Continue</button>
+    } @else {
+      <h1>Failed to verify email!</h1>
+    }
+  </div>
+</div>

@@ -1,0 +1,102 @@
+<div class="container">
+  <div class="content">
+    @if (requestSentSuccess) {
+      <h1>Verification email sent</h1>
+    } @else {
+      <div class="login-container">
+        <span>Have an account?</span>
+        <span routerLink="/login" class="login-link">Log in now</span>
+      </div>
+      <mat-divider></mat-divider>
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="register-form-container">
+        <mat-button-toggle-group name="role" aria-label="Role" formControlName="role" class="register-toggle-group">
+          <mat-button-toggle value="CUSTOMER">Customer
+            <mat-icon fontIcon="person"></mat-icon>
+          </mat-button-toggle>
+          <mat-button-toggle value="DRIVER">Driver
+            <mat-icon fontIcon="local_taxi"></mat-icon>
+          </mat-button-toggle>
+        </mat-button-toggle-group>
+        <div class="register-fields">
+          <div class="register-pair">
+            <mat-form-field>
+              <mat-label>First name</mat-label>
+              <input matInput formControlName="firstName">
+            </mat-form-field>
+            <mat-form-field>
+              <mat-label>Last name</mat-label>
+              <input matInput formControlName="lastName">
+            </mat-form-field>
+          </div>
+          <div class="register-pair">
+            <mat-form-field>
+              <mat-label>Username</mat-label>
+              <input matInput formControlName="username">
+            </mat-form-field>
+            <mat-form-field>
+              <mat-label>Birthday</mat-label>
+              <input matInput [matDatepicker]="picker" formControlName="birthday">
+              <mat-hint>DD.MM.YYYY</mat-hint>
+              <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+          </div>
+          <div class="register-pair">
+            <mat-form-field>
+              <mat-label>Email</mat-label>
+              <input matInput formControlName="email">
+            </mat-form-field>
+            <mat-form-field>
+              <mat-label>Confirm email</mat-label>
+              <input matInput formControlName="emailConfirmation">
+            </mat-form-field>
+          </div>
+          @if (registerForm.errors?.['emailMismatch']) {
+            <p>Email addresses do not match</p>
+          }
+          <div class="register-pair">
+            <mat-form-field>
+              <mat-label>Password</mat-label>
+              <input matInput [type]="hidePassword() ? 'password' : 'text'" formControlName="password">
+              <button
+                type="button"
+                mat-icon-button
+                matSuffix
+                (click)="hidePassword.set(!hidePassword())">
+                <mat-icon>{{ hidePassword() ? "visibility_off" : "visibility_on" }}</mat-icon>
+              </button>
+            </mat-form-field>
+            <mat-form-field>
+              <mat-label>Confirm password</mat-label>
+              <input matInput [type]="hidePasswordConfirmation() ? 'password' : 'text'" formControlName="passwordConfirmation">
+              <button
+                type="button"
+                mat-icon-button
+                matSuffix
+                (click)="hidePasswordConfirmation.set(!hidePasswordConfirmation())">
+                <mat-icon>{{ hidePasswordConfirmation() ? "visibility_off" : "visibility_on" }}</mat-icon>
+              </button>
+            </mat-form-field>
+          </div>
+          @if (registerForm.errors?.['passwordMismatch']) {
+            <p>Passwords do not match</p>
+          }
+        </div>
+
+        <div class="picture-upload">
+          <input #fileInput hidden="hidden" type="file" (change)="onFileChanged($event)" accept="image/jpeg, image/png">
+          <button type="button" mat-stroked-button (click)="fileInput.click()" class="image-btn">Select profile picture
+          </button>
+          <div class="selected-picture">
+            @if (imagePreview) {
+              <img [src]="imagePreview" alt="Image Preview" width="200px">
+            }
+            <p>{{ selectedFile ? selectedFile.name : "No profile picture selected." }}</p>
+          </div>
+        </div>
+
+        <button mat-flat-button type="submit" [disabled]="!registerForm.valid" class="register-button">Register</button>
+      </form>
+    }
+  </div>
+</div>

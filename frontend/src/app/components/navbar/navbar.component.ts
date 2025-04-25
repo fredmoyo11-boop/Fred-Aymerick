@@ -12,6 +12,4 @@ import {RouterLink} from '@angular/router';
 export class NavbarComponent {
 
   isLoggedIn: boolean = false;
-
-  protected readonly console = console;
 }

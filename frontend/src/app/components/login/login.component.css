@@ -1,0 +1,84 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.content {
+  width: 100%;
+  max-width: 800px;
+  padding: 50px;
+}
+
+.register-container {
+  display: flex;
+  gap: 10px;
+  padding-bottom: 20px;
+}
+
+.register-container > span {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.register-link {
+  cursor: pointer;
+  color: blue;
+}
+
+.register-link:hover {
+  text-decoration: underline;
+}
+
+.divider {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.login-form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 400px;
+  width: fit-content;
+  padding-top: 10px;
+}
+
+.submit-button {
+  width: fit-content;
+  border-radius: 8px;
+}
+
+mat-divider {
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.otp-btn-container {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  padding: 10px 20px;
+}
+
+.otp-input {
+  width: 50px;
+  height: 60px;
+  text-align: center;
+  font-size: 30px;
+  border: 2px solid;
+  border-radius: 8px;
+}
+
+.confirmation-btn {
+  border-radius: 8px;
+}
+
+.check-container {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}

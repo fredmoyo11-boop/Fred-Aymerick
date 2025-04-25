@@ -1,0 +1,85 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.content {
+  width: 100%;
+  max-width: 800px;
+  padding: 50px;
+}
+
+.register-form-container {
+  min-width: 750px;
+  width: fit-content;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding-top: 20px;
+}
+
+.register-toggle-group {
+  width: 100%;
+  border-radius: 8px;
+}
+
+.register-toggle-group > mat-button-toggle {
+  width: 50%;
+}
+
+.register-fields {
+  display: flex;
+  flex-direction: column;
+}
+
+.register-pair {
+  display: flex;
+  gap: 30px;
+}
+
+.register-pair > mat-form-field {
+  width: 100%;
+}
+
+.register-button {
+  border-radius: 8px;
+  width: fit-content;
+}
+
+.login-container {
+  display: flex;
+  gap: 10px;
+  padding-bottom: 20px;
+}
+
+.login-container > span {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.login-link {
+  cursor: pointer;
+  color: blue;
+}
+
+.login-link:hover {
+  text-decoration: underline;
+}
+
+.picture-upload {
+  display: flex;
+  gap: 10px;
+}
+
+.selected-picture {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.image-btn {
+  border-radius: 0.5rem;
+}

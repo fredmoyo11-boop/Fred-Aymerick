@@ -1,0 +1,16 @@
+<header class="navbar">
+  <div class="navbar-content">
+    <button [routerLink]="''" class="logo-btn">SEP-Drive</button>
+    <div class="navbar-btn-container">
+      <button [routerLink]="'/home'">Home</button>
+    </div>
+    <div>
+      @if (isLoggedIn) {
+        <p>TODO</p>
+      } @else {
+        <button [routerLink]="'/login'" class="login-btn">Sign in</button>
+        <button [routerLink]="'/register'" class="register-btn">Sign up</button>
+      }
+    </div>
+  </div>
+</header>

@@ -2,6 +2,7 @@ package com.sep.backend.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -10,6 +11,8 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+
+import com.sep.backend.route.WaypointTypeEnum;
 
 @Getter
 @Setter
@@ -27,6 +30,10 @@ public class WaypointEntity extends AbstractEntity {
     @Column(name = "latitude", nullable = false)
     private String latitude;
 
+    @Enumerated(EnumType.ORDINAL)
+    @NotBlank
+    @Column(name = "type", nullable = false)
+    private WaypointTypeEnum type;
 //    @NotNull
 //    @Column(name = "verified", nullable = false)
 //    private Boolean verified;

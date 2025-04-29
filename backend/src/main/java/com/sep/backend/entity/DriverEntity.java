@@ -1,5 +1,6 @@
 package com.sep.backend.entity;
 
+import com.sep.backend.account.Vehicleclass;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.*;
@@ -10,5 +11,5 @@ import lombok.*;
 @Table(name = "driver")
 @Entity
 public class DriverEntity extends AccountEntity {
-    // add additional fields that only belong to driver
+    Vehicleclass vehicleclass;
 }

@@ -9,9 +9,14 @@ import com.sep.backend.entity.AccountEntity;
 import com.sep.backend.entity.CustomerEntity;
 import com.sep.backend.entity.DriverEntity;
 import jakarta.validation.Valid;
+import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class AccountService {
@@ -32,7 +37,7 @@ public class AccountService {
      * @return The customer entity.
      * @throws NotFoundException If customer with specified email does not exist.
      */
-    public CustomerEntity getCustomerByEmail(String email) throws NotFoundException {
+     public CustomerEntity getCustomerByEmail(String email) throws NotFoundException {
         return customerRepository
                 .findByEmail(email)
                 .orElseThrow(() -> new NotFoundException(ErrorMessages.NOT_FOUND_CUSTOMER));
@@ -124,6 +129,53 @@ public class AccountService {
         }
     }
 
+
+    private AccountDTO getAccountprofild(String username ){
+        Optional<CustomerEntity> customerEntity = customerRepository.findByUsername(username);
+        if ( customerEntity.isPresent() ) {
+            return getCustomerDTO(customerEntity);
+        } else {
+            Optional<DriverEntity> driverEntity = driverRepository.findByUsername(username);
+            if ( driverEntity.isPresent() ) {
+                return getDriverDTO(driverEntity);
+            }else {
+                throw new NotFoundException(ErrorMessages.NOT_FOUND_USER);
+            }
+
+
+
+        }
+
+    }
+
+    @NotNull
+    private static AccountDTO getCustomerDTO(Optional<CustomerEntity> customerEntity) {
+        AccountDTO customerDTO = new AccountDTO();
+        customerDTO.setEmail(customerEntity.get().getEmail());
+        customerDTO.setRatings(customerEntity.get().getRatings());
+        customerDTO.setRole(Roles.CUSTOMER);
+        customerDTO.setUsername(customerEntity.get().getUsername());
+        customerDTO.setFirstName(customerEntity.get().getFirstName());
+        customerDTO.setLastName(customerEntity.get().getLastName());
+        customerDTO.setProfilePictureUrl( customerEntity.get().getProfilePictureUrl());
+        return customerDTO;
+    }
+
+    @NotNull
+    private static AccountDTO getDriverDTO(Optional<DriverEntity> driverEntity) {
+        AccountDTO driverDTO = new AccountDTO();
+        driverDTO.setEmail(driverEntity.get().getEmail());
+        driverDTO.setRatings(driverEntity.get().getRatings());
+        driverDTO.setRole(Roles.DRIVER);
+        driverDTO.setUsername(driverEntity.get().getUsername());
+        driverDTO.setFirstName(driverEntity.get().getFirstName());
+        driverDTO.setLastName(driverEntity.get().getLastName());
+        driverDTO.setTotalnumberofrides( driverEntity.get().getTotalnumberofrides() );
+        driverDTO.setProfilePictureUrl( driverEntity.get().getProfilePictureUrl());
+        return driverDTO;
+    }
+
+
     /**
      * Returns if an account with specified username exists.
      *
@@ -161,8 +213,11 @@ public class AccountService {
      * @return Whether account with email address exists or not.
      */
     public boolean existsEmail(String email) {
+
         return existsCustomerEmail(email) || existsDriverEmail(email);
+
     }
+
 
     /**
      * Returns if a customer with specified email address exists.

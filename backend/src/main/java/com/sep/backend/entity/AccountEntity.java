@@ -10,6 +10,7 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Getter
 @Setter
@@ -19,6 +20,10 @@ public abstract class AccountEntity extends AbstractEntity {
     @NotBlank
     @Column(name = "email", unique = true, nullable = false)
     private String email;
+
+    private List<Rating> ratings;
+
+    private  int Totalnumberofrides =0;
 
     @NotBlank
     @Column(name = "username", unique = true, nullable = false)

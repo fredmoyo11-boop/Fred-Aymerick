@@ -7,23 +7,73 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
+@AllArgsConstructor
 @RestController
 @RequestMapping(value = "/api/account", produces = MediaType.APPLICATION_JSON_VALUE)
 public class AccountController {
-
+     private final AccountService accountService;
     @GetMapping("/health")
     @Operation(description = "Returns the status of the account controller.",
             tags = {Tags.ACCOUNT},
             responses = {
                     @ApiResponse(responseCode = HttpStatus.OK, description = "Account controller healthy.",
                             content = @Content(schema = @Schema(implementation = StringResponse.class)))})
+
     public StringResponse health() {
         return new StringResponse("OK");
     }
 
+    @Operation(description = "Returns  a list of  username .", tags = {"Profil"}, responses = { @ApiResponse(responseCode = HttpStatus.OK, description = "List of usernames.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = String.class)))})
+    @GetMapping("/search")
+    public List<String> NutzerSuche (@RequestParam String part){
+
+        return accountService.UserSearch(part);
+    }
+
+    @Operation(
+            summary = "Aktualisiert das Benutzerprofil",
+            description = "Aktualisiert das Profil eines Benutzers basierend auf dem angegebenen Benutzernamen. Die neuen Profildaten werden im JSON-Format übergeben.",
+            tags = { "Benutzerprofil" }
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Profil erfolgreich aktualisiert.",
+            content = @Content(
+                    mediaType = "text/plain",
+                    schema = @Schema(type = "string", example = "Profil erfolgreich aktualisiert!")
+            )
+    )
+    @PutMapping("/update")
+    public ResponseEntity<?> updateBenutzerprofil(@RequestBody String username, AccountupdateDTO accountupdateDTO) {
+        accountService.Accountupdate(username,accountupdateDTO);
+
+        return ResponseEntity.ok("Profil erfolgreich aktualisiert!");
+    }
+    @Operation(
+            summary = "Gibt das Benutzerprofil zurück",
+            description = "Liefert die vollständigen Profildaten eines Benutzers basierend auf dem Benutzernamen.",
+            tags = { "Benutzerprofil" }
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Benutzerprofil erfolgreich geladen.",
+            content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = AccountDTO.class)
+            )
+    )
+    @GetMapping("/{username}")
+    public  AccountDTO getAccountprofild(@PathVariable  String username ){
+
+        return accountService.getAccountprofild(username);
+    }
 }

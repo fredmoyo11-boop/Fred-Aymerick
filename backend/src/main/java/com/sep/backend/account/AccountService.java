@@ -9,26 +9,28 @@ import com.sep.backend.entity.AccountEntity;
 import com.sep.backend.entity.CustomerEntity;
 import com.sep.backend.entity.DriverEntity;
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
-
+@AllArgsConstructor
 @Service
 public class AccountService {
     private final Logger log = LoggerFactory.getLogger(AccountService.class);
 
     private final CustomerRepository customerRepository;
     private final DriverRepository driverRepository;
+    private final ProfilePictureStorageService profilePictureStorageService ;
 
-    public AccountService(CustomerRepository customerRepository, DriverRepository driverRepository) {
-        this.customerRepository = customerRepository;
-        this.driverRepository = driverRepository;
-    }
+
 
     /**
      * Returns the customer with the specified email.
@@ -129,8 +131,41 @@ public class AccountService {
         }
     }
 
+    public List<String> UserSearch(  String part){
 
-    private AccountDTO getAccountprofild(String username ){
+            List<String> Benutzernamen = new ArrayList<>();
+
+            List<DriverEntity> drivers = driverRepository.findByUsernameContainingIgnoreCase(part);
+            List<CustomerEntity> customers = customerRepository.findByUsernameContainingIgnoreCase(part);
+
+            if (drivers.isEmpty() && customers.isEmpty()) {
+
+                throw new NotFoundException("Kein Kunde mit Benutzername " + " " + part + " " + "gefunden.");
+            } else if (drivers.isEmpty()) {
+                for (CustomerEntity customer : customers) {
+                    Benutzernamen.add(customer.getUsername());
+                }
+            } else if (customers.isEmpty()) {
+                for (DriverEntity driver : drivers) {
+                    Benutzernamen.add(driver.getUsername());
+                }
+            } else {
+                for (CustomerEntity customer : customers) {
+                    Benutzernamen.add(customer.getUsername());
+                }
+                for (DriverEntity driver : drivers) {
+                    Benutzernamen.add(driver.getUsername());
+                }
+
+            }
+            log.info("Liste ausgegeben");
+            return Benutzernamen;
+
+
+
+
+    }
+    public AccountDTO getAccountprofild(String username){
         Optional<CustomerEntity> customerEntity = customerRepository.findByUsername(username);
         if ( customerEntity.isPresent() ) {
             return getCustomerDTO(customerEntity);
@@ -148,8 +183,7 @@ public class AccountService {
 
     }
 
-    @NotNull
-    private static AccountDTO getCustomerDTO(Optional<CustomerEntity> customerEntity) {
+    public  static AccountDTO getCustomerDTO(Optional<CustomerEntity> customerEntity) {
         AccountDTO customerDTO = new AccountDTO();
         customerDTO.setEmail(customerEntity.get().getEmail());
         customerDTO.setRatings(customerEntity.get().getRatings());
@@ -161,8 +195,8 @@ public class AccountService {
         return customerDTO;
     }
 
-    @NotNull
-    private static AccountDTO getDriverDTO(Optional<DriverEntity> driverEntity) {
+
+    public static AccountDTO getDriverDTO(Optional<DriverEntity> driverEntity) {
         AccountDTO driverDTO = new AccountDTO();
         driverDTO.setEmail(driverEntity.get().getEmail());
         driverDTO.setRatings(driverEntity.get().getRatings());
@@ -264,5 +298,42 @@ public class AccountService {
         } catch (Exception e) {
             throw new RuntimeException("Failed to create account entity of type " + clazz.getName(), e);
         }
+    }
+
+    public void Accountupdate(String username ,  AccountupdateDTO accountupdateDTO) {
+        if(existsCustomerUsername(username)){
+            if(!existsCustomerUsername(accountupdateDTO.getUsername())){
+                if(accountupdateDTO.getUsername() != null){
+                    if(accountupdateDTO.getFirstName() != null){
+                        if(accountupdateDTO.getLastName() != null) {
+                            if (accountupdateDTO.getBirthday() != null) {
+                                CustomerEntity customerEntity = customerRepository.findByUsername(username).get();
+                                customerEntity.setFirstName(accountupdateDTO.getFirstName());
+                                customerEntity.setLastName(accountupdateDTO.getLastName());
+                                customerEntity.setUsername(accountupdateDTO.getUsername());
+                                profilePictureStorageService.save(accountupdateDTO.getProfilePicture(), accountupdateDTO.getUsername());
+                                customerEntity.setBirthday(accountupdateDTO.getBirthday());
+                                customerRepository.save(customerEntity);
+                                log.info("Updated customer {} with username {}", customerEntity.getUsername(), customerEntity.getEmail());
+                            }else{
+                                throw new IllegalArgumentException("Birthday cannot be null");
+                            }
+                        }else{
+                            throw new IllegalArgumentException("Last name cannot be null");
+                        }
+                    }else{
+                        throw new IllegalArgumentException("First name cannot be null");
+                    }
+                }else{
+                    throw new IllegalArgumentException("Username cannot be null");
+                }
+
+            }else{
+              throw new IllegalArgumentException("Username already exists");
+            }
+        }else{
+          throw new NotFoundException(ErrorMessages.NOT_FOUND_USER);
+        }
+
     }
 }

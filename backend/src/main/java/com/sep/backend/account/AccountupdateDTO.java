@@ -1,5 +1,6 @@
 package com.sep.backend.account;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 @Data
@@ -13,5 +14,7 @@ public class AccountupdateDTO {
     private String  lastName;
     private String birthday;
     private CarType carType;
+
+    @JsonIgnore
     private MultipartFile profilePicture;
 }

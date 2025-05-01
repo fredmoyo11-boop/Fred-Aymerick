@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
 import java.util.List;
@@ -69,7 +70,8 @@ public class AccountController {
             )
     )
     @PutMapping("/update/{username}")
-    public ResponseEntity<String> AccountUpdate( @PathVariable String username, @RequestBody AccountupdateDTO accountupdateDTO) {
+    public ResponseEntity<String> AccountUpdate( @PathVariable String username, @RequestPart("data") AccountupdateDTO accountupdateDTO ,@RequestPart (value ="file",required =false) MultipartFile file) {
+        accountupdateDTO.setProfilePicture( file);
         accountService.AccountUpdate(username, accountupdateDTO);
 
         return ResponseEntity.ok("Profil erfolgreich aktualisiert!");

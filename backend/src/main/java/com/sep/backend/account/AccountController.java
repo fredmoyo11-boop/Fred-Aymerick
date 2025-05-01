@@ -8,19 +8,23 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
-import lombok.NonNull;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @AllArgsConstructor
 @RestController
 @RequestMapping(value = "/api/account", produces = MediaType.APPLICATION_JSON_VALUE)
 public class AccountController {
+
      private final AccountService accountService;
+
+
+
+
     @GetMapping("/health")
     @Operation(description = "Returns the status of the account controller.",
             tags = {Tags.ACCOUNT},
@@ -32,12 +36,24 @@ public class AccountController {
         return new StringResponse("OK");
     }
 
-    @Operation(description = "Suche nach Benutzerprofilen basierend auf einem Suchbegriff ", tags = {"Profil"}, responses = { @ApiResponse(responseCode = HttpStatus.OK, description = "List of userprofile.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = AccountDTO.class)))})
+
+
+
+
+    @Operation(description = "Suche nach Benutzerprofilen basierend auf einem Suchbegriff ",
+            tags = {"Profil"},
+            responses = { @ApiResponse(responseCode = HttpStatus.OK,
+                    description = "List of userprofile.",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = AccountDTO.class)))})
     @GetMapping("/search")
     public List<AccountDTO> Usersearch (@RequestParam String part){
 
         return accountService.UserSearch(part);
     }
+
+
+
 
     @Operation(
             summary = "Aktualisiert das Benutzerprofil",
@@ -53,13 +69,15 @@ public class AccountController {
             )
     )
     @PutMapping("/update/{username}")
-    public ResponseEntity<String> updateBenutzerprofil(
-            @PathVariable String username,
-            @RequestBody AccountupdateDTO accountupdateDTO
-    ) {
-        accountService.Accountupdate(username, accountupdateDTO);
+    public ResponseEntity<String> AccountUpdate( @PathVariable String username, @RequestBody AccountupdateDTO accountupdateDTO) {
+        accountService.AccountUpdate(username, accountupdateDTO);
+
         return ResponseEntity.ok("Profil erfolgreich aktualisiert!");
     }
+
+
+
+
 
     @Operation(
             summary = "Gibt das Benutzerprofil zurück",

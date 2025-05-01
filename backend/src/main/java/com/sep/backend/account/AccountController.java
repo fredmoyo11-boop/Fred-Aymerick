@@ -71,9 +71,7 @@ public class AccountController {
     )
     @PutMapping("/update/{username}")
     public ResponseEntity<String> AccountUpdate( @PathVariable String username, @RequestPart("data") AccountupdateDTO accountupdateDTO ,@RequestPart (value ="file",required =false) MultipartFile file) {
-        accountupdateDTO.setProfilePicture( file);
-        accountService.AccountUpdate(username, accountupdateDTO);
-
+        accountService.AccountUpdate(username, accountupdateDTO,file);
         return ResponseEntity.ok("Profil erfolgreich aktualisiert!");
     }
 

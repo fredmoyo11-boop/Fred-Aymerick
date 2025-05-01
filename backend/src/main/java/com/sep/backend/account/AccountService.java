@@ -13,6 +13,7 @@ import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -295,7 +296,8 @@ public class AccountService {
         }
     }
 
-    public void AccountUpdate(String username, AccountupdateDTO accountupdateDTO) {
+    public void AccountUpdate(String username, AccountupdateDTO accountupdateDTO, MultipartFile file) {
+        accountupdateDTO.setProfilePicture(file);
         if (existsCustomerUsername(username)) {
             updateCustomer(username, accountupdateDTO);
         } else if (existsDriverUsername(username)) {
@@ -305,7 +307,8 @@ public class AccountService {
         }
     }
 
-    public void updateCustomer(String username, AccountupdateDTO accountupdateDTO) {
+    public void updateCustomer(String username, AccountupdateDTO accountupdateDTO)  {
+
         if (!existsCustomerUsername(accountupdateDTO.getUsername()) ) {
             CustomerEntity customerEntity = customerRepository.findByUsername(username)
                     .orElseThrow(() -> new NotFoundException(ErrorMessages.NOT_FOUND_USER));

@@ -32,16 +32,16 @@ public class AccountController {
         return new StringResponse("OK");
     }
 
-    @Operation(description = "Returns  a list of  username .", tags = {"Profil"}, responses = { @ApiResponse(responseCode = HttpStatus.OK, description = "List of usernames.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = String.class)))})
+    @Operation(description = "Suche nach Benutzerprofilen basierend auf einem Suchbegriff ", tags = {"Profil"}, responses = { @ApiResponse(responseCode = HttpStatus.OK, description = "List of userprofile.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = AccountDTO.class)))})
     @GetMapping("/search")
-    public List<String> NutzerSuche (@RequestParam String part){
+    public List<AccountDTO> Usersearch (@RequestParam String part){
 
         return accountService.UserSearch(part);
     }
 
     @Operation(
             summary = "Aktualisiert das Benutzerprofil",
-            description = "Aktualisiert das Profil eines Benutzers basierend auf dem angegebenen Benutzernamen. Die neuen Profildaten werden im JSON-Format übergeben.",
+            description = "Aktualisiert das Profil eines Benutzers basierend auf dem aktuellen Benutzernamen, der in der URL angegeben wird. Die neuen Profildaten werden im JSON-Format im Anfragebody übergeben.",
             tags = { "Benutzerprofil" }
     )
     @ApiResponse(
@@ -49,15 +49,18 @@ public class AccountController {
             description = "Profil erfolgreich aktualisiert.",
             content = @Content(
                     mediaType = "text/plain",
-                    schema = @Schema(type = "string", example = "Profil erfolgreich aktualisiert!")
+                    schema = @Schema(type = "String", example ="Profil erfolgreich aktualisiert!")
             )
     )
-    @PutMapping("/update")
-    public ResponseEntity<?> updateBenutzerprofil(@RequestBody String username, AccountupdateDTO accountupdateDTO) {
-        accountService.Accountupdate(username,accountupdateDTO);
-
+    @PutMapping("/update/{username}")
+    public ResponseEntity<String> updateBenutzerprofil(
+            @PathVariable String username,
+            @RequestBody AccountupdateDTO accountupdateDTO
+    ) {
+        accountService.Accountupdate(username, accountupdateDTO);
         return ResponseEntity.ok("Profil erfolgreich aktualisiert!");
     }
+
     @Operation(
             summary = "Gibt das Benutzerprofil zurück",
             description = "Liefert die vollständigen Profildaten eines Benutzers basierend auf dem Benutzernamen.",

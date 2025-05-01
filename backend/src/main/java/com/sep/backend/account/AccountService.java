@@ -28,8 +28,7 @@ public class AccountService {
 
     private final CustomerRepository customerRepository;
     private final DriverRepository driverRepository;
-    private final ProfilePictureStorageService profilePictureStorageService ;
-
+    private final ProfilePictureStorageService profilePictureStorageService;
 
 
     /**
@@ -39,7 +38,7 @@ public class AccountService {
      * @return The customer entity.
      * @throws NotFoundException If customer with specified email does not exist.
      */
-     public CustomerEntity getCustomerByEmail(String email) throws NotFoundException {
+    public CustomerEntity getCustomerByEmail(String email) throws NotFoundException {
         return customerRepository
                 .findByEmail(email)
                 .orElseThrow(() -> new NotFoundException(ErrorMessages.NOT_FOUND_CUSTOMER));
@@ -131,81 +130,68 @@ public class AccountService {
         }
     }
 
-    public List<String> UserSearch(  String part){
-
-            List<String> Benutzernamen = new ArrayList<>();
-
-            List<DriverEntity> drivers = driverRepository.findByUsernameContainingIgnoreCase(part);
-            List<CustomerEntity> customers = customerRepository.findByUsernameContainingIgnoreCase(part);
-
-            if (drivers.isEmpty() && customers.isEmpty()) {
-
-                throw new NotFoundException("Kein Kunde mit Benutzername " + " " + part + " " + "gefunden.");
-            } else if (drivers.isEmpty()) {
-                for (CustomerEntity customer : customers) {
-                    Benutzernamen.add(customer.getUsername());
-                }
-            } else if (customers.isEmpty()) {
-                for (DriverEntity driver : drivers) {
-                    Benutzernamen.add(driver.getUsername());
-                }
-            } else {
-                for (CustomerEntity customer : customers) {
-                    Benutzernamen.add(customer.getUsername());
-                }
-                for (DriverEntity driver : drivers) {
-                    Benutzernamen.add(driver.getUsername());
-                }
-
+    public List<AccountDTO> UserSearch(String part) {
+        List<AccountDTO> accounts = new ArrayList<>();
+        List<DriverEntity> drivers = driverRepository.findByUsernameContainingIgnoreCase(part);
+        List<CustomerEntity> customers = customerRepository.findByUsernameContainingIgnoreCase(part);
+        if (drivers.isEmpty() && customers.isEmpty()) {
+            throw new NotFoundException("Kein Kunde mit Benutzername " + " " + part + " " + "gefunden.");
+        } else if (drivers.isEmpty()) {
+            for (CustomerEntity customer : customers) {
+                accounts.add(getCustomerDTO(customer));
             }
-            log.info("Liste ausgegeben");
-            return Benutzernamen;
+        } else if (customers.isEmpty()) {
+            for (DriverEntity driver : drivers) {
+                accounts.add(getDriverDTO(driver));
+            }
+        }
 
-
-
+        return accounts;
 
     }
-    public AccountDTO getAccountprofild(String username){
+
+
+    public AccountDTO getAccountprofild(String username) {
         Optional<CustomerEntity> customerEntity = customerRepository.findByUsername(username);
-        if ( customerEntity.isPresent() ) {
-            return getCustomerDTO(customerEntity);
+        if (customerEntity.isPresent()) {
+            return getCustomerDTO(customerEntity.get());
         } else {
             Optional<DriverEntity> driverEntity = driverRepository.findByUsername(username);
-            if ( driverEntity.isPresent() ) {
-                return getDriverDTO(driverEntity);
-            }else {
+            if (driverEntity.isPresent()) {
+                return getDriverDTO(driverEntity.get());
+            } else {
                 throw new NotFoundException(ErrorMessages.NOT_FOUND_USER);
             }
-
 
 
         }
 
     }
 
-    public  static AccountDTO getCustomerDTO(Optional<CustomerEntity> customerEntity) {
+    public static AccountDTO getCustomerDTO(CustomerEntity customerEntity) {
         AccountDTO customerDTO = new AccountDTO();
-        customerDTO.setEmail(customerEntity.get().getEmail());
-        customerDTO.setRatings(customerEntity.get().getRatings());
+        customerDTO.setEmail(customerEntity.getEmail());
+        customerDTO.setRatings(customerEntity.getRatings());
         customerDTO.setRole(Roles.CUSTOMER);
-        customerDTO.setUsername(customerEntity.get().getUsername());
-        customerDTO.setFirstName(customerEntity.get().getFirstName());
-        customerDTO.setLastName(customerEntity.get().getLastName());
-        customerDTO.setProfilePictureUrl( customerEntity.get().getProfilePictureUrl());
+        customerDTO.setUsername(customerEntity.getUsername());
+        customerDTO.setFirstName(customerEntity.getFirstName());
+        customerDTO.setLastName(customerEntity.getLastName());
+        customerDTO.setProfilePictureUrl(customerEntity.getProfilePictureUrl());
         return customerDTO;
     }
 
 
-    public static AccountDTO getDriverDTO(Optional<DriverEntity> driverEntity) {
+    public static AccountDTO getDriverDTO(DriverEntity driverEntity) {
         AccountDTO driverDTO = new AccountDTO();
-        driverDTO.setEmail(driverEntity.get().getEmail());
-        driverDTO.setRatings(driverEntity.get().getRatings());
+        driverDTO.setEmail(driverEntity.getEmail());
+        driverDTO.setRatings(driverEntity.getRatings());
         driverDTO.setRole(Roles.DRIVER);
-        driverDTO.setUsername(driverEntity.get().getUsername());
-        driverDTO.setFirstName(driverEntity.get().getFirstName());
-        driverDTO.setLastName(driverEntity.get().getLastName());
-        driverDTO.setTotalnumberofrides( driverEntity.get().getTotalnumberofrides() );
-        driverDTO.setProfilePictureUrl( driverEntity.get().getProfilePictureUrl());
+        driverDTO.setUsername(driverEntity.getUsername());
+        driverDTO.setFirstName(driverEntity.getFirstName());
+        driverDTO.setLastName(driverEntity.getLastName());
+        driverDTO.setCarType(driverEntity.getCarType());
+        driverDTO.setTotalnumberofrides(driverEntity.getTotalnumberofrides());
+        driverDTO.setProfilePictureUrl(driverEntity.getProfilePictureUrl());
         return driverDTO;
     }
 
@@ -300,40 +286,40 @@ public class AccountService {
         }
     }
 
-    public void Accountupdate(String username ,  AccountupdateDTO accountupdateDTO) {
-        if(existsCustomerUsername(username)){
-            if(!existsCustomerUsername(accountupdateDTO.getUsername())){
-                if(accountupdateDTO.getUsername() != null){
-                    if(accountupdateDTO.getFirstName() != null){
-                        if(accountupdateDTO.getLastName() != null) {
-                            if (accountupdateDTO.getBirthday() != null) {
-                                CustomerEntity customerEntity = customerRepository.findByUsername(username).get();
-                                customerEntity.setFirstName(accountupdateDTO.getFirstName());
-                                customerEntity.setLastName(accountupdateDTO.getLastName());
-                                customerEntity.setUsername(accountupdateDTO.getUsername());
-                                profilePictureStorageService.save(accountupdateDTO.getProfilePicture(), accountupdateDTO.getUsername());
-                                customerEntity.setBirthday(accountupdateDTO.getBirthday());
-                                customerRepository.save(customerEntity);
-                                log.info("Updated customer {} with username {}", customerEntity.getUsername(), customerEntity.getEmail());
-                            }else{
-                                throw new IllegalArgumentException("Birthday cannot be null");
-                            }
-                        }else{
-                            throw new IllegalArgumentException("Last name cannot be null");
-                        }
-                    }else{
-                        throw new IllegalArgumentException("First name cannot be null");
-                    }
-                }else{
-                    throw new IllegalArgumentException("Username cannot be null");
+    public void Accountupdate(String username, AccountupdateDTO accountupdateDTO) {
+        if (existsCustomerUsername(username)) {
+            if (!existsCustomerUsername(accountupdateDTO.getUsername()) || accountupdateDTO.getUsername() == null) {
+
+                CustomerEntity customerEntity = customerRepository.findByUsername(username)
+                        .orElseThrow(() -> new NotFoundException(ErrorMessages.NOT_FOUND_USER));
+
+                // Felder nur aktualisieren, wenn sie nicht null sind
+                if (accountupdateDTO.getFirstName() != null) {
+                    customerEntity.setFirstName(accountupdateDTO.getFirstName());
+                }
+                if (accountupdateDTO.getLastName() != null) {
+                    customerEntity.setLastName(accountupdateDTO.getLastName());
+                }
+                if (accountupdateDTO.getUsername() != null) {
+                    customerEntity.setUsername(accountupdateDTO.getUsername());
+                }
+                if (accountupdateDTO.getBirthday() != null) {
+                    customerEntity.setBirthday(accountupdateDTO.getBirthday());
+                }
+                if (accountupdateDTO.getProfilePicture() != null) {
+                    String profilePictureUrl = profilePictureStorageService.save(accountupdateDTO.getProfilePicture(), username);
+                    customerEntity.setProfilePictureUrl(profilePictureUrl);
                 }
 
-            }else{
-              throw new IllegalArgumentException("Username already exists");
-            }
-        }else{
-          throw new NotFoundException(ErrorMessages.NOT_FOUND_USER);
-        }
+                // Kunde speichern
+                customerRepository.save(customerEntity);
+                log.info("Updated customer {} with username {}", customerEntity.getUsername(), customerEntity.getEmail());
 
+            } else {
+                throw new IllegalArgumentException("Username already exists");
+            }
+        } else {
+            throw new NotFoundException(ErrorMessages.NOT_FOUND_USER);
+        }
     }
 }

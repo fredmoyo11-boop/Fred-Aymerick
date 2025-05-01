@@ -1,6 +1,7 @@
 package com.sep.backend.entity;
 
-import com.sep.backend.account.Vehicleclass;
+import com.sep.backend.account.CarType;
+import com.sep.backend.account.CarType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.*;
@@ -11,5 +12,5 @@ import lombok.*;
 @Table(name = "driver")
 @Entity
 public class DriverEntity extends AccountEntity {
-    Vehicleclass vehicleclass;
+    private CarType carType;
 }

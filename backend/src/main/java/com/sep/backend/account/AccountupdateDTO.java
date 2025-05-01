@@ -12,5 +12,6 @@ public class AccountupdateDTO {
     private String firstName;
     private String  lastName;
     private String birthday;
+    private CarType carType;
     private MultipartFile profilePicture;
 }

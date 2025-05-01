@@ -16,6 +16,7 @@ public class AccountDTO {
     private String firstName;
     private String lastName;
     private String profilePictureUrl;
+    private CarType carType;
     private String birthday;
     private List<Rating> ratings;
     private  int Totalnumberofrides;

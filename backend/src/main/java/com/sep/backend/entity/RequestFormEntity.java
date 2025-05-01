@@ -7,18 +7,21 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.domain.Auditable;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public abstract class RequestFormEntity {
+public abstract class RequestFormEntity extends AbstractEntity{
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "form_id")
     private float formID;
+
+    //UserID foreign key
 
     @NotBlank
     @Column(name = "first_name")
@@ -32,7 +35,7 @@ public abstract class RequestFormEntity {
     @Column(name = "notes")
     private String notes;
 
-    //StartLocation
+    //StartLocation -> Location Entity?
 
     //EndLocation
 

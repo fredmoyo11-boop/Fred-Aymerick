@@ -4,11 +4,13 @@ import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.EnumType;
-import jakarta.validation.constraints.Email;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -18,6 +20,9 @@ import com.sep.backend.route.WaypointTypeEnum;
 @Getter
 @Setter
 @MappedSuperclass
+@NoArgsConstructor
+@Table(name = "waypoint")
+@Entity
 public class WaypointEntity extends AbstractEntity {
     @NotBlank
     @Column(name = "index", unique = false, nullable = false)
@@ -35,15 +40,9 @@ public class WaypointEntity extends AbstractEntity {
     @NotBlank
     @Column(name = "type", nullable = false)
     private WaypointTypeEnum type;
-//    @NotNull
-//    @Column(name = "verified", nullable = false)
-//    private Boolean verified;
-//
-//    @Column(name = "profile_picture_url")
-//    private String profilePictureUrl;
 
-//    public void setBirthday(String birthday) {
-//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-//        this.birthday = LocalDate.parse(birthday, formatter);
-//    }
+    @NotBlank
+    //@Column(name = "route", nullable = false)
+    @ManyToOne(optional=false)
+    private RouteEntity routeEntity;
 }

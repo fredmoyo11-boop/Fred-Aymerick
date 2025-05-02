@@ -13,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.security.Principal;
 import java.util.List;
 
 @AllArgsConstructor
@@ -50,7 +49,7 @@ public class AccountController {
     @GetMapping("/search")
     public List<AccountDTO> Usersearch (@RequestParam String part){
 
-        return accountService.UserSearch(part);
+        return accountService.userSearch(part);
     }
 
 
@@ -58,7 +57,7 @@ public class AccountController {
 
     @Operation(
             summary = "Aktualisiert das Benutzerprofil",
-            description = "Aktualisiert das Profil eines Benutzers basierend auf dem aktuellen Benutzernamen, der in der URL angegeben wird. Die neuen Profildaten werden im JSON-Format im Anfragebody übergeben.",
+            description = "Aktualisiert das Profil eines Benutzers basierend auf dem aktuellen Benutzernamen, der in der URL angegeben wird. Die neuen Profildaten außer  werden im JSON-Format im Anfragebody übergeben.",
             tags = { "Benutzerprofil" }
     )
     @ApiResponse(
@@ -70,8 +69,8 @@ public class AccountController {
             )
     )
     @PutMapping("/update/{username}")
-    public ResponseEntity<String> AccountUpdate( @PathVariable String username, @RequestPart("data") AccountupdateDTO accountupdateDTO ,@RequestPart (value ="file",required =false) MultipartFile file) {
-        accountService.AccountUpdate(username, accountupdateDTO,file);
+    public ResponseEntity<String> AccountUpdate(@PathVariable String username, @RequestPart("data") UpdateAccountDTO updateAccountDTO, @RequestPart (value ="file",required =false) MultipartFile file) {
+        accountService.updateAccount(username, updateAccountDTO,file);
         return ResponseEntity.ok("Profil erfolgreich aktualisiert!");
     }
 

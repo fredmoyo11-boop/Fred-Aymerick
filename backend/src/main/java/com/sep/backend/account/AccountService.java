@@ -127,7 +127,7 @@ public class AccountService {
         }
     }
 
-    public List<AccountDTO> UserSearch(String part) {
+    public List<AccountDTO> userSearch(String part) {
         List<AccountDTO> accounts = new ArrayList<>();
         List<DriverEntity> drivers = driverRepository.findByUsernameContainingIgnoreCase(part);
         List<CustomerEntity> customers = customerRepository.findByUsernameContainingIgnoreCase(part);
@@ -296,37 +296,37 @@ public class AccountService {
         }
     }
 
-    public void AccountUpdate(String username, AccountupdateDTO accountupdateDTO, MultipartFile file) {
-        accountupdateDTO.setProfilePicture(file);
+    public void updateAccount(String username, UpdateAccountDTO updateAccountDTO, MultipartFile file) {
+        updateAccountDTO.setProfilePicture(file);
         if (existsCustomerUsername(username)) {
-            updateCustomer(username, accountupdateDTO);
+            updateCustomer(username, updateAccountDTO);
         } else if (existsDriverUsername(username)) {
-            updateDriver(username, accountupdateDTO);
+            updateDriver(username, updateAccountDTO);
         } else {
             throw new NotFoundException(ErrorMessages.NOT_FOUND_USER);
         }
     }
 
-    public void updateCustomer(String username, AccountupdateDTO accountupdateDTO)  {
+    public void updateCustomer(String username, UpdateAccountDTO updateAccountDTO)  {
 
-        if (!existsCustomerUsername(accountupdateDTO.getUsername()) ) {
+        if (!existsCustomerUsername(updateAccountDTO.getUsername()) ) {
             CustomerEntity customerEntity = customerRepository.findByUsername(username)
                     .orElseThrow(() -> new NotFoundException(ErrorMessages.NOT_FOUND_USER));
             // Felder nur aktualisieren, wenn sie nicht null sind
-            if (accountupdateDTO.getFirstName() != null) {
-                customerEntity.setFirstName(accountupdateDTO.getFirstName());
+            if (updateAccountDTO.getFirstName() != null) {
+                customerEntity.setFirstName(updateAccountDTO.getFirstName());
             }
-            if (accountupdateDTO.getLastName() != null) {
-                customerEntity.setLastName(accountupdateDTO.getLastName());
+            if (updateAccountDTO.getLastName() != null) {
+                customerEntity.setLastName(updateAccountDTO.getLastName());
             }
-            if (accountupdateDTO.getUsername() != null) {
-                customerEntity.setUsername(accountupdateDTO.getUsername());
+            if (updateAccountDTO.getUsername() != null) {
+                customerEntity.setUsername(updateAccountDTO.getUsername());
             }
-            if (accountupdateDTO.getBirthday() != null) {
-                customerEntity.setBirthday(accountupdateDTO.getBirthday());
+            if (updateAccountDTO.getBirthday() != null) {
+                customerEntity.setBirthday(updateAccountDTO.getBirthday());
             }
-            if (accountupdateDTO.getProfilePicture() != null) {
-                String profilePictureUrl = profilePictureStorageService.save(accountupdateDTO.getProfilePicture(), username);
+            if (updateAccountDTO.getProfilePicture() != null) {
+                String profilePictureUrl = profilePictureStorageService.save(updateAccountDTO.getProfilePicture(), username);
                 customerEntity.setProfilePictureUrl(profilePictureUrl);
             }
             // Kunde speichern
@@ -337,28 +337,28 @@ public class AccountService {
         }
     }
 
-    private void updateDriver(String username, AccountupdateDTO accountupdateDTO) {
-        if (!existsDriverUsername(accountupdateDTO.getUsername()) ) {
+    private void updateDriver(String username, UpdateAccountDTO updateAccountDTO) {
+        if (!existsDriverUsername(updateAccountDTO.getUsername()) ) {
             DriverEntity driverEntity = driverRepository.findByUsername(username)
                     .orElseThrow(() -> new NotFoundException(ErrorMessages.NOT_FOUND_USER));
             // Felder nur aktualisieren, wenn sie nicht null sind
-            if (accountupdateDTO.getFirstName() != null) {
-                driverEntity.setFirstName(accountupdateDTO.getFirstName());
+            if (updateAccountDTO.getFirstName() != null) {
+                driverEntity.setFirstName(updateAccountDTO.getFirstName());
             }
-            if (accountupdateDTO.getLastName() != null) {
-                driverEntity.setLastName(accountupdateDTO.getLastName());
+            if (updateAccountDTO.getLastName() != null) {
+                driverEntity.setLastName(updateAccountDTO.getLastName());
             }
-            if (accountupdateDTO.getUsername() != null) {
-                driverEntity.setUsername(accountupdateDTO.getUsername());
+            if (updateAccountDTO.getUsername() != null) {
+                driverEntity.setUsername(updateAccountDTO.getUsername());
             }
-            if (accountupdateDTO.getBirthday() != null) {
-                driverEntity.setBirthday(accountupdateDTO.getBirthday());
+            if (updateAccountDTO.getBirthday() != null) {
+                driverEntity.setBirthday(updateAccountDTO.getBirthday());
             }
-            if (accountupdateDTO.getCarType() != null) {
-                driverEntity.setCarType(accountupdateDTO.getCarType());
+            if (updateAccountDTO.getCarType() != null) {
+                driverEntity.setCarType(updateAccountDTO.getCarType());
             }
-            if (accountupdateDTO.getProfilePicture() != null) {
-                String profilePictureUrl = profilePictureStorageService.save(accountupdateDTO.getProfilePicture(), username);
+            if (updateAccountDTO.getProfilePicture() != null) {
+                String profilePictureUrl = profilePictureStorageService.save(updateAccountDTO.getProfilePicture(), username);
                 driverEntity.setProfilePictureUrl(profilePictureUrl);
             }
             // Fahrer speichern

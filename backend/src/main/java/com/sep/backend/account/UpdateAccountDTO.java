@@ -8,7 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 @NoArgsConstructor
 @Getter
 @Setter
-public class AccountupdateDTO {
+public class UpdateAccountDTO {
     private String username;
     private String firstName;
     private String  lastName;

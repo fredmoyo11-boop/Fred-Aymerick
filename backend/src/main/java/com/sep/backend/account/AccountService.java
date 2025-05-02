@@ -134,12 +134,13 @@ public class AccountService {
         if (drivers.isEmpty() && customers.isEmpty()) {
             throw new NotFoundException("Kein Kunde mit Benutzername " + " " + part + " " + "gefunden.");
         } else if (drivers.isEmpty()) {
-            List<AccountDTO> mappedCustomers = mapToCustomerDTO(customers);
-            accounts.addAll(mappedCustomers);
+            accounts.addAll(mapToCustomerDTO(customers));
         }else if (customers.isEmpty()) {
-        List<AccountDTO> mappedDrivers = mapToDriverDTO(drivers);
-        accounts.addAll(mappedDrivers);
-       }
+            accounts.addAll(mapToDriverDTO(drivers));
+        }else{
+            accounts.addAll(mapToCustomerDTO(customers));
+            accounts.addAll(mapToDriverDTO(drivers));
+        }
         return accounts;
     }
 

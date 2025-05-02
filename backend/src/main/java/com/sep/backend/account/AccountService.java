@@ -12,6 +12,8 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -298,15 +300,43 @@ public class AccountService {
     }
 
     public void updateAccount(String username, UpdateAccountDTO updateAccountDTO, MultipartFile file) {
-        updateAccountDTO.setProfilePicture(file);
-        if (existsCustomerUsername(username)) {
-            updateCustomer(username, updateAccountDTO);
-        } else if (existsDriverUsername(username)) {
-            updateDriver(username, updateAccountDTO);
+        // Authentifizierten Benutzer abrufen (Email)
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String authenticatedEmail = authentication.getName();
+        // Username des authentifizierten Benutzers anhand der Email ermitteln
+        String authenticatedUsername = resolveUsernameByEmail(authenticatedEmail);
+        // Prüfen, ob der angegebene Username mit dem authentifizierten Username übereinstimmt
+        if (authenticatedUsername.equals(username)) {
+            // Profilbild setzen
+            updateAccountDTO.setProfilePicture(file);
+            // Prüfen, ob der Benutzer ein Kunde oder Fahrer ist, und entsprechend updaten
+            if (existsCustomerUsername(username)) {
+                updateCustomer(username, updateAccountDTO);
+            } else if (existsDriverUsername(username)) {
+                updateDriver(username, updateAccountDTO);
+            } else {
+                throw new NotFoundException(ErrorMessages.NOT_FOUND_USER);
+            }
         } else {
-            throw new NotFoundException(ErrorMessages.NOT_FOUND_USER);
+            throw new IllegalArgumentException("The provided username does not match the authenticated user.");
         }
     }
+    private String resolveUsernameByEmail(String email) {
+        // Prüfen, ob der Benutzer ein Kunde ist, und Username zurückgeben
+        if (customerRepository.existsByEmail(email)) {
+            return customerRepository.findByEmail(email).get().getUsername();
+        }
+        // Prüfen, ob der Benutzer ein Fahrer ist, und Username zurückgeben
+        if (driverRepository.existsByEmail(email)) {
+            return driverRepository.findByEmail(email).get().getUsername();
+        }
+        // Benutzer nicht gefunden
+        throw new NotFoundException("No user found with the provided email: " + email);
+    }
+
+
+
+
 
     public void updateCustomer(String username, UpdateAccountDTO updateAccountDTO)  {
 

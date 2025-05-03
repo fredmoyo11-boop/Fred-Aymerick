@@ -1,7 +1,6 @@
 package com.sep.backend.entity;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.ManyToOne;
@@ -16,7 +15,6 @@ import com.sep.backend.route.WaypointTypeEnum;
 
 @Getter
 @Setter
-@MappedSuperclass
 @NoArgsConstructor
 @Table(name = "waypoint")
 @Entity

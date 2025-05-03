@@ -1,4 +1,4 @@
-package com.sep.backend.route.RouteController;
+package com.sep.backend.route;
 
 import com.sep.backend.HttpStatus;
 import com.sep.backend.StringResponse;

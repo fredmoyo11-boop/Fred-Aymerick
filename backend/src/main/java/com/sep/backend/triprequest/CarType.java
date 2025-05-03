@@ -1,4 +1,4 @@
-package com.sep.backend.requestDrive;
+package com.sep.backend.triprequest;
 
 public class CarType {
     public static final String MEDIUM = "MEDIUM";

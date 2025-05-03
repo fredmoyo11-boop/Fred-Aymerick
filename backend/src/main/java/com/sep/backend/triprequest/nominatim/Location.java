@@ -1,11 +1,9 @@
-package com.sep.backend.requestDrive.nominatim;
+package com.sep.backend.triprequest.nominatim;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 @Getter
 @NoArgsConstructor
@@ -16,9 +14,6 @@ public class Location {
 
     @JsonProperty("display_name")
     String displayName;
-
-    //@JsonProperty("address")
-    //List<String> address;
 
     @JsonProperty("lat")
     Double latitude;

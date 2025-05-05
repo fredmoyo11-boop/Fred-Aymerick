@@ -10,8 +10,8 @@ import java.util.Optional;
 @Repository
 public interface TripRequestRepository extends JpaRepository<TripRequestEntity, Long> {
 
-    Optional<TripRequestEntity> findByRequestID(@NotBlank float requestID);
+    Optional<TripRequestEntity> findById(Long id);
 
-    Optional<TripRequestEntity> findByUsername(@NotBlank String username);
+    Optional<TripRequestEntity> findByCustomer_Username(String username);
 
 }

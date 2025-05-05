@@ -31,6 +31,7 @@ public class ErrorMessages {
 
     public static final String ALREADY_EXISTS_EMAIL = "Email already exists.";
 
+    public static final String ALREADY_EXISTS_TRIPREQUEST = "Maximum number of trip requests reached.";
 
     public static final String EXPIRED_OTP = "OTP expired.";
 

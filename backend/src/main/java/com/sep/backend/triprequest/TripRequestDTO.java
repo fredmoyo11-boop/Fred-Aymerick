@@ -1,7 +1,9 @@
 package com.sep.backend.triprequest;
 
+import com.sep.backend.entity.CustomerEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
+import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
@@ -13,7 +15,7 @@ import lombok.*;
 public class TripRequestDTO {
 
     @NotBlank
-    @Schema(description = "The username of the customer.", requiredMode = RequiredMode.REQUIRED)
+    @Schema(description = "The customer requesting drive.", requiredMode = RequiredMode.REQUIRED)
     private String username;
 
     @NotBlank

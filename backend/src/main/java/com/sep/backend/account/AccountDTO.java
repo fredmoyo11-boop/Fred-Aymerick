@@ -31,7 +31,7 @@ public class AccountDTO {
     @Schema(description = "URL to the profile picture (optional).", nullable = true)
     private String profilePictureUrl;
 
-    @Schema(description = "The type of car associated with the account when the person is a driver  .", nullable = true)
+    @Schema(description = "The type of car associated with the account( when the person is a driver)  .", nullable = true)
     private CarType carType;
 
     @Schema(description = "Date of birth in the format YYYY-MM-DD.", example = "1985-05-15")

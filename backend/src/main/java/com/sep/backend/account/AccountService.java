@@ -184,7 +184,7 @@ public class AccountService {
     public static AccountDTO getCustomerDTO(CustomerEntity customerEntity) {
         AccountDTO customerDTO = new AccountDTO();
         customerDTO.setEmail(customerEntity.getEmail());
-        customerDTO.setRatings(customerEntity.getRatings());
+        customerDTO.setRatings(customerEntity.getRating());
         customerDTO.setRole(Roles.CUSTOMER);
         customerDTO.setUsername(customerEntity.getUsername());
         customerDTO.setFirstName(customerEntity.getFirstName());
@@ -197,7 +197,7 @@ public class AccountService {
     public static AccountDTO getDriverDTO(DriverEntity driverEntity) {
         AccountDTO driverDTO = new AccountDTO();
         driverDTO.setEmail(driverEntity.getEmail());
-        driverDTO.setRatings(driverEntity.getRatings());
+        driverDTO.setRatings(driverEntity.getRating());
         driverDTO.setRole(Roles.DRIVER);
         driverDTO.setUsername(driverEntity.getUsername());
         driverDTO.setFirstName(driverEntity.getFirstName());

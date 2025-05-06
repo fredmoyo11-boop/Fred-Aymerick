@@ -1,22 +1,28 @@
 package com.sep.backend.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
-import lombok.extern.slf4j.Slf4j;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter
-@Slf4j
-@Entity
-@Table(name = "Rating")
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@Entity
+@Table(name = "rating")
 public class Rating {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
     private int rating;
+
+
     private String comment;
 
+    public  String  toString(){
+        return "rating: " + rating + " comment: " + comment;
+    }
 }

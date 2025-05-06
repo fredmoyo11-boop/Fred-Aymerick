@@ -11,4 +11,5 @@ import lombok.*;
 @Entity
 public class CustomerEntity extends AccountEntity {
     // add additional fields that only belong to customer
+
 }

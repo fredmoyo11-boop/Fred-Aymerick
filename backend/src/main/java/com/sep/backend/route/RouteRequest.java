@@ -7,17 +7,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
+import com.sep.backend.route.RouteDTO;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Schema(description = "Represents a Route request.")
-public class RegistrationRequest {
-//
-//    @Schema(description = "The user data.", implementation = RegistrationDTO.class, requiredMode = RequiredMode.REQUIRED)
-//    private RegistrationDTO data;
-//
-//    @Schema(description = "The profile picture of the user.", requiredMode = RequiredMode.NOT_REQUIRED)
-//    private MultipartFile file;
+public class RouteRequest {
+
+    @Schema(description = "The route id.", implementation = RouteDTO.class, requiredMode = RequiredMode.REQUIRED)
+    private RouteDTO id;
 }

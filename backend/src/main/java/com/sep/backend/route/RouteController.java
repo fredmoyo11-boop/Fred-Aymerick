@@ -3,6 +3,7 @@ package com.sep.backend.route;
 import com.sep.backend.HttpStatus;
 import com.sep.backend.StringResponse;
 import com.sep.backend.route.RouteResponse;
+import com.sep.backend.route.RouteRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -29,7 +30,14 @@ public class RouteController {
     @Operation(description = "Returns start, end, count of midpoints and count of path waypoints from the route.",
             responses = {
                     @ApiResponse(responseCode = HttpStatus.OK, description = "Route metadata returned.",
-                            content = @Content(schema = @Schema(implementation = RouteResponse.class)))})
+                            content = @Content(schema = @Schema(implementation = RouteResponse.class)))},
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    content = @Content(
+                        mediaType = MediaType.MULTIPART_FORM_DATA_VALUE,
+                        schema = @Schema(implementation = RouteRequest.class)
+                    )
+            )
+    )
     public RouteResponse getMetadata() {
         return new RouteResponse();
     }

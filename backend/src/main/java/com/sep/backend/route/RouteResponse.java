@@ -12,7 +12,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Schema(description = "Represents Route Metadata.")
-public class StringResponse {
+public class RouteResponse {
 
     @Schema(description = "Longitude from Startpoint.", requiredMode = RequiredMode.REQUIRED)
     private String startLongitude;

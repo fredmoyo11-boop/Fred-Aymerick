@@ -2,6 +2,7 @@ package com.sep.backend.route;
 
 import com.sep.backend.HttpStatus;
 import com.sep.backend.StringResponse;
+import com.sep.backend.route.RouteResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -23,5 +24,15 @@ public class RouteController {
     public StringResponse health() {
         return new StringResponse("OK");
     }
+
+    @GetMapping("/route_metadata")
+    @Operation(description = "Returns start, end, count of midpoints and count of path waypoints from the route.",
+            responses = {
+                    @ApiResponse(responseCode = HttpStatus.OK, description = "Route metadata returned.",
+                            content = @Content(schema = @Schema(implementation = RouteResponse.class)))})
+    public RouteResponse getMetadata() {
+        return new RouteResponse();
+    }
+
 
 }

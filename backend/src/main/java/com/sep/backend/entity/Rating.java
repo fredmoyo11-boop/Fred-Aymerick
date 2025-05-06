@@ -1,7 +1,6 @@
 package com.sep.backend.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
@@ -14,6 +13,9 @@ import lombok.extern.slf4j.Slf4j;
 @NoArgsConstructor
 @Builder
 public class Rating {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
     private int rating;
     private String comment;
 

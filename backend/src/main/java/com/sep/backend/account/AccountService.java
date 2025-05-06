@@ -167,7 +167,7 @@ public class AccountService {
     }
 
 
-    public AccountDTO getAccountprofild(String username) {
+    public AccountDTO getAccountprofil(String username) {
         Optional<CustomerEntity> customerEntity = customerRepository.findByUsername(username);
         if (customerEntity.isPresent()) {
             return getCustomerDTO(customerEntity.get());
@@ -203,7 +203,7 @@ public class AccountService {
         driverDTO.setFirstName(driverEntity.getFirstName());
         driverDTO.setLastName(driverEntity.getLastName());
         driverDTO.setCarType(driverEntity.getCarType());
-        driverDTO.setTotalnumberofrides(driverEntity.getTotalnumberofrides());
+        driverDTO.setTotalNumberOfRides(driverEntity.getTotalNumberOfRides());
         driverDTO.setProfilePictureUrl(driverEntity.getProfilePictureUrl());
         return driverDTO;
     }

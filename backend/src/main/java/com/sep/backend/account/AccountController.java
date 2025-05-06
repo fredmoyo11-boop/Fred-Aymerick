@@ -92,8 +92,8 @@ public class AccountController {
             )
     )
     @GetMapping("/{username}")
-    public  AccountDTO getAccountprofild(@PathVariable  String username ){
+    public  AccountDTO getAccountprofil(@PathVariable  String username ){
 
-        return accountService.getAccountprofild(username);
+        return accountService.getAccountprofil(username);
     }
 }

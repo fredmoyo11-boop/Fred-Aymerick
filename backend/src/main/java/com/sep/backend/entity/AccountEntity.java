@@ -26,7 +26,7 @@ public abstract class AccountEntity extends AbstractEntity {
     private List<Rating> rating = new ArrayList<>();
 
 
-    private  int Totalnumberofrides =0;
+    private  int totalNumberOfRides =0;
 
     @NotBlank
     @Column(name = "username", unique = true, nullable = false)

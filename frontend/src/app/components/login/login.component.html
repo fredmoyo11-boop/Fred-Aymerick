@@ -1,0 +1,57 @@
+<div class="container">
+  <div class="content">
+    @if (!sentLoginRequest) {
+      <div class="register-container">
+        <span>Hast du keinen Account?</span>
+        <span routerLink="/register" class="register-link">Jetzt registrieren</span>
+      </div>
+      <mat-divider class="divider"></mat-divider>
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form-container">
+        <mat-form-field>
+          <mat-label>E-Mail</mat-label>
+          <input matInput formControlName="email">
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Passwort</mat-label>
+          <input matInput [type]="hidePassword() ? 'password' : 'text'" formControlName="password">
+          <button
+            type="button"
+            mat-icon-button
+            matSuffix
+            (click)="this.hidePassword.set(!this.hidePassword())"
+          >
+            <mat-icon>{{ hidePassword() ? "visibility_off" : "visibility_on" }}</mat-icon>
+          </button>
+        </mat-form-field>
+      </form>
+      <button mat-flat-button (click)="onSubmit()" [disabled]="loginForm.invalid" class="submit-button">Anmelden
+      </button>
+    } @else {
+      <h1>OTP eingeben zum verifizieren: {{ this.loginForm.value.email }}</h1>
+      <div class="otp-btn-container">
+        @for (digit of otp; track idx; let idx = $index) {
+          <input
+            maxlength="1"
+            type="text"
+            inputmode="numeric"
+            class="otp-input"
+            [(ngModel)]="otp[idx]"
+            (input)="onInput($event, idx)"
+            (keydown)="onKeyDown($event, idx)"
+            #otpInput>
+        }
+      </div>
+      <div class="check-container">
+        <span>Überprüfe deinen Posteingang und deinen Spam-Ordner. Nicht erhalten?</span>
+        <button mat-icon-button (click)="sendLoginRequest()">
+          <mat-icon>refresh</mat-icon>
+        </button>
+      </div>
+      <button mat-flat-button
+              (click)="onClick()"
+              [disabled]="otpString.length != 6"
+              class="confirmation-btn">Bestätigen
+      </button>
+    }
+  </div>
+</div>

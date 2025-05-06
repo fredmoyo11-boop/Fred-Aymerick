@@ -13,7 +13,7 @@ import java.util.List;
 @Setter
 @Schema(description = "Represents the data of an account.", requiredProperties = {"username", "email", "role", "firstName", "lastName", "birthday", "totalNumberOfRides","ratings"})
 public class AccountDTO {
-    @Schema(description = "The unique username of the account.", example = "john_doe")
+    @Schema(description = "The unique username of the account.", example = "john_doe", required = true )
     private String username;
 
     @Schema(description = "The email address of the account.", example = "john.doe@example.com")

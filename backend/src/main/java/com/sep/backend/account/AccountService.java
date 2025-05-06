@@ -8,6 +8,7 @@ import com.sep.backend.auth.registration.RegistrationException;
 import com.sep.backend.entity.AccountEntity;
 import com.sep.backend.entity.CustomerEntity;
 import com.sep.backend.entity.DriverEntity;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
@@ -282,6 +283,7 @@ public class AccountService {
      * @param <T>               The class of the entity.
      * @return The created entity.
      */
+    
     private <T extends AccountEntity> T createAccountEntity(@Valid RegistrationDTO data, String profilePictureUrl, Class<T> clazz) {
         try {
             T account = clazz.getDeclaredConstructor().newInstance();
@@ -298,13 +300,13 @@ public class AccountService {
             throw new RuntimeException("Failed to create account entity of type " + clazz.getName(), e);
         }
     }
-
+     @Schema(description = "Updates the account of the authenticated user")
     public void updateAccount(String username, UpdateAccountDTO updateAccountDTO, MultipartFile file) {
         // Authentifizierten Benutzer abrufen (Email)
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String authenticatedEmail = authentication.getName();
         // Username des authentifizierten Benutzers anhand der Email ermitteln
-        String authenticatedUsername = resolveUsernameByEmail(authenticatedEmail);
+        String authenticatedUsername = getUsernameByEmail(authenticatedEmail);
         // Prüfen, ob der angegebene Username mit dem authentifizierten Username übereinstimmt
         if (authenticatedUsername.equals(username)) {
             // Profilbild setzen
@@ -321,7 +323,9 @@ public class AccountService {
             throw new IllegalArgumentException("The provided username does not match the authenticated user.");
         }
     }
-    private String resolveUsernameByEmail(String email) {
+    
+    @Schema(description = "get  the username of the authenticated user")
+    private String getUsernameByEmail(String email) {
         // Prüfen, ob der Benutzer ein Kunde ist, und Username zurückgeben
         if (customerRepository.existsByEmail(email)) {
             return customerRepository.findByEmail(email).get().getUsername();
@@ -329,9 +333,9 @@ public class AccountService {
         // Prüfen, ob der Benutzer ein Fahrer ist, und Username zurückgeben
         if (driverRepository.existsByEmail(email)) {
             return driverRepository.findByEmail(email).get().getUsername();
+        }else{
+            throw new NotFoundException(ErrorMessages.NOT_FOUND_USER);
         }
-        // Benutzer nicht gefunden
-        throw new NotFoundException("No user found with the provided email: " + email);
     }
 
 

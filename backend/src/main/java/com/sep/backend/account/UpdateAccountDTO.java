@@ -9,6 +9,8 @@ import org.springframework.web.multipart.MultipartFile;
 @NoArgsConstructor
 @Getter
 @Setter
+
+@Schema(description = "Represents the data of an account that can be updated.")
 public class UpdateAccountDTO {
     @Schema(description = "Benutzername des Accounts", example = "john_doe", required = false)
     private String username;
@@ -28,5 +30,4 @@ public class UpdateAccountDTO {
     @JsonIgnore
     @Schema(description = "Profilbild des Nutzers ", hidden = true, required = false)
     private MultipartFile profilePicture;
-
 }

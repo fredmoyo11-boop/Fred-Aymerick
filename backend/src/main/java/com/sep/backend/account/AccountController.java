@@ -47,7 +47,7 @@ public class AccountController {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = AccountDTO.class)))})
     @GetMapping("/search")
-    public List<AccountDTO> Usersearch (@RequestParam String part){
+    public List<AccountDTO> userSearch(@RequestParam String part){
 
         return accountService.userSearch(part);
     }

@@ -395,7 +395,7 @@ public class AccountService {
             // Fahrer speichern
             driverRepository.save(driverEntity);
             log.info("Updated driver {} with username {}", driverEntity.getUsername(), driverEntity.getEmail());
-        } else {
+        }else{
             throw new IllegalArgumentException("Username already exists");
         }
     }

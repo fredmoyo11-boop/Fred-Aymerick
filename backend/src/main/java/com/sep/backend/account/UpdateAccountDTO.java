@@ -10,12 +10,23 @@ import org.springframework.web.multipart.MultipartFile;
 @Getter
 @Setter
 public class UpdateAccountDTO {
+    @Schema(description = "Benutzername des Accounts", example = "john_doe", required = false)
     private String username;
+
+    @Schema(description = "Vorname des Account-Inhabers", example = "John", required = false)
     private String firstName;
-    private String  lastName;
+
+    @Schema(description = "Nachname des Account-Inhabers", example = "Doe", required = false)
+    private String lastName;
+
+    @Schema(description = "Geburtsdatum im Format YYYY-MM-DD", example = "1990-01-01", required = false)
     private String birthday;
+
+    @Schema(description = "Typ des Autos", required = false)
     private CarType carType;
-    @Schema(description = "The profile picture of the account.", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+
     @JsonIgnore
+    @Schema(description = "Profilbild des Nutzers ", hidden = true, required = false)
     private MultipartFile profilePicture;
+
 }

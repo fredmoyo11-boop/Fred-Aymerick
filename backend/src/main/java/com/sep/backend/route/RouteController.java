@@ -38,8 +38,8 @@ public class RouteController {
                     )
             )
     )
-    public RouteResponse getMetadata() {
-        return new RouteResponse();
+    public RouteResponse getMetadata(@Parameter(description = "The route id.") @RequestPart("data") RouteDTO id) {
+        return new RouteResponse(id);       //nicht ganz so, wie bei refresh
     }
 
 

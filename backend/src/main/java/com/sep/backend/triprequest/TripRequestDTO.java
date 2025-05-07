@@ -1,5 +1,6 @@
 package com.sep.backend.triprequest;
 
+import com.sep.backend.triprequest.nominatim.LocationDTO;
 import com.sep.backend.triprequest.nominatim.LocationEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
@@ -19,11 +20,11 @@ public class TripRequestDTO {
 
     @NotBlank
     @Schema(description = "The start location of the drive.", requiredMode = RequiredMode.REQUIRED)
-    private LocationEntity startLocation;
+    private LocationDTO startLocation;
 
     @NotBlank
     @Schema(description = "The end location of the drive.", requiredMode = RequiredMode.REQUIRED)
-    private LocationEntity endLocation;
+    private LocationDTO endLocation;
 
     @NotBlank
     @Schema(description = "The type of car requested.", requiredMode = RequiredMode.REQUIRED)

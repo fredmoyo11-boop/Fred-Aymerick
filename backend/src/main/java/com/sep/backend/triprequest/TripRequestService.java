@@ -8,7 +8,6 @@ import com.sep.backend.entity.TripRequestEntity;
 import com.sep.backend.triprequest.nominatim.LocationDTO;
 import com.sep.backend.triprequest.nominatim.LocationEntity;
 import com.sep.backend.triprequest.nominatim.LocationRepository;
-import com.sep.backend.triprequest.nominatim.NominatimService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.stereotype.Service;
@@ -19,15 +18,12 @@ import java.util.Objects;
 public class TripRequestService {
 
     private final TripRequestRepository tripRequestRepository;
-
-    private final NominatimService nominatimService;
     private final CustomerRepository customerRepository;
     private final LocationRepository locationRepository;
 
-    public TripRequestService(TripRequestRepository tripRequestRepository, NominatimService nominatimService,
-                              CustomerRepository customerRepository, LocationRepository locationRepository) {
+    public TripRequestService(TripRequestRepository tripRequestRepository,CustomerRepository customerRepository
+            , LocationRepository locationRepository) {
         this.tripRequestRepository = tripRequestRepository;
-        this.nominatimService = nominatimService;
         this.customerRepository = customerRepository;
         this.locationRepository = locationRepository;
     }
@@ -69,20 +65,20 @@ public class TripRequestService {
         locationRepository.save(location);
     }
 
-    public void convertDTOToEntity(@Valid LocationDTO locationDTO) {
+    public LocationEntity convertDTOToEntity(@Valid LocationDTO locationDTO) {
         LocationEntity locationEntity = new LocationEntity();
         locationEntity.setDisplayName(locationDTO.getDisplayName());
         locationEntity.setLatitude(locationDTO.getLatitude());
         locationEntity.setLongitude(locationDTO.getLongitude());
         locationRepository.save(locationEntity);
+        return locationEntity;
     }
 
     //TripRequestEntity mit Constructer erstellen
-    private void upsertTripRequest(@Valid TripRequestDTO tripRequestDTO) {
+    public void upsertTripRequest(@Valid TripRequestDTO tripRequestDTO) {
         String username = tripRequestDTO.getUsername();
-        var startAddress = getLocationById(tripRequestDTO.getStartLocation().getId());
-        var endAddress = getLocationById(tripRequestDTO.getEndLocation().getId());
-
+        LocationEntity startAddress = convertDTOToEntity(tripRequestDTO.getStartLocation());
+        LocationEntity endAddress = convertDTOToEntity(tripRequestDTO.getEndLocation());
         if (existsByCustomer_Username(username)) {
             // update
             var tripRequestEntity = getRequestByUsername(username);

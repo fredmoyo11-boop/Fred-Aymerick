@@ -12,22 +12,22 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Schema(description = "Represents the data of an account that can be updated.")
 public class UpdateAccountDTO {
-    @Schema(description = "Benutzername des Accounts", example = "john_doe", required = false)
+    @Schema(description = "Benutzername des Accounts", example = "john_doe", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private String username;
 
-    @Schema(description = "Vorname des Account-Inhabers", example = "John", required = false)
+    @Schema(description = "Vorname des Account-Inhabers", example = "John", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private String firstName;
 
-    @Schema(description = "Nachname des Account-Inhabers", example = "Doe", required = false)
+    @Schema(description = "Nachname des Account-Inhabers", example = "Doe", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private String lastName;
 
-    @Schema(description = "Geburtsdatum im Format YYYY-MM-DD", example = "1990-01-01", required = false)
+    @Schema(description = "Geburtsdatum im Format YYYY-MM-DD", example = "1990-01-01", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private String birthday;
 
-    @Schema(description = "Typ des Autos", required = false)
+    @Schema(description = "Typ des Autos", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private CarType carType;
 
     @JsonIgnore
-    @Schema(description = "Profilbild des Nutzers ", hidden = true, required = false)
+    @Schema(description = "Profilbild des Nutzers ", hidden = true, requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private MultipartFile profilePicture;
 }

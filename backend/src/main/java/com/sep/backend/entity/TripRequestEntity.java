@@ -1,6 +1,7 @@
 package com.sep.backend.entity;
 
 
+import com.sep.backend.triprequest.nominatim.LocationEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 import jakarta.persistence.*;
@@ -24,15 +25,17 @@ public class TripRequestEntity extends AbstractEntity{
 
     //StartLocation -> Location Entity?
     @NotBlank
-    @Column(name = "start_location")
+    @OneToOne
+    @JoinColumn(name = "display_name")
     @Schema(description = "The start location of the request.", requiredMode = RequiredMode.REQUIRED)
-    private String startAddressCoordinates;
+    private LocationEntity startLocation;
 
     //EndLocation
     @NotBlank
-    @Column(name = "end_location")
+    @OneToOne
+    @JoinColumn(name = "display_name")
     @Schema(description = "The end location of the request.", requiredMode = RequiredMode.REQUIRED)
-    private String endAddressCoordinates;
+    private LocationEntity endLocation;
 
     @Column(name = "notes")
     @Schema(description = "Optional note which the customer can add.", requiredMode = RequiredMode.NOT_REQUIRED)

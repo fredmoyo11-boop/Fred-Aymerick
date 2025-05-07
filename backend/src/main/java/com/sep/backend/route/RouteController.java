@@ -4,7 +4,9 @@ import com.sep.backend.HttpStatus;
 import com.sep.backend.StringResponse;
 import com.sep.backend.route.RouteResponse;
 import com.sep.backend.route.RouteRequest;
+import com.sep.backend.route.RouteService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -12,10 +14,16 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(value = "/api/route", produces = MediaType.APPLICATION_JSON_VALUE)
 public class RouteController {
+    private final RouteService routeService;
+
+    public RouteController(RouteService routeService) {
+        this.routeService = routeService;
+    }
 
     @GetMapping("/health")
     @Operation(description = "Returns the status of the route controller.",
@@ -38,8 +46,8 @@ public class RouteController {
                     )
             )
     )
-    public RouteResponse getMetadata(@Parameter(description = "The route id.") @RequestPart("data") RouteDTO id) {
-        return new RouteResponse(id);       //nicht ganz so, wie bei refresh
+    public RouteResponse getMetadata(@Parameter(description = "The route id.") @RequestPart("id") RouteDTO id) {
+        return routeService.getRouteById(id);
     }
 
 

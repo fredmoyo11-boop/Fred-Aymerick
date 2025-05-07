@@ -27,9 +27,9 @@ public class RouteResponse {
     private String endLatitude;
 
     @Schema(description = "Amount of other points.", requiredMode = RequiredMode.REQUIRED)
-    private int otherPointCount;
+    private long otherPointCount;
 
     @Schema(description = "Amount of midpoints.", requiredMode = RequiredMode.REQUIRED)
-    private int midpointCount;
+    private long midpointCount;
 
 }

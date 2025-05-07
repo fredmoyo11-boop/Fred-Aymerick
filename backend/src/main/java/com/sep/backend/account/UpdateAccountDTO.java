@@ -29,6 +29,6 @@ public class UpdateAccountDTO {
     private CarType carType;
 
     @JsonIgnore
-    @Schema(description = "Profilbild des Nutzers ", hidden = true, requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+    @Schema(description = "Profilbild des Nutzers ", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private MultipartFile profilePicture;
 }

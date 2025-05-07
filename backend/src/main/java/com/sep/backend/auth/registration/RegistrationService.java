@@ -55,7 +55,7 @@ public class RegistrationService {
             throw new RegistrationException(ErrorMessages.ALREADY_EXISTS_EMAIL);
         }
         // check if username already registered
-        if (accountService.existsUsername(username)) {
+        if (accountService.existsUsername(data.getPassword())) {
             throw new RegistrationException(ErrorMessages.ALREADY_EXISTS_USERNAME);
         }
 

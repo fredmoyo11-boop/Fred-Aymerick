@@ -142,29 +142,35 @@ public class AccountService {
         }else if (customers.isEmpty()) {
             accounts.addAll(mapToDriverDTO(drivers));
         }else{
-            accounts.addAll(mapToCustomerDTO(customers));
-            accounts.addAll(mapToDriverDTO(drivers));
+            accounts.addAll(mapToAccountDTOs(customers, drivers));
         }
         return accounts;
     }
 
+    private List<AccountDTO> mapToAccountDTOs(List<CustomerEntity> customers, List<DriverEntity> drivers) {
+        List<AccountDTO> accountDTOs = new ArrayList<>();
+        accountDTOs.addAll(mapToCustomerDTO(customers));
+        accountDTOs.addAll(mapToDriverDTO(drivers));
+        return accountDTOs;
+    }
+
     private List<AccountDTO> mapToCustomerDTO(List<CustomerEntity> customers) {
-        List<AccountDTO> accounts = new ArrayList<>();
+        List<AccountDTO> accountDTOS = new ArrayList<>();
         for (CustomerEntity customer : customers) {
             AccountDTO account = getCustomerDTO(customer);
-            accounts.add(account);
+            accountDTOS.add(account);
         }
-        return accounts;
+        return accountDTOS;
     }
 
 
     private List<AccountDTO> mapToDriverDTO(List<DriverEntity> drivers) {
-        List<AccountDTO> accounts = new ArrayList<>();
+        List<AccountDTO> accountDTOS = new ArrayList<>();
         for (DriverEntity driver : drivers) {
             AccountDTO account = getDriverDTO(driver);
-            accounts.add(account);
+            accountDTOS.add(account);
         }
-        return accounts;
+        return accountDTOS;
     }
 
     @Schema(description = "get the account of  user BASED OF THE username ")
@@ -176,7 +182,7 @@ public class AccountService {
             Optional<DriverEntity> driverEntity = driverRepository.findByUsername(username);
             if (driverEntity.isPresent()) {
                 return getDriverDTO(driverEntity.get());
-            } else {
+            }else {
                 throw new NotFoundException(ErrorMessages.NOT_FOUND_USER);
             }
         }

@@ -16,16 +16,19 @@ import java.util.List;
 @Setter
 @MappedSuperclass
 public abstract class AccountEntity extends AbstractEntity {
+
     @Email
     @NotBlank
     @Column(name = "email", unique = true, nullable = false)
     private String email;
 
     @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "account_id") // alternativ: mappedBy verwenden
+    @JoinColumn(name = "account_id")
+    @NotNull
     private List<Rating> rating = new ArrayList<>();
 
-
+    @NotNull
+    @Column(name = "totalNumberOfRides")
     private  int totalNumberOfRides =0;
 
     @NotBlank

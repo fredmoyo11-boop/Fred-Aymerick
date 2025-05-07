@@ -132,19 +132,19 @@ public class AccountService {
 
     @Schema(description = "gibt eine Liste von users basierend auf suchbegriffe zurück ")
     public List<AccountDTO> userSearch(String part) {
-        List<AccountDTO> accounts = new ArrayList<>();
+        List<AccountDTO> accountDTOS = new ArrayList<>();
         List<DriverEntity> drivers = driverRepository.findByUsernameContainingIgnoreCase(part);
         List<CustomerEntity> customers = customerRepository.findByUsernameContainingIgnoreCase(part);
         if (drivers.isEmpty() && customers.isEmpty()) {
             throw new NotFoundException("Kein Kunde mit Benutzername " + " " + part + " " + "gefunden.");
         } else if (drivers.isEmpty()) {
-            accounts.addAll(mapToCustomerDTO(customers));
+            accountDTOS.addAll(mapToCustomerDTO(customers));
         }else if (customers.isEmpty()) {
-            accounts.addAll(mapToDriverDTO(drivers));
+            accountDTOS.addAll(mapToDriverDTO(drivers));
         }else{
-            accounts.addAll(mapToAccountDTOs(customers, drivers));
+            accountDTOS.addAll(mapToAccountDTOs(customers, drivers));
         }
-        return accounts;
+        return accountDTOS;
     }
 
     private List<AccountDTO> mapToAccountDTOs(List<CustomerEntity> customers, List<DriverEntity> drivers) {
@@ -173,7 +173,7 @@ public class AccountService {
         return accountDTOS;
     }
 
-    @Schema(description = "get the account of  user BASED OF THE username ")
+    @Schema(description = "get the account of  user BASED OF THE username .Die Methode ist erstmal für Unterstützung des frontend Features : klickbares profil gedacht")
     public AccountDTO getAccountprofil(String username) {
         Optional<CustomerEntity> customerEntity = customerRepository.findByUsername(username);
         if (customerEntity.isPresent()) {

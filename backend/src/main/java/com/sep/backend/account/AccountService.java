@@ -130,6 +130,7 @@ public class AccountService {
         }
     }
 
+    @Schema(description = "gibt eine Liste von users basierend auf suchbegriffe zurück ")
     public List<AccountDTO> userSearch(String part) {
         List<AccountDTO> accounts = new ArrayList<>();
         List<DriverEntity> drivers = driverRepository.findByUsernameContainingIgnoreCase(part);
@@ -157,7 +158,6 @@ public class AccountService {
     }
 
 
-
     private List<AccountDTO> mapToDriverDTO(List<DriverEntity> drivers) {
         List<AccountDTO> accounts = new ArrayList<>();
         for (DriverEntity driver : drivers) {
@@ -167,7 +167,7 @@ public class AccountService {
         return accounts;
     }
 
-
+    @Schema(description = "get the account of  user BASED OF THE username ")
     public AccountDTO getAccountprofil(String username) {
         Optional<CustomerEntity> customerEntity = customerRepository.findByUsername(username);
         if (customerEntity.isPresent()) {
@@ -181,6 +181,7 @@ public class AccountService {
             }
         }
     }
+ 
 
     public static AccountDTO getCustomerDTO(CustomerEntity customerEntity) {
         AccountDTO customerDTO = new AccountDTO();

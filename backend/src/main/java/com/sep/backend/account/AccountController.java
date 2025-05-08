@@ -62,7 +62,7 @@ public class AccountController {
                     schema = @Schema(type = "String", example = "Profil erfolgreich aktualisiert!")
             )
     )
-    @PutMapping("/update/{username}")
+    @PutMapping(value ="/update/{username}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @IsOwner
     public ResponseEntity<String> AccountUpdate(@PathVariable String username, @RequestPart("data") UpdateAccountDTO updateAccountDTO, @RequestPart(value = "file", required = false) MultipartFile file) {
 

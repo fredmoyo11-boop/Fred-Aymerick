@@ -6,6 +6,7 @@ import com.sep.backend.route.response.*;
 import com.sep.backend.entity.WaypointEntity;
 import com.sep.backend.entity.RouteEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import java.util.Optional;
 import java.util.List;
 import java.util.ArrayList;
@@ -47,6 +48,10 @@ public class RouteService {
         List<WaypointResponse> waypointList = new ArrayList<WaypointResponse>();
         waypointList.addAll(mapWaypointEntityToWaypointResponse(waypointRepository.findAllPointsById(Id.getRouteId())));
         return waypointList;
+    }
+
+    public String importGeoJson(MultipartFile file) {
+        return "Unavailable";
     }
 
     private List<WaypointResponse> mapWaypointEntityToWaypointResponse(List<WaypointEntity> entityList) {

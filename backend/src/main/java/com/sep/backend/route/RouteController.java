@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @RestController
@@ -82,5 +83,19 @@ public class RouteController {
     )
     public List<WaypointResponse> getFullRoute(@Parameter(description = "The route id") @RequestPart("id") RouteDTO Id) {
         return routeService.getFullRouteById(Id);
+    }
+
+    @PostMapping("/import_geojson")
+    @Operation(description = "Accepts and Imports route from geoJSON.",
+            responses = {
+                    @ApiResponse(responseCode = HttpStatus.OK, description = "geoJSON accepted.",
+                            content = @Content(schema = @Schema(implementation = StringResponse.class)))},
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    content = @Content(
+                            mediaType = MediaType.MULTIPART_FORM_DATA_VALUE
+                    )
+            ))
+    public StringResponse register(@Parameter(description = "geoJSON file") @RequestPart(value = "file") MultipartFile file) {
+        return new StringResponse(routeService.importGeoJson(file));
     }
 }

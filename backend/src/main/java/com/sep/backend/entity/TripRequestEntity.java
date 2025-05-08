@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @Getter
@@ -17,23 +18,23 @@ import lombok.*;
 public class TripRequestEntity extends AbstractEntity{
 
     //relation in JPA -> Relation zu Customer hinzufügen
-    @NotBlank
+    @NotNull
     @OneToOne
     @JoinColumn(name = "username")
     @Schema(description = "The customer who made the request.", requiredMode = RequiredMode.REQUIRED)
     private CustomerEntity customer;
 
     //StartLocation -> Location Entity?
-    @NotBlank
+    @NotNull
     @OneToOne
-    @JoinColumn(name = "display_name")
+    @JoinColumn(name = "start_location_id", referencedColumnName = "id")
     @Schema(description = "The start location of the request.", requiredMode = RequiredMode.REQUIRED)
     private LocationEntity startLocation;
 
     //EndLocation
-    @NotBlank
+    @NotNull
     @OneToOne
-    @JoinColumn(name = "display_name")
+    @JoinColumn(name = "end_location_id", referencedColumnName = "id")
     @Schema(description = "The end location of the request.", requiredMode = RequiredMode.REQUIRED)
     private LocationEntity endLocation;
 

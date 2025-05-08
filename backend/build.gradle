@@ -43,6 +43,7 @@ dependencies {
     testImplementation("org.assertj:assertj-core:3.6.1")
 
     testImplementation 'com.icegreen:greenmail:2.1.3'
+    testImplementation("junit:junit:4.13.2") //maybe not needed
 
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }

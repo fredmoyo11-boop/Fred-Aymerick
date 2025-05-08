@@ -97,8 +97,8 @@ public class TripRequestService {
             tripRequestEntity.setCustomer(customer);
             tripRequestEntity.setStartLocation(startAddress);
             tripRequestEntity.setEndLocation(endAddress);
-            tripRequestEntity.setCartype(tripRequestEntity.getCartype());
-            tripRequestEntity.setNotes(tripRequestEntity.getNotes());
+            tripRequestEntity.setCartype(tripRequestDTO.getCarType());
+            tripRequestEntity.setNotes(tripRequestDTO.getNote());
             tripRequestEntity.setRequestStatus(TripRequestStatus.ACTIVE);
 
             tripRequestRepository.save(tripRequestEntity);

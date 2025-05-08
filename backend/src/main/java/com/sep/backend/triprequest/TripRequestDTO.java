@@ -5,6 +5,7 @@ import com.sep.backend.triprequest.nominatim.LocationEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @Getter
@@ -18,11 +19,11 @@ public class TripRequestDTO {
     @Schema(description = "The customer requesting drive.", requiredMode = RequiredMode.REQUIRED)
     private String username;
 
-    @NotBlank
+    @NotNull
     @Schema(description = "The start location of the drive.", requiredMode = RequiredMode.REQUIRED)
     private LocationDTO startLocation;
 
-    @NotBlank
+    @NotNull
     @Schema(description = "The end location of the drive.", requiredMode = RequiredMode.REQUIRED)
     private LocationDTO endLocation;
 

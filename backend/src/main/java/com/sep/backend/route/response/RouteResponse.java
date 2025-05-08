@@ -1,4 +1,4 @@
-package com.sep.backend.route;
+package com.sep.backend.route.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;

@@ -2,7 +2,8 @@ package com.sep.backend.route;
 
 import com.sep.backend.HttpStatus;
 import com.sep.backend.StringResponse;
-import com.sep.backend.route.RouteResponse;
+import com.sep.backend.route.response.RouteResponse;
+import com.sep.backend.route.response.WaypointResponse;
 import com.sep.backend.route.RouteRequest;
 import com.sep.backend.route.RouteService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/api/route", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -46,8 +48,24 @@ public class RouteController {
                     )
             )
     )
-    public RouteResponse getMetadata(@Parameter(description = "The route id.") @RequestPart("id") RouteDTO id) {
-        return routeService.getRouteById(id);
+    public RouteResponse getMetadata(@Parameter(description = "The route id.") @RequestPart("id") RouteDTO Id) {
+        return routeService.getRouteById(Id);
+    }
+
+    @GetMapping("/route_midpoints")
+    @Operation(description = "Returns all midpoints from the route.",
+            responses = {
+                    @ApiResponse(responseCode = HttpStatus.OK, description = "Route midpoints returned.",
+                            content = @Content(schema = @Schema(implementation = WaypointResponse.class)))},
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    content = @Content(
+                            mediaType = MediaType.MULTIPART_FORM_DATA_VALUE,
+                            schema = @Schema(implementation = RouteRequest.class)
+                    )
+            )
+    )
+    public List<WaypointResponse> getMidpoints(@Parameter(description = "The route id") @RequestPart("id") RouteDTO Id) {
+        return routeService.getMidpointsById(Id);
     }
 
 

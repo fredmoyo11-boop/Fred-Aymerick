@@ -27,7 +27,7 @@ public class AccountDTO {
     private String email;
 
     @NotBlank
-    @Schema(description = "The role of the user ( admin, user).", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "The role of the user ( 'CUSTOMER' or 'DRIVER' ).", requiredMode = Schema.RequiredMode.REQUIRED)
     private String role;
 
     @NotBlank

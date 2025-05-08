@@ -1,6 +1,5 @@
 package com.sep.backend.account;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sep.backend.entity.Rating;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
@@ -39,16 +38,10 @@ public class AccountDTO {
     @Schema(description = "Last name of the account holder.", requiredMode = Schema.RequiredMode.REQUIRED)
     private String lastName;
 
-    @JsonIgnore
     @Schema(description = "URL to the profile picture (optional).",requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private String profilePictureUrl;
 
-    @Schema(
-            description = "The type of car associated with the account (when the person is a driver its cannot be null). "
-                    + "Should be null if the user is a customer.",
-            allowableValues = {"SMALL", "MEDIUM", "DELUXE"},
-            requiredMode = Schema.RequiredMode.NOT_REQUIRED
-    )
+    @Schema(description = "The type of car associated with the account (when the person is a driver its cannot be null). " + "Should be null if the user is a customer.", allowableValues = {"SMALL", "MEDIUM", "DELUXE"}, requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private CarType carType;
 
     @NotBlank

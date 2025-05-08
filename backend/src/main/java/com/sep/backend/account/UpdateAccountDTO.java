@@ -12,16 +12,16 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Schema(description = "Represents the data of an account that can be updated.")
 public class UpdateAccountDTO {
-    @Schema(description = "Benutzername des Accounts", example = "john_doe", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+    @Schema(description = "Benutzername des Accounts", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private String username;
 
-    @Schema(description = "Vorname des Account-Inhabers", example = "John", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+    @Schema(description = "Vorname des Account-Inhabers", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private String firstName;
 
-    @Schema(description = "Nachname des Account-Inhabers", example = "Doe", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+    @Schema(description = "Nachname des Account-Inhabers", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private String lastName;
 
-    @Schema(description = "Geburtsdatum im Format YYYY-MM-DD", example = "1990-01-01", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+    @Schema(description = "Geburtsdatum im Format YYYY-MM-DD",  requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private String birthday;
 
 

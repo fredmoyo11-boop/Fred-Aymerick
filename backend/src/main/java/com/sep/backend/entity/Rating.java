@@ -27,7 +27,7 @@ public class Rating {
     @NotNull
     private int rating;
 
-    @Column(name = "comment")
+    @Column(name = "comment", nullable = false)
     @NotNull
     @Lob
     private String comment;

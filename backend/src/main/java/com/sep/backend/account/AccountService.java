@@ -18,6 +18,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.lang.annotation.Annotation;
+import java.sql.Driver;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -309,13 +311,6 @@ public class AccountService {
     }
      @Schema(description = "Updates the account of the authenticated user")
     public void updateAccount(String username, UpdateAccountDTO updateAccountDTO, MultipartFile file) {
-        // Authentifizierten Benutzer abrufen (Email)
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String authenticatedEmail = authentication.getName();
-        // Username des authentifizierten Benutzers anhand der Email ermitteln
-        String authenticatedUsername = getUsernameByEmail(authenticatedEmail);
-        // Prüfen, ob der angegebene Username mit dem authentifizierten Username übereinstimmt
-        if (authenticatedUsername.equals(username)) {
             // Profilbild setzen
             updateAccountDTO.setProfilePicture(file);
             // Prüfen, ob der Benutzer ein Kunde oder Fahrer ist, und entsprechend updaten
@@ -326,24 +321,9 @@ public class AccountService {
             } else {
                 throw new NotFoundException(ErrorMessages.NOT_FOUND_USER);
             }
-        } else {
-            throw new IllegalArgumentException("The provided username does not match the authenticated user.");
-        }
+
     }
     
-    @Schema(description = "get  the username of the authenticated user")
-    private String getUsernameByEmail(String email) {
-        // Prüfen, ob der Benutzer ein Kunde ist, und Username zurückgeben
-        if (customerRepository.existsByEmail(email)) {
-            return customerRepository.findByEmail(email).get().getUsername();
-        }
-        // Prüfen, ob der Benutzer ein Fahrer ist, und Username zurückgeben
-        if (driverRepository.existsByEmail(email)) {
-            return driverRepository.findByEmail(email).get().getUsername();
-        }else{
-            throw new NotFoundException(ErrorMessages.NOT_FOUND_USER);
-        }
-    }
 
 
 
@@ -409,6 +389,23 @@ public class AccountService {
         }else{
             throw new IllegalArgumentException("Username already exists");
         }
+    }
+
+    public boolean isOwner(String username) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        String currentEmail = authentication.getName();
+
+        Optional<DriverEntity> driver = driverRepository.findByEmail(currentEmail);
+        if(driver.isPresent()){
+            return driver.get().getUsername().equals(username);
+        }
+            Optional<CustomerEntity> customer = customerRepository.findByEmail(currentEmail);
+            if(customer.isPresent()){
+                return customer.get().getUsername().equals(username);
+            }else {
+                throw new NotFoundException(ErrorMessages.NOT_FOUND_USER);
+            }
     }
 
 }

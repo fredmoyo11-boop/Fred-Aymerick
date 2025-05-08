@@ -43,6 +43,12 @@ public class RouteService {
         return midpointList;
     }
 
+    public List<WaypointResponse> getFullRouteById(RouteDTO Id) {
+        List<WaypointResponse> waypointList = new ArrayList<WaypointResponse>();
+        waypointList.addAll(mapWaypointEntityToWaypointResponse(waypointRepository.findAllPointsById(Id.getRouteId())));
+        return waypointList;
+    }
+
     private List<WaypointResponse> mapWaypointEntityToWaypointResponse(List<WaypointEntity> entityList) {
         List<WaypointResponse> waypointResponseList = new ArrayList<WaypointResponse>();
         for(WaypointEntity waypointEntity : entityList) {

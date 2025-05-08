@@ -15,6 +15,8 @@ public interface WaypointRepository extends JpaRepository<WaypointEntity, Long> 
 
     long countByIdAndType(@NotBlank long routeId, @NotBlank String type);
 
+    List<WaypointEntity> findAllPointsById(@NotBlank long routeId);
+
     List<WaypointEntity> findAllPointsByIdAndType(@NotBlank long routeId, @NotBlank String type);
 
     Optional<WaypointEntity> findById(@NotBlank long id);

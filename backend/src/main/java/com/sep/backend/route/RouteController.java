@@ -36,7 +36,7 @@ public class RouteController {
         return new StringResponse("OK");
     }
 
-    @GetMapping("/route_metadata")
+    @GetMapping("/metadata")
     @Operation(description = "Returns start, end, count of midpoints and count of path waypoints from the route.",
             responses = {
                     @ApiResponse(responseCode = HttpStatus.OK, description = "Route metadata returned.",
@@ -52,7 +52,7 @@ public class RouteController {
         return routeService.getRouteById(Id);
     }
 
-    @GetMapping("/route_midpoints")
+    @GetMapping("/midpoints")
     @Operation(description = "Returns all midpoints from the route.",
             responses = {
                     @ApiResponse(responseCode = HttpStatus.OK, description = "Route midpoints returned.",
@@ -68,5 +68,19 @@ public class RouteController {
         return routeService.getMidpointsById(Id);
     }
 
-
+    @GetMapping("/full")
+    @Operation(description = "Returns the full route.",
+            responses = {
+                    @ApiResponse(responseCode = HttpStatus.OK, description = "Route returned.",
+                            content = @Content(schema = @Schema(implementation = WaypointResponse.class)))},
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    content = @Content(
+                            mediaType = MediaType.MULTIPART_FORM_DATA_VALUE,
+                            schema = @Schema(implementation = RouteRequest.class)
+                    )
+            )
+    )
+    public List<WaypointResponse> getFullRoute(@Parameter(description = "The route id") @RequestPart("id") RouteDTO Id) {
+        return routeService.getFullRouteById(Id);
+    }
 }

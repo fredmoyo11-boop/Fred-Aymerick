@@ -11,7 +11,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.*;
 
-import com.sep.backend.route.WaypointTypeEnum;
+import com.sep.backend.route.WaypointType;
+//import com.sep.backend.route.WaypointTypeEnum;
 
 @Getter
 @Setter
@@ -31,13 +32,21 @@ public class WaypointEntity extends AbstractEntity {
     @Column(name = "latitude", nullable = false)
     private String latitude;
 
-    @Enumerated(EnumType.ORDINAL)
-    @NotBlank
-    @Column(name = "type", nullable = false)
-    private WaypointTypeEnum type;
+//    @Enumerated(EnumType.ORDINAL)
+//    @NotBlank
+//    @Column(name = "type", nullable = false)
+//    private WaypointTypeEnum type;
 
     @NotBlank
-    //@Column(name = "route", nullable = false)
-    @ManyToOne(optional=false)
-    private RouteEntity routeEntity;
+    @Column(name = "type", nullable = false)
+    private String type;
+
+//    @NotBlank
+//    //@Column(name = "route", nullable = false)
+//    @ManyToOne(optional=false)
+//    private RouteEntity routeEntity;
+
+    @NotBlank
+    @Column(name = "route_id", nullable = false, unique = true)
+    private long routeId;
 }

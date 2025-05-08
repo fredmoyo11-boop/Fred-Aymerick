@@ -16,6 +16,6 @@ public class RouteDTO {
 
     @NotBlank
     @Schema(description = "The id of the route.", requiredMode = RequiredMode.REQUIRED)
-    private long routeid;
+    private long routeId;
 
 }

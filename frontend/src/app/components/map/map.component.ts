@@ -32,10 +32,10 @@ private getRouteDataFromBackend(): void {
 
 
   map: any;
-  @Input() startLat!: number;
-  @Input() startLng!: number;
-  @Input() endLat!: number;
-  @Input() endLng!: number;
+  @Input() startLan!: number;
+  @Input() startLon!: number;
+  @Input() endLan!: number;
+  @Input() endLon!: number;
 
 
 
@@ -47,48 +47,47 @@ private getRouteDataFromBackend(): void {
 
 
   private initMap(): void {
-    this.map =  L.map('map').setView([51.505, -0.09], 13);
+
+    this.startLan = 51.4516; // Essen Hbf
+    this.startLon = 7.0146;
+
+    this.endLan = 51.5136;   // Dortmund Hbf
+    this.endLon = 7.4653;
+
+    this.map =  L.map('map').setView([this.startLan, this.startLon], 13);
+
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(this.map);
 
     var greenIcon = L.icon({
-      iconUrl: 'https://leafletjs.com/examples/custom-icons/leaf-green.png',
-      shadowUrl: 'https://leafletjs.com/examples/custom-icons/leaf-shadow.png',
-      iconSize: [38, 95],
-      iconAnchor: [22, 94],
-      popupAnchor: [-3, -76],
-      shadowSize: [50, 64],
-      shadowAnchor: [4, 62]
+      iconUrl: 'https://cdn-icons-png.flaticon.com/512/684/684908.png',
+      iconSize: [40, 40],
+      iconAnchor: [20, 40],
+      popupAnchor: [0, -40]
     });
 
     var redIcon = L.icon({
-      iconUrl: 'https://leafletjs.com/examples/custom-icons/leaf-red.png',
-      shadowUrl: 'https://leafletjs.com/examples/custom-icons/leaf-shadow.png',
-      iconSize: [38, 95],
-      iconAnchor: [22, 94],
-      popupAnchor: [-3, -76],
-      shadowSize: [50, 64],
-      shadowAnchor: [4, 62]
+      iconUrl: 'https://cdn-icons-png.flaticon.com/512/190/190411.png',
+      iconSize: [40, 40],
+      iconAnchor: [20, 40],
+      popupAnchor: [0, -40]
     });
 
 
-    this.startLat = 51.505;
-    this.startLng = -0.09;
-    this.endLat = 51.507;
-    this.endLng = -0.08;
 
 
-    const startMarker = L.marker([this.startLat, this.startLng], { icon: greenIcon }).addTo(this.map);
+
+    const startMarker = L.marker([this.startLan, this.startLon], { icon: greenIcon }).addTo(this.map);
     startMarker.bindPopup('Startpunkt');
 
-    const endMarker = L.marker([this.endLat, this.endLng], { icon: redIcon }).addTo(this.map);
+    const endMarker = L.marker([this.endLan, this.endLon], { icon: redIcon }).addTo(this.map);
     endMarker.bindPopup('Endpunkt');
 
     (L as any ).Routing.control({
       waypoints: [
-        L.latLng(this.startLat, this.startLng),
-        L.latLng(this.endLat, this.endLng)
+        L.latLng(this.startLan, this.startLon),
+        L.latLng(this.endLan, this.endLon)
       ],
       routeWhileDragging: false,
       lineOptions: {

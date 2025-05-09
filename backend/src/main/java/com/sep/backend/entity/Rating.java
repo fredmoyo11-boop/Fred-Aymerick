@@ -29,7 +29,6 @@ public class Rating {
 
     @Column(name = "comment", nullable = false)
     @NotNull
-    @Lob
     private String comment;
 
     public  String  toString(){

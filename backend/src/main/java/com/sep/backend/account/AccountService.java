@@ -19,8 +19,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.lang.annotation.Annotation;
-import java.sql.Driver;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -177,7 +175,7 @@ public class AccountService {
     }
 
     @Schema(description = "get the account of  user BASED OF THE username .Die Methode ist erstmal für Unterstützung des frontend Features : klickbares profil gedacht")
-    public AccountDTO getAccountprofil(String username) {
+    public AccountDTO getAccountprofile(String username) {
         Optional<CustomerEntity> customerEntity = customerRepository.findByUsername(username);
         if (customerEntity.isPresent()) {
             return getCustomerDTO(customerEntity.get());
@@ -311,7 +309,7 @@ public class AccountService {
         }
     }
      @Schema(description = "Updates the account of the authenticated user")
-    public void updateAccount(String username, UpdateAccountDTO updateAccountDTO, MultipartFile file) {
+    public void saveAccountChanges(String username, UpdateAccountDTO updateAccountDTO, MultipartFile file) {
             // Profilbild setzen
             updateAccountDTO.setProfilePicture(file);
             // Prüfen, ob der Benutzer ein Kunde oder Fahrer ist, und entsprechend updaten
@@ -360,7 +358,7 @@ public class AccountService {
         }
     }
 
-    private void updateDriver(String username, UpdateAccountDTO updateAccountDTO) {
+    private void updateDriver(String username,  UpdateAccountDTO updateAccountDTO) {
         if (!existsDriverUsername(updateAccountDTO.getUsername()) ) {
             DriverEntity driverEntity = driverRepository.findByUsername(username)
                     .orElseThrow(() -> new NotFoundException(ErrorMessages.NOT_FOUND_USER));
@@ -377,7 +375,7 @@ public class AccountService {
             if (updateAccountDTO.getBirthday() != null) {
                 driverEntity.setBirthday(updateAccountDTO.getBirthday());
             }
-            if (updateAccountDTO.getCarType() != null && (CarType.LARGE.equals(updateAccountDTO.getCarType()) || CarType.MEDIUM.equals(updateAccountDTO.getCarType()) || CarType.DELUXE.equals(updateAccountDTO.getCarType()))) {
+            if (updateAccountDTO.getCarType() != null ) {
                 driverEntity.setCarType(updateAccountDTO.getCarType());
             }
             if (updateAccountDTO.getProfilePicture() != null) {

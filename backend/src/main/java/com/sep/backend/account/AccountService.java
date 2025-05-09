@@ -8,7 +8,6 @@ import com.sep.backend.auth.registration.RegistrationException;
 import com.sep.backend.entity.AccountEntity;
 import com.sep.backend.entity.CustomerEntity;
 import com.sep.backend.entity.DriverEntity;
-import com.sep.backend.triprequest.CarType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -291,7 +290,6 @@ public class AccountService {
      * @param <T>               The class of the entity.
      * @return The created entity.
      */
-    
     private <T extends AccountEntity> T createAccountEntity(@Valid RegistrationDTO data, String profilePictureUrl, Class<T> clazz) {
         try {
             T account = clazz.getDeclaredConstructor().newInstance();

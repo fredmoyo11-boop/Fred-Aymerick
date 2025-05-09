@@ -19,7 +19,7 @@ export class MapComponent implements OnInit {
 }
 
 private getRouteDataFromBackend(): void {
-  this.http.get<any>('https://dein-backend.de/api/route')
+  this.http.get<any>('http://localhost:8080/api/route')
     .subscribe(data => {
       this.startLat = data.startLat;
       this.startLng = data.startLng;
@@ -29,7 +29,10 @@ private getRouteDataFromBackend(): void {
     });
 } */
 
-
+  viaPoints: Array<{ lat: number, lng: number }> = [
+    { lat: 51.4800, lng: 7.2000 },
+    { lat: 51.4900, lng: 7.3000 }
+  ];
 
   map: any;
   @Input() startLan!: number;
@@ -74,6 +77,13 @@ private getRouteDataFromBackend(): void {
       popupAnchor: [0, -40]
     });
 
+    var orangeIcon = L.icon({
+      iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-orange.png',
+      iconSize: [40, 40],
+      iconAnchor: [20, 40],
+      popupAnchor: [0, -40]
+    });
+
 
 
 
@@ -84,9 +94,15 @@ private getRouteDataFromBackend(): void {
     const endMarker = L.marker([this.endLan, this.endLon], { icon: redIcon }).addTo(this.map);
     endMarker.bindPopup('Endpunkt');
 
+    this.viaPoints.forEach((point, index) => {
+      const marker = L.marker([point.lat, point.lng], { icon: orangeIcon }).addTo(this.map);
+      marker.bindPopup(`Zwischenstopp ${index + 1}`);
+    });
+
     (L as any ).Routing.control({
       waypoints: [
         L.latLng(this.startLan, this.startLon),
+        ...this.viaPoints.map(p => L.latLng(p.lat, p.lng)),
         L.latLng(this.endLan, this.endLon)
       ],
       routeWhileDragging: false,
@@ -97,7 +113,7 @@ private getRouteDataFromBackend(): void {
       },
       addWaypoints: false,
       fitSelectedRoutes: true,
-      show: false
+      show: true
     }).addTo(this.map);
 
 

@@ -20,5 +20,5 @@ public interface DriverRepository extends JpaRepository<DriverEntity, Long> {
 
     boolean existsByUsername(@NotBlank String username);
 
-    List<DriverEntity> findByUsernameContainingIgnoreCase(String part);
+    List<DriverEntity> findByUsernameContainingIgnoreCase(@NotBlank String part);
 }

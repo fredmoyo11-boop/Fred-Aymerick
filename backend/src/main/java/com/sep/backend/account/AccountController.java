@@ -39,10 +39,8 @@ public class AccountController {
 
     @Operation(description = "Suche nach Benutzerprofilen basierend auf einem Suchbegriff ",
             responses = {
-                    @ApiResponse(responseCode = "200",
-                            description = "List of userprofile.",
-                            content = @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = AccountDTO.class)))})
+                    @ApiResponse(responseCode = "200", description = "List of userprofile.",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = AccountDTO.class)))})
     @GetMapping("/search")
     public ResponseEntity<List<AccountDTO>> userSearch(@RequestParam String part) {
 
@@ -50,18 +48,10 @@ public class AccountController {
     }
 
 
-    @Operation(
-            summary = "Aktualisiert das Benutzerprofil",
-            description = "Aktualisiert das Profil eines Benutzers basierend auf dem aktuellen Benutzernamen, der in der URL angegeben wird. Die neuen Profildaten  werden im JSON-Format(außer Bild) im Anfrage body übergeben."
+    @Operation(summary = "Aktualisiert das Benutzerprofil", description = "Aktualisiert das Profil eines Benutzers basierend auf dem aktuellen Benutzernamen, der in der URL angegeben wird. Die neuen Profildaten  werden im JSON-Format(außer Bild) im Anfrage body übergeben."
     )
-    @ApiResponse(
-            responseCode = "200",
-            description = "Profil erfolgreich aktualisiert.",
-            content = @Content(
-                    mediaType = "text/plain",
-                    schema = @Schema(type = "String", example = "Profil erfolgreich aktualisiert!")
-            )
-    )
+    @ApiResponse(responseCode = "200", description = "Profil erfolgreich aktualisiert.",
+            content = @Content(mediaType = "text/plain", schema = @Schema(type = "String")))
     @IsOwner
     @PutMapping(value ="/update/{username}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> AccountUpdate(@PathVariable String username, @RequestPart("data") UpdateAccountDTO updateAccountDTO, @RequestPart(value = "file", required = false) MultipartFile file) {
@@ -71,21 +61,14 @@ public class AccountController {
     }
 
 
-    @Operation(
-            summary = "Gibt das Benutzerprofil zurück",
-            description = "Liefert die vollständigen Profildaten eines Benutzers basierend auf dem Benutzernamen."
+    @Operation(summary = "Gibt das Benutzerprofil zurück", description = "Liefert die vollständigen Profildaten eines Benutzers basierend auf dem Benutzernamen."
     )
-    @ApiResponse(
-            responseCode = "200",
-            description = "Benutzerprofil erfolgreich geladen.",
-            content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(implementation = AccountDTO.class)
+    @ApiResponse(responseCode = "200", description = "Benutzerprofil erfolgreich geladen.",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = AccountDTO.class)
             )
     )
     @GetMapping("/{username}")
     public ResponseEntity<AccountDTO> getAccountprofil(@PathVariable String username) {
         return ResponseEntity.ok(accountService.getAccountprofil(username));
-
     }
 }

@@ -8,6 +8,7 @@ import com.sep.backend.auth.registration.RegistrationException;
 import com.sep.backend.entity.AccountEntity;
 import com.sep.backend.entity.CustomerEntity;
 import com.sep.backend.entity.DriverEntity;
+import com.sep.backend.triprequest.CarType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -376,7 +377,7 @@ public class AccountService {
             if (updateAccountDTO.getBirthday() != null) {
                 driverEntity.setBirthday(updateAccountDTO.getBirthday());
             }
-            if (updateAccountDTO.getCarType() != null) {
+            if (updateAccountDTO.getCarType() != null && (CarType.LARGE.equals(updateAccountDTO.getCarType()) || CarType.MEDIUM.equals(updateAccountDTO.getCarType()) || CarType.DELUXE.equals(updateAccountDTO.getCarType()))) {
                 driverEntity.setCarType(updateAccountDTO.getCarType());
             }
             if (updateAccountDTO.getProfilePicture() != null) {

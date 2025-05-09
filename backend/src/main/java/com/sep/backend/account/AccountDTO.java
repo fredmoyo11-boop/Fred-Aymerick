@@ -1,6 +1,7 @@
 package com.sep.backend.account;
 
 import com.sep.backend.entity.Rating;
+import com.sep.backend.triprequest.CarType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -42,7 +43,7 @@ public class AccountDTO {
     private String profilePictureUrl;
 
     @Schema(description = "The type of car associated with the account (when the person is a driver its cannot be null). " + "Should be null if the user is a customer.", allowableValues = {"SMALL", "MEDIUM", "DELUXE"}, requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-    private CarType carType;
+    private String carType;
 
     @NotBlank
     @Schema(description = "Date of birth in the format YYYY-MM-DD." ,requiredMode = Schema.RequiredMode.NOT_REQUIRED)

@@ -53,8 +53,8 @@ public class AccountController {
     @ApiResponse(responseCode = "200", description = "Profil erfolgreich aktualisiert.",
             content = @Content(mediaType = "text/plain", schema = @Schema(type = "String")))
     @IsOwner
-    @PutMapping(value ="/update/{username}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> AccountUpdate(@PathVariable String username, @RequestPart("data") UpdateAccountDTO updateAccountDTO, @RequestPart(value = "file", required = false) MultipartFile file) {
+    @PutMapping(value ="/{username}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> updateAccount(@PathVariable String username, @RequestPart("data") UpdateAccountDTO updateAccountDTO, @RequestPart(value = "file", required = false) MultipartFile file) {
 
         accountService.updateAccount(username, updateAccountDTO, file);
         return ResponseEntity.ok("Profil erfolgreich aktualisiert!");

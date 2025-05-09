@@ -41,7 +41,7 @@ public class AccountController {
             tags = {Tags.ACCOUNT},
             responses = {
                     @ApiResponse(responseCode = "200", description = "List of userprofile.",
-                                 content = @Content(mediaType = "application/json", schema = @Schema(implementation = AccountDTO.class)))})
+                                 content = @Content( schema = @Schema(implementation = AccountDTO.class)))})
     @GetMapping("/search")
     public ResponseEntity<List<AccountDTO>> searchUserProfiles(@RequestParam String part) {
 
@@ -54,8 +54,8 @@ public class AccountController {
              responses = {
           @ApiResponse(responseCode = HttpStatus.OK, description = "Profil erfolgreich aktualisiert.",
                        content = @Content(mediaType = "text/plain", schema = @Schema(type = "String")))})
-    @IsOwner
     @PutMapping(value ="/{username}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @IsOwner
     public ResponseEntity<String> updateAccountProfile(@PathVariable String username, @RequestPart("data") UpdateAccountDTO updateAccountDTO, @RequestPart(value = "file", required = false) MultipartFile file) {
 
         accountService.saveAccountChanges(username, updateAccountDTO, file);
@@ -67,7 +67,7 @@ public class AccountController {
             tags = {Tags.ACCOUNT},
             responses = {
             @ApiResponse(responseCode = HttpStatus.OK, description = "Benutzerprofil erfolgreich geladen.",
-                         content = @Content(mediaType = "application/json", schema = @Schema(implementation = AccountDTO.class)
+                         content = @Content(schema = @Schema(implementation = AccountDTO.class)
             ))}
     )
     @GetMapping("/{username}")

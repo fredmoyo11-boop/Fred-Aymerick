@@ -3,7 +3,6 @@ package com.sep.backend.triprequest;
 import com.sep.backend.ErrorMessages;
 import com.sep.backend.NotFoundException;
 import com.sep.backend.account.CustomerRepository;
-import com.sep.backend.entity.CustomerEntity;
 import com.sep.backend.entity.TripRequestEntity;
 import com.sep.backend.triprequest.nominatim.LocationDTO;
 import com.sep.backend.triprequest.nominatim.LocationEntity;
@@ -61,31 +60,45 @@ public class TripRequestService {
         tripRequestRepository.delete(tripRequestEntity);
     }
 
-    public void saveLocation(@NotNull LocationEntity location) {
-        locationRepository.save(location);
-    }
-
-    public LocationEntity convertDTOToEntity(@Valid LocationDTO locationDTO) {
-        LocationEntity locationEntity = new LocationEntity();
-        locationEntity.setDisplayName(locationDTO.getDisplayName());
-        locationEntity.setLatitude(locationDTO.getLatitude());
-        locationEntity.setLongitude(locationDTO.getLongitude());
+    public LocationEntity convertLocationDTOToEntity(@Valid LocationDTO locationDTO) {
+        var locationEntity = LocationEntity.from(locationDTO);
         locationRepository.save(locationEntity);
         return locationEntity;
     }
 
-    //TripRequestEntity mit Constructer erstellen
-    public void upsertTripRequest(@Valid TripRequestDTO tripRequestDTO) {
+    public LocationDTO convertLocationEntityToDTO(LocationEntity locationEntity) {
+        return LocationDTO.from(locationEntity);
+    }
+
+    public TripRequestDTO convertTripRequestEntityToDTO(TripRequestEntity tripRequestEntity) {
+        return TripRequestDTO.from(tripRequestEntity);
+    }
+
+
+    //TripRequestEntity mit Constructer erstellen //TODO Change to create and delete function, not upsert
+    public void createTripRequest(@Valid TripRequestDTO tripRequestDTO) {
         String username = tripRequestDTO.getUsername();
-        LocationEntity startAddress = convertDTOToEntity(tripRequestDTO.getStartLocation());
-        LocationEntity endAddress = convertDTOToEntity(tripRequestDTO.getEndLocation());
+        LocationEntity startAddress = convertLocationDTOToEntity(tripRequestDTO.getStartLocation());
+        LocationEntity endAddress = convertLocationDTOToEntity(tripRequestDTO.getEndLocation());
         if (existsByCustomer_Username(username)) {
+            throw new TripRequestException(ErrorMessages.ALREADY_EXISTS_TRIPREQUEST);
+        }
+        var tripRequestEntity = getRequestByUsername(username);
+        tripRequestEntity.setStartLocation(startAddress);
+        tripRequestEntity.setEndLocation(endAddress);
+        tripRequestEntity.setCartype(tripRequestDTO.getCarType());
+        tripRequestEntity.setNote(tripRequestDTO.getNote());
+        tripRequestEntity.setRequestStatus(TripRequestStatus.ACTIVE);
+
+        tripRequestRepository.save(tripRequestEntity);
+
+        /*if (existsByCustomer_Username(username)) {
             // update
             var tripRequestEntity = getRequestByUsername(username);
             tripRequestEntity.setStartLocation(startAddress);
             tripRequestEntity.setEndLocation(endAddress);
             tripRequestEntity.setCartype(tripRequestDTO.getCarType());
-            tripRequestEntity.setNotes(tripRequestDTO.getNote());
+            tripRequestEntity.setNote(tripRequestDTO.getNote());
             tripRequestEntity.setRequestStatus(TripRequestStatus.ACTIVE);
 
             tripRequestRepository.save(tripRequestEntity);
@@ -98,10 +111,10 @@ public class TripRequestService {
             tripRequestEntity.setStartLocation(startAddress);
             tripRequestEntity.setEndLocation(endAddress);
             tripRequestEntity.setCartype(tripRequestDTO.getCarType());
-            tripRequestEntity.setNotes(tripRequestDTO.getNote());
+            tripRequestEntity.setNote(tripRequestDTO.getNote());
             tripRequestEntity.setRequestStatus(TripRequestStatus.ACTIVE);
 
             tripRequestRepository.save(tripRequestEntity);
-        }
+        }*/
     }
 }

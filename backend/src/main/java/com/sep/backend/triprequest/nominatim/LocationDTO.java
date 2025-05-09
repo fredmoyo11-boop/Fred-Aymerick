@@ -23,4 +23,13 @@ public class LocationDTO {
     @NotBlank
     @Schema(description = "Longitude of location")
     private Double longitude;
+
+
+    public static LocationDTO from(LocationEntity locationEntity) {
+        LocationDTO dto = new LocationDTO();
+        dto.setLatitude(locationEntity.getLatitude());
+        dto.setLongitude(locationEntity.getLongitude());
+        dto.setDisplayName(locationEntity.getDisplayName());
+        return dto;
+    }
 }

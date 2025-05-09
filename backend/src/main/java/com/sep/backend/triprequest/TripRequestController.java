@@ -10,7 +10,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -43,7 +42,7 @@ public class TripRequestController {
                 @ApiResponse(responseCode = HttpStatus.OK, description = "Trip request created successfully.",
                     content = @Content(schema = @Schema(implementation = TripRequestEntity.class)))})
      public void create(@RequestBody TripRequestDTO tripRequestDTO) {
-        tripRequestService.upsertTripRequest(tripRequestDTO);
+        tripRequestService.createTripRequest(tripRequestDTO);
 
     }
 

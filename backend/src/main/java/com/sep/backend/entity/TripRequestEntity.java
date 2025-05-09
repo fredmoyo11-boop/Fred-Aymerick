@@ -38,9 +38,9 @@ public class TripRequestEntity extends AbstractEntity{
     @Schema(description = "The end location of the request.", requiredMode = RequiredMode.REQUIRED)
     private LocationEntity endLocation;
 
-    @Column(name = "notes")
+    @Column(name = "note")
     @Schema(description = "Optional note which the customer can add.", requiredMode = RequiredMode.NOT_REQUIRED)
-    private String notes;
+    private String note;
 
     @NotBlank
     @Column(name = "car_type")

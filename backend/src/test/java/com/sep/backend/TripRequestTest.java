@@ -16,8 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.*;
-import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
@@ -74,12 +72,12 @@ class TripRequestTest {
         dto.setStartLocation(new LocationDTO("Start", 52.5, 13.4));
         dto.setEndLocation(new LocationDTO("End", 55.6, 11.7));
 
-        tripRequestService.upsertTripRequest(dto);
+        tripRequestService.createTripRequest(dto);
 
         TripRequestEntity request = tripRequestService.getRequestByUsername("john_doe");
         assertEquals("john_doe", request.getCustomer().getUsername());
         assertEquals(CarType.LARGE, request.getCartype());
-        assertEquals("test note", request.getNotes());
+        assertEquals("test note", request.getNote());
         assertEquals("Start", request.getStartLocation().getDisplayName());
         assertEquals("End", request.getEndLocation().getDisplayName());
         assertEquals(52.5, request.getStartLocation().getLatitude());

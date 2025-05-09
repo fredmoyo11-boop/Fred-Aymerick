@@ -25,4 +25,12 @@ public class LocationEntity extends AbstractEntity {
 
     @JsonProperty("lon")
     Double longitude;
+
+    public static LocationEntity from(LocationDTO locationDTO) {
+        LocationEntity locationEntity = new LocationEntity();
+        locationEntity.setDisplayName(locationDTO.getDisplayName());
+        locationEntity.setLatitude(locationDTO.getLatitude());
+        locationEntity.setLongitude(locationDTO.getLongitude());
+        return locationEntity;
+    }
 }

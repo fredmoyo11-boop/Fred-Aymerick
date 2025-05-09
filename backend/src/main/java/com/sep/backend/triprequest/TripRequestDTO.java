@@ -1,5 +1,6 @@
 package com.sep.backend.triprequest;
 
+import com.sep.backend.entity.TripRequestEntity;
 import com.sep.backend.triprequest.nominatim.LocationDTO;
 import com.sep.backend.triprequest.nominatim.LocationEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -33,4 +34,14 @@ public class TripRequestDTO {
 
     @Schema(description = "Optional notes by customer", requiredMode = RequiredMode.NOT_REQUIRED)
     private String note;
+
+    public static TripRequestDTO from(TripRequestEntity tripRequestEntity) {
+        var dto = new TripRequestDTO();
+        dto.setUsername(tripRequestEntity.getCustomer().getUsername());
+        dto.setStartLocation(LocationDTO.from(tripRequestEntity.getStartLocation()));
+        dto.setEndLocation(LocationDTO.from(tripRequestEntity.getEndLocation()));
+        dto.setCarType(tripRequestEntity.getCartype());
+        dto.setNote(tripRequestEntity.getNote());
+        return dto;
+    }
 }

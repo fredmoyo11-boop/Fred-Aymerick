@@ -27,7 +27,6 @@ public class UpdateAccountDTO {
     @Schema(description = "Geburtsdatum im Format YYYY-MM-DD",  requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private String birthday;
 
-
     @Schema(description = "Typ des Autos nur bei drivers ",allowableValues = {"SMALL", "MEDIUM", "DELUXE"}, requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private String  carType;
 

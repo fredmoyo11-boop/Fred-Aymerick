@@ -330,10 +330,19 @@ public class AccountService {
 
     public void updateCustomer(String username, UpdateAccountDTO updateAccountDTO)  {
 
-        if (!existsCustomerUsername(updateAccountDTO.getUsername()) ) {
+
             CustomerEntity customerEntity = customerRepository.findByUsername(username)
                     .orElseThrow(() -> new NotFoundException(ErrorMessages.NOT_FOUND_USER));
-            // Felder nur aktualisieren, wenn sie nicht null sind
+
+        // Nur prüfen, ob der neue Benutzername existiert, wenn er geändert werden soll
+
+        if(updateAccountDTO.getUsername()!= null && !customerEntity.getUsername().equals(updateAccountDTO.getUsername()) ){
+            if (existsCustomerUsername(updateAccountDTO.getUsername())) {
+                throw new IllegalArgumentException("Username already exists");
+            }else{
+                customerEntity.setUsername(updateAccountDTO.getUsername());
+            }
+        }
             if (updateAccountDTO.getFirstName() != null) {
                 customerEntity.setFirstName(updateAccountDTO.getFirstName());
             }
@@ -353,24 +362,27 @@ public class AccountService {
             // Kunde speichern
             customerRepository.save(customerEntity);
             log.info("Updated customer {} with username {}", customerEntity.getUsername(), customerEntity.getEmail());
-        } else {
-            throw new IllegalArgumentException("Username already exists");
-        }
+
     }
 
     private void updateDriver(String username,  UpdateAccountDTO updateAccountDTO) {
-        if (!existsDriverUsername(updateAccountDTO.getUsername()) ) {
+
             DriverEntity driverEntity = driverRepository.findByUsername(username)
                     .orElseThrow(() -> new NotFoundException(ErrorMessages.NOT_FOUND_USER));
+            // Nur prüfen, ob der neue Benutzername existiert, wenn er geändert werden soll
+            if (updateAccountDTO.getUsername() != null && !updateAccountDTO.getUsername().equals(driverEntity.getUsername())) {
+                if (existsDriverUsername(updateAccountDTO.getUsername())) {
+                    throw new IllegalArgumentException("Username already exists");
+                }else{
+                    driverEntity.setUsername(updateAccountDTO.getUsername());
+                }
+            }
             // Felder nur aktualisieren, wenn sie nicht null sind
             if (updateAccountDTO.getFirstName() != null) {
                 driverEntity.setFirstName(updateAccountDTO.getFirstName());
             }
             if (updateAccountDTO.getLastName() != null) {
                 driverEntity.setLastName(updateAccountDTO.getLastName());
-            }
-            if (updateAccountDTO.getUsername() != null) {
-                driverEntity.setUsername(updateAccountDTO.getUsername());
             }
             if (updateAccountDTO.getBirthday() != null) {
                 driverEntity.setBirthday(updateAccountDTO.getBirthday());
@@ -385,9 +397,7 @@ public class AccountService {
             // Fahrer speichern
             driverRepository.save(driverEntity);
             log.info("Updated driver {} with username {}", driverEntity.getUsername(), driverEntity.getEmail());
-        }else{
-            throw new IllegalArgumentException("Username already exists");
-        }
+
     }
 
     public boolean isOwner(String username) {

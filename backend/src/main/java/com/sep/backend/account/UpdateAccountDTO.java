@@ -1,10 +1,8 @@
 package com.sep.backend.account;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
-import org.springframework.web.multipart.MultipartFile;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -27,14 +25,5 @@ public class UpdateAccountDTO {
 
     @Schema(description = "Typ des Autos nur bei drivers ",allowableValues = {"SMALL", "MEDIUM", "DELUXE"}, requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private String  carType;
-
-    @JsonIgnore
-    @Schema(
-            description = "Profilbild des Nutzers",
-            type = "string",               // OpenAPI-Typ für Dateien ist "string"
-            format = "binary",             // zeigt an, dass es eine Datei ist
-            requiredMode = Schema.RequiredMode.NOT_REQUIRED
-    )
-    private MultipartFile profilePicture;
 
 }

@@ -49,7 +49,7 @@ public class AccountController {
     }
 
 
-    @Operation(summary = "Aktualisiert das Benutzerprofil", description = "Aktualisiert das Profil eines Benutzers basierend auf dem aktuellen Benutzernamen, der in der URL angegeben wird. Die neuen Profildaten  werden im JSON-Format(außer Bild) im Anfrage body übergeben."
+    @Operation(summary = "Aktualisiert das Benutzerprofil", description = "Profildaten werden als multipart/form-data gesendet, wobei das JSON-Objekt unter 'data' und das optionale Bild unter 'file' übermittelt wird."
             ,tags = {Tags.ACCOUNT} ,
              responses = {
           @ApiResponse(responseCode = HttpStatus.OK, description = "Profil erfolgreich aktualisiert.",
@@ -67,8 +67,7 @@ public class AccountController {
             tags = {Tags.ACCOUNT},
             responses = {
             @ApiResponse(responseCode = HttpStatus.OK, description = "Benutzerprofil erfolgreich geladen.",
-                         content = @Content(schema = @Schema(implementation = AccountDTO.class)
-            ))}
+                         content = @Content(schema = @Schema(implementation = AccountDTO.class)))}
     )
     @GetMapping("/{username}")
     public ResponseEntity<AccountDTO> getAccountprofile(@PathVariable String username) {

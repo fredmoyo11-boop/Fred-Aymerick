@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 @AllArgsConstructor
-@Service
+@Service("accountService")
 public class AccountService {
     private final Logger log = LoggerFactory.getLogger(AccountService.class);
 
@@ -194,9 +194,11 @@ public class AccountService {
         customerDTO.setEmail(customerEntity.getEmail());
         customerDTO.setRatings(customerEntity.getRating());
         customerDTO.setRole(Roles.CUSTOMER);
+        customerDTO.setBirthday(customerEntity.getBirthday().toString());
         customerDTO.setUsername(customerEntity.getUsername());
         customerDTO.setFirstName(customerEntity.getFirstName());
         customerDTO.setLastName(customerEntity.getLastName());
+        customerDTO.setTotalNumberOfRides(customerEntity.getTotalNumberOfRides());
         customerDTO.setProfilePictureUrl(customerEntity.getProfilePictureUrl());
         return customerDTO;
     }
@@ -210,6 +212,7 @@ public class AccountService {
         driverDTO.setUsername(driverEntity.getUsername());
         driverDTO.setFirstName(driverEntity.getFirstName());
         driverDTO.setLastName(driverEntity.getLastName());
+        driverDTO.setBirthday(driverEntity.getBirthday().toString());
         driverDTO.setCarType(driverEntity.getCarType());
         driverDTO.setTotalNumberOfRides(driverEntity.getTotalNumberOfRides());
         driverDTO.setProfilePictureUrl(driverEntity.getProfilePictureUrl());
@@ -308,70 +311,66 @@ public class AccountService {
     }
      @Schema(description = "Updates the account of the authenticated user")
     public void saveAccountChanges(String username, UpdateAccountDTO updateAccountDTO, MultipartFile file) {
-            // Profilbild setzen
-            updateAccountDTO.setProfilePicture(file);
             // Prüfen, ob der Benutzer ein Kunde oder Fahrer ist, und entsprechend updaten
             if (existsCustomerUsername(username)) {
-                updateCustomer(username, updateAccountDTO);
+                updateCustomer(username, updateAccountDTO, file);
             } else if (existsDriverUsername(username)) {
-                updateDriver(username, updateAccountDTO);
+                updateDriver(username, updateAccountDTO,file);
             } else {
                 throw new NotFoundException(ErrorMessages.NOT_FOUND_USER);
             }
 
     }
-    
 
 
+    public void updateCustomer(String username, UpdateAccountDTO updateAccountDTO, MultipartFile file)  {
 
-
-
-    public void updateCustomer(String username, UpdateAccountDTO updateAccountDTO)  {
-
-
+        try{
             CustomerEntity customerEntity = customerRepository.findByUsername(username)
                     .orElseThrow(() -> new NotFoundException(ErrorMessages.NOT_FOUND_USER));
 
-        // Nur prüfen, ob der neue Benutzername existiert, wenn er geändert werden soll
+            // Nur prüfen, ob der neue Benutzername existiert, wenn er geändert werden soll
 
-        if(updateAccountDTO.getUsername()!= null && !customerEntity.getUsername().equals(updateAccountDTO.getUsername()) ){
-            if (existsCustomerUsername(updateAccountDTO.getUsername())) {
-                throw new IllegalArgumentException("Username already exists");
-            }else{
-                customerEntity.setUsername(updateAccountDTO.getUsername());
+            if(updateAccountDTO.getUsername()!= null && !customerEntity.getUsername().equals(updateAccountDTO.getUsername())){
+                if (existsCustomerUsername(updateAccountDTO.getUsername()) || existsDriverUsername(updateAccountDTO.getUsername())) {
+                    throw new IllegalArgumentException("Username already exists");
+                }else{
+                    customerEntity.setUsername(updateAccountDTO.getUsername());
+                }
             }
-        }
             if (updateAccountDTO.getFirstName() != null) {
                 customerEntity.setFirstName(updateAccountDTO.getFirstName());
             }
             if (updateAccountDTO.getLastName() != null) {
                 customerEntity.setLastName(updateAccountDTO.getLastName());
             }
-            if (updateAccountDTO.getUsername() != null) {
-                customerEntity.setUsername(updateAccountDTO.getUsername());
-            }
+
             if (updateAccountDTO.getBirthday() != null) {
                 customerEntity.setBirthday(updateAccountDTO.getBirthday());
             }
-            if (updateAccountDTO.getProfilePicture() != null) {
-                String profilePictureUrl = profilePictureStorageService.save(updateAccountDTO.getProfilePicture(), username);
+            if (file != null) {
+                String profilePictureUrl = profilePictureStorageService.save(file, username);
                 customerEntity.setProfilePictureUrl(profilePictureUrl);
             }
             // Kunde speichern
             customerRepository.save(customerEntity);
             log.info("Updated customer {} with username {}", customerEntity.getUsername(), customerEntity.getEmail());
+        }catch (Exception e){
+            throw new RuntimeException("Failed to update account entity of type " + CustomerEntity.class.getName(), e);
+        }
+
 
     }
 
-    private void updateDriver(String username,  UpdateAccountDTO updateAccountDTO) {
-
+    private void updateDriver(String username, UpdateAccountDTO updateAccountDTO, MultipartFile file) {
+        try {
             DriverEntity driverEntity = driverRepository.findByUsername(username)
                     .orElseThrow(() -> new NotFoundException(ErrorMessages.NOT_FOUND_USER));
             // Nur prüfen, ob der neue Benutzername existiert, wenn er geändert werden soll
             if (updateAccountDTO.getUsername() != null && !updateAccountDTO.getUsername().equals(driverEntity.getUsername())) {
-                if (existsDriverUsername(updateAccountDTO.getUsername())) {
-                    throw new IllegalArgumentException("Username already exists");
-                }else{
+                if (existsDriverUsername(updateAccountDTO.getUsername())|| existsCustomerUsername(updateAccountDTO.getUsername())) {
+                    throw new IllegalArgumentException("Username already exists,update failed!");
+                } else {
                     driverEntity.setUsername(updateAccountDTO.getUsername());
                 }
             }
@@ -385,17 +384,19 @@ public class AccountService {
             if (updateAccountDTO.getBirthday() != null) {
                 driverEntity.setBirthday(updateAccountDTO.getBirthday());
             }
-            if (updateAccountDTO.getCarType() != null ) {
+            if (updateAccountDTO.getCarType() != null) {
                 driverEntity.setCarType(updateAccountDTO.getCarType());
             }
-            if (updateAccountDTO.getProfilePicture() != null) {
-                String profilePictureUrl = profilePictureStorageService.save(updateAccountDTO.getProfilePicture(), username);
+            if (file != null) {
+                String profilePictureUrl = profilePictureStorageService.save(file, username);
                 driverEntity.setProfilePictureUrl(profilePictureUrl);
             }
             // Fahrer speichern
             driverRepository.save(driverEntity);
             log.info("Updated driver {} with username {}", driverEntity.getUsername(), driverEntity.getEmail());
-
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to update account entity of type " + DriverEntity.class.getName(), e);
+        }
     }
 
     public boolean isOwner(String username) {

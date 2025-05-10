@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 @AllArgsConstructor
-@Service("accountService")
+@Service
 public class AccountService {
     private final Logger log = LoggerFactory.getLogger(AccountService.class);
 
@@ -312,16 +312,18 @@ public class AccountService {
      @Schema(description = "Updates the account of the authenticated user")
     public void saveAccountChanges(String username, UpdateAccountDTO updateAccountDTO, MultipartFile file) {
             // Prüfen, ob der Benutzer ein Kunde oder Fahrer ist, und entsprechend updaten
-            if (existsCustomerUsername(username)) {
-                updateCustomer(username, updateAccountDTO, file);
-            } else if (existsDriverUsername(username)) {
-                updateDriver(username, updateAccountDTO,file);
-            } else {
-                throw new NotFoundException(ErrorMessages.NOT_FOUND_USER);
+            if(isOwner(username)) {
+                if (existsCustomerUsername(username)) {
+                    updateCustomer(username, updateAccountDTO, file);
+                } else if (existsDriverUsername(username)) {
+                    updateDriver(username, updateAccountDTO, file);
+                } else {
+                    throw new NotFoundException(ErrorMessages.NOT_FOUND_USER);
+                }
+            }else{
+                throw new NotFoundException("You are not the owner of this account.");
             }
-
     }
-
 
     public void updateCustomer(String username, UpdateAccountDTO updateAccountDTO, MultipartFile file)  {
 
@@ -370,7 +372,7 @@ public class AccountService {
             if (updateAccountDTO.getUsername() != null && !updateAccountDTO.getUsername().equals(driverEntity.getUsername())) {
                 if (existsDriverUsername(updateAccountDTO.getUsername())|| existsCustomerUsername(updateAccountDTO.getUsername())) {
                     throw new IllegalArgumentException("Username already exists,update failed!");
-                } else {
+                }else {
                     driverEntity.setUsername(updateAccountDTO.getUsername());
                 }
             }

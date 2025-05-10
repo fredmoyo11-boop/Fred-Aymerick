@@ -44,10 +44,8 @@ public class AccountController {
                                  content = @Content( schema = @Schema(implementation = AccountDTO.class)))})
     @GetMapping("/search")
     public ResponseEntity<List<AccountDTO>> searchUserProfiles(@RequestParam String part) {
-
         return ResponseEntity.ok(accountService.userSearch(part));
     }
-
 
     @Operation(summary = "Aktualisiert das Benutzerprofil", description = "Profildaten werden als multipart/form-data gesendet, wobei das JSON-Objekt unter 'data' und das optionale Bild unter 'file' übermittelt wird."
             ,tags = {Tags.ACCOUNT} ,
@@ -55,9 +53,7 @@ public class AccountController {
           @ApiResponse(responseCode = HttpStatus.OK, description = "Profil erfolgreich aktualisiert.",
                        content = @Content(mediaType = "text/plain", schema = @Schema(type = "String")))})
     @PutMapping(value ="/{username}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @IsOwner
     public ResponseEntity<String> updateAccountProfile(@PathVariable String username, @RequestPart("data") UpdateAccountDTO updateAccountDTO, @RequestPart(value = "file", required = false) MultipartFile file) {
-
         accountService.saveAccountChanges(username, updateAccountDTO, file);
         return ResponseEntity.ok("Profil erfolgreich aktualisiert!");
     }

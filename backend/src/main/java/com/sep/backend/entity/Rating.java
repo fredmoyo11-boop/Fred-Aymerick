@@ -3,12 +3,12 @@ package com.sep.backend.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 @Getter
 @Setter
 @AllArgsConstructor
@@ -28,7 +28,7 @@ public class Rating {
     private int rating;
 
     @Column(name = "comment", nullable = false)
-    @NotNull
+    @NotBlank
     private String comment;
 
     public  String  toString(){

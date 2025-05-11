@@ -1,6 +1,6 @@
 package com.sep.backend.triprequest;
 
-public class CarType { //TODO Change to Enum
+public class CarType {
     public static final String MEDIUM = "MEDIUM";
 
     public static final String LARGE = "LARGE";

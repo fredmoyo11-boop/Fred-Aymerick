@@ -17,13 +17,11 @@ import java.util.Objects;
 public class TripRequestService {
 
     private final TripRequestRepository tripRequestRepository;
-    private final CustomerRepository customerRepository;
+
     private final LocationRepository locationRepository;
 
-    public TripRequestService(TripRequestRepository tripRequestRepository,CustomerRepository customerRepository
-            , LocationRepository locationRepository) {
+    public TripRequestService(TripRequestRepository tripRequestRepository, LocationRepository locationRepository) {
         this.tripRequestRepository = tripRequestRepository;
-        this.customerRepository = customerRepository;
         this.locationRepository = locationRepository;
     }
 
@@ -50,16 +48,6 @@ public class TripRequestService {
         tripRequestRepository.save(tripRequestEntity);
     }
 
-
-    //deleteFromRepository -> when customer wants to delete request
-    public void deleteTripRequest(String username) throws NotFoundException {
-        TripRequestEntity tripRequestEntity = getRequestByUsername(username);
-        if (Objects.equals(tripRequestEntity.getRequestStatus(), TripRequestStatus.INPROGRESS)) {
-            throw new RuntimeException("Cannot delete active request");
-        }
-        tripRequestRepository.delete(tripRequestEntity);
-    }
-
     public LocationEntity convertLocationDTOToEntity(@Valid LocationDTO locationDTO) {
         var locationEntity = LocationEntity.from(locationDTO);
         locationRepository.save(locationEntity);
@@ -74,6 +62,14 @@ public class TripRequestService {
         return TripRequestDTO.from(tripRequestEntity);
     }
 
+    //deleteFromRepository -> when customer wants to delete request
+    public void deleteTripRequest(String username) throws NotFoundException {
+        TripRequestEntity tripRequestEntity = getRequestByUsername(username);
+        if (Objects.equals(tripRequestEntity.getRequestStatus(), TripRequestStatus.INPROGRESS)) {
+            throw new RuntimeException("Cannot delete active request");
+        }
+        tripRequestRepository.delete(tripRequestEntity);
+    }
 
     //TripRequestEntity mit Constructer erstellen //TODO Change to create and delete function, not upsert
     public void createTripRequest(@Valid TripRequestDTO tripRequestDTO) {

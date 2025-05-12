@@ -3,6 +3,7 @@ package com.sep.backend.triprequest.nominatim;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
@@ -10,22 +11,28 @@ import java.util.List;
 @Service
 public class NominatimService {
 
+    private final RestClient restClient = RestClient.builder()
+            .baseUrl("https://nominatim.openstreetmap.org")
+            .build();
 
     public List<LocationDTO> getSuggestions(String location) throws Exception {
-        try { //TODO: RestClient benutzen
-            RestTemplate restTemplate = new RestTemplate();
+        try {
             ObjectMapper mapper = new ObjectMapper();
-            String url = "https://nominatim.openstreetmap.org/search?format=json&q=" + location;
 
-            String response = restTemplate.getForObject(url, String.class);
+            String response = restClient.get()
+                    .uri(uriBuilder -> uriBuilder
+                            .path("/search")
+                            .queryParam("format", "json") //TODO GeoJSON benutzen -> Entity/DTO ändern
+                            .queryParam("q", location)
+                            .build())
+                    .retrieve()
+                    .body(String.class);
+
             System.out.println(response);
 
-            return mapper.readValue(response, new TypeReference<List<LocationDTO>>() {
-            });
-
+            return mapper.readValue(response, new TypeReference<List<LocationDTO>>() {});
         } catch (Exception e) {
-            throw new Exception("Could not find location");
+            throw new Exception("Could not find location", e);
         }
     }
-
 }

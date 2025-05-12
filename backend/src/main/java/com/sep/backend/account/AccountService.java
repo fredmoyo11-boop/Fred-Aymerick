@@ -311,7 +311,6 @@ public class AccountService {
     }
      @Schema(description = "Updates the account of the authenticated user")
     public void saveAccountChanges(String username, UpdateAccountDTO updateAccountDTO, MultipartFile file) {
-            // Prüfen, ob der Benutzer ein Kunde oder Fahrer ist, und entsprechend updaten
             if(isOwner(username)) {
                 if (existsCustomerUsername(username)) {
                     updateCustomer(username, updateAccountDTO, file);
@@ -331,7 +330,6 @@ public class AccountService {
             CustomerEntity customerEntity = customerRepository.findByUsername(username)
                     .orElseThrow(() -> new NotFoundException(ErrorMessages.NOT_FOUND_USER));
 
-            // Nur prüfen, ob der neue Benutzername existiert, wenn er geändert werden soll
 
             if(updateAccountDTO.getUsername()!= null && !customerEntity.getUsername().equals(updateAccountDTO.getUsername())){
                 if (existsCustomerUsername(updateAccountDTO.getUsername()) || existsDriverUsername(updateAccountDTO.getUsername())) {
@@ -368,7 +366,6 @@ public class AccountService {
         try {
             DriverEntity driverEntity = driverRepository.findByUsername(username)
                     .orElseThrow(() -> new NotFoundException(ErrorMessages.NOT_FOUND_USER));
-            // Nur prüfen, ob der neue Benutzername existiert, wenn er geändert werden soll
             if (updateAccountDTO.getUsername() != null && !updateAccountDTO.getUsername().equals(driverEntity.getUsername())) {
                 if (existsDriverUsername(updateAccountDTO.getUsername())|| existsCustomerUsername(updateAccountDTO.getUsername())) {
                     throw new IllegalArgumentException("Username already exists,update failed!");
@@ -393,7 +390,6 @@ public class AccountService {
                 String profilePictureUrl = profilePictureStorageService.save(file, username);
                 driverEntity.setProfilePictureUrl(profilePictureUrl);
             }
-            // Fahrer speichern
             driverRepository.save(driverEntity);
             log.info("Updated driver {} with username {}", driverEntity.getUsername(), driverEntity.getEmail());
         } catch (Exception e) {

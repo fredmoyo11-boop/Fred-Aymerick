@@ -11,13 +11,15 @@ import java.util.List;
 
 @Repository
 public interface WaypointRepository extends JpaRepository<WaypointEntity, Long> {
-    Optional<WaypointEntity> findByIdAndType(@NotBlank long routeId, @NotBlank String type);
+    Optional<WaypointEntity> findByRouteIdAndType(@NotBlank long routeId, @NotBlank String type);
 
-    long countByIdAndType(@NotBlank long routeId, @NotBlank String type);
+    long countByRouteIdAndType(@NotBlank long routeId, @NotBlank String type);
 
-    List<WaypointEntity> findAllPointsById(@NotBlank long routeId);
+    List<WaypointEntity> findAllPointsByRouteId(@NotBlank long routeId);
 
-    List<WaypointEntity> findAllPointsByIdAndType(@NotBlank long routeId, @NotBlank String type);
+    List<WaypointEntity> findAllPointsByRouteIdAndType(@NotBlank long routeId, @NotBlank String type);
+
+    Optional<WaypointEntity> findByRouteIdAndIndex(@NotBlank long routeId, @NotBlank long index);
 
     Optional<WaypointEntity> findById(@NotBlank long id);
 

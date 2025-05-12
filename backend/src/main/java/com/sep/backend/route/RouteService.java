@@ -3,6 +3,7 @@ package com.sep.backend.route;
 import com.sep.backend.NotFoundException;
 import com.sep.backend.route.*;
 import com.sep.backend.route.response.*;
+import com.sep.backend.route.jsonimporter.*;
 import com.sep.backend.entity.WaypointEntity;
 import com.sep.backend.entity.RouteEntity;
 import org.springframework.stereotype.Service;
@@ -10,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.Optional;
 import java.util.List;
 import java.util.ArrayList;
+import java.io.IOException;
 
 @Service
 public class RouteService {
@@ -23,35 +25,43 @@ public class RouteService {
 
     public RouteResponse getRouteById(RouteDTO Id) {
         WaypointEntity startEntity = waypointRepository
-                                            .findByIdAndType(Id.getRouteId(), WaypointType.START)
+                                            .findByRouteIdAndType(Id.getRouteId(), WaypointType.START)
                                             .orElseThrow(() -> new NotFoundException(RouteErrorMessages.INVALID_ROUTE_ID));
         WaypointEntity endEntity = waypointRepository
-                                            .findByIdAndType(Id.getRouteId(), WaypointType.END)
+                                            .findByRouteIdAndType(Id.getRouteId(), WaypointType.END)
                                             .orElseThrow(() -> new NotFoundException(RouteErrorMessages.INVALID_ROUTE_ID));
 
         String startLongitude = startEntity.getLongitude();
         String startLatitude = startEntity.getLatitude();
         String endLongitude = endEntity.getLongitude();
         String endLatitude = endEntity.getLatitude();
-        long otherPointCount = waypointRepository.countByIdAndType(Id.getRouteId(), WaypointType.POINT);
-        long midpointCount = waypointRepository.countByIdAndType(Id.getRouteId(), WaypointType.MID);
+        long otherPointCount = waypointRepository.countByRouteIdAndType(Id.getRouteId(), WaypointType.POINT);
+        long midpointCount = waypointRepository.countByRouteIdAndType(Id.getRouteId(), WaypointType.MID);
         return new RouteResponse(startLongitude, startLatitude, endLongitude, endLatitude, otherPointCount, midpointCount);
     }
 
     public List<WaypointResponse> getMidpointsById(RouteDTO Id) {
         List<WaypointResponse> midpointList = new ArrayList<WaypointResponse>();
-        midpointList.addAll(mapWaypointEntityToWaypointResponse(waypointRepository.findAllPointsByIdAndType(Id.getRouteId(),WaypointType.MID)));
+        midpointList.addAll(mapWaypointEntityToWaypointResponse(waypointRepository.findAllPointsByRouteIdAndType(Id.getRouteId(),WaypointType.MID)));
         return midpointList;
     }
 
     public List<WaypointResponse> getFullRouteById(RouteDTO Id) {
         List<WaypointResponse> waypointList = new ArrayList<WaypointResponse>();
-        waypointList.addAll(mapWaypointEntityToWaypointResponse(waypointRepository.findAllPointsById(Id.getRouteId())));
+        waypointList.addAll(mapWaypointEntityToWaypointResponse(waypointRepository.findAllPointsByRouteId(Id.getRouteId())));
         return waypointList;
     }
 
     public String importGeoJson(MultipartFile file) {
-        return "Unavailable";
+        if(!(file.getContentType().equals("application/json"))) {
+            return "Unsupported Content Type";
+        }
+        try {
+            return RouteImport.importRoute(new String(file.getBytes()), routeRepository, waypointRepository);
+        }
+        catch (IOException e) {
+            return "failed to import route";
+        }
     }
 
     private List<WaypointResponse> mapWaypointEntityToWaypointResponse(List<WaypointEntity> entityList) {

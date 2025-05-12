@@ -32,19 +32,9 @@ public class WaypointEntity extends AbstractEntity {
     @Column(name = "latitude", nullable = false)
     private String latitude;
 
-//    @Enumerated(EnumType.ORDINAL)
-//    @NotBlank
-//    @Column(name = "type", nullable = false)
-//    private WaypointTypeEnum type;
-
     @NotBlank
     @Column(name = "type", nullable = false)
     private String type;
-
-//    @NotBlank
-//    //@Column(name = "route", nullable = false)
-//    @ManyToOne(optional=false)
-//    private RouteEntity routeEntity;
 
     @NotBlank
     @Column(name = "route_id", nullable = false, unique = true)

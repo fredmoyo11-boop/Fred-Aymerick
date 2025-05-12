@@ -46,6 +46,17 @@ public class TripRequestController {
 
     }
 
+
+    @PostMapping("/request/view")
+    @Operation(description = "Shows trip request of customer",
+            tags = {Tags.TRIP},
+            responses = {
+                @ApiResponse(responseCode = HttpStatus.OK, description = "Trip request showed successfully",
+                    content = @Content(schema = @Schema(implementation = TripRequestDTO.class)))})
+    public TripRequestDTO view(@Parameter(description = "Give username to find request")@RequestParam String username) {
+        return tripRequestService.showTripRequest(username);
+    }
+
     @PostMapping("/request/view/delete")
     @Operation(description = "Deletes trip request from repository",
             tags= {Tags.TRIP},

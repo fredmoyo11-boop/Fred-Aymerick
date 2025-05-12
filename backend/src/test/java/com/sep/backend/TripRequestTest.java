@@ -64,7 +64,7 @@ class TripRequestTest {
     }
 
     @Test
-    void testUpsertTripRequest_createNewTripRequest() {
+    void testCreateTripRequest_createNewTripRequest() {
         TripRequestDTO dto = new TripRequestDTO();
         dto.setUsername("john_doe");
         dto.setCarType(CarType.LARGE);
@@ -86,6 +86,12 @@ class TripRequestTest {
         assertEquals(11.7, request.getEndLocation().getLongitude());
         assertEquals(TripRequestStatus.ACTIVE, request.getRequestStatus());
     }
+
+    //TODO Test, if List of locations gets created when searching address
+
+    //TODO Test, if List of locations gets created when searching coordinates
+
+    //TODO Test, if List of locations gets created when searching Point of Interest
 
     /*@Test
     void upsertTripRequest() {

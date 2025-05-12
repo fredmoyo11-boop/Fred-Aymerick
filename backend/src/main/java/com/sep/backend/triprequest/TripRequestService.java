@@ -62,6 +62,11 @@ public class TripRequestService {
         return TripRequestDTO.from(tripRequestEntity);
     }
 
+    public TripRequestDTO showTripRequest(String username) throws NotFoundException {
+        TripRequestEntity tripRequestEntity = getRequestByUsername(username);
+        return convertTripRequestEntityToDTO(tripRequestEntity);
+    }
+
     //deleteFromRepository -> when customer wants to delete request
     public void deleteTripRequest(String username) throws NotFoundException {
         TripRequestEntity tripRequestEntity = getRequestByUsername(username);
@@ -79,6 +84,7 @@ public class TripRequestService {
         if (existsByCustomer_Username(username)) {
             throw new TripRequestException(ErrorMessages.ALREADY_EXISTS_TRIPREQUEST);
         }
+
         var tripRequestEntity = getRequestByUsername(username);
         tripRequestEntity.setStartLocation(startAddress);
         tripRequestEntity.setEndLocation(endAddress);

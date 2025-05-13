@@ -6,6 +6,7 @@ import com.sep.backend.route.response.RouteResponse;
 import com.sep.backend.route.response.WaypointResponse;
 import com.sep.backend.route.RouteRequest;
 import com.sep.backend.route.RouteService;
+import com.sep.backend.Tags;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -30,6 +31,7 @@ public class RouteController {
 
     @GetMapping("/health")
     @Operation(description = "Returns the status of the route controller.",
+            tags={Tags.ROUTE},
             responses = {
                     @ApiResponse(responseCode = HttpStatus.OK, description = "Route controller healthy.",
                             content = @Content(schema = @Schema(implementation = StringResponse.class)))})
@@ -39,6 +41,7 @@ public class RouteController {
 
     @GetMapping("/metadata")
     @Operation(description = "Returns start, end, count of midpoints and count of path waypoints from the route.",
+            tags={Tags.ROUTE},
             responses = {
                     @ApiResponse(responseCode = HttpStatus.OK, description = "Route metadata returned.",
                             content = @Content(schema = @Schema(implementation = RouteResponse.class)))},
@@ -55,6 +58,7 @@ public class RouteController {
 
     @GetMapping("/midpoints")
     @Operation(description = "Returns all midpoints from the route.",
+            tags={Tags.ROUTE},
             responses = {
                     @ApiResponse(responseCode = HttpStatus.OK, description = "Route midpoints returned.",
                             content = @Content(schema = @Schema(implementation = WaypointResponse.class)))},
@@ -71,6 +75,7 @@ public class RouteController {
 
     @GetMapping("/full")
     @Operation(description = "Returns the full route.",
+            tags={Tags.ROUTE},
             responses = {
                     @ApiResponse(responseCode = HttpStatus.OK, description = "Route returned.",
                             content = @Content(schema = @Schema(implementation = WaypointResponse.class)))},
@@ -87,6 +92,7 @@ public class RouteController {
 
     @PostMapping("/import_geojson")
     @Operation(description = "Accepts and Imports route from geoJSON.",
+            tags={Tags.ROUTE},
             responses = {
                     @ApiResponse(responseCode = HttpStatus.OK, description = "geoJSON accepted.",
                             content = @Content(schema = @Schema(implementation = StringResponse.class)))},

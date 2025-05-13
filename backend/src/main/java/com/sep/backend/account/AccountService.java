@@ -197,7 +197,7 @@ public class AccountService {
         customerDTO.setUsername(customerEntity.getUsername());
         customerDTO.setFirstName(customerEntity.getFirstName());
         customerDTO.setLastName(customerEntity.getLastName());
-        customerDTO.setTotalNumberOfRides(customerEntity.getTotalNumberOfRides());
+        customerDTO.setTotalNumberOfRides(5);
         customerDTO.setProfilePictureUrl(customerEntity.getProfilePictureUrl());
         return customerDTO;
     }

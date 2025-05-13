@@ -5,6 +5,7 @@ import {LoginComponent} from './components/login/login.component';
 import {StandardLayoutComponent} from './layouts/standard-layout/standard-layout.component';
 import {HomeComponent} from './components/home/home.component';
 import {FahranfrageErstellenComponent} from './components/fahranfrage-erstellen/fahranfrage-erstellen.component';
+import {AktiveFahranfrageComponent} from './components/aktive-fahranfrage/aktive-fahranfrage.component';
 
 export const routes: Routes = [
   {path: "register", component: RegisterComponent},

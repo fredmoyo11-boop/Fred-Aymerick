@@ -37,7 +37,7 @@ public class AccountController {
     }
 
 
-    @Operation(description = "Suche nach Benutzerprofilen basierend auf einem Suchbegriff ",
+    @Operation(description = "Suche nach Benutzerprofilen basierend auf einem Suchbegriff ( username-part)",
             tags = {Tags.ACCOUNT},
             responses = {
                     @ApiResponse(responseCode = "200", description = "List of userprofile.",
@@ -52,21 +52,21 @@ public class AccountController {
              responses = {
           @ApiResponse(responseCode = HttpStatus.OK, description = "Profil erfolgreich aktualisiert.",
                        content = @Content(mediaType = "text/plain", schema = @Schema(type = "String")))})
-    @PutMapping(value ="/{username}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> updateAccountProfile(@PathVariable String username, @RequestPart("data") UpdateAccountDTO updateAccountDTO, @RequestPart(value = "file", required = false) MultipartFile file) {
-        accountService.saveAccountChanges(username, updateAccountDTO, file);
+    @PutMapping(value ="/{email}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> updateAccountProfile(@PathVariable String email, @RequestPart("data") UpdateAccountDTO updateAccountDTO, @RequestPart(value = "file", required = false) MultipartFile file) {
+        accountService.saveAccountChanges(email, updateAccountDTO, file);
         return ResponseEntity.ok("Profil erfolgreich aktualisiert!");
     }
 
 
-    @Operation(summary = "Gibt das Benutzerprofil zurück", description = "Liefert die vollständigen Profildaten eines Benutzers basierend auf dem Benutzernamen.",
+    @Operation(summary = "Gibt das Benutzerprofil zurück", description = "Liefert die vollständigen Profildaten eines Benutzers basierend auf der email.",
             tags = {Tags.ACCOUNT},
             responses = {
             @ApiResponse(responseCode = HttpStatus.OK, description = "Benutzerprofil erfolgreich geladen.",
                          content = @Content(schema = @Schema(implementation = AccountDTO.class)))}
     )
-    @GetMapping("/{username}")
-    public ResponseEntity<AccountDTO> getAccountprofile(@PathVariable String username) {
-        return ResponseEntity.ok(accountService.getAccountprofile(username));
+    @GetMapping("/{email}")
+    public ResponseEntity<AccountDTO> getAccountprofile(@PathVariable String email) {
+        return ResponseEntity.ok(accountService.getAccountprofile(email));
     }
 }

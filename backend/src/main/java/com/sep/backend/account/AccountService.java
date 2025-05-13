@@ -13,7 +13,6 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -173,13 +172,13 @@ public class AccountService {
         return accountDTOS;
     }
 
-    @Schema(description = "get the account of  user BASED OF THE username .Die Methode ist erstmal für Unterstützung des frontend Features : klickbares profil gedacht")
-    public AccountDTO getAccountprofile(String username) {
-        Optional<CustomerEntity> customerEntity = customerRepository.findByUsername(username);
+    @Schema(description = "get the account of  user BASED OF THE email .Die Methode ist erstmal für Unterstützung des frontend Features : klickbares profil gedacht")
+    public AccountDTO getAccountprofile(String email) {
+        Optional<CustomerEntity> customerEntity = customerRepository.findByEmail(email);
         if (customerEntity.isPresent()) {
             return getCustomerDTO(customerEntity.get());
         } else {
-            Optional<DriverEntity> driverEntity = driverRepository.findByUsername(username);
+            Optional<DriverEntity> driverEntity = driverRepository.findByEmail(email);
             if (driverEntity.isPresent()) {
                 return getDriverDTO(driverEntity.get());
             }else {
@@ -310,24 +309,24 @@ public class AccountService {
         }
     }
      @Schema(description = "Updates the account of the authenticated user")
-    public void saveAccountChanges(String username, UpdateAccountDTO updateAccountDTO, MultipartFile file) {
-            if(isOwner(username)) {
-                if (existsCustomerUsername(username)) {
-                    updateCustomer(username, updateAccountDTO, file);
-                } else if (existsDriverUsername(username)) {
-                    updateDriver(username, updateAccountDTO, file);
+    public void saveAccountChanges(String email, UpdateAccountDTO updateAccountDTO, MultipartFile file) {
+            if(isOwner(email)) {
+                if (existsCustomerEmail(email)) {
+                    updateCustomer(email, updateAccountDTO, file);
+                } else if (existsDriverEmail(email)) {
+                    updateDriver(email, updateAccountDTO, file);
                 } else {
                     throw new NotFoundException(ErrorMessages.NOT_FOUND_USER);
                 }
             }else{
-                throw new NotFoundException("You are not the owner of this account.");
+                throw new RuntimeException("You are not allowed to update this account.") ;
             }
     }
 
-    public void updateCustomer(String username, UpdateAccountDTO updateAccountDTO, MultipartFile file)  {
+    public void updateCustomer(String email, UpdateAccountDTO updateAccountDTO, MultipartFile file)  {
 
         try{
-            CustomerEntity customerEntity = customerRepository.findByUsername(username)
+            CustomerEntity customerEntity = customerRepository.findByEmail(email)
                     .orElseThrow(() -> new NotFoundException(ErrorMessages.NOT_FOUND_USER));
 
 
@@ -344,12 +343,11 @@ public class AccountService {
             if (updateAccountDTO.getLastName() != null) {
                 customerEntity.setLastName(updateAccountDTO.getLastName());
             }
-
             if (updateAccountDTO.getBirthday() != null) {
                 customerEntity.setBirthday(updateAccountDTO.getBirthday());
             }
             if (file != null) {
-                String profilePictureUrl = profilePictureStorageService.save(file, username);
+                String profilePictureUrl = profilePictureStorageService.save(file, customerEntity.getUsername());
                 customerEntity.setProfilePictureUrl(profilePictureUrl);
             }
             // Kunde speichern
@@ -362,9 +360,9 @@ public class AccountService {
 
     }
 
-    private void updateDriver(String username, UpdateAccountDTO updateAccountDTO, MultipartFile file) {
+    private void updateDriver(String email, UpdateAccountDTO updateAccountDTO, MultipartFile file) {
         try {
-            DriverEntity driverEntity = driverRepository.findByUsername(username)
+            DriverEntity driverEntity = driverRepository.findByEmail(email)
                     .orElseThrow(() -> new NotFoundException(ErrorMessages.NOT_FOUND_USER));
             if (updateAccountDTO.getUsername() != null && !updateAccountDTO.getUsername().equals(driverEntity.getUsername())) {
                 if (existsDriverUsername(updateAccountDTO.getUsername())|| existsCustomerUsername(updateAccountDTO.getUsername())) {
@@ -387,31 +385,18 @@ public class AccountService {
                 driverEntity.setCarType(updateAccountDTO.getCarType());
             }
             if (file != null) {
-                String profilePictureUrl = profilePictureStorageService.save(file, username);
+                String profilePictureUrl = profilePictureStorageService.save(file, driverEntity.getUsername());
                 driverEntity.setProfilePictureUrl(profilePictureUrl);
             }
             driverRepository.save(driverEntity);
-            log.info("Updated driver {} with username {}", driverEntity.getUsername(), driverEntity.getEmail());
+            log.info("Updated driver {} with email {}", driverEntity.getUsername(), driverEntity.getEmail());
         } catch (Exception e) {
             throw new RuntimeException("Failed to update account entity of type " + DriverEntity.class.getName(), e);
         }
     }
 
-    public boolean isOwner(String username) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        String currentEmail = authentication.getName();
-
-        Optional<DriverEntity> driver = driverRepository.findByEmail(currentEmail);
-        if(driver.isPresent()){
-            return driver.get().getUsername().equals(username);
-        }
-            Optional<CustomerEntity> customer = customerRepository.findByEmail(currentEmail);
-            if(customer.isPresent()){
-                return customer.get().getUsername().equals(username);
-            }else {
-                throw new NotFoundException(ErrorMessages.NOT_FOUND_USER);
-            }
+    public boolean isOwner(String email) {
+        return SecurityContextHolder.getContext().getAuthentication().getName().equals(email) ;
     }
 
 }

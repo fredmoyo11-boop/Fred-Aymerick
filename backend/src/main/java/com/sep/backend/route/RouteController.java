@@ -45,7 +45,7 @@ public class RouteController {
             tags={Tags.ROUTE},
             responses = {
                     @ApiResponse(responseCode = HttpStatus.OK, description = "Route metadata returned.",
-                            content = @Content(array = @ArraySchema(implementation = WaypointResponse.class)))}
+                            content = @Content(array = @ArraySchema(schema = @Schema(implementation = WaypointResponse.class))))}
     )
     public RouteResponse getMetadata(@Parameter(description = "The route id.") @PathVariable("id") Long id) {
         return routeService.getRouteById(id);
@@ -56,7 +56,7 @@ public class RouteController {
             tags={Tags.ROUTE},
             responses = {
                     @ApiResponse(responseCode = HttpStatus.OK, description = "Route midpoints returned.",
-                            content = @Content(array = @ArraySchema(implementation = WaypointResponse.class)))}
+                            content = @Content(array = @ArraySchema(schema = @Schema(implementation = WaypointResponse.class))))}
     )
     public List<WaypointResponse> getMidpoints(@Parameter(description = "The route id") @PathVariable("id") Long id) {
         return routeService.getMidpointsById(id);
@@ -67,7 +67,7 @@ public class RouteController {
             tags={Tags.ROUTE},
             responses = {
                     @ApiResponse(responseCode = HttpStatus.OK, description = "Route returned.",
-                            content = @Content(array = @ArraySchema(implementation = WaypointResponse.class)))}
+                            content = @Content(array = @ArraySchema(schema = @Schema(implementation = WaypointResponse.class))))}
     )
     public List<WaypointResponse> getFullRoute(@Parameter(description = "The route id") @PathVariable("id") Long id) {
         return routeService.getFullRouteById(id);

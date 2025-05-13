@@ -18,7 +18,7 @@ public class TripRequestDTO {
 
     @NotBlank
     @Schema(description = "The customer requesting drive.", requiredMode = RequiredMode.REQUIRED)
-    private String username;
+    private String email;
 
     @NotNull
     @Schema(description = "The start location of the drive.", requiredMode = RequiredMode.REQUIRED)
@@ -37,7 +37,7 @@ public class TripRequestDTO {
 
     public static TripRequestDTO from(TripRequestEntity tripRequestEntity) {
         var dto = new TripRequestDTO();
-        dto.setUsername(tripRequestEntity.getCustomer().getUsername());
+        dto.setEmail(tripRequestEntity.getCustomer().getUsername());
         dto.setStartLocation(LocationDTO.from(tripRequestEntity.getStartLocation()));
         dto.setEndLocation(LocationDTO.from(tripRequestEntity.getEndLocation()));
         dto.setCarType(tripRequestEntity.getCartype());

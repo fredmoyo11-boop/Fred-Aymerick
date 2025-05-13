@@ -27,7 +27,7 @@ public class TripRequestController {
 
     @PostMapping("/search")
     @Operation(description = "Provides a suggested list of locations",
-            tags = {Tags.TRIP},
+            tags = {Tags.TRIP_REQUEST},
             responses = {
                 @ApiResponse(responseCode = HttpStatus.OK, description = "Suggested list successful send",
                     content = @Content(schema = @Schema(implementation = LocationDTO.class)))})
@@ -37,7 +37,7 @@ public class TripRequestController {
 
     @PostMapping("/request/create")
     @Operation(description = "Creates trip request and saves to repository",
-            tags= {Tags.TRIP},
+            tags= {Tags.TRIP_REQUEST},
             responses = {
                 @ApiResponse(responseCode = HttpStatus.OK, description = "Trip request created successfully.",
                     content = @Content(schema = @Schema(implementation = TripRequestEntity.class)))})
@@ -46,24 +46,23 @@ public class TripRequestController {
 
     }
 
-
     @PostMapping("/request/view")
     @Operation(description = "Shows trip request of customer",
-            tags = {Tags.TRIP},
+            tags = {Tags.TRIP_REQUEST},
             responses = {
                 @ApiResponse(responseCode = HttpStatus.OK, description = "Trip request showed successfully",
                     content = @Content(schema = @Schema(implementation = TripRequestDTO.class)))})
-    public TripRequestDTO view(@Parameter(description = "Give username to find request")@RequestParam String username) {
-        return tripRequestService.showTripRequest(username);
+    public TripRequestDTO view(@Parameter(description = "Give email to find request")@RequestParam String email) {
+        return tripRequestService.showTripRequest(email);
     }
 
-    @PostMapping("/request/view/delete")
+    @DeleteMapping("/request/view/delete")
     @Operation(description = "Deletes trip request from repository",
-            tags= {Tags.TRIP},
+            tags= {Tags.TRIP_REQUEST},
             responses = {
                     @ApiResponse(responseCode = HttpStatus.OK, description = "Trip request deleted successfully.",
                             content = @Content(schema = @Schema(implementation = TripRequestEntity.class)))})
-    public void deleteRequest(@RequestParam String username) {
-        tripRequestService.deleteTripRequest(username);
+    public void deleteRequest(@Parameter(description = "Give email to find request")@RequestParam String email) {
+        tripRequestService.deleteTripRequest(email);
     }
 }

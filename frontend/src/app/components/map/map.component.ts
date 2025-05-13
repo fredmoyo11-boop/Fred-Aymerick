@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import * as L from 'leaflet';
 import 'leaflet-routing-machine';
-// import { HttpClient } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 
 
 
@@ -12,8 +12,16 @@ import 'leaflet-routing-machine';
   styleUrl: './map.component.css'
 })
 export class MapComponent implements OnInit {
-  // constructor(private http: HttpClient) {}
-  /*
+  map: any;
+  startLan!: number;
+  startLon!: number;
+  endLan!: number;
+  endLon!: number;
+  viaPoints: Array<{ lat: number; lng: number }> = [];
+
+
+   constructor(private http: HttpClient) {}
+
   ngOnInit(): void {
   this.getRouteDataFromBackend();
 }
@@ -21,15 +29,16 @@ export class MapComponent implements OnInit {
 private getRouteDataFromBackend(): void {
   this.http.get<any>('http://localhost:8080/api/route')
     .subscribe(data => {
-      this.startLat = data.startLat;
-      this.startLng = data.startLng;
-      this.endLat = data.endLat;
-      this.endLng = data.endLng;
+      this.startLan = data.startLan;
+      this.startLon = data.startLon;
+      this.endLan = data.endLan;
+      this.endLon = data.endLon;
+      this.viaPoints = data.viaPoints || [];
       this.initMap();
     });
-} */
+}
 
-  viaPoints: Array<{ lat: number, lng: number }> = [
+  /*viaPoints: Array<{ lat: number, lng: number }> = [
     { lat: 51.4800, lng: 7.2000 },
     { lat: 51.4900, lng: 7.3000 }
   ];
@@ -38,24 +47,24 @@ private getRouteDataFromBackend(): void {
   @Input() startLan!: number;
   @Input() startLon!: number;
   @Input() endLan!: number;
-  @Input() endLon!: number;
+  @Input() endLon!: number;*/
 
 
 
-  ngOnInit(): void {
-    this.initMap();
-  }
+  // ngOnInit(): void {
+  //   this.initMap();
+  // }
 
 
 
 
   private initMap(): void {
-
-    this.startLan = 51.4516; // Essen Hbf
-    this.startLon = 7.0146;
-
-    this.endLan = 51.5136;   // Dortmund Hbf
-    this.endLon = 7.4653;
+    //
+    // this.startLan = 51.4516; // Essen Hbf
+    // this.startLon = 7.0146;
+    //
+    // this.endLan = 51.5136;   // Dortmund Hbf
+    // this.endLon = 7.4653;
 
     this.map =  L.map('map').setView([this.startLan, this.startLon], 13);
 

@@ -6,7 +6,6 @@ public class Tags {
 
     public static final String AUTH = "Auth";
 
-    public static final String TRIP = "Trip";
 
     public Tags() {
         throw new UnsupportedOperationException("Tags cannot be instantiated");

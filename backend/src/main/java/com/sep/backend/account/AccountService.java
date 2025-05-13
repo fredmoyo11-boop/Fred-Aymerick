@@ -214,7 +214,7 @@ public class AccountService {
         driverDTO.setLastName(driverEntity.getLastName());
         driverDTO.setBirthday(driverEntity.getBirthday().toString());
         driverDTO.setCarType(driverEntity.getCarType());
-        driverDTO.setTotalNumberOfRides(driverEntity.getTotalNumberOfRides());
+        driverDTO.setTotalNumberOfRides(5);
         driverDTO.setProfilePictureUrl(driverEntity.getProfilePictureUrl());
         return driverDTO;
     }

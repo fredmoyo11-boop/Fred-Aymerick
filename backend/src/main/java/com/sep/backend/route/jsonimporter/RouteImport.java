@@ -13,11 +13,13 @@ import java.io.IOException;
 
 public final class RouteImport {
 
+    static final long MAX_NODES = 10000L;
+
     private RouteImport() {}
 
     public static String importRoute(String file, RouteRepository routeRepository, WaypointRepository waypointRepository) throws IOException {
         RouteEntity route = routeRepository.save(new RouteEntity());
-        String Id = Long.toString(route.getId());
+        String id = Long.toString(route.getId());
         JsonNode node = new ObjectMapper().readTree(file);
 
         long i = 0L;
@@ -44,6 +46,18 @@ public final class RouteImport {
         waypointRepository.save(startEntity);
         waypointRepository.save(endEntity);
 
-        return Id;
+        long k = 1L;
+        while(true) {
+            String midLongitude = node.path("features/" + Long.toString(k) + "/geometry/coordinates/0").asText();
+            String midLatitude = node.path("features/" + Long.toString(k) + "/geometry/coordinates/1").asText();
+            if(k>=i-1) {
+                break;
+            }
+            long j = 1L;
+            while (j < i - 1) {
+                
+            }
+        }
+        return id;
     }
 }

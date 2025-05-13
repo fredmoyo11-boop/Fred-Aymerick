@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,58 +40,40 @@ public class RouteController {
         return new StringResponse("OK");
     }
 
-    @GetMapping("/metadata")
+    @GetMapping("/metadata/{id}")
     @Operation(description = "Returns start, end, count of midpoints and count of path waypoints from the route.",
             tags={Tags.ROUTE},
             responses = {
                     @ApiResponse(responseCode = HttpStatus.OK, description = "Route metadata returned.",
-                            content = @Content(schema = @Schema(implementation = RouteResponse.class)))},
-            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    content = @Content(
-                        mediaType = MediaType.MULTIPART_FORM_DATA_VALUE,
-                        schema = @Schema(implementation = RouteRequest.class)
-                    )
-            )
+                            content = @Content(array = @ArraySchema(schema = @Schema(implementation = WaypointResponse.class))))}
     )
-    public RouteResponse getMetadata(@Parameter(description = "The route id.") @RequestPart("id") RouteDTO Id) {
-        return routeService.getRouteById(Id);
+    public RouteResponse getMetadata(@Parameter(description = "The route id.") @PathVariable("id") Long id) {
+        return routeService.getRouteById(id);
     }
 
-    @GetMapping("/midpoints")
+    @GetMapping("/midpoints/{id}")
     @Operation(description = "Returns all midpoints from the route.",
             tags={Tags.ROUTE},
             responses = {
                     @ApiResponse(responseCode = HttpStatus.OK, description = "Route midpoints returned.",
-                            content = @Content(schema = @Schema(implementation = WaypointResponse.class)))},
-            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    content = @Content(
-                            mediaType = MediaType.MULTIPART_FORM_DATA_VALUE,
-                            schema = @Schema(implementation = RouteRequest.class)
-                    )
-            )
+                            content = @Content(array = @ArraySchema(schema = @Schema(implementation = WaypointResponse.class))))}
     )
-    public List<WaypointResponse> getMidpoints(@Parameter(description = "The route id") @RequestPart("id") RouteDTO Id) {
-        return routeService.getMidpointsById(Id);
+    public List<WaypointResponse> getMidpoints(@Parameter(description = "The route id") @PathVariable("id") Long id) {
+        return routeService.getMidpointsById(id);
     }
 
-    @GetMapping("/full")
+    @GetMapping("/full/{id}")
     @Operation(description = "Returns the full route.",
             tags={Tags.ROUTE},
             responses = {
                     @ApiResponse(responseCode = HttpStatus.OK, description = "Route returned.",
-                            content = @Content(schema = @Schema(implementation = WaypointResponse.class)))},
-            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    content = @Content(
-                            mediaType = MediaType.MULTIPART_FORM_DATA_VALUE,
-                            schema = @Schema(implementation = RouteRequest.class)
-                    )
-            )
+                            content = @Content(array = @ArraySchema(schema = @Schema(implementation = WaypointResponse.class))))}
     )
-    public List<WaypointResponse> getFullRoute(@Parameter(description = "The route id") @RequestPart("id") RouteDTO Id) {
-        return routeService.getFullRouteById(Id);
+    public List<WaypointResponse> getFullRoute(@Parameter(description = "The route id") @PathVariable("id") Long id) {
+        return routeService.getFullRouteById(id);
     }
 
-    @PostMapping("/import_geojson")
+    @PostMapping("/import/geojson")
     @Operation(description = "Accepts and Imports route from geoJSON.",
             tags={Tags.ROUTE},
             responses = {

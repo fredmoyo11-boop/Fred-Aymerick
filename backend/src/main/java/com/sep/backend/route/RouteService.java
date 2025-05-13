@@ -23,32 +23,32 @@ public class RouteService {
         this.waypointRepository = waypointRepository;
     }
 
-    public RouteResponse getRouteById(RouteDTO Id) {
+    public RouteResponse getRouteById(Long id) {
         WaypointEntity startEntity = waypointRepository
-                                            .findByRouteIdAndType(Id.getRouteId(), WaypointType.START)
+                                            .findByRouteIdAndType(id, WaypointType.START)
                                             .orElseThrow(() -> new NotFoundException(RouteErrorMessages.INVALID_ROUTE_ID));
         WaypointEntity endEntity = waypointRepository
-                                            .findByRouteIdAndType(Id.getRouteId(), WaypointType.END)
+                                            .findByRouteIdAndType(id, WaypointType.END)
                                             .orElseThrow(() -> new NotFoundException(RouteErrorMessages.INVALID_ROUTE_ID));
 
         String startLongitude = startEntity.getLongitude();
         String startLatitude = startEntity.getLatitude();
         String endLongitude = endEntity.getLongitude();
         String endLatitude = endEntity.getLatitude();
-        long otherPointCount = waypointRepository.countByRouteIdAndType(Id.getRouteId(), WaypointType.POINT);
-        long midpointCount = waypointRepository.countByRouteIdAndType(Id.getRouteId(), WaypointType.MID);
+        long otherPointCount = waypointRepository.countByRouteIdAndType(id, WaypointType.POINT);
+        long midpointCount = waypointRepository.countByRouteIdAndType(id, WaypointType.MID);
         return new RouteResponse(startLongitude, startLatitude, endLongitude, endLatitude, otherPointCount, midpointCount);
     }
 
-    public List<WaypointResponse> getMidpointsById(RouteDTO Id) {
+    public List<WaypointResponse> getMidpointsById(Long id) {
         List<WaypointResponse> midpointList = new ArrayList<WaypointResponse>();
-        midpointList.addAll(mapWaypointEntityToWaypointResponse(waypointRepository.findAllPointsByRouteIdAndType(Id.getRouteId(),WaypointType.MID)));
+        midpointList.addAll(mapWaypointEntityToWaypointResponse(waypointRepository.findAllPointsByRouteIdAndType(id,WaypointType.MID)));
         return midpointList;
     }
 
-    public List<WaypointResponse> getFullRouteById(RouteDTO Id) {
+    public List<WaypointResponse> getFullRouteById(Long id) {
         List<WaypointResponse> waypointList = new ArrayList<WaypointResponse>();
-        waypointList.addAll(mapWaypointEntityToWaypointResponse(waypointRepository.findAllPointsByRouteId(Id.getRouteId())));
+        waypointList.addAll(mapWaypointEntityToWaypointResponse(waypointRepository.findAllPointsByRouteId(id)));
         return waypointList;
     }
 

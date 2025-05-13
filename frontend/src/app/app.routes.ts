@@ -4,10 +4,13 @@ import {VerifyEmailComponent} from './components/verify-email/verify-email.compo
 import {LoginComponent} from './components/login/login.component';
 import {StandardLayoutComponent} from './layouts/standard-layout/standard-layout.component';
 import {HomeComponent} from './components/home/home.component';
+import {MapComponent} from './components/map/map.component';
 
 export const routes: Routes = [
   {path: "register", component: RegisterComponent},
   {path: "login", component: LoginComponent},
+  {path: "map", component: MapComponent},
+
   {
     path: "verify", children: [
       {path: "email", component: VerifyEmailComponent},

@@ -1,0 +1,6 @@
+#map {
+  height: 100vh;   /* 100% der Browserhöhe */
+  width: 100vw;    /* 100% der Browserbreite */
+  margin: 0;
+  padding: 0;
+}

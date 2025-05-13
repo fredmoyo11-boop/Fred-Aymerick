@@ -14,7 +14,7 @@ import lombok.Setter;
 @Schema(description = "Represents Route Metadata.")
 public class WaypointResponse {
     @Schema(description = "Index of Point", requiredMode = RequiredMode.REQUIRED)
-    private long index;
+    private Long index;
 
     @Schema(description = "Type of Point", requiredMode = RequiredMode.REQUIRED)
     private String type;

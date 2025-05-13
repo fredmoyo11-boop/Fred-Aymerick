@@ -37,7 +37,7 @@ public final class RouteImport {
 
             i++;
         }
-        WaypointEntity startEntity  = waypointRepository.findByRouteIdAndIndex(route.getId(),0).orElseThrow(() -> new NotFoundException(""));
+        WaypointEntity startEntity  = waypointRepository.findByRouteIdAndIndex(route.getId(),0L).orElseThrow(() -> new NotFoundException(""));
         WaypointEntity endEntity    = waypointRepository.findByRouteIdAndIndex(route.getId(),i-1).orElseThrow(() -> new NotFoundException(""));
         startEntity.setType(WaypointType.START);
         endEntity.setType(WaypointType.END);

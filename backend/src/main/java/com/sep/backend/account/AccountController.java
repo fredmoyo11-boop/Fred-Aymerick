@@ -43,8 +43,8 @@ public class AccountController {
                     @ApiResponse(responseCode = "200", description = "List of userprofile.",
                                  content = @Content( schema = @Schema(implementation = AccountDTO.class)))})
     @GetMapping("/search")
-    public ResponseEntity<List<AccountDTO>> searchUserProfiles(@RequestParam String part) {
-        return ResponseEntity.ok(accountService.userSearch(part));
+    public ResponseEntity<List<AccountDTO>> SearchUserProfiles(@RequestParam String part) {
+        return ResponseEntity.ok(accountService.SearchUser(part));
     }
 
     @Operation(summary = "Aktualisiert das Benutzerprofil", description = "Profildaten werden als multipart/form-data gesendet, wobei das JSON-Objekt unter 'data' und das optionale Bild unter 'file' übermittelt wird."

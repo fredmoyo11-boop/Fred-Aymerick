@@ -130,7 +130,7 @@ public class AccountService {
     }
 
     @Schema(description = "gibt eine Liste von users basierend auf suchbegriffe zurück ")
-    public List<AccountDTO> userSearch(String part) {
+    public List<AccountDTO> SearchUser(String part) {
         List<AccountDTO> accountDTOS = new ArrayList<>();
         List<DriverEntity> drivers = driverRepository.findByUsernameContainingIgnoreCase(part);
         List<CustomerEntity> customers = customerRepository.findByUsernameContainingIgnoreCase(part);

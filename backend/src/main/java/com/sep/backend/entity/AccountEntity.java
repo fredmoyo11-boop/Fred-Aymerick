@@ -22,7 +22,7 @@ public abstract class AccountEntity extends AbstractEntity {
     @Column(name = "email", unique = true, nullable = false)
     private String email;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "account_id")
     @NotNull
     private List<Rating> rating = new ArrayList<>();

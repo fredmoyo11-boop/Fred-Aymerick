@@ -10,6 +10,7 @@ import com.sep.backend.route.WaypointRepository;
 import com.sep.backend.route.WaypointType;
 import com.sep.backend.NotFoundException;
 import java.io.IOException;
+import java.lang.Math;
 
 public final class RouteImport {
 
@@ -48,15 +49,30 @@ public final class RouteImport {
 
         long k = 1L;
         while(true) {
-            String midLongitude = node.path("features/" + Long.toString(k) + "/geometry/coordinates/0").asText();
-            String midLatitude = node.path("features/" + Long.toString(k) + "/geometry/coordinates/1").asText();
-            if(k>=i-1) {
+            String midLongitudeString = node.path("features/" + Long.toString(k) + "/geometry/coordinates/0").asText();
+            String midLatitudeString = node.path("features/" + Long.toString(k) + "/geometry/coordinates/1").asText();
+            if(midLongitudeString.equals("") || midLatitudeString.equals("")) {
                 break;
             }
+            Double midLongitude = Double.valueOf(midLongitudeString);
+            Double midLatitude = Double.valueOf(midLatitudeString);
             long j = 1L;
+            long currentIndex = 0L;
+            double currentDistance = Double.MAX_VALUE;
             while (j < i - 1) {
-                
+                WaypointEntity we = waypointRepository.findByRouteIdAndIndex(route.getId(),j).orElseThrow(() -> new NotFoundException(""));
+                Double currentLongitude = Double.valueOf(we.getLongitude());
+                Double currentLatitude = Double.valueOf(we.getLatitude());
+                double distance = Math.sqrt((Math.pow((currentLongitude - midLongitude),2)) + (Math.pow((currentLatitude - midLatitude),2)));
+                if(distance < currentDistance) {
+                    currentDistance = distance;
+                    currentIndex = j;
+                }
             }
+            WaypointEntity we = waypointRepository.findByRouteIdAndIndex(route.getId(),currentIndex).orElseThrow(() -> new NotFoundException(""));
+            we.setType(WaypointType.MID);
+            waypointRepository.save(we);
+            k++;
         }
         return id;
     }

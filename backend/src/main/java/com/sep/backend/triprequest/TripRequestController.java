@@ -3,7 +3,7 @@ package com.sep.backend.triprequest;
 import com.sep.backend.HttpStatus;
 import com.sep.backend.Tags;
 import com.sep.backend.entity.TripRequestEntity;
-import com.sep.backend.triprequest.nominatim.LocationDTO;
+import com.sep.backend.triprequest.nominatim.data.LocationDTO;
 import com.sep.backend.triprequest.nominatim.NominatimService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

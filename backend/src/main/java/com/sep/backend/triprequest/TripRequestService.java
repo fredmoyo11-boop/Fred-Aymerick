@@ -3,11 +3,10 @@ package com.sep.backend.triprequest;
 import com.sep.backend.ErrorMessages;
 import com.sep.backend.NotFoundException;
 import com.sep.backend.entity.TripRequestEntity;
-import com.sep.backend.triprequest.nominatim.LocationDTO;
+import com.sep.backend.triprequest.nominatim.data.LocationDTO;
 import com.sep.backend.triprequest.nominatim.LocationEntity;
 import com.sep.backend.triprequest.nominatim.LocationRepository;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
@@ -70,7 +69,6 @@ public class TripRequestService {
         tripRequestRepository.delete(tripRequestEntity);
     }
 
-    //TODO Change to create and delete function, not upsert
     public void createTripRequest(@Valid TripRequestDTO tripRequestDTO) {
         String email = tripRequestDTO.getEmail();
         if (!CarType.isValidCarType(tripRequestDTO.getCarType())) {

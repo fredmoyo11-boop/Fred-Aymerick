@@ -1,5 +1,6 @@
-package com.sep.backend.triprequest.nominatim;
+package com.sep.backend.triprequest.nominatim.data;
 
+import com.sep.backend.triprequest.nominatim.LocationEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;

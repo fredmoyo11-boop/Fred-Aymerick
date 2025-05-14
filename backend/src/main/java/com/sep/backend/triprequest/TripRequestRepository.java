@@ -1,6 +1,8 @@
 package com.sep.backend.triprequest;
 
 import com.sep.backend.entity.TripRequestEntity;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -11,8 +13,8 @@ public interface TripRequestRepository extends JpaRepository<TripRequestEntity, 
 
     Optional<TripRequestEntity> findById(Long id);
 
-    Optional<TripRequestEntity> findByCustomer_Username(String username);
+    Optional<TripRequestEntity> findByCustomer_Email(String email);
 
-    boolean existsByCustomer_Username(String username);
+    boolean existsByCustomer_EmailAndRequestStatus(String email, String status);
 
 }

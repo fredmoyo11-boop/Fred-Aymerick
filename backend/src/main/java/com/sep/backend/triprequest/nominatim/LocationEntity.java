@@ -3,6 +3,7 @@ package com.sep.backend.triprequest.nominatim;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sep.backend.entity.AbstractEntity;
+import com.sep.backend.triprequest.nominatim.data.LocationDTO;
 import jakarta.persistence.Entity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -7,7 +7,7 @@ import com.sep.backend.triprequest.CarType;
 import com.sep.backend.triprequest.TripRequestDTO;
 import com.sep.backend.triprequest.TripRequestService;
 import com.sep.backend.triprequest.TripRequestStatus;
-import com.sep.backend.triprequest.nominatim.LocationDTO;
+import com.sep.backend.triprequest.nominatim.data.LocationDTO;
 import com.sep.backend.triprequest.nominatim.LocationEntity;
 import com.sep.backend.triprequest.nominatim.LocationRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -66,17 +66,17 @@ class TripRequestTest {
     @Test
     void testCreateTripRequest_createNewTripRequest() {
         TripRequestDTO dto = new TripRequestDTO();
-        dto.setUsername("john_doe");
-        dto.setCarType(CarType.LARGE);
+        dto.setEmail("johndoe@mail.com");
+        dto.setCarType(CarType.SMALL);
         dto.setNote("test note");
         dto.setStartLocation(new LocationDTO("Start", 52.5, 13.4));
         dto.setEndLocation(new LocationDTO("End", 55.6, 11.7));
 
         tripRequestService.createTripRequest(dto);
 
-        TripRequestEntity request = tripRequestService.getRequestByUsername("john_doe");
+        TripRequestEntity request = tripRequestService.getRequestByEmail("johndoe@mail.com");
         assertEquals("john_doe", request.getCustomer().getUsername());
-        assertEquals(CarType.LARGE, request.getCartype());
+        assertEquals(CarType.SMALL, request.getCartype());
         assertEquals("test note", request.getNote());
         assertEquals("Start", request.getStartLocation().getDisplayName());
         assertEquals("End", request.getEndLocation().getDisplayName());

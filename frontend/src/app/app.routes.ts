@@ -19,6 +19,8 @@ export const routes: Routes = [
     path: "", component: StandardLayoutComponent, children: [
       {path: "", component: HomeComponent},
       {path: "fahranfrage", component: FahranfrageErstellenComponent},
+      {path: "aktiveFahranfrage", component: AktiveFahranfrageComponent},
+
     ]
   },
   {path: "**", redirectTo: ""}

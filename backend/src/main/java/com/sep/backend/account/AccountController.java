@@ -4,6 +4,7 @@ import com.sep.backend.HttpStatus;
 import com.sep.backend.StringResponse;
 import com.sep.backend.Tags;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -41,7 +42,7 @@ public class AccountController {
             tags = {Tags.ACCOUNT},
             responses = {
                     @ApiResponse(responseCode = "200", description = "List of userprofile.",
-                                 content = @Content( schema = @Schema(implementation = AccountDTO.class)))})
+                                 content = @Content(array = @ArraySchema(schema = @Schema(implementation = AccountDTO.class)) ))})
     @GetMapping("/search")
     public ResponseEntity<List<AccountDTO>> SearchUserProfiles(@RequestParam String part) {
         return ResponseEntity.ok(accountService.SearchUser(part));

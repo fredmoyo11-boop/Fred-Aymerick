@@ -28,48 +28,47 @@ class AccountServiceTest {
     @Autowired
     private CustomerRepository customerRepository;
 
-@BeforeEach
-void setUp() {
-    CustomerEntity customer = new CustomerEntity();
-    customer.setUsername("test");
-    customer.setEmail("test@example.com");
-    customer.setPassword("PASSWORD");
-    customer.setFirstName("Fred");
-    customer.setLastName("hello");
-    customer.setBirthday("1999-01-01");
-    customer.setVerified(true);
+    @BeforeEach
+    void setUp() {
+        CustomerEntity customer = new CustomerEntity();
+        customer.setUsername("test");
+        customer.setEmail("test@example.com");
+        customer.setPassword("PASSWORD");
+        customer.setFirstName("Fred");
+        customer.setLastName("hello");
+        customer.setBirthday("1999-01-01");
+        customer.setVerified(true);
 
 
-    customerRepository.save(customer);
+        customerRepository.save(customer);
 
 
+        DriverEntity driver = new DriverEntity();
+        driver.setUsername("hii");
+        driver.setEmail("ok@example.com");
+        driver.setBirthday("1999-01-01");
+        driver.setPassword("password");
+        driver.setFirstName("Fred");
+        driver.setLastName("hello");
+        driver.setVerified(true);
+        driver.setCarType("MEDIUM");
+        driver.setTotalNumberOfRides(5);
 
-    DriverEntity driver = new DriverEntity();
-    driver.setUsername("hii");
-    driver.setEmail("ok@example.com");
-    driver.setBirthday("1999-01-01");
-    driver.setPassword("password");
-    driver.setFirstName("Fred");
-    driver.setLastName("hello");
-    driver.setVerified(true);
-    driver.setCarType("MEDIUM");
-    driver.setTotalNumberOfRides(5);
-
-    driverRepository.save(driver);
+        driverRepository.save(driver);
 
 
-}
+    }
 
-@AfterEach
-void tearDown() {
-    customerRepository.deleteAll();
-    driverRepository.deleteAll();
-}
+    @AfterEach
+    void tearDown() {
+        customerRepository.deleteAll();
+        driverRepository.deleteAll();
+    }
 
     @Test
     void shouldSaveAccount() {
 
-        List< AccountDTO> driverList = accountService.SearchUser("hi");
+        List<AccountDTO> driverList = accountService.SearchUser("hi");
         AccountDTO driver = driverList.getFirst();
 
         assertEquals("hii", driver.getUsername());
@@ -102,7 +101,7 @@ void tearDown() {
     @Test
     void searchUser() {
 
-        List< AccountDTO> driverList = accountService.SearchUser("h");
+        List<AccountDTO> driverList = accountService.SearchUser("h");
         AccountDTO driver = driverList.getFirst();
         assertEquals("hii", driver.getUsername());
         assertEquals("ok@example.com", driver.getEmail());
@@ -161,13 +160,13 @@ void tearDown() {
 
     // Ausgabe bei leerem String testen
     @Test
-    void UserSearchTest(){
-       List<AccountDTO> result= accountService.SearchUser("");
-       assertEquals(2,result.size());
-       assertEquals("test",result.get(0).getUsername());
-       assertEquals("hii",result.get(1).getUsername());
-       assertEquals("CUSTOMER",result.get(0).getRole());
-       assertEquals("DRIVER",result.get(1).getRole());
+    void UserSearchTest() {
+        List<AccountDTO> result = accountService.SearchUser("");
+        assertEquals(2, result.size());
+        assertEquals("test", result.get(0).getUsername());
+        assertEquals("hii", result.get(1).getUsername());
+        assertEquals("CUSTOMER", result.get(0).getRole());
+        assertEquals("DRIVER", result.get(1).getRole());
     }
 
 

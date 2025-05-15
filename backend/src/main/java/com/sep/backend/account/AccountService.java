@@ -300,6 +300,7 @@ public class AccountService {
             account.setFirstName(data.getFirstName());
             account.setLastName(data.getLastName());
             account.setBirthday(data.getBirthday());
+            account.setTotalNumberOfRides(0);
             account.setVerified(false);
             account.setProfilePictureUrl(profilePictureUrl);
             return account;

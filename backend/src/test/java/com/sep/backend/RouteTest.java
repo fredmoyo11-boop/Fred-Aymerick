@@ -11,6 +11,9 @@ import com.sep.backend.route.response.*;
 import com.sep.backend.route.jsonimporter.*;
 import com.sep.backend.route.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -30,8 +33,7 @@ public class RouteTest {
     @Test
     public void databaseReadTest() {
         RouteEntity routeEntity = routeRepository.save(new RouteEntity());
-        //routeRepository.flush();
-        //routeEntity = routeRepository.findById(routeEntity.getId()).orElse(null);
+
         WaypointEntity waypointEntity = new WaypointEntity();
         waypointEntity.setRouteId(routeEntity.getId());
         waypointEntity.setIndex(0L);
@@ -50,12 +52,13 @@ public class RouteTest {
         assertEquals(LatTest, waypointEntity.getLatitude());
         assertEquals(TypeTest, waypointEntity.getType());
         assertEquals(indexTest, waypointEntity.getIndex());
-        assertEquals(idTest, waypointEntity.getId());
+        assertEquals(idTest, waypointEntity.getRouteId());
     }
 
     @Test
     public void serviceMetadataTest() {
         RouteEntity routeEntity = routeRepository.save(new RouteEntity());
+
         WaypointEntity waypointEntity1 = new WaypointEntity();
         waypointEntity1.setRouteId(routeEntity.getId());
         waypointEntity1.setIndex(0L);
@@ -97,11 +100,229 @@ public class RouteTest {
         waypointRepository.save(waypointEntity5);
 
         RouteResponse routeResponse = routeService.getRouteById(routeEntity.getId());
+
         assertEquals(waypointEntity1.getLongitude(), routeResponse.getStartLongitude());
         assertEquals(waypointEntity1.getLatitude(), routeResponse.getStartLatitude());
         assertEquals(waypointEntity5.getLongitude(), routeResponse.getEndLongitude());
         assertEquals(waypointEntity5.getLatitude(), routeResponse.getEndLatitude());
         assertEquals(2L, routeResponse.getOtherPointCount());
         assertEquals(1L, routeResponse.getMidpointCount());
+    }
+
+    @Test
+    public void serviceAllMidpointsTest() {
+        RouteEntity routeEntity = routeRepository.save(new RouteEntity());
+
+        WaypointEntity waypointEntity1 = new WaypointEntity();
+        waypointEntity1.setRouteId(routeEntity.getId());
+        waypointEntity1.setIndex(0L);
+        waypointEntity1.setLongitude("5.3267886273");
+        waypointEntity1.setLatitude("1.886273");
+        waypointEntity1.setType(WaypointType.START);
+        waypointRepository.save(waypointEntity1);
+
+        WaypointEntity waypointEntity2 = new WaypointEntity();
+        waypointEntity2.setRouteId(routeEntity.getId());
+        waypointEntity2.setIndex(1L);
+        waypointEntity2.setLongitude("6.3267886273");
+        waypointEntity2.setLatitude("2.886273");
+        waypointEntity2.setType(WaypointType.MID);
+        waypointRepository.save(waypointEntity2);
+
+        WaypointEntity waypointEntity3 = new WaypointEntity();
+        waypointEntity3.setRouteId(routeEntity.getId());
+        waypointEntity3.setIndex(2L);
+        waypointEntity3.setLongitude("7.3267886273");
+        waypointEntity3.setLatitude("3.886273");
+        waypointEntity3.setType(WaypointType.POINT);
+        waypointRepository.save(waypointEntity3);
+
+        WaypointEntity waypointEntity4 = new WaypointEntity();
+        waypointEntity4.setRouteId(routeEntity.getId());
+        waypointEntity4.setIndex(3L);
+        waypointEntity4.setLongitude("8.3267886273");
+        waypointEntity4.setLatitude("4.886273");
+        waypointEntity4.setType(WaypointType.MID);
+        waypointRepository.save(waypointEntity4);
+
+        WaypointEntity waypointEntity5 = new WaypointEntity();
+        waypointEntity5.setRouteId(routeEntity.getId());
+        waypointEntity5.setIndex(4L);
+        waypointEntity5.setLongitude("9.3267886273");
+        waypointEntity5.setLatitude("5.3267886273");
+        waypointEntity5.setType(WaypointType.END);
+        waypointRepository.save(waypointEntity5);
+
+        List<WaypointResponse> waypointResponses = routeService.getMidpointsById(routeEntity.getId());
+
+        assertEquals(2, waypointResponses.size());
+
+        assertEquals(waypointEntity2.getLongitude(), waypointResponses.get(0).getLongitude());
+        assertEquals(waypointEntity2.getLatitude(), waypointResponses.get(0).getLatitude());
+        assertEquals(WaypointType.MID, waypointResponses.get(0).getType());
+        assertEquals(waypointEntity2.getIndex(), waypointResponses.get(0).getIndex());
+
+        assertEquals(waypointEntity4.getLongitude(), waypointResponses.get(1).getLongitude());
+        assertEquals(waypointEntity4.getLatitude(), waypointResponses.get(1).getLatitude());
+        assertEquals(WaypointType.MID, waypointResponses.get(1).getType());
+        assertEquals(waypointEntity4.getIndex(), waypointResponses.get(1).getIndex());
+    }
+
+    @Test
+    public void serviceFullRouteTest() {
+        RouteEntity routeEntity = routeRepository.save(new RouteEntity());
+
+        WaypointEntity waypointEntity1 = new WaypointEntity();
+        waypointEntity1.setRouteId(routeEntity.getId());
+        waypointEntity1.setIndex(0L);
+        waypointEntity1.setLongitude("5.3267886273");
+        waypointEntity1.setLatitude("1.886273");
+        waypointEntity1.setType(WaypointType.START);
+        waypointRepository.save(waypointEntity1);
+
+        WaypointEntity waypointEntity2 = new WaypointEntity();
+        waypointEntity2.setRouteId(routeEntity.getId());
+        waypointEntity2.setIndex(1L);
+        waypointEntity2.setLongitude("6.3267886273");
+        waypointEntity2.setLatitude("2.886273");
+        waypointEntity2.setType(WaypointType.MID);
+        waypointRepository.save(waypointEntity2);
+
+        WaypointEntity waypointEntity3 = new WaypointEntity();
+        waypointEntity3.setRouteId(routeEntity.getId());
+        waypointEntity3.setIndex(2L);
+        waypointEntity3.setLongitude("7.3267886273");
+        waypointEntity3.setLatitude("3.886273");
+        waypointEntity3.setType(WaypointType.POINT);
+        waypointRepository.save(waypointEntity3);
+
+        WaypointEntity waypointEntity4 = new WaypointEntity();
+        waypointEntity4.setRouteId(routeEntity.getId());
+        waypointEntity4.setIndex(3L);
+        waypointEntity4.setLongitude("8.3267886273");
+        waypointEntity4.setLatitude("4.886273");
+        waypointEntity4.setType(WaypointType.MID);
+        waypointRepository.save(waypointEntity4);
+
+        WaypointEntity waypointEntity5 = new WaypointEntity();
+        waypointEntity5.setRouteId(routeEntity.getId());
+        waypointEntity5.setIndex(4L);
+        waypointEntity5.setLongitude("9.3267886273");
+        waypointEntity5.setLatitude("5.3267886273");
+        waypointEntity5.setType(WaypointType.END);
+        waypointRepository.save(waypointEntity5);
+
+        List<WaypointResponse> waypointResponses = routeService.getFullRouteById(routeEntity.getId());
+
+        assertEquals(5, waypointResponses.size());
+
+        assertEquals(waypointEntity1.getLongitude(), waypointResponses.get(0).getLongitude());
+        assertEquals(waypointEntity1.getLatitude(), waypointResponses.get(0).getLatitude());
+        assertEquals(WaypointType.START, waypointResponses.get(0).getType());
+        assertEquals(waypointEntity1.getIndex(), waypointResponses.get(0).getIndex());
+
+        assertEquals(waypointEntity2.getLongitude(), waypointResponses.get(1).getLongitude());
+        assertEquals(waypointEntity2.getLatitude(), waypointResponses.get(1).getLatitude());
+        assertEquals(WaypointType.MID, waypointResponses.get(1).getType());
+        assertEquals(waypointEntity2.getIndex(), waypointResponses.get(1).getIndex());
+
+        assertEquals(waypointEntity3.getLongitude(), waypointResponses.get(2).getLongitude());
+        assertEquals(waypointEntity3.getLatitude(), waypointResponses.get(2).getLatitude());
+        assertEquals(WaypointType.POINT, waypointResponses.get(2).getType());
+        assertEquals(waypointEntity3.getIndex(), waypointResponses.get(2).getIndex());
+
+        assertEquals(waypointEntity4.getLongitude(), waypointResponses.get(3).getLongitude());
+        assertEquals(waypointEntity4.getLatitude(), waypointResponses.get(3).getLatitude());
+        assertEquals(WaypointType.MID, waypointResponses.get(3).getType());
+        assertEquals(waypointEntity4.getIndex(), waypointResponses.get(3).getIndex());
+
+        assertEquals(waypointEntity5.getLongitude(), waypointResponses.get(4).getLongitude());
+        assertEquals(waypointEntity5.getLatitude(), waypointResponses.get(4).getLatitude());
+        assertEquals(WaypointType.END, waypointResponses.get(4).getType());
+        assertEquals(waypointEntity5.getIndex(), waypointResponses.get(4).getIndex());
+
+        RouteEntity routeEntity2 = routeRepository.save(new RouteEntity());
+
+        WaypointEntity waypointEntity11 = new WaypointEntity();
+        waypointEntity11.setRouteId(routeEntity2.getId());
+        waypointEntity11.setIndex(0L);
+        waypointEntity11.setLongitude("5.3267886273");
+        waypointEntity11.setLatitude("1.886273");
+        waypointEntity11.setType(WaypointType.START);
+        waypointRepository.save(waypointEntity11);
+
+        WaypointEntity waypointEntity12 = new WaypointEntity();
+        waypointEntity12.setRouteId(routeEntity2.getId());
+        waypointEntity12.setIndex(1L);
+        waypointEntity12.setLongitude("6.3267886273");
+        waypointEntity12.setLatitude("2.886273");
+        waypointEntity12.setType(WaypointType.MID);
+        waypointRepository.save(waypointEntity12);
+
+        WaypointEntity waypointEntity13 = new WaypointEntity();
+        waypointEntity13.setRouteId(routeEntity2.getId());
+        waypointEntity13.setIndex(2L);
+        waypointEntity13.setLongitude("7.3267886273");
+        waypointEntity13.setLatitude("3.886273");
+        waypointEntity13.setType(WaypointType.POINT);
+        waypointRepository.save(waypointEntity13);
+
+        WaypointEntity waypointEntity14 = new WaypointEntity();
+        waypointEntity14.setRouteId(routeEntity2.getId());
+        waypointEntity14.setIndex(3L);
+        waypointEntity14.setLongitude("8.3267886273");
+        waypointEntity14.setLatitude("4.886273");
+        waypointEntity14.setType(WaypointType.MID);
+        waypointRepository.save(waypointEntity14);
+
+        WaypointEntity waypointEntity15 = new WaypointEntity();
+        waypointEntity15.setRouteId(routeEntity2.getId());
+        waypointEntity15.setIndex(4L);
+        waypointEntity15.setLongitude("9.3267886273");
+        waypointEntity15.setLatitude("5.886273");
+        waypointEntity15.setType(WaypointType.POINT);
+        waypointRepository.save(waypointEntity15);
+
+        WaypointEntity waypointEntity16 = new WaypointEntity();
+        waypointEntity16.setRouteId(routeEntity2.getId());
+        waypointEntity16.setIndex(5L);
+        waypointEntity16.setLongitude("10.3267886273");
+        waypointEntity16.setLatitude("6.3267886273");
+        waypointEntity16.setType(WaypointType.END);
+        waypointRepository.save(waypointEntity16);
+
+        List<WaypointResponse> waypointResponses2 = routeService.getFullRouteById(routeEntity2.getId());
+
+        assertEquals(6, waypointResponses2.size());
+
+        assertEquals(waypointEntity11.getLongitude(), waypointResponses2.get(0).getLongitude());
+        assertEquals(waypointEntity11.getLatitude(), waypointResponses2.get(0).getLatitude());
+        assertEquals(WaypointType.START, waypointResponses2.get(0).getType());
+        assertEquals(waypointEntity11.getIndex(), waypointResponses2.get(0).getIndex());
+
+        assertEquals(waypointEntity12.getLongitude(), waypointResponses2.get(1).getLongitude());
+        assertEquals(waypointEntity12.getLatitude(), waypointResponses2.get(1).getLatitude());
+        assertEquals(WaypointType.MID, waypointResponses2.get(1).getType());
+        assertEquals(waypointEntity12.getIndex(), waypointResponses2.get(1).getIndex());
+
+        assertEquals(waypointEntity13.getLongitude(), waypointResponses2.get(2).getLongitude());
+        assertEquals(waypointEntity13.getLatitude(), waypointResponses2.get(2).getLatitude());
+        assertEquals(WaypointType.POINT, waypointResponses2.get(2).getType());
+        assertEquals(waypointEntity13.getIndex(), waypointResponses2.get(2).getIndex());
+
+        assertEquals(waypointEntity14.getLongitude(), waypointResponses2.get(3).getLongitude());
+        assertEquals(waypointEntity14.getLatitude(), waypointResponses2.get(3).getLatitude());
+        assertEquals(WaypointType.MID, waypointResponses2.get(3).getType());
+        assertEquals(waypointEntity14.getIndex(), waypointResponses2.get(3).getIndex());
+
+        assertEquals(waypointEntity15.getLongitude(), waypointResponses2.get(4).getLongitude());
+        assertEquals(waypointEntity15.getLatitude(), waypointResponses2.get(4).getLatitude());
+        assertEquals(WaypointType.POINT, waypointResponses2.get(4).getType());
+        assertEquals(waypointEntity15.getIndex(), waypointResponses2.get(4).getIndex());
+
+        assertEquals(waypointEntity16.getLongitude(), waypointResponses2.get(5).getLongitude());
+        assertEquals(waypointEntity16.getLatitude(), waypointResponses2.get(5).getLatitude());
+        assertEquals(WaypointType.END, waypointResponses2.get(5).getType());
+        assertEquals(waypointEntity16.getIndex(), waypointResponses2.get(5).getIndex());
     }
 }

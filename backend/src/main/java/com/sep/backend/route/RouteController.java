@@ -4,8 +4,6 @@ import com.sep.backend.HttpStatus;
 import com.sep.backend.StringResponse;
 import com.sep.backend.route.response.RouteResponse;
 import com.sep.backend.route.response.WaypointResponse;
-import com.sep.backend.route.RouteRequest;
-import com.sep.backend.route.RouteService;
 import com.sep.backend.Tags;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -81,7 +79,8 @@ public class RouteController {
                             content = @Content(schema = @Schema(implementation = StringResponse.class)))},
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     content = @Content(
-                            mediaType = MediaType.MULTIPART_FORM_DATA_VALUE
+                            mediaType = MediaType.MULTIPART_FORM_DATA_VALUE,
+                            schema = @Schema(implementation = FileRequest.class)
                     )
             ))
     public StringResponse register(@Parameter(description = "geoJSON file") @RequestPart(value = "file") MultipartFile file) {

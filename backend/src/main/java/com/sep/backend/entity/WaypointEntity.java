@@ -22,7 +22,7 @@ import com.sep.backend.route.WaypointType;
 public class WaypointEntity extends AbstractEntity {
     @NotBlank
     @Column(name = "index", unique = false, nullable = false)
-    private long index;
+    private Long index;
 
     @NotBlank
     @Column(name = "longitude", nullable = false)
@@ -38,5 +38,5 @@ public class WaypointEntity extends AbstractEntity {
 
     @NotBlank
     @Column(name = "route_id", nullable = false, unique = true)
-    private long routeId;
+    private Long routeId;
 }

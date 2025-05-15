@@ -36,6 +36,6 @@ public class WaypointEntity extends AbstractEntity {
     @Column(name = "type", nullable = false)
     private String type;
 
-    @Column(name = "route_id", nullable = false, unique = true)
+    @Column(name = "route_id", nullable = false)
     private Long routeId;
 }

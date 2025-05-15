@@ -28,7 +28,7 @@ public final class RouteImport {
             String longitude = node.at("/features/0/geometry/coordinates/" + Long.toString(i) + "/0").asText();
             String latitude = node.at("/features/0/geometry/coordinates/" + Long.toString(i) + "/1").asText();
             if(longitude.equals("") || latitude.equals("")) {
-               break;
+                break;
             }
             WaypointEntity we = new WaypointEntity();
             we.setIndex(i);
@@ -47,11 +47,12 @@ public final class RouteImport {
         waypointRepository.save(startEntity);
         waypointRepository.save(endEntity);
 
-        long k = 1L;
+        long k = 2L;
+        long size = Long.valueOf(node.at("/features").size());
         while(true) {
             String midLongitudeString = node.at("/features/" + Long.toString(k) + "/geometry/coordinates/0").asText();
             String midLatitudeString = node.at("/features/" + Long.toString(k) + "/geometry/coordinates/1").asText();
-            if(midLongitudeString.equals("") || midLatitudeString.equals("")) {
+            if(k>=size-1) {
                 break;
             }
             Double midLongitude = Double.valueOf(midLongitudeString);

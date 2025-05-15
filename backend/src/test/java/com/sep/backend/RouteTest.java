@@ -3,6 +3,7 @@ package com.sep.backend;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 
 import com.sep.backend.entity.RouteEntity;
@@ -11,8 +12,12 @@ import com.sep.backend.route.response.*;
 import com.sep.backend.route.jsonimporter.*;
 import com.sep.backend.route.*;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Files;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -29,6 +34,8 @@ public class RouteTest {
 
     @Autowired
     private RouteService routeService;
+
+//    String basePath = "";
 
     @Test
     public void databaseReadTest() {
@@ -325,4 +332,44 @@ public class RouteTest {
         assertEquals(WaypointType.END, waypointResponses2.get(5).getType());
         assertEquals(waypointEntity16.getIndex(), waypointResponses2.get(5).getIndex());
     }
+
+//    @Test
+//    public void serviceImportGeojsonTest() throws IOException {
+//        String importResult = routeService.importGeoJson(new MockMultipartFile("file", basePath + "route_1_mhrrz_mhsm.json", "application/json", Files.readAllBytes(Path.of(basePath + "route_1_mhrrz_mhsm.json"))));
+//        assertNotEquals("Unsupported Content Type", importResult);
+//        assertNotEquals("failed to import route", importResult);
+//        assertNotEquals("", importResult);
+//    }
+//
+//    @Test
+//    public void importGeoJsonTest() throws IOException {
+//        String route1Id = RouteImport.importRoute(Files.readString(Path.of(basePath + "route_1_mhrrz_mhsm.json")),routeRepository,waypointRepository);
+//        String route2Id = RouteImport.importRoute(Files.readString(Path.of(basePath + "route_2_unie_mhhrw_unidu.json")),routeRepository,waypointRepository);
+//        String route3Id = RouteImport.importRoute(Files.readString(Path.of(basePath + "route_3_dhbf_duhbf_mhhbf_ehbf.json")),routeRepository,waypointRepository);
+//        String route4Id = RouteImport.importRoute(Files.readString(Path.of(basePath + "route_4_mhhei.json")),routeRepository,waypointRepository);
+//        String route5Id = RouteImport.importRoute(Files.readString(Path.of(basePath + "route_5_mhhei_no_midpoint.json")),routeRepository,waypointRepository);
+//
+//        assertEquals(WaypointType.START, waypointRepository.findByRouteIdAndIndex(Long.valueOf(route2Id),0L).orElseThrow().getType());
+//        assertEquals(WaypointType.POINT, waypointRepository.findByRouteIdAndIndex(Long.valueOf(route2Id),1L).orElseThrow().getType());
+//        assertEquals(WaypointType.POINT, waypointRepository.findByRouteIdAndIndex(Long.valueOf(route2Id),431L).orElseThrow().getType());
+//        assertEquals(WaypointType.END, waypointRepository.findByRouteIdAndIndex(Long.valueOf(route2Id),432L).orElseThrow().getType());
+//        assertEquals(1L, waypointRepository.countByRouteIdAndType(Long.valueOf(route2Id), WaypointType.MID));
+//
+//        assertEquals(2, waypointRepository.countByRouteIdAndType(Long.valueOf(route3Id), WaypointType.MID));
+//        assertEquals("6.793248", waypointRepository.findByRouteIdAndIndex(Long.valueOf(route3Id),0L).orElseThrow().getLongitude());
+//        assertEquals("51.221014", waypointRepository.findByRouteIdAndIndex(Long.valueOf(route3Id),0L).orElseThrow().getLatitude());
+//        assertEquals("7.0131", waypointRepository.findByRouteIdAndIndex(Long.valueOf(route3Id),771L).orElseThrow().getLongitude());
+//        assertEquals("51.450727", waypointRepository.findByRouteIdAndIndex(Long.valueOf(route3Id),771L).orElseThrow().getLatitude());
+//        assertEquals(2L, routeService.getRouteById(Long.valueOf(route3Id)).getMidpointCount());
+//
+//        assertEquals("6.924997", waypointRepository.findByRouteIdAndIndex(Long.valueOf(route4Id),2L).orElseThrow().getLongitude());
+//        assertEquals("51.433167", waypointRepository.findByRouteIdAndIndex(Long.valueOf(route4Id),2L).orElseThrow().getLatitude());
+//        assertEquals(WaypointType.MID, waypointRepository.findByRouteIdAndIndex(Long.valueOf(route4Id),1L).orElseThrow().getType());
+//
+//        assertEquals(1L, waypointRepository.countByRouteIdAndType(Long.valueOf(route5Id),WaypointType.START));
+//        assertEquals(1L, waypointRepository.countByRouteIdAndType(Long.valueOf(route5Id),WaypointType.POINT));
+//        assertEquals(1L, waypointRepository.countByRouteIdAndType(Long.valueOf(route5Id),WaypointType.END));
+//        assertEquals(WaypointType.START, waypointRepository.findByRouteIdAndIndex(Long.valueOf(route5Id),0L).orElseThrow().getType());
+//        assertEquals(0L, routeService.getRouteById(Long.valueOf(route5Id)).getMidpointCount());
+//    }
 }

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
-
+import jakarta.validation.constraints.NotNull;
 @Repository
 public interface DriverRepository extends JpaRepository<DriverEntity, Long> {
     Optional<DriverEntity> findByEmail(@Email @NotBlank String email);
@@ -20,5 +20,5 @@ public interface DriverRepository extends JpaRepository<DriverEntity, Long> {
 
     boolean existsByUsername(@NotBlank String username);
 
-    List<DriverEntity> findByUsernameContainingIgnoreCase(@NotBlank String part);
+    List<DriverEntity> findByUsernameContainingIgnoreCase(@NotNull String part);
 }

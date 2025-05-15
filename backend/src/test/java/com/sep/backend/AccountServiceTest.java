@@ -160,6 +160,17 @@ void tearDown() {
     }
 
     @Test
+    void UserSearchTest(){
+       List<AccountDTO> result= accountService.SearchUser("");
+       assertEquals(2,result.size());
+       assertEquals("test",result.get(0).getUsername());
+       assertEquals("hii",result.get(1).getUsername());
+       assertEquals("CUSTOMER",result.get(0).getRole());
+       assertEquals("DRIVER",result.get(1).getRole());
+    }
+
+
+    @Test
     void saveAccountChanges() {
     }
 }

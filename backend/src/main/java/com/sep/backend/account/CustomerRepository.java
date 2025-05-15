@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,5 +19,5 @@ public interface CustomerRepository extends JpaRepository<CustomerEntity, Long> 
 
     boolean existsByUsername(@NotBlank String username);
 
-    List<CustomerEntity> findByUsernameContainingIgnoreCase(String part);
+    List<CustomerEntity> findByUsernameContainingIgnoreCase(@NotNull String part);
 }

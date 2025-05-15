@@ -3,7 +3,7 @@ package com.sep.backend.account;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
-@Data
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -11,6 +11,7 @@ import lombok.*;
 
 @Schema(description = "Represents the data of an account that can be updated.")
 public class UpdateAccountDTO {
+
     @Schema(description = "Benutzername des Accounts", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private String username;
 

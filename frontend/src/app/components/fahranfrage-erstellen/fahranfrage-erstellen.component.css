@@ -37,3 +37,20 @@
   border-radius: 10px;
   align-items: center;
 }
+.bem-field{
+  width: 500px;
+}
+.banner {
+  background-image: url('/assets/banner_pic.jpg');
+  background-size: cover;
+  background-color: deepskyblue;
+  background-position: center;
+  min-height: 200px;
+  height: 30vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: black;
+  text-align: center;
+  padding: 1rem;
+}

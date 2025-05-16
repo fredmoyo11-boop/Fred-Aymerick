@@ -4,7 +4,7 @@ import {MatIcon} from '@angular/material/icon';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatDatepicker, MatDatepickerInput, MatDatepickerToggle} from '@angular/material/datepicker';
-import {provideNativeDateAdapter} from '@angular/material/core';
+import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, provideNativeDateAdapter} from '@angular/material/core';
 import {
   AbstractControl,
   FormControl,
@@ -19,6 +19,20 @@ import {formatDate, NgClass, NgOptimizedImage} from '@angular/common';
 import {MatDivider} from '@angular/material/list';
 import {RouterLink} from '@angular/router';
 import {AuthService} from '../../../api/sep_drive';
+import {MomentDateAdapter} from '@angular/material-moment-adapter';
+import {HttpErrorResponse} from '@angular/common/http';
+
+export const MY_DATE_FORMATS = {
+  parse: {
+    dateInput: 'DD.MM.YYYY',
+  },
+  display: {
+    dateInput: 'DD.MM.YYYY',
+    monthYearLabel: 'MMMM YYYY',
+    dateA11yLabel: 'LL',
+    monthYearA11yLabel: 'MMMM YYYY',
+  },
+}
 
 @Component({
   selector: 'app-register-edit',
@@ -37,14 +51,18 @@ import {AuthService} from '../../../api/sep_drive';
     RouterLink,
     MatIconButton
   ],
-  providers: [provideNativeDateAdapter()],
+  providers: [{provide: MAT_DATE_LOCALE, useValue: 'de'},
+    {provide: DateAdapter, useClass: MomentDateAdapter},
+    {provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS},],
   templateUrl: './register.component.html',
   styleUrl: './register.component.css'
 })
 export class RegisterComponent {
   authService = inject(AuthService)
 
-  requestSentSuccess: boolean = false;
+  registerRequestSuccess: boolean = false;
+  registerRequestError = false
+  requestErrorMessage = ""
 
   registerForm = new FormGroup({
     role: new FormControl('', [Validators.required]),
@@ -101,11 +119,17 @@ export class RegisterComponent {
     this.authService.register(registerDTO, this.selectedFile || undefined).subscribe({
       next: success => {
         console.log(success)
-        this.requestSentSuccess = true;
+        this.registerRequestSuccess = true;
+        this.registerRequestError = false
       },
-      error: error => {
-        // handle error
-        console.error(error)
+      error: err => {
+        this.registerRequestError = true;
+        console.log("Err", err)
+        if (err instanceof HttpErrorResponse && err.status === 401) {
+          this.requestErrorMessage = err.error.message
+        } else {
+          this.requestErrorMessage = "Unbekannter Fehler beim Registrieren. Bitte versuche es später erneut."
+        }
       }
     })
   }

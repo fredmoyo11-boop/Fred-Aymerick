@@ -6,8 +6,9 @@ import {MatIcon} from '@angular/material/icon';
 import {Router, RouterLink} from '@angular/router';
 import {MatDivider} from '@angular/material/list';
 import {AuthService, LoginRequest, OtpRequest} from '../../../api/sep_drive';
-import {of} from 'rxjs';
+import {catchError, of} from 'rxjs';
 import {AngularAuthService} from '../../services/angular-auth.service';
+import {HttpErrorResponse} from '@angular/common/http';
 
 @Component({
   selector: 'app-login',
@@ -40,7 +41,10 @@ export class LoginComponent {
     password: new FormControl("", [Validators.required, Validators.minLength(1)])
   })
 
-  sentLoginRequest: boolean = false;
+  loginRequestSent: boolean = false;
+  loginRequestError: boolean = false;
+  loginRequestErrorMessage: string = "";
+
 
   @ViewChildren("otpInput") inputs!: QueryList<ElementRef>
 
@@ -66,11 +70,16 @@ export class LoginComponent {
 
     this.authService.login(authRequest).subscribe({
       next: res => {
-        console.log(res);
-        this.sentLoginRequest = true;
+        this.loginRequestSent = true;
+        this.loginRequestError = false;
       },
-      error: error => {
-        console.error(error);
+      error: err => {
+        this.loginRequestError = true;
+        if (err instanceof HttpErrorResponse && err.status === 401) {
+          this.loginRequestErrorMessage = err.error.message
+        } else {
+          this.loginRequestErrorMessage = "Unbekannter Fehler beim Login. Bitte versuche es später erneut.";
+        }
       }
     })
   }

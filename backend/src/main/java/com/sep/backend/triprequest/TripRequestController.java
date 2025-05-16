@@ -53,7 +53,7 @@ public class TripRequestController {
             responses = {
                 @ApiResponse(responseCode = HttpStatus.OK, description = "Trip request showed successfully",
                     content = @Content(schema = @Schema(implementation = TripRequestDTO.class)))})
-    public TripRequestDTO view(@Parameter(description = "Give email to find request")@RequestParam Principal principal) {
+    public TripRequestDTO view(@Parameter(description = "Uses principal to find request.") Principal principal) {
         return tripRequestService.showTripRequest(principal);
     }
 
@@ -63,7 +63,7 @@ public class TripRequestController {
             responses = {
                     @ApiResponse(responseCode = HttpStatus.OK, description = "Trip request deleted successfully.",
                             content = @Content(schema = @Schema(implementation = TripRequestEntity.class)))})
-    public void deleteRequest(@Parameter(description = "Give email to find request")@RequestParam Principal principal) {
+    public void deleteRequest(@Parameter(description = "Uses principal to find request.") Principal principal) {
         tripRequestService.deleteTripRequest(principal);
     }
 }

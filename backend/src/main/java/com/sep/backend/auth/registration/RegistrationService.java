@@ -63,7 +63,7 @@ public class RegistrationService {
         String profilePictureUrl = file != null ? profilePictureStorageService.save(file, username) : null;
 
         // hash password before saving
-        data.setPassword(passwordEncoder.encode(username));
+        data.setPassword(passwordEncoder.encode(data.getPassword()));
 
         accountService.createAccount(data, profilePictureUrl);
 

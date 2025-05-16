@@ -21,6 +21,7 @@ import {RouterLink} from '@angular/router';
 import {AuthService} from '../../../api/sep_drive';
 import {MomentDateAdapter} from '@angular/material-moment-adapter';
 import {HttpErrorResponse} from '@angular/common/http';
+import {MatSnackBar} from '@angular/material/snack-bar';
 
 export const MY_DATE_FORMATS = {
   parse: {
@@ -61,8 +62,9 @@ export class RegisterComponent {
   authService = inject(AuthService)
 
   registerRequestSuccess: boolean = false;
-  registerRequestError = false
-  requestErrorMessage = ""
+  registerRequestErrorMessage = ""
+
+  private _snackBar = inject(MatSnackBar)
 
   registerForm = new FormGroup({
     role: new FormControl('', [Validators.required]),
@@ -120,16 +122,26 @@ export class RegisterComponent {
       next: success => {
         console.log(success)
         this.registerRequestSuccess = true;
-        this.registerRequestError = false
       },
       error: err => {
-        this.registerRequestError = true;
         console.log("Err", err)
+        this.registerRequestErrorMessage = "";
         if (err instanceof HttpErrorResponse && err.status === 401) {
-          this.requestErrorMessage = err.error.message
-        } else {
-          this.requestErrorMessage = "Unbekannter Fehler beim Registrieren. Bitte versuche es später erneut."
+          const errorMessage = err.error.message;
+          if (errorMessage.includes("Email")) {
+            this.registerForm.get("email")!.setValue("")
+            this.registerForm.get("emailConfirmation")!.setValue("")
+            this.registerRequestErrorMessage = "Diese Email ist bereits vergeben."
+          } else if (errorMessage.includes("Username")) {
+            this.registerForm.get("username")!.setValue("")
+            this.registerRequestErrorMessage = "Dieser Benutzername ist bereits vergeben."
+          }
         }
+        if (!this.registerRequestErrorMessage) {
+          this.registerRequestErrorMessage = "Unbekannter Fehler beim Registrieren. Bitte versuche es später erneut."
+          this.registerForm.reset();
+        }
+        this._snackBar.open(this.registerRequestErrorMessage, "Okay")
       }
     })
   }

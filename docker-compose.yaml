@@ -38,6 +38,10 @@ services:
       - "80:80"
     volumes:
       - ./nginx:/etc/nginx/conf.d
+    develop:
+      watch:
+        - action: rebuild
+          path: ./frontend/src/app
     depends_on:
       - backend
 

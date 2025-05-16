@@ -1,0 +1,25 @@
+<div class="header">
+  <nav class="nav_buttons">
+    <button mat-raised-button color="primary" [routerLink]="'/fahranfrage'">Fahranfrage</button>
+    <button mat-raised-button color="accent" [routerLink]="'/aktiveFahranfrage'">Aktive Fahranfrage</button>
+  </nav>
+</div>
+<div class = "container">
+  <h2>Meine aktive Fahranfragen</h2>
+<div class="card" *ngIf="activeRide">
+  <mat-card appearance="outlined">
+    <mat-card-content>
+      <p><strong>Start:</strong>{{activeRide.startAddress}}</p>
+      <p><strong>Ziel:</strong>{{ activeRide.endAddress }}</p>
+      <p><strong>Fahrzeugklasse:</strong>{{activeRide.carType}}</p>
+      <div class="slide-btn">
+        <p><label><strong>Status</strong></label>
+          <mat-slide-toggle labelPosition="before" [(ngModel)] ="activeRide.status" > </mat-slide-toggle></p>
+      </div>
+    </mat-card-content>
+    <mat-card-actions align="end">
+      <button mat-button (click)="deleteRequest()">Löschen</button>
+    </mat-card-actions>
+  </mat-card>
+ </div>
+</div>

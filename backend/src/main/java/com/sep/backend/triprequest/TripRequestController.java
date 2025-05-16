@@ -7,6 +7,7 @@ import com.sep.backend.triprequest.nominatim.data.LocationDTO;
 import com.sep.backend.triprequest.nominatim.NominatimService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -31,7 +32,7 @@ public class TripRequestController {
             tags = {Tags.TRIP_REQUEST},
             responses = {
                 @ApiResponse(responseCode = HttpStatus.OK, description = "Suggested list successful send",
-                    content = @Content(schema = @Schema(implementation = LocationDTO.class)))})
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = TripRequestDTO.class))))})
     public List<LocationDTO> suggestions(@Parameter(description = "Searched Location") @RequestParam String search) throws Exception {
         return nominatimService.getSuggestions(search);
     }
@@ -47,7 +48,7 @@ public class TripRequestController {
 
     }
 
-    @PostMapping("/request/view")
+    @GetMapping("/request/view")
     @Operation(description = "Shows trip request of customer",
             tags = {Tags.TRIP_REQUEST},
             responses = {

@@ -360,7 +360,7 @@ public class AccountService {
 
     }
 
-    private void updateDriver(String email, UpdateAccountDTO updateAccountDTO, MultipartFile file) {
+    public void updateDriver(String email, UpdateAccountDTO updateAccountDTO, MultipartFile file) {
         try {
             DriverEntity driverEntity = driverRepository.findByEmail(email)
                     .orElseThrow(() -> new NotFoundException(ErrorMessages.NOT_FOUND_USER));

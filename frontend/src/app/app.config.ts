@@ -6,14 +6,14 @@ import {provideHttpClient, withInterceptors} from '@angular/common/http';
 import {MAT_DATE_LOCALE} from '@angular/material/core';
 import {registerLocaleData} from '@angular/common';
 import localeDe from "@angular/common/locales/de"
-import {AccountService, AuthService} from '../api/sep_drive';
+import {AccountService, AuthService,RouteService } from '../api/sep_drive';
 import {authInterceptor} from './interceptors/auth-interceptor';
 
 
 registerLocaleData(localeDe);
 
 export const appConfig: ApplicationConfig = {
-  providers: [provideZoneChangeDetection({eventCoalescing: true}), provideRouter(routes), AuthService, AccountService, provideHttpClient(withInterceptors([authInterceptor])), {
+  providers: [provideZoneChangeDetection({eventCoalescing: true}), provideRouter(routes), AuthService, AccountService,RouteService, provideHttpClient(withInterceptors([authInterceptor])), {
     provide: MAT_DATE_LOCALE,
     useValue: "de"
   }, {provide: LOCALE_ID, useValue: "de"}]

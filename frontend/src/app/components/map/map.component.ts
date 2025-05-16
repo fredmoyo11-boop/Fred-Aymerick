@@ -1,7 +1,8 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, inject, Input, OnInit} from '@angular/core';
 import * as L from 'leaflet';
 import 'leaflet-routing-machine';
-import { HttpClient } from '@angular/common/http';
+import {RouteService} from '../../../api/sep_drive';
+
 
 
 
@@ -12,48 +13,44 @@ import { HttpClient } from '@angular/common/http';
   styleUrl: './map.component.css'
 })
 export class MapComponent implements OnInit {
+  routeService = inject(RouteService)
+
   map: any;
   startLan!: number;
   startLon!: number;
   endLan!: number;
   endLon!: number;
-  viaPoints: Array<{ lat: number; lng: number }> = [];
+  viaPoints: Array<{ lan: number; lon: number }> = [];
 
 
-   constructor(private http: HttpClient) {}
+
 
   ngOnInit(): void {
   this.getRouteDataFromBackend();
 }
 
 private getRouteDataFromBackend(): void {
-  this.http.get<any>('http://localhost:8080/api/route')
-    .subscribe(data => {
-      this.startLan = data.startLan;
-      this.startLon = data.startLon;
-      this.endLan = data.endLan;
-      this.endLon = data.endLon;
-      this.viaPoints = data.viaPoints || [];
+
+  this.routeService.getFullRoute(1).subscribe(data => {
+    if (data.length >= 2) {
+      const start = data[0];
+      const end = data[data.length - 1];
+      const midpoints = data.slice(1, -1);
+
+      this.startLan = parseFloat(start.latitude);
+      this.startLon = parseFloat(start.longitude);
+      this.endLan = parseFloat(end.latitude);
+      this.endLon = parseFloat(end.longitude);
+      this.viaPoints = midpoints.map(p => ({
+        lan: parseFloat(p.latitude),
+        lon: parseFloat(p.longitude)
+      }));
+
       this.initMap();
-    });
+    }
+  });
 }
 
-  /*viaPoints: Array<{ lat: number, lng: number }> = [
-    { lat: 51.4800, lng: 7.2000 },
-    { lat: 51.4900, lng: 7.3000 }
-  ];
-
-  map: any;
-  @Input() startLan!: number;
-  @Input() startLon!: number;
-  @Input() endLan!: number;
-  @Input() endLon!: number;*/
-
-
-
-  // ngOnInit(): void {
-  //   this.initMap();
-  // }
 
 
 
@@ -104,14 +101,14 @@ private getRouteDataFromBackend(): void {
     endMarker.bindPopup('Endpunkt');
 
     this.viaPoints.forEach((point, index) => {
-      const marker = L.marker([point.lat, point.lng], { icon: orangeIcon }).addTo(this.map);
+      const marker = L.marker([point.lan, point.lon], { icon: orangeIcon }).addTo(this.map);
       marker.bindPopup(`Zwischenstopp ${index + 1}`);
     });
 
     (L as any ).Routing.control({
       waypoints: [
         L.latLng(this.startLan, this.startLon),
-        ...this.viaPoints.map(p => L.latLng(p.lat, p.lng)),
+        ...this.viaPoints.map(p => L.latLng(p.lan, p.lon)),
         L.latLng(this.endLan, this.endLon)
       ],
       routeWhileDragging: false,

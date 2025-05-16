@@ -24,13 +24,18 @@ public class ErrorMessages {
 
     public static final String NOT_FOUND_OTP = "OTP not found.";
 
+    public static final String NOT_FOUND_REQUEST = "Request not found.";
+
 
     public static final String ALREADY_EXISTS_USERNAME = "Username already exists.";
 
     public static final String ALREADY_EXISTS_EMAIL = "Email already exists.";
 
+    public static final String ALREADY_EXISTS_TRIPREQUEST = "Maximum number of trip requests reached.";
 
     public static final String EXPIRED_OTP = "OTP expired.";
+
+    public static final String INVALID_CAR_TYPE = "Invalid car type.";
 
     public ErrorMessages() {
         throw new UnsupportedOperationException("Cannot instantiate ErrorMessages.");

@@ -11,3 +11,6 @@ export interface TripRequestDTO {
   note?: string;
 
 }
+
+export class TripRequest {
+}

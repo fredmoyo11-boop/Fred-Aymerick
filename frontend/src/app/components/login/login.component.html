@@ -26,9 +26,6 @@
       </form>
       <button mat-flat-button (click)="onSubmit()" [disabled]="loginForm.invalid" class="submit-button">Anmelden
       </button>
-      @if (this.loginRequestError) {
-        <p>{{ this.loginRequestErrorMessage }}</p>
-      }
     } @else {
       <h1>OTP eingeben zum verifizieren: {{ this.loginForm.value.email }}</h1>
       <div class="otp-btn-container">

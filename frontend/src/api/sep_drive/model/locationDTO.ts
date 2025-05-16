@@ -12,7 +12,7 @@
 
 
 /**
- * The end location of the drive.
+ * DTO for Location
  */
 export interface LocationDTO { 
     /**

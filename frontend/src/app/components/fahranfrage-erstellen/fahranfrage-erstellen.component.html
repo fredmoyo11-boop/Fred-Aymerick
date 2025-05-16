@@ -22,7 +22,7 @@
                        class='form-control'
                        matInput
                        formControlName="startAddress"
-                       [value]="optionToString(this.fahranfrageForm.controls['startAddress'].value)"
+                       [value]="optionToString(fahranfrageForm.controls['startAddress'].value)"
                        [matAutocomplete]="auto_start">
                 <button matTooltip="Aktuelle Position suchen" type="button" mat-icon-button matSuffix
                         (click)="currentLocation()">
@@ -49,7 +49,7 @@
                        class='form-control'
                        matInput
                        formControlName="endAddress"
-                       [value]="optionToString(this.fahranfrageForm.controls['endAddress'].value)"
+                       [value]="optionToString(fahranfrageForm.controls['endAddress'].value)"
                        [matAutocomplete]="auto_ziel">
                 <mat-autocomplete #auto_ziel="matAutocomplete"  [displayWith]="optionToString">
                     @for (option of filteredEndAddressOptions| async ; track option) {

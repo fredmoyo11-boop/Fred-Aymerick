@@ -13,7 +13,7 @@
 
 import { Inject, Injectable, Optional }                      from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams,
-         HttpResponse, HttpEvent, HttpParameterCodec, HttpContext
+         HttpResponse, HttpEvent, HttpParameterCodec, HttpContext 
         }       from '@angular/common/http';
 import { CustomHttpParameterCodec }                          from '../encoder';
 import { Observable }                                        from 'rxjs';
@@ -92,13 +92,13 @@ export class TripRequestService {
 
     /**
      * Creates trip request and saves to repository
-     * @param tripRequestDTO
+     * @param tripRequestDTO 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public create(tripRequestDTO: TripRequestDTO, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*', context?: HttpContext}): Observable<TripRequestEntity>;
-    public create(tripRequestDTO: TripRequestDTO, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*', context?: HttpContext}): Observable<HttpResponse<TripRequestEntity>>;
-    public create(tripRequestDTO: TripRequestDTO, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*', context?: HttpContext}): Observable<HttpEvent<TripRequestEntity>>;
+    public create(tripRequestDTO: TripRequestDTO, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*', context?: HttpContext}): Observable<any>;
+    public create(tripRequestDTO: TripRequestDTO, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*', context?: HttpContext}): Observable<HttpResponse<any>>;
+    public create(tripRequestDTO: TripRequestDTO, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*', context?: HttpContext}): Observable<HttpEvent<any>>;
     public create(tripRequestDTO: TripRequestDTO, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*', context?: HttpContext}): Observable<any> {
         if (tripRequestDTO === null || tripRequestDTO === undefined) {
             throw new Error('Required parameter tripRequestDTO was null or undefined when calling create.');
@@ -151,7 +151,7 @@ export class TripRequestService {
             }
         }
 
-        return this.httpClient.post<TripRequestEntity>(`${this.configuration.basePath}/map/request/create`,
+        return this.httpClient.post<any>(`${this.configuration.basePath}/map/request/create`,
             tripRequestDTO,
             {
                 context: localVarHttpContext,
@@ -166,7 +166,7 @@ export class TripRequestService {
 
     /**
      * Deletes trip request from repository
-     * @param email Give email to find request
+     * @param email Uses principal to find request.
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
@@ -241,9 +241,9 @@ export class TripRequestService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public suggestions(search: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*', context?: HttpContext}): Observable<LocationDTO>;
-    public suggestions(search: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*', context?: HttpContext}): Observable<HttpResponse<LocationDTO>>;
-    public suggestions(search: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*', context?: HttpContext}): Observable<HttpEvent<LocationDTO>>;
+    public suggestions(search: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*', context?: HttpContext}): Observable<Array<LocationDTO>>;
+    public suggestions(search: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*', context?: HttpContext}): Observable<HttpResponse<Array<LocationDTO>>>;
+    public suggestions(search: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*', context?: HttpContext}): Observable<HttpEvent<Array<LocationDTO>>>;
     public suggestions(search: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*', context?: HttpContext}): Observable<any> {
         if (search === null || search === undefined) {
             throw new Error('Required parameter search was null or undefined when calling suggestions.');
@@ -293,7 +293,7 @@ export class TripRequestService {
             }
         }
 
-        return this.httpClient.post<LocationDTO[]>(`${this.configuration.basePath}/map/search`,
+        return this.httpClient.post<Array<LocationDTO>>(`${this.configuration.basePath}/map/search`,
             null,
             {
                 context: localVarHttpContext,
@@ -309,7 +309,7 @@ export class TripRequestService {
 
     /**
      * Shows trip request of customer
-     * @param email Give email to find request
+     * @param email Uses principal to find request.
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
@@ -365,8 +365,7 @@ export class TripRequestService {
             }
         }
 
-        return this.httpClient.post<TripRequestDTO>(`${this.configuration.basePath}/map/request/view`,
-            null,
+        return this.httpClient.get<TripRequestDTO>(`${this.configuration.basePath}/map/request/view`,
             {
                 context: localVarHttpContext,
                 params: localVarQueryParameters,

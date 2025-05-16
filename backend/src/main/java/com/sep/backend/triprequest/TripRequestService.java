@@ -57,16 +57,14 @@ public class TripRequestService {
         return TripRequestDTO.from(tripRequestEntity);
     }
 
-    public TripRequestDTO showTripRequest(Principal principal) throws NotFoundException {
-        String email = principal.getName();
+    public TripRequestDTO showTripRequest(String  email) throws NotFoundException {
 
         TripRequestEntity tripRequestEntity = getRequestByEmail(email, TripRequestStatus.ACTIVE);
         return convertTripRequestEntityToDTO(tripRequestEntity);
     }
 
     //deleteFromRepository -> when customer wants to delete request
-    public void deleteTripRequest(Principal principal) throws NotFoundException {
-        String email = principal.getName();
+    public void deleteTripRequest( String email) throws NotFoundException {
 
         TripRequestEntity tripRequestEntity = getRequestByEmail(email, TripRequestStatus.ACTIVE);
         if (Objects.equals(tripRequestEntity.getRequestStatus(), TripRequestStatus.INPROGRESS)) {

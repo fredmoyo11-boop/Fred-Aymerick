@@ -30,5 +30,9 @@ export interface TripRequestDTO {
      * Optional notes by customer
      */
     note?: string;
+    /**
+     * Shows current status. Either ACTIVE, INPROGRESS or COMPLETED
+     */
+    status?: string;
 }
 

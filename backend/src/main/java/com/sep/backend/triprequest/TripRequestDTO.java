@@ -34,6 +34,9 @@ public class TripRequestDTO {
     @Schema(description = "Optional notes by customer", requiredMode = RequiredMode.NOT_REQUIRED)
     private String note;
 
+    @Schema(description = "Shows current status. Either ACTIVE, INPROGRESS or COMPLETED")
+    private String status;
+
     public static TripRequestDTO from(TripRequestEntity tripRequestEntity) {
         var dto = new TripRequestDTO();
         dto.setEmail(tripRequestEntity.getCustomer().getUsername());
@@ -41,6 +44,7 @@ public class TripRequestDTO {
         dto.setEndLocation(LocationDTO.from(tripRequestEntity.getEndLocation()));
         dto.setCarType(tripRequestEntity.getCartype());
         dto.setNote(tripRequestEntity.getNote());
+        dto.setStatus(tripRequestEntity.getRequestStatus());
         return dto;
     }
 }

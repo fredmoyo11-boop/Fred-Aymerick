@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -52,8 +53,8 @@ public class TripRequestController {
             responses = {
                 @ApiResponse(responseCode = HttpStatus.OK, description = "Trip request showed successfully",
                     content = @Content(schema = @Schema(implementation = TripRequestDTO.class)))})
-    public TripRequestDTO view(@Parameter(description = "Give email to find request")@RequestParam String email) {
-        return tripRequestService.showTripRequest(email);
+    public TripRequestDTO view(@Parameter(description = "Give email to find request")@RequestParam Principal principal) {
+        return tripRequestService.showTripRequest(principal);
     }
 
     @DeleteMapping("/request/view/delete")
@@ -62,7 +63,7 @@ public class TripRequestController {
             responses = {
                     @ApiResponse(responseCode = HttpStatus.OK, description = "Trip request deleted successfully.",
                             content = @Content(schema = @Schema(implementation = TripRequestEntity.class)))})
-    public void deleteRequest(@Parameter(description = "Give email to find request")@RequestParam String email) {
-        tripRequestService.deleteTripRequest(email);
+    public void deleteRequest(@Parameter(description = "Give email to find request")@RequestParam Principal principal) {
+        tripRequestService.deleteTripRequest(principal);
     }
 }

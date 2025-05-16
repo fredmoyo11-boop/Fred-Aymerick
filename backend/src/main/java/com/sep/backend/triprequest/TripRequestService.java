@@ -9,6 +9,7 @@ import com.sep.backend.triprequest.nominatim.LocationRepository;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.util.Objects;
 
 @Service
@@ -30,6 +31,7 @@ public class TripRequestService {
     public LocationEntity getLocationById(Long id) throws NotFoundException {
         return locationRepository.findById(id).orElseThrow(() -> new NotFoundException(ErrorMessages.NOT_FOUND_REQUEST));
     }
+
     private boolean existsActiveTripRequest(String email) {
         return tripRequestRepository.existsByCustomer_EmailAndRequestStatus(email, TripRequestStatus.ACTIVE);
     }
@@ -55,13 +57,17 @@ public class TripRequestService {
         return TripRequestDTO.from(tripRequestEntity);
     }
 
-    public TripRequestDTO showTripRequest(String email) throws NotFoundException {
+    public TripRequestDTO showTripRequest(Principal principal) throws NotFoundException {
+        String email = principal.getName();
+
         TripRequestEntity tripRequestEntity = getRequestByEmail(email);
         return convertTripRequestEntityToDTO(tripRequestEntity);
     }
 
     //deleteFromRepository -> when customer wants to delete request
-    public void deleteTripRequest(String email) throws NotFoundException {
+    public void deleteTripRequest(Principal principal) throws NotFoundException {
+        String email = principal.getName();
+
         TripRequestEntity tripRequestEntity = getRequestByEmail(email);
         if (Objects.equals(tripRequestEntity.getRequestStatus(), TripRequestStatus.INPROGRESS)) {
             throw new RuntimeException("Cannot delete active request");
@@ -71,6 +77,7 @@ public class TripRequestService {
 
     public void createTripRequest(@Valid TripRequestDTO tripRequestDTO) {
         String email = tripRequestDTO.getEmail();
+
         if (!CarType.isValidCarType(tripRequestDTO.getCarType())) {
             throw new TripRequestException(ErrorMessages.INVALID_CAR_TYPE);
         }

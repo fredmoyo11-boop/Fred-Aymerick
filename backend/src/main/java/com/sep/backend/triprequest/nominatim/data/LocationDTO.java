@@ -12,6 +12,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Schema(description = "DTO for Location")
 public class LocationDTO {
     @NotBlank
     @Schema(description = "Display name of location")

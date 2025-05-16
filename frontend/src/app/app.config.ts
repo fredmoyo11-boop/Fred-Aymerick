@@ -7,7 +7,7 @@ import {MAT_DATE_LOCALE} from '@angular/material/core';
 import {registerLocaleData} from '@angular/common';
 import localeDe from "@angular/common/locales/de"
 import {AccountService, AuthService} from '../api/sep_drive';
-import {authInterceptor} from './interceptors/auth-interceptor';
+import {authInterceptor} from './interceptors/auth.interceptor';
 
 
 registerLocaleData(localeDe);

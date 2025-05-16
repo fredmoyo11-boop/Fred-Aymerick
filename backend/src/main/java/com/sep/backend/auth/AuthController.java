@@ -46,7 +46,9 @@ public class AuthController {
             tags = {Tags.AUTH},
             responses = {
                     @ApiResponse(responseCode = HttpStatus.OK, description = "Registration process started successfully.",
-                            content = @Content(schema = @Schema(implementation = StringResponse.class)))},
+                            content = @Content(schema = @Schema(implementation = StringResponse.class))),
+                    @ApiResponse(responseCode = HttpStatus.UNAUTHORIZED, description = "Username already exists."),
+                    @ApiResponse(responseCode = HttpStatus.UNAUTHORIZED, description = "Email already exists.")},
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     content = @Content(
                             mediaType = MediaType.MULTIPART_FORM_DATA_VALUE,
@@ -64,7 +66,8 @@ public class AuthController {
             responses = {
                     @ApiResponse(responseCode = HttpStatus.OK, description = "Login process started successfully.",
                             content = @Content(schema = @Schema(implementation = StringResponse.class))),
-                    @ApiResponse(responseCode = HttpStatus.NOT_FOUND, description = "Customer or driver does not exist.")})
+                    @ApiResponse(responseCode = HttpStatus.NOT_FOUND, description = "Customer or driver does not exist."),
+                    @ApiResponse(responseCode = HttpStatus.UNAUTHORIZED, description = "Invalid credentials.")})
     public StringResponse login(@RequestBody @Valid LoginRequest loginRequest) {
         return new StringResponse(loginService.login(loginRequest));
     }

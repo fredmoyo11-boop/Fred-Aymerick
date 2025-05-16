@@ -1,6 +1,6 @@
 <div class="container">
   <div class="content">
-    @if (requestSentSuccess) {
+    @if (registerRequestSuccess) {
       <h1>Verification email sent</h1>
     } @else {
       <div class="login-container">
@@ -96,7 +96,11 @@
           </div>
         </div>
 
-        <button mat-flat-button type="submit" [disabled]="!registerForm.valid" class="register-button">Registrieren</button>
+        <button mat-flat-button type="submit" [disabled]="!registerForm.valid" class="register-button">Registrieren
+        </button>
+        @if (this.registerRequestError) {
+          <p>{{ this.requestErrorMessage }}</p>
+        }
       </form>
     }
   </div>

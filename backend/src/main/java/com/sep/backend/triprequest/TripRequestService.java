@@ -24,8 +24,8 @@ public class TripRequestService {
         this.locationRepository = locationRepository;
     }
 
-    public TripRequestEntity getRequestByEmail(String email) throws NotFoundException {
-        return tripRequestRepository.findByCustomer_Email(email).orElseThrow(() -> new NotFoundException(ErrorMessages.NOT_FOUND_REQUEST));
+    public TripRequestEntity getRequestByEmail(String email, String status) throws NotFoundException {
+        return tripRequestRepository.findByCustomer_EmailAndRequestStatus(email, status).orElseThrow(() -> new NotFoundException(ErrorMessages.NOT_FOUND_REQUEST));
     }
 
     public LocationEntity getLocationById(Long id) throws NotFoundException {
@@ -36,12 +36,12 @@ public class TripRequestService {
         return tripRequestRepository.existsByCustomer_EmailAndRequestStatus(email, TripRequestStatus.ACTIVE);
     }
 
-    //setRequestStatus -> when done or started set to either COMPLETED or ACTIVE -> Zyklus 2
+    /*//setRequestStatus -> when done or started set to either COMPLETED or ACTIVE -> Zyklus 2
     public void changeStatus(String email, String newStatus) throws NotFoundException {
-        TripRequestEntity tripRequestEntity = getRequestByEmail(email);
+        TripRequestEntity tripRequestEntity = getRequestByEmail(email, TripRequestStatus.ACTIVE);
         tripRequestEntity.setRequestStatus(newStatus);
         tripRequestRepository.save(tripRequestEntity);
-    }
+    }*/
 
     public LocationEntity convertLocationDTOToEntity(@Valid LocationDTO locationDTO) {
         var locationEntity = LocationEntity.from(locationDTO);
@@ -60,7 +60,7 @@ public class TripRequestService {
     public TripRequestDTO showTripRequest(Principal principal) throws NotFoundException {
         String email = principal.getName();
 
-        TripRequestEntity tripRequestEntity = getRequestByEmail(email);
+        TripRequestEntity tripRequestEntity = getRequestByEmail(email, TripRequestStatus.ACTIVE);
         return convertTripRequestEntityToDTO(tripRequestEntity);
     }
 
@@ -68,7 +68,7 @@ public class TripRequestService {
     public void deleteTripRequest(Principal principal) throws NotFoundException {
         String email = principal.getName();
 
-        TripRequestEntity tripRequestEntity = getRequestByEmail(email);
+        TripRequestEntity tripRequestEntity = getRequestByEmail(email, TripRequestStatus.ACTIVE);
         if (Objects.equals(tripRequestEntity.getRequestStatus(), TripRequestStatus.INPROGRESS)) {
             throw new RuntimeException("Cannot delete active request");
         }
@@ -89,7 +89,7 @@ public class TripRequestService {
         LocationEntity endAddress = convertLocationDTOToEntity(tripRequestDTO.getEndLocation());
 
 
-        var tripRequestEntity = getRequestByEmail(email);
+        var tripRequestEntity = new TripRequestEntity();
         tripRequestEntity.setStartLocation(startAddress);
         tripRequestEntity.setEndLocation(endAddress);
         tripRequestEntity.setCartype(tripRequestDTO.getCarType());

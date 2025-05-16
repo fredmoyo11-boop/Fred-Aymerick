@@ -6,6 +6,7 @@ import {StandardLayoutComponent} from './layouts/standard-layout/standard-layout
 import {HomeComponent} from './components/home/home.component';
 import {FahranfrageErstellenComponent} from './components/fahranfrage-erstellen/fahranfrage-erstellen.component';
 import {AktiveFahranfrageComponent} from './components/aktive-fahranfrage/aktive-fahranfrage.component';
+import {MapComponent} from './components/map/map.component';
 
 export const routes: Routes = [
   {path: "register", component: RegisterComponent},
@@ -20,6 +21,7 @@ export const routes: Routes = [
       {path: "", component: HomeComponent},
       {path: "fahranfrage", component: FahranfrageErstellenComponent},
       {path: "aktiveFahranfrage", component: AktiveFahranfrageComponent},
+      {path: "karte", component: MapComponent},
 
     ]
   },

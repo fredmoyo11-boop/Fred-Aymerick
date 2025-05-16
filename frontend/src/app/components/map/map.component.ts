@@ -1,7 +1,7 @@
-import {Component, inject, Input, OnInit} from '@angular/core';
+import {Component, inject, OnInit} from '@angular/core';
 import * as L from 'leaflet';
 import 'leaflet-routing-machine';
-import {RouteService} from '../../../api/sep_drive';
+//import {RouteService} from '../../../api/sep_drive';
 
 
 
@@ -13,7 +13,7 @@ import {RouteService} from '../../../api/sep_drive';
   styleUrl: './map.component.css'
 })
 export class MapComponent implements OnInit {
-  routeService = inject(RouteService)
+  // routeService = inject(RouteService)
 
   map: any;
   startLan!: number;
@@ -25,43 +25,52 @@ export class MapComponent implements OnInit {
 
 
 
+
+
+
   ngOnInit(): void {
-  this.getRouteDataFromBackend();
+  // this.getRouteDataFromBackend();
+    this.initMap();
 }
 
-private getRouteDataFromBackend(): void {
-
-  this.routeService.getFullRoute(1).subscribe(data => {
-    if (data.length >= 2) {
-      const start = data[0];
-      const end = data[data.length - 1];
-      const midpoints = data.slice(1, -1);
-
-      this.startLan = parseFloat(start.latitude);
-      this.startLon = parseFloat(start.longitude);
-      this.endLan = parseFloat(end.latitude);
-      this.endLon = parseFloat(end.longitude);
-      this.viaPoints = midpoints.map(p => ({
-        lan: parseFloat(p.latitude),
-        lon: parseFloat(p.longitude)
-      }));
-
-      this.initMap();
-    }
-  });
-}
+// private getRouteDataFromBackend(): void {
+//
+//   this.routeService.getFullRoute(1).subscribe(data => {
+//     if (data.length >= 2) {
+//       const start = data[0];
+//       const end = data[data.length - 1];
+//       // const midpoints = data.slice(1, -1);
+//
+//       this.startLan = parseFloat(start.latitude);
+//       this.startLon = parseFloat(start.longitude);
+//       this.endLan = parseFloat(end.latitude);
+//       this.endLon = parseFloat(end.longitude);
+//       // this.viaPoints = midpoints.map(p => ({
+//       //   lan: parseFloat(p.latitude),
+//       //   lon: parseFloat(p.longitude)
+//       // }));
+//
+//       this.initMap();
+//     }
+//   });
+// }
 
 
 
 
 
   private initMap(): void {
-    //
-    // this.startLan = 51.4516; // Essen Hbf
-    // this.startLon = 7.0146;
-    //
-    // this.endLan = 51.5136;   // Dortmund Hbf
-    // this.endLon = 7.4653;
+
+     this.startLan = 51.4516; // Essen Hbf
+     this.startLon = 7.0146;
+
+     this.endLan = 51.5136;   // Dortmund Hbf
+     this.endLon = 7.4653;
+
+    this.viaPoints = [
+      { lan: 51.4800, lon: 7.2000 },
+      { lan: 51.4900, lon: 7.3000 }
+    ];
 
     this.map =  L.map('map').setView([this.startLan, this.startLon], 13);
 

@@ -3,13 +3,15 @@
     <button [routerLink]="''" class="logo-btn">SEP-Drive</button>
     <div class="navbar-btn-container">
       <button [routerLink]="'/home'">Home</button>
+      <button [routerLink]="'/map'">Karte</button>
+      <button [routerLink]="'/profile'">Profil</button>
     </div>
     <div>
       @if (isLoggedIn) {
         <p>TODO</p>
       } @else {
-        <button [routerLink]="'/login'" class="login-btn">Sign in</button>
-        <button [routerLink]="'/register'" class="register-btn">Sign up</button>
+        <button [routerLink]="'/login'" class="login-btn">Anmelden</button>
+        <button [routerLink]="'/register'" class="register-btn">Registrieren</button>
       }
     </div>
   </div>

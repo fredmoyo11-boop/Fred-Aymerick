@@ -55,3 +55,9 @@ tasks.named('test') {
 tasks.named("generateOpenApiDocs") {
     dependsOn 'build'
 }
+
+openApi {
+    customBootRun {
+        args.set(["--spring.profiles.active=openapi"])
+    }
+}

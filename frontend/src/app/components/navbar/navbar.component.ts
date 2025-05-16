@@ -1,10 +1,13 @@
 import {Component} from '@angular/core';
-import {RouterLink} from '@angular/router';
+import {MatToolbar} from '@angular/material/toolbar';
+import { RouterModule } from '@angular/router';
+import { MatIconModule } from '@angular/material/icon';
+
 
 @Component({
   selector: 'app-navbar',
   imports: [
-    RouterLink,
+    MatIconModule,RouterModule
   ],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.css'
@@ -12,6 +15,4 @@ import {RouterLink} from '@angular/router';
 export class NavbarComponent {
 
   isLoggedIn: boolean = false;
-
-  protected readonly console = console;
 }

@@ -5,8 +5,7 @@
     </nav>
 </div><br>
 <div class="banner">
-
-    <h2> FINDE EINE FAHRT </h2>
+  <h2> FINDE EINE FAHRT </h2>
 </div>
 <div class="container">
     <form [formGroup]="fahranfrageForm" (ngSubmit)="submitRideRequest()">
@@ -14,7 +13,7 @@
         <div class="start">
             <p>
                 <mat-icon>location_on</mat-icon>
-                <label for="">Von</label></p>
+                <label>Von</label></p>
             <br>
             <mat-form-field class="start-address-form-field">
                 <mat-label>Startadresse/Startkoordinaten(lat,lng) eingeben</mat-label>
@@ -29,10 +28,11 @@
                         (click)="currentLocation()">
                     <mat-icon>my_location</mat-icon>
                 </button>
-                <mat-autocomplete #auto_start="matAutocomplete">
-                    @for (option of filteredStartAddressOptions | async; track option) {
-                        <mat-option [value]="option">{{ optionToString(option) }}</mat-option>
-                    }
+                <mat-autocomplete #auto_start="matAutocomplete"  [displayWith]="optionToString">
+                  @for (option of filteredStartAddressOptions | async; track option) {
+                    <mat-option [value]="option">{{ optionToString(option) }}</mat-option>
+                  }
+
                 </mat-autocomplete>
             </mat-form-field>
         </div>
@@ -51,8 +51,8 @@
                        formControlName="endAddress"
                        [value]="optionToString(this.fahranfrageForm.controls['endAddress'].value)"
                        [matAutocomplete]="auto_ziel">
-                <mat-autocomplete #auto_ziel="matAutocomplete">
-                    @for (option of filteredEndAddressOptions | async; track option) {
+                <mat-autocomplete #auto_ziel="matAutocomplete"  [displayWith]="optionToString">
+                    @for (option of filteredEndAddressOptions| async ; track option) {
                         <mat-option [value]="option">{{ optionToString(option) }}</mat-option>
                     }
                 </mat-autocomplete>
@@ -66,7 +66,7 @@
 
         <!-- Vehicle class options -->
         <div class="vehicleClass">
-            <label for="vehicleClass">F A H R Z E U G K L A S S E</label><br>
+            <label>F A H R Z E U G K L A S S E</label><br>
             <mat-radio-group class='form-control' formControlName="carType" aria-label="Select an option">
                 <p>
                     <mat-radio-button value="klein"> K L E I N</mat-radio-button>

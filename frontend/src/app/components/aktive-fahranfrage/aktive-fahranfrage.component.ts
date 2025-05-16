@@ -9,8 +9,8 @@ import {NgIf} from '@angular/common';
 import {MatDialog} from '@angular/material/dialog';
 import {DeleteRideDialogComponent} from '../delete-ride-dialog/delete-ride-dialog.component';
 import {AngularAuthService} from "../../services/angular-auth.service";
-import {TripRequestService} from "../../services/trip-request.service";
-import {TripRequestDTO} from '../../models/trip-request.model';
+import {TripRequestService} from '../../../api/sep_drive';
+import {TripRequestDTO} from '../../../api/sep_drive';
 
 @Component({
   selector: 'app-aktive-fahranfrage',
@@ -44,7 +44,7 @@ export class AktiveFahranfrageComponent {
       return;
     }
 
-    this.tripService.viewTripRequest(email).subscribe({
+    this.tripService.view(email).subscribe({
       next: (data) => this.tripData = data,
       error: err => console.error('Fehler beim Laden der Fahranfrage:', err)
     });
@@ -59,7 +59,7 @@ export class AktiveFahranfrageComponent {
         if(!email){
           return;
         }
-        this.tripService.deleteTripRequest(email).subscribe({
+        this.tripService.deleteRequest(email).subscribe({
           next: () => {
             this.rideRequestService.clearRideRequest();
             this.tripData = null;

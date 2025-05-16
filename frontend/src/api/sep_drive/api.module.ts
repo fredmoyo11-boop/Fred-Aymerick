@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 
 import { AccountService } from './api/account.service';
 import { AuthService } from './api/auth.service';
+import { TripRequestService } from './api/tripRequest.service';
 
 @NgModule({
   imports:      [],

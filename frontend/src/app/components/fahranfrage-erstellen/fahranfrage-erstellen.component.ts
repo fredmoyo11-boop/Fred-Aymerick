@@ -13,17 +13,16 @@ import {MatButton, MatIconButton} from '@angular/material/button';
 import {MatFormField, MatInput, MatLabel, MatSuffix} from '@angular/material/input';
 import {MatAutocomplete, MatAutocompleteTrigger, MatOption} from '@angular/material/autocomplete';
 import {AsyncPipe, NgIf} from '@angular/common';
-import {debounceTime, distinctUntilChanged, map, Observable, switchMap} from 'rxjs';
+import {catchError, debounceTime, distinctUntilChanged, map, Observable, of, switchMap} from 'rxjs';
 import {MatTooltipModule} from '@angular/material/tooltip';
-import {Address} from '../../models/address';
 import {MatIcon} from '@angular/material/icon';
 import {RouterLink} from '@angular/router';
 import {RideRequest,RideRequestService} from '../../services/ride-request.service';
 import {Router} from '@angular/router';
 import {MatDialog} from '@angular/material/dialog';
 import {ActiveRideDialogComponent} from '../active-ride-dialog/active-ride-dialog.component';
-import {TripRequestService} from '../../services/trip-request.service';
-import {LocationDTO,TripRequestDTO} from '../../models/trip-request.model';
+import {TripRequestService} from '../../../api/sep_drive';
+import {LocationDTO,TripRequestDTO} from '../../../api/sep_drive';
 import {AngularAuthService} from '../../services/angular-auth.service';
 
 
@@ -73,22 +72,11 @@ export class FahranfrageErstellenComponent implements OnInit {
   }
   filteredStartAddressOptions!: Observable<LocationDTO[]>;
   filteredEndAddressOptions!: Observable<LocationDTO[]>;
-  // filteredStartAddressOptions: Observable<Address[]> | undefined;
-  // filteredEndAddressOptions: Observable<Address[]> | undefined;
-  // options: Address[] = [
-  //   {
-  //     strasse: 'Alexanderplatz',
-  //     hausnummer: '1',
-  //     plz: '10178',
-  //     stadt: 'Berlin'
-  //   },
-  //   {
-  //     strasse: 'Berliner Straße',
-  //     hausnummer: '85',
-  //     plz: '13189',
-  //     stadt: 'Berlin'
-  //   }
-  // ];
+
+   // filteredStartAddressOptions: LocationDTO[] = [];
+   // filteredEndAddressOptions: LocationDTO[] = [];
+
+
   noSameStartEndValidator(group:AbstractControl):ValidationErrors| null{
     const start = group.get('startAddress')?.value;
     const end = group.get('endAddress')?.value;
@@ -99,34 +87,63 @@ export class FahranfrageErstellenComponent implements OnInit {
     return null;
   };
 
-  ngOnInit() {
+      // this.fahranfrageForm.get("startAddress")!.valueChanges.pipe(
+      //   debounceTime(300),
+      //   distinctUntilChanged(),
+      //   switchMap(query => this.tripService.suggestions(this.extractSearchValue(query)).pipe(
+      //     catchError(err => {
+      //       console.error('Start-Suche Fehler:', err);
+      //       return of([]); // leere Liste zurückgeben, falls Fehler
+      //     })
+      //   ))
+      // ).subscribe(res => {
+      //   console.log('Startadresse Optionen:', res);
+      //   this.filteredStartAddressOptions = res;
+      // });
+  ngOnInit(): void {
+    this.fahranfrageForm.controls['startAddress'].valueChanges.subscribe((value: string) => {
+      if (value) {
+        this.tripService.suggestions(value).subscribe((res: LocationDTO[]) => {
+          this.filteredStartAddressOptions = res;
+        });
+      }
+    });
 
-    this.filteredStartAddressOptions = this.fahranfrageForm.controls['startAddress'].valueChanges.pipe(
-      debounceTime(300),
-      distinctUntilChanged(),
-      switchMap((value) => this.tripService.searchLocation(typeof value === 'string' ? value : value?.displayName || ''))
-    );
-
-    this.filteredEndAddressOptions = this.fahranfrageForm.controls['endAddress'].valueChanges.pipe(
-      debounceTime(300),
-      distinctUntilChanged(),
-      switchMap((value) => this.tripService.searchLocation(typeof value === 'string' ? value : value?.displayName || ''))
-    );
-
-    // this.filteredStartAddressOptions = this.fahranfrageForm.get('startAddress')?.valueChanges.pipe(
-    //   map(value => this._filter(value || '')),
-    // );
-    // this.filteredEndAddressOptions = this.fahranfrageForm.get('endAddress')?.valueChanges.pipe(
-    //   map(value => this._filter(value || '')),
-    // );
-
-  }
-
-  // private _filter(value: string): Address[] {
-  //   const filterValue = value.toLowerCase();
-  //   return this.options.filter(option => (option.strasse + option.hausnummer + option.plz + option.stadt).toLowerCase().includes(filterValue));
-  // }
-
+    this.fahranfrageForm.controls['endAddress'].valueChanges.subscribe((value: string) => {
+      if (value) {
+        this.tripService.suggestions(value).subscribe((res: LocationDTO[]) => {
+          this.filteredEndAddressOptions = res;
+        });
+      }
+    });
+    // this.filteredStartAddressOptions = this.fahranfrageForm.get("startAddress")!.valueChanges.pipe(
+    //     debounceTime(300),
+    //     distinctUntilChanged(),
+    //     switchMap(query =>
+    //       this.tripService.suggestions(this.extractSearchValue(query)).pipe(
+    //         catchError(err => {
+    //           console.error('Start-Suche Fehler:', err);
+    //           return of([]);
+    //         })
+    //       )
+    //     )
+    //   )
+    // this.filteredEndAddressOptions = this.fahranfrageForm.get("endAddress")!.valueChanges.pipe(
+    //     debounceTime(300),
+    //     distinctUntilChanged(),
+    //     switchMap(query =>
+    //       this.tripService.suggestions(this.extractSearchValue(query)).pipe(
+    //         catchError(err => {
+    //           console.error('Start-Suche Fehler:', err);
+    //           return of([] as LocationDTO[]);
+    //         })
+    //       )
+    //     )
+    //   )
+    //   .subscribe((res: LocationDTO[]) => {
+    //      this.filteredEndAddressOptions = res;
+    //    });
+    }
   currentLocation() {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition((position) => {
@@ -143,13 +160,17 @@ export class FahranfrageErstellenComponent implements OnInit {
     } else {
       this.error = 'Geolocation is not supported by this browser.';
     }
+
   }
-  optionToString(option: any): string {
-    return option?.displayName || option || '';
+  optionToString(option: LocationDTO | string): string {
+    if (typeof option === 'string') return option;
+    return `${option.displayName} (${option.latitude}, ${option.longitude})`;
   }
 
-  // optionToString(option: Address): string {
-  //   return  option.strasse && option.hausnummer && option.plz && option.stadt ? `${option.strasse} ${option.hausnummer}, ${option.plz} ${option.stadt}` : '';
+
+
+  // optionToString(option: any): string {
+  //   return  typeof option === 'string' ? option : option?.displayName || '';
   // }
 
   // swapLocations() {
@@ -203,7 +224,7 @@ export class FahranfrageErstellenComponent implements OnInit {
       note: ''
     };
 
-    this.tripService.createTripRequest(tripRequest).subscribe({
+    this.tripService.create(tripRequest).subscribe({
       next: () => {
         console.log('Fahrt erfolgreich erstellt!');
         alert('Fahrt wurde erfolgreich erstellt!');
@@ -219,7 +240,6 @@ export class FahranfrageErstellenComponent implements OnInit {
 
     // nut zum debugging
     console.log('Fahranfrage erstellt:', formData )
-    console.log((<Address>this.fahranfrageForm.get('startAddress')?.value));
   }
 
 

@@ -13,7 +13,7 @@ import {MatButton, MatIconButton} from '@angular/material/button';
 import {MatFormField, MatInput, MatLabel, MatSuffix} from '@angular/material/input';
 import {MatAutocomplete, MatAutocompleteTrigger, MatOption} from '@angular/material/autocomplete';
 import {AsyncPipe, NgIf} from '@angular/common';
-import {map, Observable} from 'rxjs';
+import {debounceTime, distinctUntilChanged, map, Observable, switchMap} from 'rxjs';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {Address} from '../../models/address';
 import {MatIcon} from '@angular/material/icon';
@@ -22,6 +22,9 @@ import {RideRequest,RideRequestService} from '../../services/ride-request.servic
 import {Router} from '@angular/router';
 import {MatDialog} from '@angular/material/dialog';
 import {ActiveRideDialogComponent} from '../active-ride-dialog/active-ride-dialog.component';
+import {TripRequestService} from '../../services/trip-request.service';
+import {LocationDTO,TripRequestDTO} from '../../models/trip-request.model';
+import {AngularAuthService} from '../../services/angular-auth.service';
 
 
 @Component({
@@ -53,70 +56,85 @@ export class FahranfrageErstellenComponent implements OnInit {
   fahranfrageForm: FormGroup = new FormGroup({
     startAddress: new FormControl('', [Validators.required]),
     endAddress: new FormControl('',[Validators.required]),
-    carType: new FormControl('',[Validators.required])
+    carType: new FormControl('',[Validators.required]),
+    note: new FormControl()
   },{validators: this.noSameStartEndValidator.bind(this)});
 
   lat: number | null = null;
-  lng: number | null = null;
+  lon: number | null = null;
   error: string | null = null;
 
-  filteredStartAddressOptions: Observable<Address[]> | undefined;
-  filteredEndAddressOptions: Observable<Address[]> | undefined;
-  options: Address[] = [
-    {
-      strasse: 'Alexanderplatz',
-      hausnummer: '1',
-      plz: '10178',
-      stadt: 'Berlin'
-    },
-    {
-      strasse: 'Berliner Straße',
-      hausnummer: '85',
-      plz: '13189',
-      stadt: 'Berlin'
-    }
-  ];
+  constructor(private rideRequestService: RideRequestService,
+              private router: Router,
+              private dialog: MatDialog,
+              private tripService: TripRequestService,
+              private auth: AngularAuthService) {
+
+  }
+  filteredStartAddressOptions!: Observable<LocationDTO[]>;
+  filteredEndAddressOptions!: Observable<LocationDTO[]>;
+  // filteredStartAddressOptions: Observable<Address[]> | undefined;
+  // filteredEndAddressOptions: Observable<Address[]> | undefined;
+  // options: Address[] = [
+  //   {
+  //     strasse: 'Alexanderplatz',
+  //     hausnummer: '1',
+  //     plz: '10178',
+  //     stadt: 'Berlin'
+  //   },
+  //   {
+  //     strasse: 'Berliner Straße',
+  //     hausnummer: '85',
+  //     plz: '13189',
+  //     stadt: 'Berlin'
+  //   }
+  // ];
   noSameStartEndValidator(group:AbstractControl):ValidationErrors| null{
     const start = group.get('startAddress')?.value;
     const end = group.get('endAddress')?.value;
 
-    if (start && end && this.optionToString(start)=== this.optionToString(end)){
+    if (start && end && start.displayName=== end.displayName){
       return {sameAddress: true};
     }
     return null;
   };
 
-
-  constructor(private rideRequestService: RideRequestService,
-              private router: Router,
-              private dialog: MatDialog) {
-
-  }
-
   ngOnInit() {
 
-    this.filteredStartAddressOptions = this.fahranfrageForm.get('startAddress')?.valueChanges.pipe(
-      map(value => this._filter(value || '')),
+    this.filteredStartAddressOptions = this.fahranfrageForm.controls['startAddress'].valueChanges.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      switchMap((value) => this.tripService.searchLocation(typeof value === 'string' ? value : value?.displayName || ''))
     );
-    this.filteredEndAddressOptions = this.fahranfrageForm.get('endAddress')?.valueChanges.pipe(
-      map(value => this._filter(value || '')),
+
+    this.filteredEndAddressOptions = this.fahranfrageForm.controls['endAddress'].valueChanges.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      switchMap((value) => this.tripService.searchLocation(typeof value === 'string' ? value : value?.displayName || ''))
     );
+
+    // this.filteredStartAddressOptions = this.fahranfrageForm.get('startAddress')?.valueChanges.pipe(
+    //   map(value => this._filter(value || '')),
+    // );
+    // this.filteredEndAddressOptions = this.fahranfrageForm.get('endAddress')?.valueChanges.pipe(
+    //   map(value => this._filter(value || '')),
+    // );
 
   }
 
-  private _filter(value: string): Address[] {
-    const filterValue = value.toLowerCase();
-    return this.options.filter(option => (option.strasse + option.hausnummer + option.plz + option.stadt).toLowerCase().includes(filterValue));
-  }
+  // private _filter(value: string): Address[] {
+  //   const filterValue = value.toLowerCase();
+  //   return this.options.filter(option => (option.strasse + option.hausnummer + option.plz + option.stadt).toLowerCase().includes(filterValue));
+  // }
 
   currentLocation() {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition((position) => {
           this.lat = position.coords.latitude;
-          this.lng = position.coords.longitude;
+          this.lon = position.coords.longitude;
           console.log(this.lat);
-          console.log(this.lng);
-          this.fahranfrageForm.get("startAddress")?.setValue(`${this.lat}, ${this.lng}`)
+          console.log(this.lon);
+          this.fahranfrageForm.get("startAddress")?.setValue(`${this.lat}, ${this.lon}`)
         },
         (err) => {
           this.error = 'Error getting location' + err.message;
@@ -126,10 +144,13 @@ export class FahranfrageErstellenComponent implements OnInit {
       this.error = 'Geolocation is not supported by this browser.';
     }
   }
-
-  optionToString(option: Address): string {
-    return  option.strasse && option.hausnummer && option.plz && option.stadt ? `${option.strasse} ${option.hausnummer}, ${option.plz} ${option.stadt}` : '';
+  optionToString(option: any): string {
+    return option?.displayName || option || '';
   }
+
+  // optionToString(option: Address): string {
+  //   return  option.strasse && option.hausnummer && option.plz && option.stadt ? `${option.strasse} ${option.hausnummer}, ${option.plz} ${option.stadt}` : '';
+  // }
 
   // swapLocations() {
   //   const temp = this.startAddress;
@@ -156,9 +177,14 @@ export class FahranfrageErstellenComponent implements OnInit {
       this.submitRideRequest();
     }
   }
-
+//to extract string given in inputbox
+  private extractSearchValue(value: any): string {
+    if (typeof value === 'string') return value;
+    if (value?.displayName) return value.displayName;
+    return '';
+  }
   submitRideRequest () {
-
+    // local storage for frontend service
     const formData: RideRequest = {
       startAddress: this.optionToString(this.fahranfrageForm.value.startAddress),
       endAddress:this.optionToString(this.fahranfrageForm.value.endAddress),
@@ -166,10 +192,39 @@ export class FahranfrageErstellenComponent implements OnInit {
       status: true  // Standardstatus: aktiv
     };
     this.rideRequestService.setRideRequest(formData);
-    this.router.navigate(['/aktiveFahranfrage']);
 
+    //send to backend
+    const form = this.fahranfrageForm.value;
+    const tripRequest: TripRequestDTO = {
+      email: this.auth.getEmailFromAccessToken() || 'user@example.com', // dynamisch aus Auth holen
+      startLocation: form.startAddress,
+      endLocation: form.endAddress,
+      carType: form.carType,
+      note: ''
+    };
+
+    this.tripService.createTripRequest(tripRequest).subscribe({
+      next: () => {
+        console.log('Fahrt erfolgreich erstellt!');
+        alert('Fahrt wurde erfolgreich erstellt!');
+        this.resetForm();
+        this.router.navigate(['/aktiveFahranfrage']);
+      },
+      error: err => {
+        console.error('Fehler beim Erstellen:', err);
+        alert('Fehler beim Erstellen der Fahrt.');
+      }
+    });
+
+
+    // nut zum debugging
     console.log('Fahranfrage erstellt:', formData )
     console.log((<Address>this.fahranfrageForm.get('startAddress')?.value));
+  }
+
+
+  resetForm(): void {
+    this.fahranfrageForm.reset();
   }
 
 

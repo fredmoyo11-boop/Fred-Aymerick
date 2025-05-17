@@ -16,21 +16,19 @@ import lombok.*;
 @Schema(description = "Represents a request form by a customer.")
 public class TripRequestEntity extends AbstractEntity{
 
-    //relation in JPA -> Relation zu Customer hinzufügen
+
     @NotNull
     @OneToOne
     @JoinColumn(name = "username")
     @Schema(description = "The customer who made the request.", requiredMode = RequiredMode.REQUIRED)
     private CustomerEntity customer;
 
-    //StartLocation -> Location Entity?
     @NotNull
     @OneToOne
     @JoinColumn(name = "start_location_id", referencedColumnName = "id")
     @Schema(description = "The start location of the request.", requiredMode = RequiredMode.REQUIRED)
     private LocationEntity startLocation;
 
-    //EndLocation
     @NotNull
     @OneToOne
     @JoinColumn(name = "end_location_id", referencedColumnName = "id")

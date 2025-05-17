@@ -3,6 +3,9 @@ package com.sep.backend.trip.request;
 import com.sep.backend.CarType;
 import com.sep.backend.ErrorMessages;
 import com.sep.backend.NotFoundException;
+import com.sep.backend.account.AccountService;
+import com.sep.backend.account.CustomerRepository;
+import com.sep.backend.entity.CustomerEntity;
 import com.sep.backend.entity.TripRequestEntity;
 import com.sep.backend.trip.nominatim.data.LocationDTO;
 import com.sep.backend.entity.LocationEntity;
@@ -10,7 +13,9 @@ import com.sep.backend.trip.nominatim.data.LocationRepository;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
 
+import javax.accessibility.AccessibleIcon;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class TripRequestService {
@@ -19,9 +24,14 @@ public class TripRequestService {
 
     private final LocationRepository locationRepository;
 
-    public TripRequestService(TripRequestRepository tripRequestRepository, LocationRepository locationRepository) {
+    private final AccountService accountService;
+    private final CustomerRepository customerRepository;
+
+    public TripRequestService(TripRequestRepository tripRequestRepository, LocationRepository locationRepository, AccountService accountService, CustomerRepository customerRepository) {
         this.tripRequestRepository = tripRequestRepository;
         this.locationRepository = locationRepository;
+        this.accountService = accountService;
+        this.customerRepository = customerRepository;
     }
 
     public TripRequestEntity getRequestByEmail(String email) throws NotFoundException {
@@ -84,8 +94,10 @@ public class TripRequestService {
         LocationEntity startAddress = convertLocationDTOToEntity(tripRequestDTO.getStartLocation());
         LocationEntity endAddress = convertLocationDTOToEntity(tripRequestDTO.getEndLocation());
 
+        Optional<CustomerEntity> customer = customerRepository.findByEmail(email);
 
         var tripRequestEntity = new TripRequestEntity();
+        tripRequestEntity.setCustomer(customer.get());
         tripRequestEntity.setStartLocation(startAddress);
         tripRequestEntity.setEndLocation(endAddress);
         tripRequestEntity.setCartype(tripRequestDTO.getCarType());

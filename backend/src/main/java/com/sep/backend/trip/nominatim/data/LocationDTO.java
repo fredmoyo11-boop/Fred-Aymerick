@@ -21,17 +21,14 @@ public class LocationDTO {
 
     @Schema(description = "Display name of location", requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty("display_name")
-    @NotBlank
     private String displayName;
 
     @Schema(description = "Latitude of location", requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty("lat")
-    @NotNull
     private Double latitude;
 
     @Schema(description = "Longitude of location", requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty("lon")
-    @NotNull
     private Double longitude;
 
 

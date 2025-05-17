@@ -15,19 +15,15 @@ import lombok.*;
 @Schema(description = "Represents a request for a drive.")
 public class TripRequestDTO {
 
-    @NotBlank
     @Schema(description = "The customer requesting drive.", requiredMode = RequiredMode.REQUIRED)
     private String email;
 
-    @NotNull
     @Schema(description = "The start location of the drive.", requiredMode = RequiredMode.REQUIRED)
     private LocationDTO startLocation;
 
-    @NotNull
     @Schema(description = "The end location of the drive.", requiredMode = RequiredMode.REQUIRED)
     private LocationDTO endLocation;
 
-    @NotBlank
     @Schema(description = "The type of car requested.", requiredMode = RequiredMode.REQUIRED)
     private String carType;
 

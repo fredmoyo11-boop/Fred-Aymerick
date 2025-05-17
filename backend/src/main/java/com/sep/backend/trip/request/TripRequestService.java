@@ -32,7 +32,7 @@ public class TripRequestService {
         return locationRepository.findById(id).orElseThrow(() -> new NotFoundException(ErrorMessages.NOT_FOUND_REQUEST));
     }
 
-    private boolean existsActiveTripRequest(String email) {
+    public boolean existsActiveTripRequest(String email) {
         return tripRequestRepository.existsByCustomer_EmailAndRequestStatus(email, TripRequestStatus.ACTIVE);
     }
 

@@ -98,9 +98,6 @@
 
         <button mat-flat-button type="submit" [disabled]="!registerForm.valid" class="register-button">Registrieren
         </button>
-        @if (this.registerRequestError) {
-          <p>{{ this.requestErrorMessage }}</p>
-        }
       </form>
     }
   </div>

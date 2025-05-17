@@ -22,9 +22,8 @@ export class HomeComponent implements OnInit {
   }
 
   sendRequest(): void {
-    this.accountService.health1().subscribe({
+    this.accountService.health2().subscribe({
       next: stringResponse => {
-
         this.message = stringResponse.message;
       },
       error: error => {

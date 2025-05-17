@@ -1,4 +1,4 @@
-package com.sep.backend.triprequest;
+package com.sep.backend.account;
 
 public class CarType {
     public static final String SMALL = "SMALL";

@@ -11,7 +11,7 @@ public interface TripRequestRepository extends JpaRepository<TripRequestEntity, 
 
     Optional<TripRequestEntity> findById(Long id);
 
-    Optional<TripRequestEntity> findByCustomer_EmailAndRequestStatus(String email, String status);
+    Optional<TripRequestEntity> findByCustomer_Email(String email);
 
     boolean existsByCustomer_EmailAndRequestStatus(String email, String status);
 

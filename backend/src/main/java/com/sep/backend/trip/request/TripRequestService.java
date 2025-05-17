@@ -24,8 +24,8 @@ public class TripRequestService {
         this.locationRepository = locationRepository;
     }
 
-    public TripRequestEntity getRequestByEmail(String email, String status) throws NotFoundException {
-        return tripRequestRepository.findByCustomer_EmailAndRequestStatus(email, status).orElseThrow(() -> new NotFoundException(ErrorMessages.NOT_FOUND_REQUEST));
+    public TripRequestEntity getRequestByEmail(String email) throws NotFoundException {
+        return tripRequestRepository.findByCustomer_Email(email).orElseThrow(() -> new NotFoundException(ErrorMessages.NOT_FOUND_REQUEST));
     }
 
     public LocationEntity getLocationById(Long id) throws NotFoundException {
@@ -58,13 +58,13 @@ public class TripRequestService {
     }
 
     public TripRequestDTO showTripRequest(String email) throws NotFoundException {
-        TripRequestEntity tripRequestEntity = getRequestByEmail(email, TripRequestStatus.ACTIVE);
+        TripRequestEntity tripRequestEntity = getRequestByEmail(email);
         return convertTripRequestEntityToDTO(tripRequestEntity);
     }
 
     //deleteFromRepository -> when customer wants to delete request
     public void deleteTripRequest(String email) throws NotFoundException {
-        TripRequestEntity tripRequestEntity = getRequestByEmail(email, TripRequestStatus.ACTIVE);
+        TripRequestEntity tripRequestEntity = getRequestByEmail(email);
         if (Objects.equals(tripRequestEntity.getRequestStatus(), TripRequestStatus.INPROGRESS)) {
             throw new RuntimeException("Cannot delete active request");
         }
@@ -90,7 +90,7 @@ public class TripRequestService {
         tripRequestEntity.setEndLocation(endAddress);
         tripRequestEntity.setCartype(tripRequestDTO.getCarType());
         tripRequestEntity.setNote(tripRequestDTO.getNote());
-        tripRequestEntity.setRequestStatus(TripRequestStatus.ACTIVE);
+        tripRequestEntity.setRequestStatus(tripRequestDTO.getStatus());
 
         tripRequestRepository.save(tripRequestEntity);
     }

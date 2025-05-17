@@ -25,6 +25,7 @@ public class ErrorMessages {
     public static final String NOT_FOUND_OTP = "OTP not found.";
 
 
+
     public static final String ALREADY_EXISTS_USERNAME = "Username already exists.";
 
     public static final String ALREADY_EXISTS_EMAIL = "Email already exists.";

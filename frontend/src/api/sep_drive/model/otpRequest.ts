@@ -14,11 +14,11 @@
 /**
  * The final request with the OTP.
  */
-export interface OtpRequest { 
+export interface OtpRequest {
     /**
-     * The email of the user.
+     * The unique identifier of the user.
      */
-    email: string;
+    uniqueIdentifier: string;
     /**
      * The OTP of the user.
      */

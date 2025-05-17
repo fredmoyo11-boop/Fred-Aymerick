@@ -128,13 +128,16 @@ export class RegisterComponent {
         this.registerRequestErrorMessage = "";
         if (err instanceof HttpErrorResponse && err.status === 401) {
           const errorMessage = err.error.message;
-          if (errorMessage.includes("Email")) {
+          if (errorMessage === "Email already exists.") {
             this.registerForm.get("email")!.setValue("")
             this.registerForm.get("emailConfirmation")!.setValue("")
             this.registerRequestErrorMessage = "Diese Email ist bereits vergeben."
-          } else if (errorMessage.includes("Username")) {
+          } else if (errorMessage === "Username already exists.") {
             this.registerForm.get("username")!.setValue("")
             this.registerRequestErrorMessage = "Dieser Benutzername ist bereits vergeben."
+          } else if (errorMessage === "Username cannot contain @ as character.") {
+            this.registerForm.get("username")!.setValue("")
+            this.registerRequestErrorMessage = "Der Benutzername darf kein @ enthalten."
           }
         }
         if (!this.registerRequestErrorMessage) {

@@ -9,6 +9,7 @@ configuration.ts
 encoder.ts
 git_push.sh
 index.ts
+model/accountDTO.ts
 model/authResponse.ts
 model/customerEntity.ts
 model/locationDTO.ts
@@ -16,6 +17,7 @@ model/locationEntity.ts
 model/loginRequest.ts
 model/models.ts
 model/otpRequest.ts
+model/rating.ts
 model/stringResponse.ts
 model/tripRequestDTO.ts
 model/tripRequestEntity.ts

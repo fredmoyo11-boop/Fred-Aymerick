@@ -14,7 +14,7 @@
 /**
  * The final request with the OTP.
  */
-export interface OtpRequest {
+export interface OtpRequest { 
     /**
      * The unique identifier of the user.
      */

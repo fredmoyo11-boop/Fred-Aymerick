@@ -7,7 +7,7 @@ import {jwtDecode} from 'jwt-decode';
   providedIn: 'root'
 })
 export class AngularAuthService {
-  private authService = inject(AuthService)
+  authService = inject(AuthService)
 
   private _email$ = new BehaviorSubject<string | null>(null)
   private _role$ = new BehaviorSubject<string | null>(null)
@@ -25,6 +25,28 @@ export class AngularAuthService {
 
   getAccessToken(): string {
     return this._accessToken$.value || '';
+  }
+
+  getEmail(): string {
+    return this._email$.value || "";
+  }
+
+  getRole(): string {
+    return this._role$.value || "";
+  }
+
+  logout() {
+    this.authService.logout().subscribe({
+      next: value => {
+        console.log("Logout successful.");
+        this._accessToken$.next(null);
+        this._email$.next(null);
+        this._role$.next(null);
+      },
+      error: err => {
+        console.error("Logout failed.", err);
+      }
+    })
   }
 
   private loadFromToken = () => {

@@ -4,6 +4,7 @@ api.module.ts
 api/account.service.ts
 api/api.ts
 api/auth.service.ts
+api/route.service.ts
 configuration.ts
 encoder.ts
 git_push.sh
@@ -15,4 +16,5 @@ model/models.ts
 model/otpRequest.ts
 model/rating.ts
 model/stringResponse.ts
+model/waypointResponse.ts
 variables.ts

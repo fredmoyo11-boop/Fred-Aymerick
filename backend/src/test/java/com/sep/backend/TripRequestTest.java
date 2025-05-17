@@ -91,4 +91,9 @@ class TripRequestTest {
         // Erwartung: mehrere Vorschläge
         assertTrue(results.size() >= 3, "Für Teil-Eingabe 'Ber' sollte es mehrere Ergebnisse geben");
     } */
+
+
+
+
+
 }

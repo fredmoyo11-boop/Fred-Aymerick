@@ -27,8 +27,17 @@ export interface LocationEntity {
      * The modification time of the entity.
      */
     modificationTime: number;
-    display_name?: string;
-    lat?: number;
-    lon?: number;
+    /**
+     * The display name of the location.
+     */
+    display_name: string;
+    /**
+     * The latitude of the location.
+     */
+    lat: number;
+    /**
+     * The longitude of the location.
+     */
+    lon: number;
 }
 

@@ -18,22 +18,21 @@ public class TripRequestEntity extends AbstractEntity{
 
     //relation in JPA -> Relation zu Customer hinzufügen
     @NotNull
-    @OneToOne
-    @JoinColumn(name = "username")
+    @ManyToOne
     @Schema(description = "The customer who made the request.", requiredMode = RequiredMode.REQUIRED)
     private CustomerEntity customer;
 
     //StartLocation -> Location Entity?
     @NotNull
     @OneToOne
-    @JoinColumn(name = "start_location_id", referencedColumnName = "id")
+    @JoinColumn(name = "start_location_id")
     @Schema(description = "The start location of the request.", requiredMode = RequiredMode.REQUIRED)
     private LocationEntity startLocation;
 
     //EndLocation
     @NotNull
     @OneToOne
-    @JoinColumn(name = "end_location_id", referencedColumnName = "id")
+    @JoinColumn(name = "end_location_id")
     @Schema(description = "The end location of the request.", requiredMode = RequiredMode.REQUIRED)
     private LocationEntity endLocation;
 
@@ -44,7 +43,7 @@ public class TripRequestEntity extends AbstractEntity{
     @NotBlank
     @Column(name = "car_type")
     @Schema(description = "The type of the car requested.", requiredMode = RequiredMode.REQUIRED)
-    private String cartype;
+    private String carType;
 
     @NotBlank
     @Column(name = "status")

@@ -96,10 +96,10 @@ export class TripRequestService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public create(tripRequestDTO: TripRequestDTO, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*', context?: HttpContext}): Observable<TripRequestEntity>;
-    public create(tripRequestDTO: TripRequestDTO, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*', context?: HttpContext}): Observable<HttpResponse<TripRequestEntity>>;
-    public create(tripRequestDTO: TripRequestDTO, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*', context?: HttpContext}): Observable<HttpEvent<TripRequestEntity>>;
-    public create(tripRequestDTO: TripRequestDTO, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*', context?: HttpContext}): Observable<any> {
+    public create(tripRequestDTO: TripRequestDTO, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<TripRequestEntity>;
+    public create(tripRequestDTO: TripRequestDTO, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<HttpResponse<TripRequestEntity>>;
+    public create(tripRequestDTO: TripRequestDTO, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<HttpEvent<TripRequestEntity>>;
+    public create(tripRequestDTO: TripRequestDTO, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<any> {
         if (tripRequestDTO === null || tripRequestDTO === undefined) {
             throw new Error('Required parameter tripRequestDTO was null or undefined when calling create.');
         }
@@ -117,7 +117,8 @@ export class TripRequestService {
         if (localVarHttpHeaderAcceptSelected === undefined) {
             // to determine the Accept header
             const httpHeaderAccepts: string[] = [
-                '*/*'
+                '*/*',
+                'application/json'
             ];
             localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
         }
@@ -151,7 +152,7 @@ export class TripRequestService {
             }
         }
 
-        return this.httpClient.post<TripRequestEntity>(`${this.configuration.basePath}/map/request/create`,
+        return this.httpClient.post<TripRequestEntity>(`${this.configuration.basePath}/api/trip/request`,
             tripRequestDTO,
             {
                 context: localVarHttpContext,
@@ -170,10 +171,10 @@ export class TripRequestService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public deleteRequest(email: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*', context?: HttpContext}): Observable<TripRequestEntity>;
-    public deleteRequest(email: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*', context?: HttpContext}): Observable<HttpResponse<TripRequestEntity>>;
-    public deleteRequest(email: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*', context?: HttpContext}): Observable<HttpEvent<TripRequestEntity>>;
-    public deleteRequest(email: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*', context?: HttpContext}): Observable<any> {
+    public deleteRequest(email: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<TripRequestEntity>;
+    public deleteRequest(email: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<HttpResponse<TripRequestEntity>>;
+    public deleteRequest(email: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<HttpEvent<TripRequestEntity>>;
+    public deleteRequest(email: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<any> {
         if (email === null || email === undefined) {
             throw new Error('Required parameter email was null or undefined when calling deleteRequest.');
         }
@@ -197,7 +198,8 @@ export class TripRequestService {
         if (localVarHttpHeaderAcceptSelected === undefined) {
             // to determine the Accept header
             const httpHeaderAccepts: string[] = [
-                '*/*'
+                '*/*',
+                'application/json'
             ];
             localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
         }
@@ -222,7 +224,7 @@ export class TripRequestService {
             }
         }
 
-        return this.httpClient.delete<TripRequestEntity>(`${this.configuration.basePath}/map/request/view/delete`,
+        return this.httpClient.delete<TripRequestEntity>(`${this.configuration.basePath}/api/trip/request/current`,
             {
                 context: localVarHttpContext,
                 params: localVarQueryParameters,
@@ -241,10 +243,10 @@ export class TripRequestService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public suggestions(search: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*', context?: HttpContext}): Observable<Array<LocationDTO>>;
-    public suggestions(search: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*', context?: HttpContext}): Observable<HttpResponse<Array<LocationDTO>>>;
-    public suggestions(search: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*', context?: HttpContext}): Observable<HttpEvent<Array<LocationDTO>>>;
-    public suggestions(search: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*', context?: HttpContext}): Observable<any> {
+    public suggestions(search: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<Array<LocationDTO>>;
+    public suggestions(search: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<HttpResponse<Array<LocationDTO>>>;
+    public suggestions(search: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<HttpEvent<Array<LocationDTO>>>;
+    public suggestions(search: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<any> {
         if (search === null || search === undefined) {
             throw new Error('Required parameter search was null or undefined when calling suggestions.');
         }
@@ -268,7 +270,8 @@ export class TripRequestService {
         if (localVarHttpHeaderAcceptSelected === undefined) {
             // to determine the Accept header
             const httpHeaderAccepts: string[] = [
-                '*/*'
+                '*/*',
+                'application/json'
             ];
             localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
         }
@@ -293,7 +296,7 @@ export class TripRequestService {
             }
         }
 
-        return this.httpClient.get<Array<LocationDTO>>(`${this.configuration.basePath}/map/search`,
+        return this.httpClient.get<Array<LocationDTO>>(`${this.configuration.basePath}/api/trip/request/search`,
             {
                 context: localVarHttpContext,
                 params: localVarQueryParameters,
@@ -312,10 +315,10 @@ export class TripRequestService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public view(email: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*', context?: HttpContext}): Observable<TripRequestDTO>;
-    public view(email: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*', context?: HttpContext}): Observable<HttpResponse<TripRequestDTO>>;
-    public view(email: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*', context?: HttpContext}): Observable<HttpEvent<TripRequestDTO>>;
-    public view(email: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*', context?: HttpContext}): Observable<any> {
+    public view(email: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<TripRequestDTO>;
+    public view(email: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<HttpResponse<TripRequestDTO>>;
+    public view(email: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<HttpEvent<TripRequestDTO>>;
+    public view(email: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<any> {
         if (email === null || email === undefined) {
             throw new Error('Required parameter email was null or undefined when calling view.');
         }
@@ -339,7 +342,8 @@ export class TripRequestService {
         if (localVarHttpHeaderAcceptSelected === undefined) {
             // to determine the Accept header
             const httpHeaderAccepts: string[] = [
-                '*/*'
+                '*/*',
+                'application/json'
             ];
             localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
         }
@@ -364,7 +368,7 @@ export class TripRequestService {
             }
         }
 
-        return this.httpClient.get<TripRequestDTO>(`${this.configuration.basePath}/map/request/view`,
+        return this.httpClient.get<TripRequestDTO>(`${this.configuration.basePath}/api/trip/request/current`,
             {
                 context: localVarHttpContext,
                 params: localVarQueryParameters,

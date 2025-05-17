@@ -19,13 +19,9 @@ import { CustomHttpParameterCodec }                          from '../encoder';
 import { Observable }                                        from 'rxjs';
 
 // @ts-ignore
-import { AccountDTO } from '../model/accountDTO';
-// @ts-ignore
-import { ModelString } from '../model/modelString';
-// @ts-ignore
 import { StringResponse } from '../model/stringResponse';
 // @ts-ignore
-import { UpdateAccountDTO } from '../model/updateAccountDTO';
+import { WaypointResponse } from '../model/waypointResponse';
 
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
@@ -36,7 +32,7 @@ import { Configuration }                                     from '../configurat
 @Injectable({
   providedIn: 'root'
 })
-export class AccountService {
+export class RouteService {
 
     protected basePath = 'http://localhost';
     public defaultHeaders = new HttpHeaders();
@@ -106,18 +102,17 @@ export class AccountService {
     }
 
     /**
-     * Gibt das Benutzerprofil zurück
-     * Liefert die vollständigen Profildaten eines Benutzers basierend auf der username.
-     * @param username 
+     * Returns the full route.
+     * @param id The route id
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getAccountprofile(username: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<AccountDTO>;
-    public getAccountprofile(username: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<HttpResponse<AccountDTO>>;
-    public getAccountprofile(username: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<HttpEvent<AccountDTO>>;
-    public getAccountprofile(username: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<any> {
-        if (username === null || username === undefined) {
-            throw new Error('Required parameter username was null or undefined when calling getAccountprofile.');
+    public getFullRoute(id: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<Array<WaypointResponse>>;
+    public getFullRoute(id: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<HttpResponse<Array<WaypointResponse>>>;
+    public getFullRoute(id: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<HttpEvent<Array<WaypointResponse>>>;
+    public getFullRoute(id: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<any> {
+        if (id === null || id === undefined) {
+            throw new Error('Required parameter id was null or undefined when calling getFullRoute.');
         }
 
         let localVarHeaders = this.defaultHeaders;
@@ -159,7 +154,7 @@ export class AccountService {
             }
         }
 
-        return this.httpClient.get<AccountDTO>(`${this.configuration.basePath}/api/account/${encodeURIComponent(String(username))}`,
+        return this.httpClient.get<Array<WaypointResponse>>(`${this.configuration.basePath}/api/route/full/${encodeURIComponent(String(id))}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,
@@ -172,84 +167,17 @@ export class AccountService {
     }
 
     /**
-     * Returns the status of the account controller.
+     * Returns start, end, count of midpoints and count of path waypoints from the route.
+     * @param id The route id.
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public health2(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<StringResponse>;
-    public health2(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<HttpResponse<StringResponse>>;
-    public health2(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<HttpEvent<StringResponse>>;
-    public health2(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<any> {
-
-        let localVarHeaders = this.defaultHeaders;
-
-        let localVarCredential: string | undefined;
-        // authentication (bearerAuth) required
-        localVarCredential = this.configuration.lookupCredential('bearerAuth');
-        if (localVarCredential) {
-            localVarHeaders = localVarHeaders.set('Authorization', 'Bearer ' + localVarCredential);
-        }
-
-        let localVarHttpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
-        if (localVarHttpHeaderAcceptSelected === undefined) {
-            // to determine the Accept header
-            const httpHeaderAccepts: string[] = [
-                '*/*',
-                'application/json'
-            ];
-            localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
-        }
-        if (localVarHttpHeaderAcceptSelected !== undefined) {
-            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
-        }
-
-        let localVarHttpContext: HttpContext | undefined = options && options.context;
-        if (localVarHttpContext === undefined) {
-            localVarHttpContext = new HttpContext();
-        }
-
-
-        let responseType_: 'text' | 'json' | 'blob' = 'json';
-        if (localVarHttpHeaderAcceptSelected) {
-            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
-                responseType_ = 'text';
-            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-                responseType_ = 'json';
-            } else {
-                responseType_ = 'blob';
-            }
-        }
-
-        return this.httpClient.get<StringResponse>(`${this.configuration.basePath}/api/account/health`,
-            {
-                context: localVarHttpContext,
-                responseType: <any>responseType_,
-                withCredentials: this.configuration.withCredentials,
-                headers: localVarHeaders,
-                observe: observe,
-                reportProgress: reportProgress
-            }
-        );
-    }
-
-    /**
-     * Suche nach Benutzerprofilen basierend auf einem Suchbegriff ( username-part)
-     * @param part 
-     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-     * @param reportProgress flag to report request and response progress.
-     */
-    public searchUserProfiles(part: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<Array<AccountDTO>>;
-    public searchUserProfiles(part: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<HttpResponse<Array<AccountDTO>>>;
-    public searchUserProfiles(part: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<HttpEvent<Array<AccountDTO>>>;
-    public searchUserProfiles(part: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<any> {
-        if (part === null || part === undefined) {
-            throw new Error('Required parameter part was null or undefined when calling searchUserProfiles.');
-        }
-
-        let localVarQueryParameters = new HttpParams({encoder: this.encoder});
-        if (part !== undefined && part !== null) {
-          localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-            <any>part, 'part');
+    public getMetadata(id: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<Array<WaypointResponse>>;
+    public getMetadata(id: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<HttpResponse<Array<WaypointResponse>>>;
+    public getMetadata(id: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<HttpEvent<Array<WaypointResponse>>>;
+    public getMetadata(id: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<any> {
+        if (id === null || id === undefined) {
+            throw new Error('Required parameter id was null or undefined when calling getMetadata.');
         }
 
         let localVarHeaders = this.defaultHeaders;
@@ -291,10 +219,9 @@ export class AccountService {
             }
         }
 
-        return this.httpClient.get<Array<AccountDTO>>(`${this.configuration.basePath}/api/account/search`,
+        return this.httpClient.get<Array<WaypointResponse>>(`${this.configuration.basePath}/api/route/metadata/${encodeURIComponent(String(id))}`,
             {
                 context: localVarHttpContext,
-                params: localVarQueryParameters,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
@@ -305,24 +232,141 @@ export class AccountService {
     }
 
     /**
-     * Aktualisiert das Benutzerprofil
-     * Profildaten werden als multipart/form-data gesendet, wobei das JSON-Objekt unter \&#39;data\&#39; und das optionale Bild unter \&#39;file\&#39; übermittelt wird.
-     * @param email 
-     * @param data 
+     * Returns all midpoints from the route.
+     * @param id The route id
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public getMidpoints(id: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<Array<WaypointResponse>>;
+    public getMidpoints(id: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<HttpResponse<Array<WaypointResponse>>>;
+    public getMidpoints(id: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<HttpEvent<Array<WaypointResponse>>>;
+    public getMidpoints(id: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<any> {
+        if (id === null || id === undefined) {
+            throw new Error('Required parameter id was null or undefined when calling getMidpoints.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+
+        let localVarCredential: string | undefined;
+        // authentication (bearerAuth) required
+        localVarCredential = this.configuration.lookupCredential('bearerAuth');
+        if (localVarCredential) {
+            localVarHeaders = localVarHeaders.set('Authorization', 'Bearer ' + localVarCredential);
+        }
+
+        let localVarHttpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (localVarHttpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                '*/*',
+                'application/json'
+            ];
+            localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        let localVarHttpContext: HttpContext | undefined = options && options.context;
+        if (localVarHttpContext === undefined) {
+            localVarHttpContext = new HttpContext();
+        }
+
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        return this.httpClient.get<Array<WaypointResponse>>(`${this.configuration.basePath}/api/route/midpoints/${encodeURIComponent(String(id))}`,
+            {
+                context: localVarHttpContext,
+                responseType: <any>responseType_,
+                withCredentials: this.configuration.withCredentials,
+                headers: localVarHeaders,
+                observe: observe,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Returns the status of the route controller.
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public health(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<StringResponse>;
+    public health(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<HttpResponse<StringResponse>>;
+    public health(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<HttpEvent<StringResponse>>;
+    public health(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<any> {
+
+        let localVarHeaders = this.defaultHeaders;
+
+        let localVarCredential: string | undefined;
+        // authentication (bearerAuth) required
+        localVarCredential = this.configuration.lookupCredential('bearerAuth');
+        if (localVarCredential) {
+            localVarHeaders = localVarHeaders.set('Authorization', 'Bearer ' + localVarCredential);
+        }
+
+        let localVarHttpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (localVarHttpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                '*/*',
+                'application/json'
+            ];
+            localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        let localVarHttpContext: HttpContext | undefined = options && options.context;
+        if (localVarHttpContext === undefined) {
+            localVarHttpContext = new HttpContext();
+        }
+
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        return this.httpClient.get<StringResponse>(`${this.configuration.basePath}/api/route/health`,
+            {
+                context: localVarHttpContext,
+                responseType: <any>responseType_,
+                withCredentials: this.configuration.withCredentials,
+                headers: localVarHeaders,
+                observe: observe,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Accepts and Imports route from geoJSON.
      * @param file 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public updateAccountProfile(email: string, data: UpdateAccountDTO, file?: Blob, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'text/plain', context?: HttpContext}): Observable<ModelString>;
-    public updateAccountProfile(email: string, data: UpdateAccountDTO, file?: Blob, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'text/plain', context?: HttpContext}): Observable<HttpResponse<ModelString>>;
-    public updateAccountProfile(email: string, data: UpdateAccountDTO, file?: Blob, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'text/plain', context?: HttpContext}): Observable<HttpEvent<ModelString>>;
-    public updateAccountProfile(email: string, data: UpdateAccountDTO, file?: Blob, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*' | 'text/plain', context?: HttpContext}): Observable<any> {
-        if (email === null || email === undefined) {
-            throw new Error('Required parameter email was null or undefined when calling updateAccountProfile.');
-        }
-        if (data === null || data === undefined) {
-            throw new Error('Required parameter data was null or undefined when calling updateAccountProfile.');
-        }
+    public register(file?: Blob, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<StringResponse>;
+    public register(file?: Blob, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<HttpResponse<StringResponse>>;
+    public register(file?: Blob, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<HttpEvent<StringResponse>>;
+    public register(file?: Blob, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<any> {
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -338,7 +382,7 @@ export class AccountService {
             // to determine the Accept header
             const httpHeaderAccepts: string[] = [
                 '*/*',
-                'text/plain'
+                'application/json'
             ];
             localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
         }
@@ -370,9 +414,6 @@ export class AccountService {
             localVarFormParams = new HttpParams({encoder: this.encoder});
         }
 
-        if (data !== undefined) {
-            localVarFormParams = localVarFormParams.append('data', localVarUseForm ? new Blob([JSON.stringify(data)], {type: 'application/json'}) : <any>data) as any || localVarFormParams;
-        }
         if (file !== undefined) {
             localVarFormParams = localVarFormParams.append('file', <any>file) as any || localVarFormParams;
         }
@@ -388,7 +429,7 @@ export class AccountService {
             }
         }
 
-        return this.httpClient.put<ModelString>(`${this.configuration.basePath}/api/account/${encodeURIComponent(String(email))}`,
+        return this.httpClient.post<StringResponse>(`${this.configuration.basePath}/api/route/import/geojson`,
             localVarConvertFormParamsToString ? localVarFormParams.toString() : localVarFormParams,
             {
                 context: localVarHttpContext,

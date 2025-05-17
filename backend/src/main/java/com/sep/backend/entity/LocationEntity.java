@@ -19,19 +19,19 @@ import lombok.Setter;
 public class LocationEntity extends AbstractEntity {
 
     @JsonProperty("display_name")
-    String displayName;
+    String display_name;
 
     @JsonProperty("lat")
-    Double latitude;
+    Double lat;
 
     @JsonProperty("lon")
-    Double longitude;
+    Double lon;
 
     public static LocationEntity from(@Valid LocationDTO locationDTO) {
         LocationEntity locationEntity = new LocationEntity();
-        locationEntity.setDisplayName(locationDTO.getDisplayName());
-        locationEntity.setLatitude(locationDTO.getLatitude());
-        locationEntity.setLongitude(locationDTO.getLongitude());
+        locationEntity.setDisplay_name(locationDTO.getDisplay_name());
+        locationEntity.setLat(locationDTO.getLat());
+        locationEntity.setLon(locationDTO.getLat());
         return locationEntity;
     }
 }

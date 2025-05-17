@@ -22,24 +22,24 @@ public class LocationDTO {
     @Schema(description = "Display name of location", requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty("display_name")
     @NotBlank
-    private String displayName;
+    private String display_name;
 
     @Schema(description = "Latitude of location", requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty("lat")
     @NotNull
-    private Double latitude;
+    private Double lat;
 
     @Schema(description = "Longitude of location", requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty("lon")
     @NotNull
-    private Double longitude;
+    private Double lon;
 
 
     public static LocationDTO from(LocationEntity locationEntity) {
         LocationDTO dto = new LocationDTO();
-        dto.setLatitude(locationEntity.getLatitude());
-        dto.setLongitude(locationEntity.getLongitude());
-        dto.setDisplayName(locationEntity.getDisplayName());
+        dto.setLat(locationEntity.getLat());
+        dto.setLon(locationEntity.getLon());
+        dto.setDisplay_name(locationEntity.getDisplay_name());
         return dto;
     }
 }

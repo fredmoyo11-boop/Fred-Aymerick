@@ -41,7 +41,7 @@
   width: 500px;
 }
 .banner {
-  background-image: url('/assets/banner_pic.jpg');
+  /*background-image: url('/assets/banner_pic.jpg');*/
   background-size: cover;
   background-color: deepskyblue;
   background-position: center;

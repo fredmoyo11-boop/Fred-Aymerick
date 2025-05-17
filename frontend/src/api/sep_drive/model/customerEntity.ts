@@ -9,6 +9,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { Rating } from './rating';
 
 
 /**
@@ -28,6 +29,8 @@ export interface CustomerEntity {
      */
     modificationTime: number;
     email?: string;
+    rating: Array<Rating>;
+    totalNumberOfRides: number;
     username?: string;
     password?: string;
     firstName?: string;

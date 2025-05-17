@@ -13,7 +13,7 @@ import {MatButton, MatIconButton} from '@angular/material/button';
 import {MatFormField, MatInput, MatLabel, MatSuffix} from '@angular/material/input';
 import {MatAutocomplete, MatAutocompleteTrigger, MatOption} from '@angular/material/autocomplete';
 import {AsyncPipe, NgIf} from '@angular/common';
-import {catchError, debounceTime, distinctUntilChanged, map, Observable, of, switchMap} from 'rxjs';
+import {catchError, debounceTime, distinctUntilChanged, map, Observable, of, switchMap, tap} from 'rxjs';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatIcon} from '@angular/material/icon';
 import {RouterLink} from '@angular/router';
@@ -57,7 +57,9 @@ export class FahranfrageErstellenComponent implements OnInit {
     endAddress: new FormControl('',[Validators.required]),
     carType: new FormControl('',[Validators.required]),
     note: new FormControl()
-  },{validators: this.noSameStartEndValidator.bind(this)});
+  }
+  ,{validators: this.noSameStartEndValidator.bind(this)}
+  );
 
   lat: number | null = null;
   lon: number | null = null;
@@ -73,89 +75,87 @@ export class FahranfrageErstellenComponent implements OnInit {
   filteredStartAddressOptions!: Observable<Array<LocationDTO>>;
   filteredEndAddressOptions!:Observable<Array<LocationDTO>>;
 
-   // filteredStartAddressOptions: LocationDTO[] = [];
-   // filteredEndAddressOptions: LocationDTO[] = [];
-
 
   noSameStartEndValidator(group:AbstractControl):ValidationErrors| null{
     const start = group.get('startAddress')?.value;
     const end = group.get('endAddress')?.value;
 
-    if (start && end && start.displayName=== end.displayName){
+    if (start && end && start.display_name === end.display_name){
       return {sameAddress: true};
     }
     return null;
   };
-
-      // this.fahranfrageForm.get("startAddress")!.valueChanges.pipe(
-      //   debounceTime(300),
-      //   distinctUntilChanged(),
-      //   switchMap(query => this.tripService.suggestions(this.extractSearchValue(query)).pipe(
-      //     catchError(err => {
-      //       console.error('Start-Suche Fehler:', err);
-      //       return of([]); // leere Liste zurückgeben, falls Fehler
-      //     })
-      //   ))
-      // ).subscribe(res => {
-      //   console.log('Startadresse Optionen:', res);
-      //   this.filteredStartAddressOptions = res;
-      // });
   ngOnInit(): void {
     this.filteredStartAddressOptions = this.fahranfrageForm.get("startAddress")!.valueChanges.pipe(
+      tap(value => console.log('Eingabewert:', value)),
       debounceTime(300),
       distinctUntilChanged(),
-      switchMap(query => this.tripService.suggestions(this.extractSearchValue(query)).pipe(
-        catchError(err => {
-          console.error('Start-Suche Fehler:', err);
-          return of([]); // leere Liste zurückgeben, falls Fehler
-        })
-      ))
-    )
-    //   .subscribe(res => {
-    //   console.log('Startadresse Optionen:', res);
-    //   this.filteredStartAddressOptions = res;
-    // });
+      switchMap(query => {
+        const searchValue = this.extractSearchValue(query);
+        if (!searchValue) return of([]);
+
+        return this.tripService.suggestions(searchValue).pipe(
+          tap(response => {
+            console.log('Backend-Antwort:', response); // Debug-Logging
+            // Stellen Sie sicher, dass die Antwort ein Array ist
+            return Array.isArray(response) ? response : [];
+          }),
+
+          catchError(error => {
+            console.error('Fehler bei der Adresssuche:', error);
+            return of([]);
+          })
+        );
+      })
+    );
     this.filteredEndAddressOptions = this.fahranfrageForm.get("endAddress")!.valueChanges.pipe(
       debounceTime(300),
       distinctUntilChanged(),
-      switchMap(query => this.tripService.suggestions(this.extractSearchValue(query)).pipe(
-        catchError(err => {
-          console.error('Start-Suche Fehler:', err);
-          return of([]); // leere Liste zurückgeben, falls Fehler
-        })
-      ))
-    )
+      switchMap(query => {
+        const searchValue = this.extractSearchValue(query);
+        if (!searchValue) return of([]);
+
+        return this.tripService.suggestions(searchValue).pipe(
+          catchError(error => {
+            console.error('Fehler bei der Adresssuche:', error);
+            return of([]);
+          })
+        );
+      })
+    );
+
+  }
+  // ngOnInit(): void {
+  //   this.filteredStartAddressOptions = this.fahranfrageForm.get("startAddress")!.valueChanges.pipe(
+  //     debounceTime(300),
+  //     distinctUntilChanged(),
+  //     switchMap(query => this.tripService.suggestions(this.extractSearchValue(query)).pipe(
+  //       catchError(err => {
+  //         console.error('Start-Suche Fehler:', err);
+  //         return of([]); // leere Liste zurückgeben, falls Fehler
+  //       })
+  //     ))
+  //   )
+  //   //   .subscribe(res => {
+  //   //   console.log('Startadresse Optionen:', res);
+  //   //   this.filteredStartAddressOptions = res;
+  //   // });
+  //   this.filteredEndAddressOptions = this.fahranfrageForm.get("endAddress")!.valueChanges.pipe(
+  //     debounceTime(300),
+  //     distinctUntilChanged(),
+  //     switchMap(query => this.tripService.suggestions(this.extractSearchValue(query)).pipe(
+  //       catchError(err => {
+  //         console.error('Start-Suche Fehler:', err);
+  //         return of([]); // leere Liste zurückgeben, falls Fehler
+  //       })
+  //     ))
+  //   )
     //   .subscribe(res => {
     //   console.log('Startadresse Optionen:', res);
     //   this.filteredEndAddressOptions = res;
     // });
 
-    // this.fahranfrageForm.controls['startAddress'].valueChanges.subscribe((value: string) => {
-    //   if (value) {
-    //     this.tripService.suggestions(value).subscribe((res: LocationDTO[]) => {
-    //       this.filteredStartAddressOptions = res;
-    //     });
-    //   }
-    // });
-    //
-    // this.fahranfrageForm.controls['endAddress'].valueChanges.subscribe((value: string) => {
-    //   if (value) {
-    //     this.tripService.suggestions(value).subscribe((res: LocationDTO[]) => {
-    //       this.filteredEndAddressOptions = res;
-    //     });
-    //   }
-    // });
-    // this.filteredStartAddressOptions = this.fahranfrageForm.get("startAddress")!.valueChanges.pipe(
-    //     debounceTime(300),
-    //     distinctUntilChanged(),
-    //     switchMap(query =>
-    //       this.tripService.suggestions(this.extractSearchValue(query)).pipe(
-    //         catchError(err => {
-    //           console.error('Start-Suche Fehler:', err);
-    //           return of([]);
-    //         })
-    //       )
-    //     )
+
     //   )
     // this.filteredEndAddressOptions = this.fahranfrageForm.get("endAddress")!.valueChanges.pipe(
     //     debounceTime(300),
@@ -172,7 +172,7 @@ export class FahranfrageErstellenComponent implements OnInit {
     //   .subscribe((res: LocationDTO[]) => {
     //      this.filteredEndAddressOptions = res;
     //    });
-    }
+
   currentLocation() {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition((position) => {
@@ -191,31 +191,25 @@ export class FahranfrageErstellenComponent implements OnInit {
     }
 
   }
-  optionToString(option: any): string {
-    if (typeof option === 'string') return option;
-    return option?.displayName ?? option?.startLocation ?? 'Unbekannt';
-  }
+  // optionToString(option: any): string {
+  //   if (typeof option === 'string') return option;
+  //   return option?.displayName ?? option?.startLocation ?? 'Unbekannt';
+  // }
   // optionToString(option: TripRequestDTO | string): string {
   //   if (typeof option === 'string') return option;
   //   return ${option?.startLocation ?? ''} → ${option?.endLocation ?? ''};
   // }
 
-  // optionToString(option: TripRequestDTO | string): string {
+  // optionToString(option: LocationDTO | string): string {
   //   if (typeof option === 'string') return option;
-  //   return `${option.displayName} (${option.latitude}, ${option.longitude})`;
+  //   return `${option.display_name} (${option.lat}, ${option.lon})`;
   // }
+  optionToString = (option: LocationDTO | string): string => {
+    if (!option) return '';
+    if (typeof option === 'string') return option;
+    return option.display_name ? `${option.display_name}` : '';
+  }
 
-
-
-  // optionToString(option: any): string {
-  //   return  typeof option === 'string' ? option : option?.displayName || '';
-  // }
-
-  // swapLocations() {
-  //   const temp = this.startAddress;
-  //   this.startAddress = this.endAddress;
-  //   this.endAddress = temp;
-  // }
 
   userHasActiveRideRequest() {
     // check if user has an activ ride from backend
@@ -239,6 +233,7 @@ export class FahranfrageErstellenComponent implements OnInit {
 //to extract string given in inputbox
   private extractSearchValue(value: any): string {
     if (typeof value === 'string') return value;
+    if (value.display_name) return value.display_name;
     if (value?.displayName) return value.displayName;
     return '';
   }
@@ -256,17 +251,25 @@ export class FahranfrageErstellenComponent implements OnInit {
     const form = this.fahranfrageForm.value;
     const tripRequest: TripRequestDTO = {
       email: this.auth.getEmailFromAccessToken() || 'user@example.com', // dynamisch aus Auth holen
-      startLocation: form.startAddress,
-      endLocation: form.endAddress,
+      startLocation: {
+        display_name: form.startAddress.displayName,
+        lat: form.startAddress.latitude,
+        lon: form.startAddress.longitude
+      },
+      endLocation: {
+        display_name: form.endAddress.displayName,
+        lat: form.endAddress.latitude,
+        lon: form.endAddress.longitude
+      },
       carType: form.carType,
-      note: '',
-      status:'ACTIVE'
-
+      note: form.note || '',
+      status: 'ACTIVE'
     };
 
+
     this.tripService.create(tripRequest).subscribe({
-      next: () => {
-        console.log('Fahrt erfolgreich erstellt!');
+      next: (response) => {
+        console.log('Fahrt erfolgreich erstellt!',response);
         alert('Fahrt wurde erfolgreich erstellt!');
         this.resetForm();
         this.router.navigate(['/aktiveFahranfrage']);
@@ -276,8 +279,6 @@ export class FahranfrageErstellenComponent implements OnInit {
         alert('Fehler beim Erstellen der Fahrt.');
       }
     });
-
-
     // nut zum debugging
     console.log('Fahranfrage erstellt:', formData )
   }

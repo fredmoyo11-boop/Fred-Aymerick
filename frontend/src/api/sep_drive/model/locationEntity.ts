@@ -12,7 +12,7 @@
 
 
 /**
- * Entity for Location
+ * The end location of the request.
  */
 export interface LocationEntity { 
     /**
@@ -27,17 +27,8 @@ export interface LocationEntity {
      * The modification time of the entity.
      */
     modificationTime: number;
-    /**
-     * Display name of location
-     */
-    displayName?: string;
-    /**
-     * Latitude of location
-     */
-    latitude: number;
-    /**
-     * Longitude of location
-     */
-    longitude: number;
+    display_name?: string;
+    lat?: number;
+    lon?: number;
 }
 

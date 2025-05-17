@@ -1,6 +1,5 @@
 import {Component, OnInit} from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { MatSlideToggle } from '@angular/material/slide-toggle';
 import { MatCard, MatCardActions, MatCardContent } from '@angular/material/card';
 import { FormsModule } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
@@ -18,7 +17,6 @@ import { TripRequestDTO } from '../../../api/sep_drive';
   imports: [
     MatButton,
     RouterLink,
-    MatSlideToggle,
     MatCardContent,
     MatCard,
     MatCardActions,
@@ -40,6 +38,7 @@ export class AktiveFahranfrageComponent implements OnInit{
   ) {}
 
   ngOnInit() {
+    console.log('Email:',this.getCurrentUserEmail());
     this.activeRide = this.rideRequestService.getRideRequest();
     const email = this.getCurrentUserEmail();
     if (!email) {
@@ -47,16 +46,7 @@ export class AktiveFahranfrageComponent implements OnInit{
       alert('Bitte melden Sie sich an, um Ihre Fahranfrage zu sehen.');
       return;
     }
-
-    this.tripService.view(email).subscribe({
-      next: (data) => this.tripData = data,
-      error: (err) => {
-        console.error('Fehler beim Laden der Fahranfrage:', err);
-        alert('Ihre Fahranfrage konnte nicht geladen werden. Bitte versuchen Sie es später erneut.');
-      }
-    });
   }
-
   deleteRequest() {
     const dialogRef = this.dialogRef.open(DeleteRideDialogComponent);
     dialogRef.afterClosed().subscribe(result => {
@@ -66,7 +56,6 @@ export class AktiveFahranfrageComponent implements OnInit{
           alert('Bitte melden Sie sich an, um Ihre Fahranfrage zu löschen.');
           return;
         }
-
         this.tripService.deleteRequest(email).subscribe({
           next: () => {
             this.rideRequestService.clearRideRequest();

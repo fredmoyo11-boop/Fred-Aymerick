@@ -6,8 +6,10 @@ import {MatIcon} from '@angular/material/icon';
 import {Router, RouterLink} from '@angular/router';
 import {MatDivider} from '@angular/material/list';
 import {AuthService, LoginRequest, OtpRequest} from '../../../api/sep_drive';
-import {of} from 'rxjs';
+import {catchError, of} from 'rxjs';
 import {AngularAuthService} from '../../services/angular-auth.service';
+import {HttpErrorResponse} from '@angular/common/http';
+import {MatSnackBar} from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-login',
@@ -31,6 +33,7 @@ export class LoginComponent {
   router = inject(Router)
   authService = inject(AuthService)
   angularAuthService = inject(AngularAuthService)
+  private _snackBar = inject(MatSnackBar)
 
   // regex for common email addresses, not RFC 5322 conform, for our purpose enough
   emailRegex = /^[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/;
@@ -40,7 +43,9 @@ export class LoginComponent {
     password: new FormControl("", [Validators.required, Validators.minLength(1)])
   })
 
-  sentLoginRequest: boolean = false;
+  loginRequestSent: boolean = false;
+  loginRequestErrorMessage: string = "";
+
 
   @ViewChildren("otpInput") inputs!: QueryList<ElementRef>
 
@@ -66,11 +71,21 @@ export class LoginComponent {
 
     this.authService.login(authRequest).subscribe({
       next: res => {
-        console.log(res);
-        this.sentLoginRequest = true;
+        this.loginRequestSent = true;
       },
-      error: error => {
-        console.error(error);
+      error: err => {
+        this.loginRequestErrorMessage = "";
+        if (err instanceof HttpErrorResponse && err.status === 401) {
+          const errorMessage = err.error.message;
+          if (errorMessage.includes("credentials")) {
+            this.loginRequestErrorMessage = "Ungültige Benutzerdaten. Benutzername oder Passwort falsch."
+          }
+        }
+        if (!this.loginRequestErrorMessage) {
+          this.loginRequestErrorMessage = "Unbekannter Fehler beim Login. Bitte versuche es später erneut."
+        }
+        this.loginForm.reset();
+        this._snackBar.open(this.loginRequestErrorMessage, "Okay")
       }
     })
   }

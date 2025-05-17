@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sep.backend.triprequest.nominatim.LocationEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,14 +21,17 @@ public class LocationDTO {
 
     @Schema(description = "Display name of location", requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty("display_name")
+    @NotBlank
     private String displayName;
 
     @Schema(description = "Latitude of location", requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty("lat")
+    @NotNull
     private Double latitude;
 
     @Schema(description = "Longitude of location", requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty("lon")
+    @NotNull
     private Double longitude;
 
 

@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -27,12 +28,12 @@ public class TripRequestController {
         this.nominatimService = nominatimService;
     }
 
-    @PostMapping("/search")
+    @GetMapping("/search")
     @Operation(description = "Provides a suggested list of locations",
             tags = {Tags.TRIP_REQUEST},
             responses = {
                 @ApiResponse(responseCode = HttpStatus.OK, description = "Suggested list successful send",
-                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = TripRequestDTO.class))))})
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = LocationDTO.class))))})
     public List<LocationDTO> suggestions(@Parameter(description = "Searched Location") @RequestParam String search) throws Exception {
         return nominatimService.getSuggestions(search);
     }
@@ -43,7 +44,7 @@ public class TripRequestController {
             responses = {
                 @ApiResponse(responseCode = HttpStatus.OK, description = "Trip request created successfully.",
                     content = @Content(schema = @Schema(implementation = TripRequestEntity.class)))})
-     public void create(@RequestBody TripRequestDTO tripRequestDTO) {
+     public void create(@RequestBody @Valid TripRequestDTO tripRequestDTO) {
         tripRequestService.createTripRequest(tripRequestDTO);
 
     }

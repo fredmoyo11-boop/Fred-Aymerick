@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,12 +28,12 @@ public class LocationEntity extends AbstractEntity {
     @Schema(description = "Display name of location")
     String displayName;
 
-    @NotBlank
+    @NotNull
     @Column(name = "lat")
     @Schema(description = "Latitude of location")
     Double latitude;
 
-    @NotBlank
+    @NotNull
     @Column(name = "lon")
     @Schema(description = "Longitude of location")
     Double longitude;

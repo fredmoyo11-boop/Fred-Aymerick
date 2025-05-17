@@ -7,9 +7,11 @@ import com.sep.backend.triprequest.CarType;
 import com.sep.backend.triprequest.TripRequestDTO;
 import com.sep.backend.triprequest.TripRequestService;
 import com.sep.backend.triprequest.TripRequestStatus;
+import com.sep.backend.triprequest.nominatim.NominatimService;
 import com.sep.backend.triprequest.nominatim.data.LocationDTO;
 import com.sep.backend.triprequest.nominatim.LocationEntity;
 import com.sep.backend.triprequest.nominatim.LocationRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
+
+import java.util.List;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -30,6 +34,9 @@ class TripRequestTest {
 
     @Autowired
     private  TestRestTemplate restTemplate;
+
+    @Autowired
+    NominatimService nominatimService;
 
     @Autowired
     private  CustomerRepository customerRepository;
@@ -59,8 +66,15 @@ class TripRequestTest {
         endLocation.setDisplayName("End");
         endLocation.setLatitude(55.6);
         endLocation.setLongitude(11.7);
-        locationRepository.save(startLocation);
         locationRepository.save(endLocation);
+        locationRepository.save(startLocation);
+    }
+
+    @AfterEach
+    public void tearDown() {
+        locationRepository.deleteAll();
+        customerRepository.deleteAll();
+
     }
 
     @Test
@@ -92,7 +106,35 @@ class TripRequestTest {
     //TODO Test, if List of locations gets created when searching coordinates
 
     //TODO Test, if List of locations gets created when searching Point of Interest
+    @Test
+    void testGetSuggestionsWithCityBerlin() throws Exception {
+        List<LocationDTO> results = nominatimService.getSuggestions("Berlin");
 
+        // Erwartung: mindestens 1 Vorschlag
+        assertFalse(results.isEmpty(), "Es sollte mindestens ein Vorschlag für 'Berlin' kommen");
+
+        // Optionale Prüfung: Ist Berlin wirklich dabei?
+        boolean enthältBerlin = results.stream()
+                .anyMatch(dto -> dto.getDisplayName().toLowerCase().contains("berlin"));
+
+        assertTrue(enthältBerlin, "Mindestens ein Vorschlag sollte 'Berlin' enthalten");
+    }
+
+    @Test
+    void testGetSuggestionsWithGibberishShouldReturnNothing() throws Exception {
+        List<LocationDTO> results = nominatimService.getSuggestions("asdfghjkl");
+
+        // Erwartung: keine Vorschläge
+        assertTrue(results.isEmpty(), "Für Unsinnige Eingabe sollte keine Adresse zurückkommen");
+    }
+
+    @Test
+    void testGetSuggestionsWithPartialInputReturnsMultipleResults() throws Exception {
+        List<LocationDTO> results = nominatimService.getSuggestions("Ber");
+
+        // Erwartung: mehrere Vorschläge
+        assertTrue(results.size() >= 3, "Für Teil-Eingabe 'Ber' sollte es mehrere Ergebnisse geben");
+    }
     /*@Test
     void upsertTripRequest() {
         TripRequestDTO dto = new TripRequestDTO();

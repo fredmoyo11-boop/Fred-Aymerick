@@ -14,14 +14,14 @@
 /**
  * Represents a login auth request.
  */
-export interface LoginRequest { 
+export interface LoginRequest {
     /**
-     * The email of the user.
+     * The unique identifier of the user. Either the email or the username.
      */
-    email?: string;
+    uniqueIdentifier?: string;
     /**
      * The password of the user.
      */
-    password?: string;
+    password: string;
 }
 

@@ -8,9 +8,11 @@ configuration.ts
 encoder.ts
 git_push.sh
 index.ts
+model/accountDTO.ts
 model/authResponse.ts
 model/loginRequest.ts
 model/models.ts
 model/otpRequest.ts
+model/rating.ts
 model/stringResponse.ts
 variables.ts

@@ -1,0 +1,11 @@
+<div class="snackbar-content">
+  <span>{{ data.message }}</span>
+  <div class="button-group">
+    @if (data.actionButtonClick && data.actionButtonIcon) {
+      <button mat-icon-button (click)="onActionClick()">
+        <mat-icon>{{ data.actionButtonIcon }}</mat-icon>
+      </button>
+    }
+    <button mat-button (click)="onDismissClick()">Okay</button>
+  </div>
+</div>

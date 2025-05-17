@@ -3,6 +3,8 @@ package com.sep.backend.trip.request;
 import com.sep.backend.CarType;
 import com.sep.backend.ErrorMessages;
 import com.sep.backend.NotFoundException;
+import com.sep.backend.account.DriverRepository;
+import com.sep.backend.entity.DriverEntity;
 import com.sep.backend.entity.TripRequestEntity;
 import com.sep.backend.trip.nominatim.data.LocationDTO;
 import com.sep.backend.entity.LocationEntity;
@@ -18,10 +20,12 @@ public class TripRequestService {
     private final TripRequestRepository tripRequestRepository;
 
     private final LocationRepository locationRepository;
+    private final DriverRepository DriverRepository;
 
-    public TripRequestService(TripRequestRepository tripRequestRepository, LocationRepository locationRepository) {
+    public TripRequestService(TripRequestRepository tripRequestRepository, LocationRepository locationRepository, DriverRepository driverRepository) {
         this.tripRequestRepository = tripRequestRepository;
         this.locationRepository = locationRepository;
+        DriverRepository = driverRepository;
     }
 
     public TripRequestEntity getRequestByEmail(String email, String status) throws NotFoundException {
@@ -73,6 +77,8 @@ public class TripRequestService {
 
     public void createTripRequest(@Valid TripRequestDTO tripRequestDTO) {
         String email = tripRequestDTO.getEmail();
+        DriverEntity driver = DriverRepository.findByEmail(email).orElseThrow(() -> new NotFoundException(ErrorMessages.NOT_FOUND_DRIVER));
+
 
         if (!CarType.isValidCarType(tripRequestDTO.getCarType())) {
             throw new TripRequestException(ErrorMessages.INVALID_CAR_TYPE);
@@ -81,6 +87,8 @@ public class TripRequestService {
             throw new TripRequestException(ErrorMessages.ALREADY_EXISTS_TRIPREQUEST);
         }
 
+        driver.setCarType(tripRequestDTO.getCarType());
+        DriverRepository.save(driver);
         LocationEntity startAddress = convertLocationDTOToEntity(tripRequestDTO.getStartLocation());
         LocationEntity endAddress = convertLocationDTOToEntity(tripRequestDTO.getEndLocation());
 

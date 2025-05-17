@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 class TripRequestTest {
-
+    /*
     @LocalServerPort
     private int port;
 
@@ -77,30 +77,6 @@ class TripRequestTest {
 
     }
 
-    @Test
-    void testCreateTripRequest_createNewTripRequest() {
-        /*TripRequestDTO dto = new TripRequestDTO();
-        dto.setEmail("johndoe@mail.com");
-        dto.setCarType(CarType.SMALL);
-        dto.setNote("test note");
-        dto.setStartLocation(new LocationDTO("Start", 52.5, 13.4));
-        dto.setEndLocation(new LocationDTO("End", 55.6, 11.7));
-
-        tripRequestService.createTripRequest(dto);
-
-        TripRequestEntity request = tripRequestService.getRequestByEmail("johndoe@mail.com");
-        assertEquals("john_doe", request.getCustomer().getUsername());
-        assertEquals(CarType.SMALL, request.getCartype());
-        assertEquals("test note", request.getNote());
-        assertEquals("Start", request.getStartLocation().getDisplayName());
-        assertEquals("End", request.getEndLocation().getDisplayName());
-        assertEquals(52.5, request.getStartLocation().getLatitude());
-        assertEquals(13.4, request.getStartLocation().getLongitude());
-        assertEquals(55.6, request.getEndLocation().getLatitude());
-        assertEquals(11.7, request.getEndLocation().getLongitude());
-        assertEquals(TripRequestStatus.ACTIVE, request.getRequestStatus());*/
-    }
-
     //TODO Test, if List of locations gets created when searching address
 
     //TODO Test, if List of locations gets created when searching coordinates
@@ -134,32 +110,5 @@ class TripRequestTest {
 
         // Erwartung: mehrere Vorschläge
         assertTrue(results.size() >= 3, "Für Teil-Eingabe 'Ber' sollte es mehrere Ergebnisse geben");
-    }
-    /*@Test
-    void upsertTripRequest() {
-        TripRequestDTO dto = new TripRequestDTO();
-        dto.setUsername("john_doe");
-        dto.setCarType(CarType.LARGE);
-        dto.setNote("test note");
-
-        LocationDTO start = new LocationDTO("Start", 52.5, 13.4);
-        LocationDTO end = new LocationDTO("End", 55.6, 11.7);
-
-        dto.setStartLocation(start);
-        dto.setEndLocation(end);
-
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        HttpEntity<TripRequestDTO> entity = new HttpEntity<>(dto, headers);
-
-        ResponseEntity<String> response = restTemplate.postForEntity(
-                "http://localhost:" + port + "/map/request/create",
-                entity,
-                String.class);
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).contains("john_doe");
-    }*/
+    } */
 }

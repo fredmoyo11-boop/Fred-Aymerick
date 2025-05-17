@@ -1,7 +1,7 @@
-package com.sep.backend.triprequest;
+package com.sep.backend.trip.request;
 
 import com.sep.backend.entity.TripRequestEntity;
-import com.sep.backend.triprequest.nominatim.data.LocationDTO;
+import com.sep.backend.trip.nominatim.data.LocationDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 import jakarta.validation.constraints.NotBlank;

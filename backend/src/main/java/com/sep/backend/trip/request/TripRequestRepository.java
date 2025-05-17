@@ -1,8 +1,6 @@
-package com.sep.backend.triprequest;
+package com.sep.backend.trip.request;
 
 import com.sep.backend.entity.TripRequestEntity;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -1,7 +1,6 @@
 package com.sep.backend.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -10,15 +9,27 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
 @MappedSuperclass
 public abstract class AccountEntity extends AbstractEntity {
+
     @Email
     @NotBlank
     @Column(name = "email", unique = true, nullable = false)
     private String email;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "account_id")
+    @NotNull
+    private List<Rating> rating = new ArrayList<>();
+
+    @NotNull
+    @Column(name = "totalNumberOfRides", nullable = false)
+    private  int totalNumberOfRides =0;
 
     @NotBlank
     @Column(name = "username", unique = true, nullable = false)

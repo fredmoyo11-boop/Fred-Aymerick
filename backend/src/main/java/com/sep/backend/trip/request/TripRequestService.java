@@ -1,15 +1,15 @@
-package com.sep.backend.triprequest;
+package com.sep.backend.trip.request;
 
+import com.sep.backend.CarType;
 import com.sep.backend.ErrorMessages;
 import com.sep.backend.NotFoundException;
 import com.sep.backend.entity.TripRequestEntity;
-import com.sep.backend.triprequest.nominatim.data.LocationDTO;
-import com.sep.backend.triprequest.nominatim.LocationEntity;
-import com.sep.backend.triprequest.nominatim.LocationRepository;
+import com.sep.backend.trip.nominatim.data.LocationDTO;
+import com.sep.backend.entity.LocationEntity;
+import com.sep.backend.trip.nominatim.data.LocationRepository;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
 
-import java.security.Principal;
 import java.util.Objects;
 
 @Service

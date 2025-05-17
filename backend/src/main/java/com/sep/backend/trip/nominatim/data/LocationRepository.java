@@ -1,5 +1,6 @@
-package com.sep.backend.triprequest.nominatim;
+package com.sep.backend.trip.nominatim.data;
 
+import com.sep.backend.entity.LocationEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

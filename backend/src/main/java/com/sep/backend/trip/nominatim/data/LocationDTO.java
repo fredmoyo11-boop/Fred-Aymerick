@@ -1,8 +1,8 @@
-package com.sep.backend.triprequest.nominatim.data;
+package com.sep.backend.trip.nominatim.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.sep.backend.triprequest.nominatim.LocationEntity;
+import com.sep.backend.entity.LocationEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

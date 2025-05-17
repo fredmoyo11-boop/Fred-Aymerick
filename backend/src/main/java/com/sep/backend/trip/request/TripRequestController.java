@@ -1,10 +1,10 @@
-package com.sep.backend.triprequest;
+package com.sep.backend.trip.request;
 
 import com.sep.backend.HttpStatus;
 import com.sep.backend.Tags;
 import com.sep.backend.entity.TripRequestEntity;
-import com.sep.backend.triprequest.nominatim.data.LocationDTO;
-import com.sep.backend.triprequest.nominatim.NominatimService;
+import com.sep.backend.trip.nominatim.data.LocationDTO;
+import com.sep.backend.trip.nominatim.NominatimService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -12,13 +12,14 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
+import javax.print.attribute.standard.Media;
 import java.util.List;
 
 @RestController
-@RequestMapping("/map")
+@RequestMapping(value = "/api/trip/request", produces = MediaType.APPLICATION_JSON_VALUE)
 public class TripRequestController {
     private final TripRequestService tripRequestService;
     private final NominatimService nominatimService;
@@ -38,7 +39,7 @@ public class TripRequestController {
         return nominatimService.getSuggestions(search);
     }
 
-    @PostMapping("/request/create")
+    @PostMapping("")
     @Operation(description = "Creates trip request and saves to repository",
             tags= {Tags.TRIP_REQUEST},
             responses = {
@@ -46,10 +47,9 @@ public class TripRequestController {
                     content = @Content(schema = @Schema(implementation = TripRequestEntity.class)))})
      public void create(@RequestBody @Valid TripRequestDTO tripRequestDTO) {
         tripRequestService.createTripRequest(tripRequestDTO);
-
     }
 
-    @GetMapping("/request/view")
+    @GetMapping("/current")
     @Operation(description = "Shows trip request of customer",
             tags = {Tags.TRIP_REQUEST},
             responses = {
@@ -59,7 +59,7 @@ public class TripRequestController {
         return tripRequestService.showTripRequest(email); //TODO Change email to principal
     }
 
-    @DeleteMapping("/request/view/delete")
+    @DeleteMapping("/current")
     @Operation(description = "Deletes trip request from repository",
             tags= {Tags.TRIP_REQUEST},
             responses = {

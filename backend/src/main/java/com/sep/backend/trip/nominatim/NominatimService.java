@@ -1,8 +1,8 @@
-package com.sep.backend.triprequest.nominatim;
+package com.sep.backend.trip.nominatim;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sep.backend.triprequest.nominatim.data.LocationDTO;
+import com.sep.backend.trip.nominatim.data.LocationDTO;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
@@ -27,6 +27,9 @@ public class NominatimService {
                             .build())
                     .retrieve()
                     .body(String.class);
+
+            System.out.println(response);
+
             return mapper.readValue(response, new TypeReference<List<LocationDTO>>() {});
         } catch (Exception e) {
             throw new Exception("Could not find location", e);

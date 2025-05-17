@@ -1,29 +1,9 @@
 package com.sep.backend;
 
-import com.sep.backend.account.CustomerRepository;
-import com.sep.backend.entity.CustomerEntity;
-import com.sep.backend.entity.TripRequestEntity;
-import com.sep.backend.triprequest.CarType;
-import com.sep.backend.triprequest.TripRequestDTO;
-import com.sep.backend.triprequest.TripRequestService;
-import com.sep.backend.triprequest.TripRequestStatus;
-import com.sep.backend.triprequest.nominatim.NominatimService;
-import com.sep.backend.triprequest.nominatim.data.LocationDTO;
-import com.sep.backend.triprequest.nominatim.LocationEntity;
-import com.sep.backend.triprequest.nominatim.LocationRepository;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.util.List;
-
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")

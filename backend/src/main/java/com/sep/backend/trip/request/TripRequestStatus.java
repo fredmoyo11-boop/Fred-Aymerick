@@ -1,4 +1,4 @@
-package com.sep.backend.triprequest;
+package com.sep.backend.trip.request;
 
 public class TripRequestStatus {
     public static final String ACTIVE = "ACTIVE"; //When triprequest created

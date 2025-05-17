@@ -131,7 +131,7 @@ class AccountServiceTest {
     @Test
     void getAccountprofile() {
 
-        AccountDTO driver = accountService.getAccountprofile("ok@example.com");
+        AccountDTO driver = accountService.getAccountprofile("hii");
         assertEquals("hii", driver.getUsername());
         assertEquals("ok@example.com", driver.getEmail());
         assertEquals("DRIVER", driver.getRole());
@@ -143,8 +143,7 @@ class AccountServiceTest {
         assertEquals(5, driver.getTotalNumberOfRides());
 
 
-
-        AccountDTO CustomerResult = accountService.getAccountprofile("test@example.com");
+        AccountDTO CustomerResult = accountService.getAccountprofile("test");
         assertEquals("test", CustomerResult.getUsername());
         assertEquals("test@example.com", CustomerResult.getEmail());
         assertEquals("CUSTOMER", CustomerResult.getRole());
@@ -168,7 +167,6 @@ class AccountServiceTest {
         assertEquals("CUSTOMER", result.get(0).getRole());
         assertEquals("DRIVER", result.get(1).getRole());
     }
-
 
     @Test
     void saveAccountChanges() {

@@ -171,13 +171,13 @@ public class AccountService {
         return accountDTOS;
     }
 
-    @Schema(description = "get the account of  user BASED OF THE email .Die Methode ist erstmal für Unterstützung des frontend Features : klickbares profil gedacht")
-    public AccountDTO getAccountprofile(String email) {
-        Optional<CustomerEntity> customerEntity = customerRepository.findByEmail(email);
+    @Schema(description = "get the account of  user BASED OF THE username .Die Methode ist erstmal für Unterstützung des frontend Features : klickbares profil gedacht")
+    public AccountDTO getAccountprofile(String username) {
+        Optional<CustomerEntity> customerEntity = customerRepository.findByUsername(username);
         if (customerEntity.isPresent()) {
             return getCustomerDTO(customerEntity.get());
         } else {
-            Optional<DriverEntity> driverEntity = driverRepository.findByEmail(email);
+            Optional<DriverEntity> driverEntity = driverRepository.findByUsername(username);
             if (driverEntity.isPresent()) {
                 return getDriverDTO(driverEntity.get());
             }else {
@@ -360,7 +360,7 @@ public class AccountService {
 
     }
 
-    private void updateDriver(String email, UpdateAccountDTO updateAccountDTO, MultipartFile file) {
+    public void updateDriver(String email, UpdateAccountDTO updateAccountDTO, MultipartFile file) {
         try {
             DriverEntity driverEntity = driverRepository.findByEmail(email)
                     .orElseThrow(() -> new NotFoundException(ErrorMessages.NOT_FOUND_USER));

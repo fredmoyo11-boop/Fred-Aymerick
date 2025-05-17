@@ -60,14 +60,14 @@ public class AccountController {
     }
 
 
-    @Operation(summary = "Gibt das Benutzerprofil zurück", description = "Liefert die vollständigen Profildaten eines Benutzers basierend auf der email.",
+    @Operation(summary = "Gibt das Benutzerprofil zurück", description = "Liefert die vollständigen Profildaten eines Benutzers basierend auf der username.",
             tags = {Tags.ACCOUNT},
             responses = {
             @ApiResponse(responseCode = HttpStatus.OK, description = "Benutzerprofil erfolgreich geladen.",
                          content = @Content(schema = @Schema(implementation = AccountDTO.class)))}
     )
-    @GetMapping("/{email}")
-    public ResponseEntity<AccountDTO> getAccountprofile(@PathVariable String email) {
-        return ResponseEntity.ok(accountService.getAccountprofile(email));
+    @GetMapping("/{username}")
+    public ResponseEntity<AccountDTO> getAccountprofile(@PathVariable String username) {
+        return ResponseEntity.ok(accountService.getAccountprofile(username));
     }
 }

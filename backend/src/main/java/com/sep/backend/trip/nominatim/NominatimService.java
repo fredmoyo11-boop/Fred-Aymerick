@@ -1,10 +1,10 @@
-package com.sep.backend.triprequest.nominatim;
+package com.sep.backend.trip.nominatim;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sep.backend.trip.nominatim.data.LocationDTO;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 

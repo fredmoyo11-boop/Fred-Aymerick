@@ -1,4 +1,4 @@
-package com.sep.backend.account;
+package com.sep.backend;
 
 public class CarType {
     public static final String SMALL = "SMALL";

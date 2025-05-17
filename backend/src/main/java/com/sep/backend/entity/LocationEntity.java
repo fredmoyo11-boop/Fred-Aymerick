@@ -1,9 +1,10 @@
-package com.sep.backend.triprequest.nominatim;
+package com.sep.backend.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.sep.backend.entity.AbstractEntity;
+import com.sep.backend.trip.nominatim.data.LocationDTO;
 import jakarta.persistence.Entity;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,7 +27,7 @@ public class LocationEntity extends AbstractEntity {
     @JsonProperty("lon")
     Double longitude;
 
-    public static LocationEntity from(LocationDTO locationDTO) {
+    public static LocationEntity from(@Valid LocationDTO locationDTO) {
         LocationEntity locationEntity = new LocationEntity();
         locationEntity.setDisplayName(locationDTO.getDisplayName());
         locationEntity.setLatitude(locationDTO.getLatitude());

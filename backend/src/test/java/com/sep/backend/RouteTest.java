@@ -354,6 +354,7 @@ public class RouteTest {
 //        assertEquals(WaypointType.POINT, waypointRepository.findByRouteIdAndIndex(Long.valueOf(route2Id),431L).orElseThrow().getType());
 //        assertEquals(WaypointType.END, waypointRepository.findByRouteIdAndIndex(Long.valueOf(route2Id),432L).orElseThrow().getType());
 //        assertEquals(1L, waypointRepository.countByRouteIdAndType(Long.valueOf(route2Id), WaypointType.MID));
+//        assertEquals(430L, waypointRepository.countByRouteIdAndType(Long.valueOf(route2Id), WaypointType.POINT));
 //
 //        assertEquals(2, waypointRepository.countByRouteIdAndType(Long.valueOf(route3Id), WaypointType.MID));
 //        assertEquals("6.793248", waypointRepository.findByRouteIdAndIndex(Long.valueOf(route3Id),0L).orElseThrow().getLongitude());

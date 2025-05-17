@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sep.backend.entity.LocationEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,22 +19,22 @@ public class LocationDTO {
 
     @Schema(description = "Display name of location", requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty("display_name")
-    private String displayName;
+    private String display_name;
 
     @Schema(description = "Latitude of location", requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty("lat")
-    private Double latitude;
+    private Double lat;
 
     @Schema(description = "Longitude of location", requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty("lon")
-    private Double longitude;
+    private Double lon;
 
 
     public static LocationDTO from(LocationEntity locationEntity) {
         LocationDTO dto = new LocationDTO();
-        dto.setLatitude(locationEntity.getLatitude());
-        dto.setLongitude(locationEntity.getLongitude());
-        dto.setDisplayName(locationEntity.getDisplayName());
+        dto.setLon(locationEntity.getLat());
+        dto.setLon(locationEntity.getLon());
+        dto.setDisplay_name(locationEntity.getDisplay_name());
         return dto;
     }
 }

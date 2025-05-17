@@ -1,7 +1,6 @@
 package com.sep.backend.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sep.backend.trip.nominatim.data.LocationDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
@@ -25,23 +24,23 @@ public class LocationEntity extends AbstractEntity {
     @NotBlank
     @Schema(description = "The display name of the location.", requiredMode = Schema.RequiredMode.REQUIRED)
     @Column(name = "display_name")
-    String displayName;
+    String display_name;
 
     @NotNull
     @Schema(description = "The latitude of the location.", requiredMode = Schema.RequiredMode.REQUIRED)
-    @Column(name = "lat")
-    Double latitude;
+    @Column(name = "latitude")
+    Double lat;
 
     @NotNull
     @Schema(description = "The longitude of the location.", requiredMode = Schema.RequiredMode.REQUIRED)
-    @Column(name = "lon")
-    Double longitude;
+    @Column(name = "longitude")
+    Double lon;
 
     public static LocationEntity from(@Valid LocationDTO locationDTO) {
         LocationEntity locationEntity = new LocationEntity();
-        locationEntity.setDisplayName(locationDTO.getDisplayName());
-        locationEntity.setLatitude(locationDTO.getLatitude());
-        locationEntity.setLongitude(locationDTO.getLongitude());
+        locationEntity.setDisplay_name(locationDTO.getDisplay_name());
+        locationEntity.setLat(locationDTO.getLat());
+        locationEntity.setLon(locationDTO.getLon());
         return locationEntity;
     }
 }

@@ -70,8 +70,8 @@ export class FahranfrageErstellenComponent implements OnInit {
               private auth: AngularAuthService) {
 
   }
-  filteredStartAddressOptions!: Observable<Array<TripRequestDTO>>;
-  filteredEndAddressOptions!:Observable<Array<TripRequestDTO>>;
+  filteredStartAddressOptions!: Observable<Array<LocationDTO>>;
+  filteredEndAddressOptions!:Observable<Array<LocationDTO>>;
 
    // filteredStartAddressOptions: LocationDTO[] = [];
    // filteredEndAddressOptions: LocationDTO[] = [];
@@ -101,7 +101,7 @@ export class FahranfrageErstellenComponent implements OnInit {
       //   this.filteredStartAddressOptions = res;
       // });
   ngOnInit(): void {
-    this.fahranfrageForm.get("startAddress")!.valueChanges.pipe(
+    this.filteredStartAddressOptions = this.fahranfrageForm.get("startAddress")!.valueChanges.pipe(
       debounceTime(300),
       distinctUntilChanged(),
       switchMap(query => this.tripService.suggestions(this.extractSearchValue(query)).pipe(
@@ -115,7 +115,7 @@ export class FahranfrageErstellenComponent implements OnInit {
     //   console.log('Startadresse Optionen:', res);
     //   this.filteredStartAddressOptions = res;
     // });
-    this.fahranfrageForm.get("endAddress")!.valueChanges.pipe(
+    this.filteredEndAddressOptions = this.fahranfrageForm.get("endAddress")!.valueChanges.pipe(
       debounceTime(300),
       distinctUntilChanged(),
       switchMap(query => this.tripService.suggestions(this.extractSearchValue(query)).pipe(
@@ -219,7 +219,7 @@ export class FahranfrageErstellenComponent implements OnInit {
 
   userHasActiveRideRequest() {
     // check if user has an activ ride from backend
-    return true;
+    return false;
   }
   checkActiveRide() {
     if (this.fahranfrageForm.invalid){
@@ -248,7 +248,7 @@ export class FahranfrageErstellenComponent implements OnInit {
       startAddress: this.optionToString(this.fahranfrageForm.value.startAddress),
       endAddress:this.optionToString(this.fahranfrageForm.value.endAddress),
       carType:this.fahranfrageForm.value.carType,
-      status: true  // Standardstatus: aktiv
+      status: 'ACTIVE'  // Standardstatus: aktiv
     };
     this.rideRequestService.setRideRequest(formData);
 
@@ -259,7 +259,9 @@ export class FahranfrageErstellenComponent implements OnInit {
       startLocation: form.startAddress,
       endLocation: form.endAddress,
       carType: form.carType,
-      note: ''
+      note: '',
+      status:'ACTIVE'
+
     };
 
     this.tripService.create(tripRequest).subscribe({

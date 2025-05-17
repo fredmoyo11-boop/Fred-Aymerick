@@ -18,14 +18,14 @@ export interface LocationDTO {
     /**
      * Display name of location
      */
-    displayName?: string;
+    display_name: string;
     /**
      * Latitude of location
      */
-    latitude?: number;
+    lat: number;
     /**
      * Longitude of location
      */
-    longitude?: number;
+    lon: number;
 }
 

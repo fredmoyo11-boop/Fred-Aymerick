@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { MatSlideToggle } from '@angular/material/slide-toggle';
 import { MatCard, MatCardActions, MatCardContent } from '@angular/material/card';
@@ -28,7 +28,7 @@ import { TripRequestDTO } from '../../../api/sep_drive';
   templateUrl: './aktive-fahranfrage.component.html',
   styleUrl: './aktive-fahranfrage.component.css'
 })
-export class AktiveFahranfrageComponent {
+export class AktiveFahranfrageComponent implements OnInit{
   tripData: TripRequestDTO | null = null;
   activeRide: RideRequest | null = null;
 

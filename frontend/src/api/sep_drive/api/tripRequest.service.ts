@@ -96,9 +96,9 @@ export class TripRequestService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public create(tripRequestDTO: TripRequestDTO, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*', context?: HttpContext}): Observable<any>;
-    public create(tripRequestDTO: TripRequestDTO, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*', context?: HttpContext}): Observable<HttpResponse<any>>;
-    public create(tripRequestDTO: TripRequestDTO, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*', context?: HttpContext}): Observable<HttpEvent<any>>;
+    public create(tripRequestDTO: TripRequestDTO, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*', context?: HttpContext}): Observable<TripRequestEntity>;
+    public create(tripRequestDTO: TripRequestDTO, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*', context?: HttpContext}): Observable<HttpResponse<TripRequestEntity>>;
+    public create(tripRequestDTO: TripRequestDTO, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*', context?: HttpContext}): Observable<HttpEvent<TripRequestEntity>>;
     public create(tripRequestDTO: TripRequestDTO, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*', context?: HttpContext}): Observable<any> {
         if (tripRequestDTO === null || tripRequestDTO === undefined) {
             throw new Error('Required parameter tripRequestDTO was null or undefined when calling create.');
@@ -151,7 +151,7 @@ export class TripRequestService {
             }
         }
 
-        return this.httpClient.post<any>(`${this.configuration.basePath}/map/request/create`,
+        return this.httpClient.post<TripRequestEntity>(`${this.configuration.basePath}/map/request/create`,
             tripRequestDTO,
             {
                 context: localVarHttpContext,
@@ -293,8 +293,7 @@ export class TripRequestService {
             }
         }
 
-        return this.httpClient.post<Array<LocationDTO>>(`${this.configuration.basePath}/map/search`,
-            null,
+        return this.httpClient.get<Array<LocationDTO>>(`${this.configuration.basePath}/map/search`,
             {
                 context: localVarHttpContext,
                 params: localVarQueryParameters,

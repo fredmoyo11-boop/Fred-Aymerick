@@ -4,7 +4,7 @@ export interface RideRequest {
   startAddress : string
   endAddress: string
   carType: string
-  status:boolean
+  status:string
 
 }
 

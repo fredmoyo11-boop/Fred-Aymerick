@@ -31,7 +31,7 @@ public class TripRequestController {
 
     @GetMapping("/search")
     @Operation(description = "Provides a suggested list of locations",
-            tags = {Tags.TRIP_REQUEST},
+            tags = {Tags.ROUTE},
             responses = {
                 @ApiResponse(responseCode = HttpStatus.OK, description = "Suggested list successful send",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = LocationDTO.class))))})
@@ -41,7 +41,7 @@ public class TripRequestController {
 
     @PostMapping("")
     @Operation(description = "Creates trip request and saves to repository",
-            tags= {Tags.TRIP_REQUEST},
+            tags= {Tags.ROUTE},
             responses = {
                 @ApiResponse(responseCode = HttpStatus.OK, description = "Trip request created successfully.",
                     content = @Content(schema = @Schema(implementation = TripRequestEntity.class)))})
@@ -51,7 +51,7 @@ public class TripRequestController {
 
     @GetMapping("/current")
     @Operation(description = "Shows trip request of customer",
-            tags = {Tags.TRIP_REQUEST},
+            tags = {Tags.ROUTE},
             responses = {
                 @ApiResponse(responseCode = HttpStatus.OK, description = "Trip request showed successfully",
                     content = @Content(schema = @Schema(implementation = TripRequestDTO.class)))})
@@ -61,7 +61,7 @@ public class TripRequestController {
 
     @DeleteMapping("/current")
     @Operation(description = "Deletes trip request from repository",
-            tags= {Tags.TRIP_REQUEST},
+            tags= {Tags.ROUTE},
             responses = {
                     @ApiResponse(responseCode = HttpStatus.OK, description = "Trip request deleted successfully.",
                             content = @Content(schema = @Schema(implementation = TripRequestEntity.class)))})

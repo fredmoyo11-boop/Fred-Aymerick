@@ -54,8 +54,8 @@ public class TripRequestController {
             responses = {
                 @ApiResponse(responseCode = HttpStatus.OK, description = "Trip request showed successfully",
                     content = @Content(schema = @Schema(implementation = TripRequestDTO.class)))})
-    public TripRequestDTO view(@Parameter(description = "Uses principal to find request.") Principal principal) {
-        return tripRequestService.showTripRequest(principal);
+    public TripRequestDTO view(@Parameter(description = "Uses principal to find request.") @RequestParam String email) {
+        return tripRequestService.showTripRequest(email); //TODO Change email to principal
     }
 
     @DeleteMapping("/request/view/delete")
@@ -64,7 +64,7 @@ public class TripRequestController {
             responses = {
                     @ApiResponse(responseCode = HttpStatus.OK, description = "Trip request deleted successfully.",
                             content = @Content(schema = @Schema(implementation = TripRequestEntity.class)))})
-    public void deleteRequest(@Parameter(description = "Uses principal to find request.") Principal principal) {
-        tripRequestService.deleteTripRequest(principal);
+    public void deleteRequest(@Parameter(description = "Uses principal to find request.") @RequestParam String email) {
+        tripRequestService.deleteTripRequest(email); //TODO Change email to principal
     }
 }

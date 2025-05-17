@@ -57,15 +57,13 @@ public class TripRequestService {
         return TripRequestDTO.from(tripRequestEntity);
     }
 
-    public TripRequestDTO showTripRequest(String  email) throws NotFoundException {
-
+    public TripRequestDTO showTripRequest(String email) throws NotFoundException {
         TripRequestEntity tripRequestEntity = getRequestByEmail(email, TripRequestStatus.ACTIVE);
         return convertTripRequestEntityToDTO(tripRequestEntity);
     }
 
     //deleteFromRepository -> when customer wants to delete request
-    public void deleteTripRequest( String email) throws NotFoundException {
-
+    public void deleteTripRequest(String email) throws NotFoundException {
         TripRequestEntity tripRequestEntity = getRequestByEmail(email, TripRequestStatus.ACTIVE);
         if (Objects.equals(tripRequestEntity.getRequestStatus(), TripRequestStatus.INPROGRESS)) {
             throw new RuntimeException("Cannot delete active request");

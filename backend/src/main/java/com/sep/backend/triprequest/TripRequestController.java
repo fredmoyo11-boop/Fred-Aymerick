@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -27,7 +28,7 @@ public class TripRequestController {
         this.nominatimService = nominatimService;
     }
 
-    @GetMapping("/search")  // Änderung von POST zu GET
+    @GetMapping("/search")
     @Operation(description = "Provides a suggested list of locations",
             tags = {Tags.TRIP_REQUEST},
             responses = {
@@ -39,10 +40,11 @@ public class TripRequestController {
 
     @PostMapping("/request/create")
     @Operation(description = "Creates trip request and saves to repository",
-            tags = {Tags.TRIP_REQUEST},
+            tags= {Tags.TRIP_REQUEST},
             responses = {
-                    @ApiResponse(responseCode = HttpStatus.OK, description = "Trip request created successfully")})
-    public void create(@RequestBody TripRequestDTO tripRequestDTO) {
+                @ApiResponse(responseCode = HttpStatus.OK, description = "Trip request created successfully.",
+                    content = @Content(schema = @Schema(implementation = TripRequestEntity.class)))})
+     public void create(@RequestBody @Valid TripRequestDTO tripRequestDTO) {
         tripRequestService.createTripRequest(tripRequestDTO);
 
     }
@@ -53,8 +55,8 @@ public class TripRequestController {
             responses = {
                 @ApiResponse(responseCode = HttpStatus.OK, description = "Trip request showed successfully",
                     content = @Content(schema = @Schema(implementation = TripRequestDTO.class)))})
-    public TripRequestDTO view(@Parameter(description = "Uses principal to find request.") String  email) {
-        return tripRequestService.showTripRequest(email);
+    public TripRequestDTO view(@Parameter(description = "Uses principal to find request.") @RequestParam String email) {
+        return tripRequestService.showTripRequest(email); //TODO Change email to principal
     }
 
     @DeleteMapping("/request/view/delete")
@@ -63,7 +65,7 @@ public class TripRequestController {
             responses = {
                     @ApiResponse(responseCode = HttpStatus.OK, description = "Trip request deleted successfully.",
                             content = @Content(schema = @Schema(implementation = TripRequestEntity.class)))})
-    public void deleteRequest(@Parameter(description = "Uses email to find request.") String email) {
-        tripRequestService.deleteTripRequest(email);
+    public void deleteRequest(@Parameter(description = "Uses principal to find request.") @RequestParam String email) {
+        tripRequestService.deleteTripRequest(email); //TODO Change email to principal
     }
 }

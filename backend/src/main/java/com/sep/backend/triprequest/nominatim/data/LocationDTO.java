@@ -1,8 +1,11 @@
 package com.sep.backend.triprequest.nominatim.data;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sep.backend.triprequest.nominatim.LocationEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,17 +16,22 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Schema(description = "DTO for Location")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class LocationDTO {
+
+    @Schema(description = "Display name of location", requiredMode = Schema.RequiredMode.REQUIRED)
+    @JsonProperty("display_name")
     @NotBlank
-    @Schema(description = "Display name of location")
     private String displayName;
 
-    @NotBlank
-    @Schema(description = "Latitude of location")
+    @Schema(description = "Latitude of location", requiredMode = Schema.RequiredMode.REQUIRED)
+    @JsonProperty("lat")
+    @NotNull
     private Double latitude;
 
-    @NotBlank
-    @Schema(description = "Longitude of location")
+    @Schema(description = "Longitude of location", requiredMode = Schema.RequiredMode.REQUIRED)
+    @JsonProperty("lon")
+    @NotNull
     private Double longitude;
 
 

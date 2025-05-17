@@ -4,6 +4,7 @@ import com.sep.backend.ErrorMessages;
 import com.sep.backend.account.AccountService;
 import com.sep.backend.auth.registration.RegistrationException;
 import com.sep.backend.entity.EmailVerificationTokenEntity;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -30,12 +31,14 @@ public class EmailVerificationService {
      * @param email The email.
      * @return The verification token entity.
      */
+    @Transactional
     public EmailVerificationTokenEntity save(String email) {
         // delete verification token if unverified token exists
         if (tokenRepository.existsByEmail(email)) {
             log.debug("Deleting email verification token for {}", email);
             tokenRepository.deleteByEmail(email);
             log.info("Deleted email verification token for {}", email);
+            log.debug("Still exists? {}", tokenRepository.existsByEmail(email));
         }
 
         log.debug("Generating email verification token for {}", email);

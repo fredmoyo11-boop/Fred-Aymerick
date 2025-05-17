@@ -10,10 +10,9 @@ import {AngularAuthService} from '../services/angular-auth.service';
 import {AuthService, AuthResponse} from '../../api/sep_drive';
 import {BehaviorSubject, finalize, Observable, of, throwError} from 'rxjs';
 import {catchError, filter, switchMap, take} from 'rxjs/operators';
-import {Router} from '@angular/router';
 
 let isRefreshing = false;
-const refreshTokenSubject = new BehaviorSubject<string | null>(null);
+const accessTokenSubject = new BehaviorSubject<string | null>(null);
 
 export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next: HttpHandlerFn): Observable<HttpEvent<any>> => {
   const authService = inject(AuthService);
@@ -60,22 +59,22 @@ const handleRefresh = (
 ): Observable<HttpEvent<any>> => {
   if (!isRefreshing) {
     isRefreshing = true;
-    refreshTokenSubject.next(null);
+    accessTokenSubject.next(null);
 
     return authService.refresh().pipe(
       switchMap((authResponse: AuthResponse) => {
         angularAuthService.consumeAuthResponse(authResponse);
-        refreshTokenSubject.next(authResponse.accessToken);
+        accessTokenSubject.next(authResponse.accessToken);
         return next(addAuthenticationHeader(req, authResponse.accessToken));
       }),
       catchError(err => {
-        refreshTokenSubject.next(null);
+        accessTokenSubject.next(null);
         return throwError(() => err);
       }),
       finalize(() => isRefreshing = false)
     );
   } else {
-    return refreshTokenSubject.pipe(
+    return accessTokenSubject.pipe(
       filter(token => token !== null),
       take(1),
       switchMap(token => next(addAuthenticationHeader(req, token!)))

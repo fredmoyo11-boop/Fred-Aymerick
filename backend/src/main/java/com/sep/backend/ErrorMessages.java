@@ -5,6 +5,10 @@ public class ErrorMessages {
 
     public static final String INVALID_ACCESS_TOKEN = "Invalid access token.";
 
+    public static final String INVALID_USERNAME_CHARACTER_AT = "Username cannot contain @ as character.";
+
+    public static final String PENDING_VERIFICATION = "Pending verification.";
+
     public static final String INVALID_ROLE = "Invalid role.";
 
     public static final String INVALID_OTP = "OTP invalid.";
@@ -25,7 +29,6 @@ public class ErrorMessages {
     public static final String NOT_FOUND_OTP = "OTP not found.";
 
     public static final String NOT_FOUND_REQUEST = "Request not found.";
-
 
     public static final String ALREADY_EXISTS_USERNAME = "Username already exists.";
 

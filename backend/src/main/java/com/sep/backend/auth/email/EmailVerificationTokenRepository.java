@@ -11,9 +11,9 @@ import java.util.Optional;
 @Repository
 public interface EmailVerificationTokenRepository extends JpaRepository<EmailVerificationTokenEntity, Long> {
 
-    boolean existsByEmail(@Email @NotBlank String email);
+    boolean existsByEmail(String email);
 
-    void deleteByEmail(@Email @NotBlank String email);
+    void deleteByEmail(String email);
     
-    Optional<EmailVerificationTokenEntity> findByToken(@NotBlank String token);
+    Optional<EmailVerificationTokenEntity> findByToken(String token);
 }

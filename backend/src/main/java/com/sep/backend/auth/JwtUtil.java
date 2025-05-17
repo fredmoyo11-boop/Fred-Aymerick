@@ -4,13 +4,12 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.Optional;
 import java.util.function.Function;
 
 /**
@@ -38,8 +37,8 @@ public class JwtUtil {
      * @param email The email.
      * @return The access JWT.
      */
-    public String generateAccessToken(String email) {
-        return generateToken(email, ACCESS_TOKEN_EXPIRATION);
+    public String generateAccessToken(String email, String role) {
+        return generateToken(email, role, ACCESS_TOKEN_EXPIRATION);
     }
 
     /**
@@ -48,8 +47,8 @@ public class JwtUtil {
      * @param email The email.
      * @return The refresh JWT.
      */
-    public String generateRefreshToken(String email) {
-        return generateToken(email, REFRESH_TOKEN_EXPIRATION);
+    public String generateRefreshToken(String email, String role) {
+        return generateToken(email, role, REFRESH_TOKEN_EXPIRATION);
     }
 
     /**
@@ -59,9 +58,10 @@ public class JwtUtil {
      * @param expiration The expiration time (in epoch millis)
      * @return The generated JWT.
      */
-    private String generateToken(String email, long expiration) {
+    private String generateToken(String email, String role, long expiration) {
         return Jwts.builder()
                 .subject(email)
+                .claim("role", role)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getSigningKey())

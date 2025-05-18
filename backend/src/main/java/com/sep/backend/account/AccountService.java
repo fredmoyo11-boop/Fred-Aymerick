@@ -484,7 +484,7 @@ public class AccountService {
             if (updateAccountDTO.getBirthday() != null) {
                 driverEntity.setBirthday(updateAccountDTO.getBirthday());
             }
-            if (updateAccountDTO.getCarType() != null) {
+            if (Set.of(CarType.ALL).contains(updateAccountDTO.getCarType())) {
                 driverEntity.setCarType(updateAccountDTO.getCarType());
             }
             if (file != null) {

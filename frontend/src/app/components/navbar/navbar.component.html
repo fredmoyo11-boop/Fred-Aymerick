@@ -8,8 +8,27 @@
 
     </div>
     <div>
-      @if (isLoggedIn) {
-        <p>TODO</p>
+      @if (accountInformation) {
+        <div class="profile-container" [matMenuTriggerFor]="menu">
+          <span>{{ accountInformation.firstName }} {{ accountInformation.lastName }}</span>
+          <div class="profile-avatar" [ngStyle]="{'width.px': 40, 'height.px': 40}">
+            @if (profileImageExists) {
+              <img [src]="accountInformation.profilePictureUrl" [ngStyle]="{ 'width.px': 50, 'height.px': 50 }"
+                   alt="Profile picture"/>
+            } @else {
+              <span class="initials">{{ initials }}</span>
+            }
+          </div>
+        </div>
+        <mat-menu #menu="matMenu">
+          <button mat-menu-item (click)="onProfile()">Profile
+            <mat-icon matSuffix>person</mat-icon>
+          </button>
+          <button mat-menu-item (click)="onLogout()">Logout
+            <mat-icon matSuffix>logout</mat-icon>
+          </button>
+        </mat-menu>
+
       } @else {
         <button [routerLink]="'/login'" class="login-btn">Anmelden</button>
         <button [routerLink]="'/register'" class="register-btn">Registrieren</button>

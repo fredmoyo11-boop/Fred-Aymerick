@@ -77,4 +77,16 @@ public class JwtFilter extends OncePerRequestFilter {
 
         chain.doFilter(request, response);
     }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String path = request.getServletPath();
+
+        // skip filter on routes where permitall
+        if (path.startsWith("/api/auth/") || path.startsWith("/v3/api-docs") || path.startsWith("/uploads/profile/picture")) {
+            log.debug("Skipping JwtFilter for permitAll path: {}", path);
+            return true;
+        }
+        return false;
+    }
 }

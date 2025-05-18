@@ -42,6 +42,7 @@ export class AngularAuthService {
         this._accessToken$.next(null);
         this._email$.next(null);
         this._role$.next(null);
+        window.location.reload()
       },
       error: err => {
         console.error("Logout failed.", err);

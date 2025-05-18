@@ -62,7 +62,7 @@ public class TripRequestService {
 
         // only one active trip request at a time
         if (existsActiveTripRequest(email)) {
-            throw new TripRequestException(ErrorMessages.ALREADY_EXISTS_TRIPREQUEST);
+            throw new TripRequestException(ErrorMessages.ALREADY_EXISTS_TRIP_REQUEST);
         }
 
         LocationEntity startAddress = saveLocation(tripRequestBody.getStartLocation());

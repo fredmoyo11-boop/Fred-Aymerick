@@ -17,6 +17,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -73,15 +74,32 @@ public class AccountService {
         }
     }
 
-
+    /**
+     * Returns an optional containing the customer entity. Optional is empty if the customer with a specified username does not exist.
+     *
+     * @param username The username of the customer.
+     * @return The optional containing the customer entity.
+     */
     public Optional<CustomerEntity> findCustomerByUsername(String username) {
         return customerRepository.findByUsername(username);
     }
 
+    /**
+     * Returns an optional containing the driver entity. Optional is empty if the driver with a specified username doesn't exist.
+     *
+     * @param username The username of the driver.
+     * @return The optional containing the driver entity.
+     */
     public Optional<DriverEntity> findDriverByUsername(String username) {
         return driverRepository.findByUsername(username);
     }
 
+    /**
+     * Returns an optional containing the role of the specified username. Either CUSTOMER or DRIVER. Optional is empty if the username does not exist.
+     *
+     * @param username The username.
+     * @return The optional containing the role.
+     */
     public Optional<String> getRoleByUsername(String username) {
         if (existsCustomerUsername(username)) {
             return Optional.of(Roles.CUSTOMER);
@@ -92,13 +110,38 @@ public class AccountService {
         }
     }
 
+
+    /**
+     * Returns the account
+     *
+     * @param principal
+     * @return
+     * @throws NotFoundException
+     */
+    public AccountDTO getCurrentAccount(Principal principal) throws NotFoundException {
+        String email = principal.getName();
+        String role = getRoleByEmail(email);
+        return switch (role) {
+            case Roles.CUSTOMER -> {
+                var customerEntity = getCustomerByEmail(email);
+                yield getCustomerDTO(customerEntity);
+            }
+            case Roles.DRIVER -> {
+                var driverEntity = getDriverByEmail(email);
+                yield getDriverDTO(driverEntity);
+            }
+            default -> throw new NotFoundException(ErrorMessages.NOT_FOUND_USER);
+        };
+    }
+
+
     /**
      * Returns an optional containing the email for the provided username. Returns an empty optional if the username is unknown.
      *
      * @param username The username.
      * @return The optional containing the email. Might be empty if the username is unknown.
      */
-    public Optional<String> getEmailByUsername(String username) {
+    public Optional<String> findEmailByUsername(String username) {
         if (existsCustomerUsername(username)) {
             return customerRepository.findByUsername(username).map(CustomerEntity::getEmail);
         } else if (existsDriverUsername(username)) {
@@ -134,6 +177,13 @@ public class AccountService {
         }
     }
 
+    /**
+     * Returns whether the user with the specified email is verified or not.
+     *
+     * @param email The email of the user.
+     * @return Whether the user is verified or not.
+     * @throws NotFoundException If user with specified username does not exist.
+     */
     public boolean isVerified(String email) throws NotFoundException {
         String role = getRoleByEmail(email);
         return switch (role) {
@@ -142,7 +192,6 @@ public class AccountService {
             default -> throw new NotFoundException(ErrorMessages.NOT_FOUND_USER);
         };
     }
-
 
     /**
      * Creates a new account (CUSTOMER or DRIVER).
@@ -181,7 +230,7 @@ public class AccountService {
     }
 
 
-    public List<AccountDTO> SearchUser(String part) {
+    public List<AccountDTO> searchUser(String part) {
         List<AccountDTO> accountDTOS = new ArrayList<>();
         List<DriverEntity> drivers = driverRepository.findByUsernameContainingIgnoreCase(part);
         List<CustomerEntity> customers = customerRepository.findByUsernameContainingIgnoreCase(part);
@@ -224,7 +273,7 @@ public class AccountService {
     }
 
     @Schema(description = "get the account of  user BASED OF THE username .Die Methode ist erstmal für Unterstützung des frontend Features : klickbares profil gedacht")
-    public AccountDTO getAccountprofile(String username) {
+    public AccountDTO getAccountProfile(String username) {
         Optional<CustomerEntity> customerEntity = customerRepository.findByUsername(username);
         if (customerEntity.isPresent()) {
             return getCustomerDTO(customerEntity.get());
@@ -271,17 +320,17 @@ public class AccountService {
 
 
     /**
-     * Returns if an account with specified username exists.
+     * Returns if an account with the specified username exists.
      *
      * @param username The username.
-     * @return Whether account with username exists or not.
+     * @return Whether an account with the username exists or not.
      */
     public boolean existsUsername(String username) {
         return existsCustomerUsername(username) || existsDriverUsername(username);
     }
 
     /**
-     * Returns if a customer with specified username exists.
+     * Returns if a customer with the specified username exists.
      *
      * @param username The username.
      * @return Whether customer with username exists or not.

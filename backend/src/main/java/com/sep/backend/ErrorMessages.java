@@ -7,8 +7,6 @@ public class ErrorMessages {
 
     public static final String INVALID_USERNAME_CHARACTER_AT = "Username cannot contain @ as character.";
 
-    public static final String PENDING_VERIFICATION = "Pending verification.";
-
     public static final String INVALID_ROLE = "Invalid role.";
 
     public static final String INVALID_OTP = "OTP invalid.";
@@ -18,6 +16,9 @@ public class ErrorMessages {
     public static final String INVALID_VERIFICATION_TOKEN = "Invalid verification token.";
 
     public static final String INVALID_PROFILE_PICTURE_FORMAT = "Invalid profile picture format.";
+
+    public static final String INVALID_CAR_TYPE = "Invalid car type";
+
 
 
     public static final String NOT_FOUND_CUSTOMER = "Customer not found.";
@@ -35,7 +36,8 @@ public class ErrorMessages {
 
 
     public static final String EXPIRED_OTP = "OTP expired.";
-    public static final String INVALID_CAR_TYPE = "Invalid car type";
+
+    public static final String PENDING_VERIFICATION = "Pending verification.";
 
     public ErrorMessages() {
         throw new UnsupportedOperationException("Cannot instantiate ErrorMessages.");

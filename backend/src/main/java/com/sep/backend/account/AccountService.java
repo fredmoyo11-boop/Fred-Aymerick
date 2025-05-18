@@ -21,6 +21,7 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Slf4j
 @AllArgsConstructor
@@ -214,11 +215,11 @@ public class AccountService {
             case Roles.DRIVER -> {
                 log.debug("Saving driver: {} ({})", username, email);
                 var driverEntity = createAccountEntity(data, profilePictureUrl, DriverEntity.class);
-                if(CarType.DELUXE.equals(data.getCarType())|| CarType.MEDIUM.equals(data.getCarType())|| CarType.LARGE.equals(data.getCarType())) {
-                    driverEntity.setCarType(data.getCarType());
-                }else {
-                    throw new RegistrationException( ErrorMessages.INVALID_CAR_TYPE);
+                String carType = data.getCarType();
+                if (!Set.of(CarType.ALL).contains(carType)) {
+                    throw new RegistrationException(ErrorMessages.INVALID_CAR_TYPE);
                 }
+                driverEntity.setCarType(carType);
                 driverRepository.save(driverEntity);
                 log.info("Saving driver: {} ({})", username, email);
             }

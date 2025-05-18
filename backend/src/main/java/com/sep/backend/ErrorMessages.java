@@ -20,7 +20,6 @@ public class ErrorMessages {
     public static final String INVALID_CAR_TYPE = "Invalid car type";
 
 
-
     public static final String NOT_FOUND_CUSTOMER = "Customer not found.";
 
     public static final String NOT_FOUND_DRIVER = "Driver not found.";
@@ -33,6 +32,8 @@ public class ErrorMessages {
     public static final String ALREADY_EXISTS_USERNAME = "Username already exists.";
 
     public static final String ALREADY_EXISTS_EMAIL = "Email already exists.";
+
+    public static final String ALREADY_EXISTS_TRIP_REQUEST = "Trip request already exists.";
 
 
     public static final String EXPIRED_OTP = "OTP expired.";

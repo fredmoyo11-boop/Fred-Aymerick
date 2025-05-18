@@ -216,7 +216,7 @@ public class AccountService {
                 log.debug("Saving driver: {} ({})", username, email);
                 var driverEntity = createAccountEntity(data, profilePictureUrl, DriverEntity.class);
                 String carType = data.getCarType();
-                if (!Set.of(CarType.ALL).contains(carType)) {
+                if (!CarType.isValidCarType(carType)) {
                     throw new RegistrationException(ErrorMessages.INVALID_CAR_TYPE);
                 }
                 driverEntity.setCarType(carType);

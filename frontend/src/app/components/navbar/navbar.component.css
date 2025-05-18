@@ -1,23 +1,76 @@
-mat-toolbar {
+.navbar {
+  width: 100%;
   display: flex;
+  flex-direction: row;
+  justify-content: center;
+  border-bottom: 1px black solid;
+  position: fixed;
+  height: 3.5rem;
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: white;
+}
+
+.navbar-content {
+  width: 75%;
+  display: flex;
+  flex-direction: row;
   justify-content: space-between;
-  background-color: #e1bee7; /* Helllila */
-  color: black; /* Textfarbe */
-}
-.logo {
-  font-weight: bold;
-  margin-right: 20px;
+  align-items: center;
+  max-width: 800px;
 }
 
-button[mat-button] {
+.logo-btn {
+  border: none;
+  background: none;
   font-weight: bold;
-  font-size: 1rem;
-  color: black;
+  font-size: 1.5rem;
+  cursor: pointer;
 }
 
-button[mat-button]:hover {
-  background-color: #f3e5f5; /* noch helleres Lila beim Hover */
-  border-radius: 4px;
+
+.navbar-btn-container {
+  display: flex;
+  flex-direction: row;
+  gap: 1.25rem;
+}
+
+.navbar-btn-container button {
+  border: none;
+  background: none;
+  outline: none;
+}
+
+.navbar-btn-container button:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.login-btn {
+  background: none;
+  border: none;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+
+.login-btn:hover {
+  text-decoration: none;
+  opacity: 0.7;
+}
+
+.register-btn {
+  background: none;
+  border: 1px black solid;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+
+}
+
+.register-btn:hover {
+  text-decoration: none;
+  opacity: 0.7;
 }
 
 .profile-container {

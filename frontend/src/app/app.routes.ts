@@ -21,8 +21,7 @@ export const routes: Routes = [
       {path: "", component: HomeComponent},
       {path: "fahranfrage", component: FahranfrageErstellenComponent},
       {path: "aktiveFahranfrage", component: AktiveFahranfrageComponent},
-      {path: "karte", component: MapComponent},
-
+      {path: "map", component: MapComponent},
     ]
   },
   {path: "**", redirectTo: ""}

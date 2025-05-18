@@ -1,7 +1,6 @@
 package com.sep.backend.auth.login;
 
 import com.sep.backend.ErrorMessages;
-import com.sep.backend.NotFoundException;
 import com.sep.backend.account.AccountService;
 import com.sep.backend.auth.JwtUtil;
 import com.sep.backend.auth.email.EmailService;
@@ -52,7 +51,7 @@ public class LoginService {
         if (uniqueIdentifier.contains("@")) {
             return Optional.of(uniqueIdentifier);
         } else {
-            return accountService.getEmailByUsername(uniqueIdentifier);
+            return accountService.findEmailByUsername(uniqueIdentifier);
         }
     }
 
@@ -140,7 +139,7 @@ public class LoginService {
     public AuthResponse refresh(HttpServletRequest req) {
         String refreshToken = extractRefreshTokenCookie(req);
 
-        if (refreshToken == null || !jwtUtil.validateToken(refreshToken)) {
+        if (refreshToken == null || refreshToken.isEmpty() || !jwtUtil.validateToken(refreshToken)) {
             log.debug("Invalid refresh token {}", refreshToken);
             throw new LoginException(ErrorMessages.INVALID_REFRESH_TOKEN);
         }

@@ -1,0 +1,17 @@
+.header {
+  padding: 16px;
+  background-color: #f5f5f5;
+  display: flex;
+  gap: 12px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  align-items: flex-start;
+}
+.card{
+  color: black;
+  width: 600px;
+  background-color: gray;
+}
+h2{
+  font-weight: bold;
+  color: #495057;
+}

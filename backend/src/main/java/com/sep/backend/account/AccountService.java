@@ -1,5 +1,6 @@
 package com.sep.backend.account;
 
+import com.sep.backend.CarType;
 import com.sep.backend.ErrorMessages;
 import com.sep.backend.NotFoundException;
 import com.sep.backend.Roles;
@@ -20,6 +21,7 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Slf4j
 @AllArgsConstructor
@@ -213,6 +215,11 @@ public class AccountService {
             case Roles.DRIVER -> {
                 log.debug("Saving driver: {} ({})", username, email);
                 var driverEntity = createAccountEntity(data, profilePictureUrl, DriverEntity.class);
+                String carType = data.getCarType();
+                if (!CarType.isValidCarType(carType)) {
+                    throw new RegistrationException(ErrorMessages.INVALID_CAR_TYPE);
+                }
+                driverEntity.setCarType(carType);
                 driverRepository.save(driverEntity);
                 log.info("Saving driver: {} ({})", username, email);
             }
@@ -477,7 +484,7 @@ public class AccountService {
             if (updateAccountDTO.getBirthday() != null) {
                 driverEntity.setBirthday(updateAccountDTO.getBirthday());
             }
-            if (updateAccountDTO.getCarType() != null) {
+            if (Set.of(CarType.ALL).contains(updateAccountDTO.getCarType())) {
                 driverEntity.setCarType(updateAccountDTO.getCarType());
             }
             if (file != null) {

@@ -5,7 +5,6 @@ import {FormsModule} from '@angular/forms';
 import {MatButton} from '@angular/material/button';
 import {NgIf} from '@angular/common';
 import {MatDialog} from '@angular/material/dialog';
-//import { DeleteRideDialogComponent } from '../delete-ride-dialog/delete-ride-dialog.component';
 import {AngularAuthService} from "../../services/angular-auth.service";
 import {TripRequestService} from '../../../api/sep_drive';
 import {TripRequestDTO} from '../../../api/sep_drive';

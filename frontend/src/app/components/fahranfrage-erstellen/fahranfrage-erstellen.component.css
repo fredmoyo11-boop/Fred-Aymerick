@@ -1,16 +1,18 @@
 .header{
   padding: 16px;
-  background-color: #f5f5f5;
+  background-color: lightgray;
   display: flex;
-  gap: 12px;
+  gap: 10px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  align-items: flex-start;
+  align-items: center;
 }
 .start-address-form-field {
   width: 500px;
+  height: auto;
 }
 .end-address-form-field{
-  width: 500px
+  width: 500px;
+  height: auto;
 }
 .search_button{
   width: 400px;
@@ -30,27 +32,28 @@
   font-size: 1rem;
   font-weight: 400;
   line-height: 1.5;
-  color: #495057;
-  background-color: #fff;
+  color: coral;
+  background-color:bisque;
   background-clip: padding-box;
-  border: 1px solid #ced4da;
-  border-radius: 10px;
+  /*border: 1px solid #ced4da;*/
+  border: coral;
+  border-radius: 20px;
   align-items: center;
 }
 .bem-field{
   width: 500px;
 }
 .banner {
-  /*background-image: url('/assets/banner_pic.jpg');*/
+  background-image: url('../../../../public/front_pic.jpg');
   background-size: cover;
-  background-color: deepskyblue;
   background-position: center;
   min-height: 200px;
   height: 30vh;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
+  font-style: italic;
   justify-content: center;
-  color: black;
+  color:dodgerblue;
   text-align: center;
   padding: 1rem;
 }

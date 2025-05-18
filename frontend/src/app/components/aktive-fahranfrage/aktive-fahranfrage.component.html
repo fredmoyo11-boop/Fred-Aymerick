@@ -9,10 +9,10 @@
 <div class="card">
   <mat-card appearance="outlined">
     <mat-card-content>
-      <p><strong>Start:</strong>{{tripData.startLocation.display_name}}</p>
-      <p><strong>Ziel:</strong>{{ tripData.endLocation.display_name }}</p>
-      <p><strong>Fahrzeugklasse:</strong>{{tripData.carType}}</p>
-      <p><strong>Notiz:</strong> {{ tripData.note || '-' }}</p>
+      <p><strong>Start :</strong>{{tripData.startLocation.display_name}}</p>
+      <p><strong>Ziel :</strong>{{ tripData.endLocation.display_name }}</p>
+      <p><strong>Fahrzeugklasse :</strong>{{tripData.carType}}</p>
+      <p><strong>Notiz :</strong> {{ tripData.note || '-' }}</p>
 
     </mat-card-content>
     <mat-card-actions align="end">
@@ -22,5 +22,5 @@
  </div>
 </div>
 <ng-template #noTrip>
-    <p>Keine Fahranfrage vorhanden.</p>
+    <p>Keine aktive Fahranfrage vorhanden.</p>
 </ng-template>

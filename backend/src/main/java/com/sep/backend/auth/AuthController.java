@@ -79,8 +79,8 @@ public class AuthController {
             tags = {Tags.AUTH},
             responses = {
                     @ApiResponse(responseCode = HttpStatus.OK, description = "Logged out user successfully.")})
-    public void logout(HttpServletResponse res, Principal principal) {
-        loginService.logout(res, principal);
+    public void logout(HttpServletResponse res) {
+        loginService.logout(res);
     }
 
     @PostMapping("/refresh")

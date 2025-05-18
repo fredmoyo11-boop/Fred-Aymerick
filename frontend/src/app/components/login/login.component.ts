@@ -6,8 +6,11 @@ import {MatIcon} from '@angular/material/icon';
 import {Router, RouterLink} from '@angular/router';
 import {MatDivider} from '@angular/material/list';
 import {AuthService, LoginRequest, OtpRequest} from '../../../api/sep_drive';
-import {of} from 'rxjs';
+import {catchError, of} from 'rxjs';
 import {AngularAuthService} from '../../services/angular-auth.service';
+import {HttpErrorResponse} from '@angular/common/http';
+import {MatSnackBar} from '@angular/material/snack-bar';
+import {ActionSnackbarComponent} from '../login-snackbar/action-snackbar.component';
 
 @Component({
   selector: 'app-login',
@@ -31,16 +34,17 @@ export class LoginComponent {
   router = inject(Router)
   authService = inject(AuthService)
   angularAuthService = inject(AngularAuthService)
+  private _snackBar = inject(MatSnackBar)
 
-  // regex for common email addresses, not RFC 5322 conform, for our purpose enough
-  emailRegex = /^[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/;
 
   loginForm = new FormGroup({
-    email: new FormControl("", [Validators.required, Validators.pattern(this.emailRegex)]),
+    uniqueIdentifier: new FormControl("", [Validators.required]),
     password: new FormControl("", [Validators.required, Validators.minLength(1)])
   })
 
-  sentLoginRequest: boolean = false;
+  loginRequestSent: boolean = false;
+  loginRequestErrorMessage: string = "";
+
 
   @ViewChildren("otpInput") inputs!: QueryList<ElementRef>
 
@@ -58,7 +62,7 @@ export class LoginComponent {
     const value = this.loginForm.value;
 
     const authRequest: LoginRequest = {
-      email: value.email!,
+      uniqueIdentifier: value.uniqueIdentifier!,
       password: value.password!,
     }
 
@@ -66,17 +70,50 @@ export class LoginComponent {
 
     this.authService.login(authRequest).subscribe({
       next: res => {
-        console.log(res);
-        this.sentLoginRequest = true;
+        this.loginRequestSent = true;
       },
-      error: error => {
-        console.error(error);
+      error: err => {
+        let actionButtonIcon = ""
+        let actionButtonClick: (() => void) | undefined = undefined;
+        this.loginRequestErrorMessage = "";
+
+        if (err instanceof HttpErrorResponse && err.status === 401) {
+          const errorMessage = err.error.message;
+          if (errorMessage.includes("credentials")) {
+            this.loginRequestErrorMessage = "Ungültige Benutzerdaten. Benutzername oder Passwort falsch."
+          } else if (errorMessage.includes("verification")) {
+            this.loginRequestErrorMessage = "Du musst deine Email noch verifizieren. Bitte klicke auf den Link in der Email. Erneut senden?"
+            actionButtonIcon = "restart_alt"
+            actionButtonClick = () => {
+              this.authService.resendVerificationEmail(this.loginForm.value.uniqueIdentifier!).subscribe({
+                next: res => {
+                  this._snackBar.open("Email erneut gesendet.", "Okay")
+                },
+                error: err => {
+                  console.error(err);
+                }
+              })
+            }
+          }
+        }
+        if (!this.loginRequestErrorMessage) {
+          this.loginRequestErrorMessage = "Unbekannter Fehler beim Login. Bitte versuche es später erneut."
+        }
+        this.loginForm.get("password")!.setValue("")
+
+        this._snackBar.openFromComponent(ActionSnackbarComponent, {
+          data: {
+            message: this.loginRequestErrorMessage,
+            actionButtonIcon: actionButtonIcon,
+            actionButtonClick: actionButtonClick
+          }
+        })
       }
     })
   }
 
   onClick(): void {
-    const otpRequest: OtpRequest = {email: this.loginForm.value.email!, otp: this.otpString};
+    const otpRequest: OtpRequest = {uniqueIdentifier: this.loginForm.value.uniqueIdentifier!, otp: this.otpString};
     console.log(otpRequest);
     this.authService.verifyOtp(otpRequest).subscribe({
       next: res => {

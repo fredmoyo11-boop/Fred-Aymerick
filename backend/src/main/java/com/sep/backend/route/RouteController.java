@@ -83,7 +83,7 @@ public class RouteController {
                             schema = @Schema(implementation = FileRequest.class)
                     )
             ))
-    public StringResponse register(@Parameter(description = "geoJSON file") @RequestPart(value = "file") MultipartFile file) {
+    public StringResponse importRoute(@Parameter(description = "geoJSON file") @RequestPart(value = "file") MultipartFile file) {
         return new StringResponse(routeService.importGeoJson(file));
     }
 }

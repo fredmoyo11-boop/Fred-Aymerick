@@ -9,6 +9,7 @@ import com.sep.backend.auth.email.EmailVerificationService;
 import com.sep.backend.auth.login.AuthResponse;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import org.slf4j.Logger;
@@ -55,8 +56,12 @@ public class RegistrationService {
             throw new RegistrationException(ErrorMessages.ALREADY_EXISTS_EMAIL);
         }
         // check if username already registered
-        if (accountService.existsUsername(username)) {
+        if (accountService.existsUsername(data.getUsername())) {
             throw new RegistrationException(ErrorMessages.ALREADY_EXISTS_USERNAME);
+        }
+        // check if the username contains @
+        if (username.contains("@")) {
+            throw new RegistrationException(ErrorMessages.INVALID_USERNAME_CHARACTER_AT);
         }
 
         // save profile picture if exists
@@ -74,18 +79,26 @@ public class RegistrationService {
 
 
     /**
-     * Verifies the user account with token from the mail.
+     * Verifies the user account with the token from the mail.
      *
      * @param token The verification token.
-     * @return The auth response with access token
+     * @return The auth response with the access token
      */
     public AuthResponse verifyEmail(@Valid String token, HttpServletResponse res) {
+        log.debug("VERIFY EMAIL: Verifying email with token {}", token);
         String email = emailVerificationService.verify(token);
+        log.info("VERIFY EMAIL: Verified email {}", email);
 
-        String refreshToken = jwtUtil.generateRefreshToken(email);
+        log.debug("VERIFY EMAIL: Getting role for {}", email);
+        String role = accountService.getRoleByEmail(email);
+        log.info("VERIFY EMAIL: Got role for {}", email);
+
+        log.debug("VERIFY EMAIL: Generating refresh token for {}", email);
+        String refreshToken = jwtUtil.generateRefreshToken(email, role);
         setRefreshTokenCookie(refreshToken, res);
+        log.info("VERIFY EMAIL: Generated refresh token for {}", email);
 
-        return generateAuthResponse(email);
+        return generateAuthResponse(email, role);
     }
 
 
@@ -96,7 +109,9 @@ public class RegistrationService {
      * @return
      */
     public String resendVerificationEmail(@Valid @Email String email) {
+        log.debug("RESEND VERIFICATION EMAIL: Resending verification link for {}", email);
         sendVerificationEmail(email);
+        log.info("RESEND VERIFICATION EMAIL: Resent verification link for {}", email);
         return "Verification link resent.";
     }
 
@@ -140,8 +155,8 @@ public class RegistrationService {
      * @param email The email
      * @return The auth response with access token.
      */
-    private AuthResponse generateAuthResponse(String email) {
-        String accessToken = jwtUtil.generateAccessToken(email);
+    private AuthResponse generateAuthResponse(String email, String role) {
+        String accessToken = jwtUtil.generateAccessToken(email, role);
         return new AuthResponse(accessToken);
     }
 }

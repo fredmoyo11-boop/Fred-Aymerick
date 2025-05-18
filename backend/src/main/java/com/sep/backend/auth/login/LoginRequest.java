@@ -11,12 +11,10 @@ import lombok.Setter;
 @Schema(description = "Represents a login auth request.")
 public class LoginRequest {
 
-    @Email
-    @NotBlank
-    @Schema(description = "The email of the user.")
-    private String email;
+    @Schema(description = "The unique identifier of the user. Either the email or the username.", requiredMode = Schema.RequiredMode.REQUIRED)
+    private String uniqueIdentifier;
 
     @NotBlank
-    @Schema(description = "The password of the user.")
+    @Schema(description = "The password of the user.", requiredMode = Schema.RequiredMode.REQUIRED)
     private String password;
 }

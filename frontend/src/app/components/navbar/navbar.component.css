@@ -19,3 +19,32 @@ button[mat-button]:hover {
   background-color: #f3e5f5; /* noch helleres Lila beim Hover */
   border-radius: 4px;
 }
+
+.profile-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
+}
+
+.profile-avatar {
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: #888;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1.2rem;
+  color: white;
+  text-transform: uppercase;
+
+  img {
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .initials {
+    color: white;
+  }
+}

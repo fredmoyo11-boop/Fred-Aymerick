@@ -3,7 +3,10 @@ package com.sep.backend.auth;
 import com.sep.backend.HttpStatus;
 import com.sep.backend.StringResponse;
 import com.sep.backend.Tags;
-import com.sep.backend.auth.login.*;
+import com.sep.backend.auth.login.AuthResponse;
+import com.sep.backend.auth.login.LoginRequest;
+import com.sep.backend.auth.login.LoginService;
+import com.sep.backend.auth.login.OtpRequest;
 import com.sep.backend.auth.registration.RegistrationDTO;
 import com.sep.backend.auth.registration.RegistrationRequest;
 import com.sep.backend.auth.registration.RegistrationService;
@@ -19,6 +22,8 @@ import jakarta.validation.constraints.Email;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.security.Principal;
 
 @RestController
 @RequestMapping(value = "/api/auth", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -69,6 +74,15 @@ public class AuthController {
         return new StringResponse(loginService.login(loginRequest));
     }
 
+    @PostMapping("/logout")
+    @Operation(description = "Logs a user out.",
+            tags = {Tags.AUTH},
+            responses = {
+                    @ApiResponse(responseCode = HttpStatus.OK, description = "Logged out user successfully.")})
+    public void logout(HttpServletResponse res, Principal principal) {
+        loginService.logout(res, principal);
+    }
+
     @PostMapping("/refresh")
     @Operation(description = "Return a fresh access token.",
             tags = {Tags.AUTH},
@@ -100,7 +114,7 @@ public class AuthController {
         return registrationService.verifyEmail(token, res);
     }
 
-    @PostMapping("/verify/resend")
+    @PostMapping("/verify/email/resend")
     @Operation(description = "Resends a verification email.",
             tags = {Tags.AUTH},
             responses = {

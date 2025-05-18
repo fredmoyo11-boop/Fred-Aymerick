@@ -25,8 +25,8 @@ public final class RouteImport {
 
         long i = 0L;
         while(true) {
-            String longitude = node.path("features/0/geometry/coordinates/" + Long.toString(i) + "/0").asText();
-            String latitude = node.path("features/0/geometry/coordinates/" + Long.toString(i) + "/1").asText();
+            String longitude = node.at("/features/0/geometry/coordinates/" + Long.toString(i) + "/0").asText();
+            String latitude = node.at("/features/0/geometry/coordinates/" + Long.toString(i) + "/1").asText();
             if(longitude.equals("") || latitude.equals("")) {
                 break;
             }
@@ -47,11 +47,12 @@ public final class RouteImport {
         waypointRepository.save(startEntity);
         waypointRepository.save(endEntity);
 
-        long k = 1L;
+        long k = 2L;
+        long size = Long.valueOf(node.at("/features").size());
         while(true) {
-            String midLongitudeString = node.path("features/" + Long.toString(k) + "/geometry/coordinates/0").asText();
-            String midLatitudeString = node.path("features/" + Long.toString(k) + "/geometry/coordinates/1").asText();
-            if(midLongitudeString.equals("") || midLatitudeString.equals("")) {
+            String midLongitudeString = node.at("/features/" + Long.toString(k) + "/geometry/coordinates/0").asText();
+            String midLatitudeString = node.at("/features/" + Long.toString(k) + "/geometry/coordinates/1").asText();
+            if(k>=size-1) {
                 break;
             }
             Double midLongitude = Double.valueOf(midLongitudeString);
@@ -68,6 +69,7 @@ public final class RouteImport {
                     currentDistance = distance;
                     currentIndex = j;
                 }
+                j++;
             }
             WaypointEntity we = waypointRepository.findByRouteIdAndIndex(route.getId(),currentIndex).orElseThrow(() -> new NotFoundException(""));
             we.setType(WaypointType.MID);

@@ -1,105 +1,95 @@
 <div class="header">
-    <nav class="nav_buttons">
-        <button mat-raised-button color="primary" [routerLink]="'/fahranfrage'">Fahranfrage</button>
-        <button mat-raised-button color="accent" [routerLink]="'/aktiveFahranfrage'">Aktive Fahranfrage</button>
-    </nav>
+  <nav class="nav_buttons">
+    <button mat-raised-button color="primary" [routerLink]="'/fahranfrage'">Fahranfrage</button>
+    <button mat-raised-button color="accent" [routerLink]="'/aktiveFahranfrage'">Aktive Fahranfrage</button>
+  </nav>
 </div><br>
 <div class="banner">
-
-    <h2> FINDE EINE FAHRT </h2>
+  <h2> FINDE EINE FAHRT </h2>
 </div>
 <div class="container">
-    <form [formGroup]="fahranfrageForm" (ngSubmit)="submitRideRequest()">
-        <!--start position options-->
-        <div class="start">
-            <p>
-                <mat-icon>location_on</mat-icon>
-                <label for="">Von</label></p>
-            <br>
-            <mat-form-field class="start-address-form-field">
-                <mat-label>Startadresse/Startkoordinaten(lat,lng) eingeben</mat-label>
-                <input type="text"
-                       aria-label="address eingeben"
-                       class='form-control'
-                       matInput
-                       formControlName="startAddress"
-                       [value]="optionToString(this.fahranfrageForm.controls['startAddress'].value)"
-                       [matAutocomplete]="auto_start">
-                <button matTooltip="Aktuelle Position suchen" type="button" mat-icon-button matSuffix
-                        (click)="currentLocation()">
-                    <mat-icon>my_location</mat-icon>
-                </button>
-                <mat-autocomplete #auto_start="matAutocomplete">
-                    @for (option of filteredStartAddressOptions | async; track option) {
-                        <mat-option [value]="option">{{ optionToString(option) }}</mat-option>
-                    }
-                </mat-autocomplete>
-            </mat-form-field>
-        </div>
-        <!--target position options-->
-        <div>
-            <p>
-                <mat-icon>location_on</mat-icon>
-                <label>Nach</label>
-            </p>
-            <mat-form-field class="end-address-form-field">
-                <mat-label>Zieladresse/Zielkoordinaten(lat,lng) eingeben</mat-label>
-                <input type="text"
-                       aria-label="zieladresse eingeben"
-                       class='form-control'
-                       matInput
-                       formControlName="endAddress"
-                       [value]="optionToString(this.fahranfrageForm.controls['endAddress'].value)"
-                       [matAutocomplete]="auto_ziel">
-                <mat-autocomplete #auto_ziel="matAutocomplete">
-                    @for (option of filteredEndAddressOptions | async; track option) {
-                        <mat-option [value]="option">{{ optionToString(option) }}</mat-option>
-                    }
-                </mat-autocomplete>
-            </mat-form-field>
-        </div>
-        <div *ngIf="fahranfrageForm.hasError('sameAddress') && fahranfrageForm.touched" class="error"
-             style="color: red;">
-            Start- und Zieladresse müssen unterschiedlich sein.
-        </div>
-        <br><br>
+  <form [formGroup]="tripRequestForm" (ngSubmit)="checkActiveRide()">
+    <!--start position options-->
+    <div class="start">
+      <p>
+        <mat-icon>location_on</mat-icon>
+        <label>Von</label></p>
+      <br>
+      <mat-form-field class="start-address-form-field">
+        <mat-label>Startadresse/Startkoordinaten(lat,lng) eingeben</mat-label>
+        <input type="text"
+               matInput
+               formControlName="startQuery">
+        <button matTooltip="Aktuelle Position suchen" type="button" mat-icon-button matSuffix
+                (click)="currentLocation()">
+          <mat-icon>my_location</mat-icon>
+        </button>
+      </mat-form-field>
+      <mat-select [(value)]="start" (selectionChange)="onStartChange($event)">
+          @for (location of startLocations; track idx; let idx = $index) {
+            <mat-option [value]="location">{{ location.display_name }}</mat-option>
+          }
+      </mat-select>
+    </div>
+    <div>
+      <p>
+        <mat-icon>location_on</mat-icon>
+        <label>Nach</label>
+      </p>
+      <mat-form-field class="end-address-form-field">
+        <mat-label>Zieladresse/Zielkoordinaten(lat,lng) eingeben</mat-label>
+        <input type="text"
+               matInput
+               formControlName="endQuery">
+      </mat-form-field>
+      <mat-select [(value)]="end" (selectionChange)="onEndChange($event)">
+          @for (location of endLocations; track idx; let idx = $index) {
+            <mat-option [value]="location">{{ location.display_name }}</mat-option>
+          }
+      </mat-select>
+    </div>
+    <div *ngIf="tripRequestForm.hasError('sameAddress') && tripRequestForm.touched" class="error"
+         style="color: red;">
+      Start- und Zieladresse dürfen nicht gleich sein.
+    </div>
+    <br><br>
 
-        <!-- Vehicle class options -->
-        <div class="vehicleClass">
-            <label for="vehicleClass">F A H R Z E U G K L A S S E</label><br>
-            <mat-radio-group class='form-control' formControlName="carType" aria-label="Select an option">
-                <p>
-                    <mat-radio-button value="klein"> K L E I N</mat-radio-button>
-                </p>
-                <p>
-                    <mat-radio-button value="mittel">M I T T E L</mat-radio-button>
-                </p>
-                <p>
-                    <mat-radio-button value="deluxe">D E L U X E</mat-radio-button>
-                </p>
-            </mat-radio-group>
-        </div>
+    <!-- Vehicle class options -->
+    <div class="vehicleClass">
+      <label>F A H R Z E U G K L A S S E</label><br>
+      <mat-radio-group class='form-control' formControlName="carType" aria-label="Select an option">
+        <p>
+          <mat-radio-button value="SMALL"> K L E I N</mat-radio-button>
+        </p>
+        <p>
+          <mat-radio-button value="MEDIUM">M I T T E L</mat-radio-button>
+        </p>
+        <p>
+          <mat-radio-button value="DELUXE">D E L U X E</mat-radio-button>
+        </p>
+      </mat-radio-group>
+    </div>
 
-        <div class="note-box">
-            <label for=" note-box"><strong>Bemerkung</strong>(optional)</label>
-            <p>
-                <mat-form-field class="bem-field">
-                    <mat-label>Kommentar eingeben</mat-label>
-                    <input type="text"
-                           aria-label="Kommentare eingeben"
-                           class='form-control'
-                           matInput
-                           formControlName="note" placeholder="Bsp.Seien Sie bitte pünktlich">
-                </mat-form-field>
-            </p>
-        </div>
+    <div class="note-box">
+      <label><strong>Bemerkung</strong>(optional)</label>
+      <p>
+        <mat-form-field class="bem-field">
+          <mat-label>Kommentar eingeben</mat-label>
+          <input type="text"
+                 aria-label="Kommentare eingeben"
+                 class='form-control'
+                 matInput
+                 formControlName="note" placeholder="Bsp.Seien Sie bitte pünktlich">
+        </mat-form-field>
+      </p>
+    </div>
 
 
-        <div class="search_button">
-            <button type="submit" mat-raised-button [disabled]="!fahranfrageForm.valid" (click)="checkActiveRide()">
-                FAHRT SUCHEN
-            </button>
-        </div>
+    <div class="search_button">
+      <button type="submit" mat-raised-button [disabled]="!tripRequestForm.valid">
+        FAHRT SUCHEN
+      </button>
+    </div>
 
-    </form>
+  </form>
 </div>

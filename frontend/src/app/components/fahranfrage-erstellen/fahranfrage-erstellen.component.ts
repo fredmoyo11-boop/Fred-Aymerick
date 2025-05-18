@@ -66,8 +66,6 @@ export class FahranfrageErstellenComponent implements OnInit {
               private tripService: TripRequestService) {
 
   }
-  filteredStartAddressOptions!: Observable<Array<LocationDTO>>;
-  filteredEndAddressOptions!:Observable<Array<LocationDTO>>;
 
   start!:LocationDTO;
   startLocations: LocationDTO[] = []

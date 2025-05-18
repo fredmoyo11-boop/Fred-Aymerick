@@ -35,6 +35,7 @@ public class ErrorMessages {
 
 
     public static final String EXPIRED_OTP = "OTP expired.";
+    public static final String INVALID_CAR_TYPE = "Invalid car type";
 
     public ErrorMessages() {
         throw new UnsupportedOperationException("Cannot instantiate ErrorMessages.");

@@ -7,6 +7,7 @@ import {jwtDecode} from 'jwt-decode';
   providedIn: 'root'
 })
 export class AngularAuthService {
+
   private authService = inject(AuthService)
 
   private _email$ = new BehaviorSubject<string | null>(null)
@@ -25,21 +26,6 @@ export class AngularAuthService {
 
   getAccessToken(): string {
     return this._accessToken$.value || '';
-  }
-  // to get email of current user
-  getEmailFromAccessToken(): string | null {
-    if (!this.accessToken) return null;
-
-    try {
-      const payloadPart = this.accessToken.split('.')[1];
-      const decodedPayload = JSON.parse(atob(payloadPart));
-
-      // Typisch: E-Mail im Feld "sub" oder "email"
-      return decodedPayload.email || decodedPayload.sub || null;
-    } catch (e) {
-      console.error('Token-Parsing fehlgeschlagen', e);
-      return null;
-    }
   }
 
   private loadFromToken = () => {

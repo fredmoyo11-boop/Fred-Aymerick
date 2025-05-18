@@ -32,7 +32,7 @@ public class LocationDTO {
 
     public static LocationDTO from(LocationEntity locationEntity) {
         LocationDTO dto = new LocationDTO();
-        dto.setLon(locationEntity.getLat());
+        dto.setLat(locationEntity.getLat());
         dto.setLon(locationEntity.getLon());
         dto.setDisplay_name(locationEntity.getDisplay_name());
         return dto;

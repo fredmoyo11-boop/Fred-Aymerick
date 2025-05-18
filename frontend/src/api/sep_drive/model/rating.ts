@@ -11,17 +11,9 @@
  */
 
 
-/**
- * The final request with the OTP.
- */
-export interface OtpRequest { 
-    /**
-     * The unique identifier of the user.
-     */
-    uniqueIdentifier: string;
-    /**
-     * The OTP of the user.
-     */
-    otp: string;
+export interface Rating { 
+    id?: number;
+    rating: number;
+    comment?: string;
 }
 

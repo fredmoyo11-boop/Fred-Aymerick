@@ -12,16 +12,24 @@
 
 
 /**
- * The final request with the OTP.
+ * Represents Route Metadata.
  */
-export interface OtpRequest { 
+export interface WaypointResponse { 
     /**
-     * The unique identifier of the user.
+     * Index of Point
      */
-    uniqueIdentifier: string;
+    index: number;
     /**
-     * The OTP of the user.
+     * Type of Point
      */
-    otp: string;
+    type: string;
+    /**
+     * Longitude
+     */
+    longitude: string;
+    /**
+     * Latitude
+     */
+    latitude: string;
 }
 

@@ -4,9 +4,6 @@ import com.sep.backend.entity.TripRequestEntity;
 import com.sep.backend.trip.nominatim.data.LocationDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @Getter
@@ -16,7 +13,6 @@ import lombok.*;
 @Schema(description = "Represents a request for a drive.")
 public class TripRequestDTO {
 
-    @Email
     @Schema(description = "The customer requesting drive.", requiredMode = RequiredMode.REQUIRED)
     private String email;
 
@@ -40,7 +36,7 @@ public class TripRequestDTO {
         dto.setEmail(tripRequestEntity.getCustomer().getUsername());
         dto.setStartLocation(LocationDTO.from(tripRequestEntity.getStartLocation()));
         dto.setEndLocation(LocationDTO.from(tripRequestEntity.getEndLocation()));
-        dto.setCarType(tripRequestEntity.getCartype());
+        dto.setCarType(tripRequestEntity.getCarType());
         dto.setNote(tripRequestEntity.getNote());
         dto.setStatus(tripRequestEntity.getRequestStatus());
         return dto;

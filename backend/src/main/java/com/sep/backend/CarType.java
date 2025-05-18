@@ -1,5 +1,7 @@
 package com.sep.backend;
 
+import jakarta.validation.constraints.NotBlank;
+
 public class CarType {
     public static final String SMALL = "SMALL";
 
@@ -11,5 +13,4 @@ public class CarType {
         return carType.equals(SMALL) || carType.equals(MEDIUM) || carType.equals(DELUXE);
     }
 
-    public CarType() {throw new UnsupportedOperationException("Cannot instantiate CarType.");}
 }

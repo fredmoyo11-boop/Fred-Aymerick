@@ -118,7 +118,7 @@ export class RegisterComponent {
       role: value.role!,
     };
 
-    this.authService.register(registerDTO, this.selectedFile || undefined).subscribe({
+    this.authService.register1(registerDTO, this.selectedFile || undefined).subscribe({
       next: success => {
         console.log(success)
         this.registerRequestSuccess = true;

@@ -12,16 +12,20 @@
 
 
 /**
- * The final request with the OTP.
+ * DTO for Location
  */
-export interface OtpRequest { 
+export interface LocationDTO { 
     /**
-     * The unique identifier of the user.
+     * Display name of location
      */
-    uniqueIdentifier: string;
+    display_name: string;
     /**
-     * The OTP of the user.
+     * Latitude of location
      */
-    otp: string;
+    lat: number;
+    /**
+     * Longitude of location
+     */
+    lon: number;
 }
 

@@ -2,7 +2,6 @@ package com.sep.backend.trip.request;
 
 import com.sep.backend.HttpStatus;
 import com.sep.backend.Tags;
-import com.sep.backend.entity.TripRequestEntity;
 import com.sep.backend.trip.nominatim.data.LocationDTO;
 import com.sep.backend.trip.nominatim.NominatimService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,10 +14,8 @@ import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import javax.print.attribute.standard.Media;
 import java.security.Principal;
 import java.util.List;
-import java.util.Locale;
 
 @RestController
 @RequestMapping(value = "/api/trip/request", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -37,18 +34,8 @@ public class TripRequestController {
             responses = {
                     @ApiResponse(responseCode = HttpStatus.OK, description = "Suggested list successful send",
                             content = @Content(array = @ArraySchema(schema = @Schema(implementation = LocationDTO.class))))})
-    public List<LocationDTO> suggestions(@Parameter(description = "Searched Location") @RequestParam String search) throws Exception {
-        return nominatimService.getSuggestions(search);
-    }
-
-    @PostMapping("")
-    @Operation(description = "Creates trip request and saves to repository",
-            tags = {Tags.TRIP_REQUEST},
-            responses = {
-                    @ApiResponse(responseCode = HttpStatus.OK, description = "Trip request created successfully.",
-                            content = @Content(schema = @Schema(implementation = TripRequestEntity.class)))})
-    public void create(@RequestBody @Valid TripRequestDTO tripRequestDTO) {
-        tripRequestService.createTripRequest(tripRequestDTO, tripRequestDTO.getEmail());
+    public List<LocationDTO> searchLocations(@Parameter(description = "Searched Location") @RequestParam String query) throws Exception {
+        return nominatimService.searchLocations(query);
     }
 
     @GetMapping("/current")
@@ -56,37 +43,29 @@ public class TripRequestController {
             tags = {Tags.TRIP_REQUEST},
             responses = {@ApiResponse(responseCode = HttpStatus.OK, description = "Trip request retrieved successfully.",
                     content = @Content(schema = @Schema(implementation = TripRequestDTO.class))),
-                    @ApiResponse(responseCode = HttpStatus.NOT_FOUND, description = "Trip request does not exist.")})
-    public TripRequestDTO getCurrentTripRequest(Principal principal) {
-        return TripRequestDTO.from(tripRequestService.getCurrentTripRequest(principal));
+                    @ApiResponse(responseCode = HttpStatus.NOT_FOUND, description = "Active trip request does not exist.")})
+    public TripRequestDTO getCurrentActiveTripRequest(Principal principal) {
+        return tripRequestService.getCurrentActiveTripRequest(principal);
     }
 
     @PostMapping("/current")
     @Operation(description = "Creates a trip request for the current customer.",
-    tags = {Tags.TRIP_REQUEST},
-    responses = {@ApiResponse(responseCode = HttpStatus.OK, description = "Trip request created successfully.",
-    content = @Content(schema = @Schema(implementation = TripRequestDTO.class)))})
-    public TripRequestDTO createCurrentTripRequest(@RequestBody @Valid TripRequestDTO tripRequestDTO, Principal principal) {
-        return TripRequestDTO.from(tripRequestService.createCurrentTripRequest(tripRequestDTO, principal));
-    }
-
-    @GetMapping("")
-    @Operation(description = "Shows trip request of customer",
             tags = {Tags.TRIP_REQUEST},
-            responses = {
-                    @ApiResponse(responseCode = HttpStatus.OK, description = "Trip request showed successfully",
-                            content = @Content(schema = @Schema(implementation = TripRequestDTO.class)))})
-    public TripRequestDTO view(@Parameter(description = "Uses principal to find request.") @RequestParam String email) {
-        return tripRequestService.showTripRequest(email); //TODO Change email to principal
+            responses = {@ApiResponse(responseCode = HttpStatus.OK, description = "Trip request created successfully.",
+                    content = @Content(schema = @Schema(implementation = TripRequestDTO.class)))})
+    public TripRequestDTO createCurrentActiveTripRequest(@RequestBody @Valid TripRequestBody tripRequestBody, Principal principal) {
+        return TripRequestDTO.from(tripRequestService.createCurrentActiveTripRequest(tripRequestBody, principal));
     }
 
     @DeleteMapping("/current")
-    @Operation(description = "Deletes trip request from repository",
+    @Operation(description = "Deletes the active trip request for the current customer.",
             tags = {Tags.TRIP_REQUEST},
             responses = {
-                    @ApiResponse(responseCode = HttpStatus.OK, description = "Trip request deleted successfully.",
-                            content = @Content(schema = @Schema(implementation = TripRequestEntity.class)))})
-    public void deleteRequest(@Parameter(description = "Uses principal to find request.") @RequestParam String email) {
-        tripRequestService.deleteTripRequest(email); //TODO Change email to principal
+                    @ApiResponse(responseCode = HttpStatus.OK, description = "Active trip request deleted successfully."),
+                    @ApiResponse(responseCode = HttpStatus.NOT_FOUND, description = "Active trip request does not exist for current customer."),
+            })
+    public void deleteCurrentActiveTripRequest(Principal principal) {
+        tripRequestService.deleteCurrentActiveTripRequest(principal);
     }
+
 }

@@ -15,7 +15,7 @@ public class NominatimService {
             .baseUrl("https://nominatim.openstreetmap.org")
             .build();
 
-    public List<LocationDTO> getSuggestions(String location) throws Exception {
+    public List<LocationDTO> searchLocations(String location) throws Exception {
         try {
             ObjectMapper mapper = new ObjectMapper();
 

@@ -1,6 +1,5 @@
 package com.sep.backend.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.sep.backend.trip.nominatim.data.LocationDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
@@ -17,7 +16,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonIgnoreProperties(ignoreUnknown = true)
 @Entity
 public class LocationEntity extends AbstractEntity {
 
@@ -38,9 +36,9 @@ public class LocationEntity extends AbstractEntity {
 
     public static LocationEntity from(@Valid LocationDTO locationDTO) {
         LocationEntity locationEntity = new LocationEntity();
-        locationEntity.setDisplay_name(locationDTO.getDisplay_name());
-        locationEntity.setLat(locationDTO.getLat());
-        locationEntity.setLon(locationDTO.getLon());
+        locationEntity.setDisplay_name(locationDTO.getDisplayName());
+        locationEntity.setLat(locationDTO.getLatitude());
+        locationEntity.setLon(locationDTO.getLongitude());
         return locationEntity;
     }
 }

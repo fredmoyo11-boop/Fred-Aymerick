@@ -14,7 +14,7 @@ import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
-import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class TripRequestService {
@@ -24,98 +24,77 @@ public class TripRequestService {
     private final LocationRepository locationRepository;
     private final AccountService accountService;
 
-    public TripRequestService(TripRequestRepository tripRequestRepository, LocationRepository locationRepository,AccountService accountService ) {
+    public TripRequestService(TripRequestRepository tripRequestRepository, LocationRepository locationRepository, AccountService accountService) {
         this.tripRequestRepository = tripRequestRepository;
         this.locationRepository = locationRepository;
         this.accountService = accountService;
-    }
-
-    public TripRequestEntity getCurrentTripRequest(Principal principal) throws NotFoundException {
-        String email = principal.getName();
-        return getRequestByEmailAndStatus(email, TripRequestStatus.ACTIVE);
-    }
-
-    public TripRequestEntity createCurrentTripRequest(TripRequestDTO tripRequestDTO, Principal principal) {
-        String email = principal.getName();
-        return createTripRequest(tripRequestDTO, email);
-    }
-
-    public TripRequestEntity getRequestByEmailAndStatus(String email, String requestStatus) throws NotFoundException {
-        return tripRequestRepository.findByCustomer_EmailAndRequestStatus(email, requestStatus).getFirst();
-    }
-
-    public TripRequestEntity getRequestByEmail(String email) throws NotFoundException {
-        return tripRequestRepository.findByCustomerEmail(email).orElseThrow(() -> new NotFoundException("Trip request does not exist."));
-    }
-
-    public LocationEntity getLocationById(Long id) throws NotFoundException {
-        return locationRepository.findById(id).orElseThrow(() -> new NotFoundException(ErrorMessages.NOT_FOUND_REQUEST));
     }
 
     public boolean existsActiveTripRequest(String email) {
         return tripRequestRepository.existsByCustomer_EmailAndRequestStatus(email, TripRequestStatus.ACTIVE);
     }
 
-    /*//setRequestStatus -> when done or started set to either COMPLETED or ACTIVE -> Zyklus 2
-    public void changeStatus(String email, String newStatus) throws NotFoundException {
-        TripRequestEntity tripRequestEntity = getRequestByEmail(email, TripRequestStatus.ACTIVE);
-        tripRequestEntity.setRequestStatus(newStatus);
-        tripRequestRepository.save(tripRequestEntity);
-    }*/
-
-    public LocationEntity convertLocationDTOToEntity(@Valid LocationDTO locationDTO) {
+    private LocationEntity saveLocation(@Valid LocationDTO locationDTO) {
         var locationEntity = LocationEntity.from(locationDTO);
-        locationRepository.save(locationEntity);
-        return locationEntity;
+        return locationRepository.save(locationEntity);
     }
 
-    public LocationDTO convertLocationEntityToDTO(LocationEntity locationEntity) {
-        return LocationDTO.from(locationEntity);
+    public Optional<TripRequestEntity> findTripRequestByEmailAndStatus(String email, String requestStatus) {
+        return tripRequestRepository.findByCustomer_EmailAndRequestStatus(email, requestStatus);
     }
 
-    public TripRequestDTO convertTripRequestEntityToDTO(TripRequestEntity tripRequestEntity) {
-        return TripRequestDTO.from(tripRequestEntity);
-    }
-
-    public TripRequestDTO showTripRequest(String email) throws NotFoundException {
-        TripRequestEntity tripRequestEntity = getRequestByEmail(email);
-        return convertTripRequestEntityToDTO(tripRequestEntity);
-    }
-
-    //deleteFromRepository -> when customer wants to delete request
-    public void deleteTripRequest(String email) throws NotFoundException {
-        TripRequestEntity tripRequestEntity = getRequestByEmail(email);
-        if (Objects.equals(tripRequestEntity.getRequestStatus(), TripRequestStatus.IN_PROGRESS)) {
-            throw new RuntimeException("Cannot delete active request");
-        }
-        tripRequestRepository.delete(tripRequestEntity);
+    public Optional<TripRequestEntity> findActiveTripRequestByEmail(String email) {
+        return findTripRequestByEmailAndStatus(email, TripRequestStatus.ACTIVE);
     }
 
     @Transactional
-    public TripRequestEntity createTripRequest(@Valid TripRequestDTO tripRequestDTO, String email) {
-        if (!CarType.isValidCarType(tripRequestDTO.getCarType())) {
+    public TripRequestEntity createCurrentActiveTripRequest(@Valid TripRequestBody tripRequestBody, Principal principal) {
+        String email = principal.getName();
+
+        String role = accountService.getRoleByEmail(email);
+        if (!Roles.CUSTOMER.equals(role)) {
+            throw new TripRequestException("User must be a customer.");
+        }
+
+        if (!CarType.isValidCarType(tripRequestBody.getCarType())) {
             throw new TripRequestException(ErrorMessages.INVALID_CAR_TYPE);
         }
+
+        // only one active trip request at a time
         if (existsActiveTripRequest(email)) {
             throw new TripRequestException(ErrorMessages.ALREADY_EXISTS_TRIPREQUEST);
         }
 
-        LocationEntity startAddress = convertLocationDTOToEntity(tripRequestDTO.getStartLocation());
-        LocationEntity endAddress = convertLocationDTOToEntity(tripRequestDTO.getEndLocation());
+        LocationEntity startAddress = saveLocation(tripRequestBody.getStartLocation());
+        LocationEntity endAddress = saveLocation(tripRequestBody.getEndLocation());
 
         var tripRequestEntity = new TripRequestEntity();
         tripRequestEntity.setStartLocation(startAddress);
         tripRequestEntity.setEndLocation(endAddress);
-        tripRequestEntity.setCarType(tripRequestDTO.getCarType());
-        tripRequestEntity.setNote(tripRequestDTO.getNote());
+        tripRequestEntity.setCarType(tripRequestBody.getCarType());
+        tripRequestEntity.setNote(tripRequestBody.getNote());
         tripRequestEntity.setRequestStatus(TripRequestStatus.ACTIVE);
 
-        String role = accountService.getRoleByEmail(email);
-        if (!Roles.CUSTOMER.equals(role)) {
-            throw new RuntimeException("User must be a customer.");
-        }
         var customerEntity = accountService.getCustomerByEmail(email);
         tripRequestEntity.setCustomer(customerEntity);
+
         return tripRequestRepository.save(tripRequestEntity);
     }
+
+    public TripRequestDTO getCurrentActiveTripRequest(Principal principal) throws NotFoundException {
+        String email = principal.getName();
+        Optional<TripRequestEntity> tripRequestEntity = findActiveTripRequestByEmail(email);
+        return tripRequestEntity.map(TripRequestDTO::from).orElseThrow(() -> new NotFoundException("Current customer does not have an active trip request."));
+    }
+
+    public void deleteCurrentActiveTripRequest(Principal principal) throws NotFoundException {
+        String email = principal.getName();
+        TripRequestEntity tripRequestEntity = findActiveTripRequestByEmail(email)
+                .orElseThrow(() -> new NotFoundException("Current customer does not have an active trip request."));
+        tripRequestEntity.setRequestStatus(TripRequestStatus.DELETED);
+
+        tripRequestRepository.save(tripRequestEntity);
+    }
+
+
 }

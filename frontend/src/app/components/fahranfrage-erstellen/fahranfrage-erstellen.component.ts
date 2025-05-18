@@ -20,7 +20,7 @@ import {RouterLink} from '@angular/router';
 import {Router} from '@angular/router';
 import {MatDialog} from '@angular/material/dialog';
 import {ActiveRideDialogComponent} from '../active-ride-dialog/active-ride-dialog.component';
-import {TripRequestService} from '../../../api/sep_drive';
+import {TripRequestBody, TripRequestService} from '../../../api/sep_drive';
 import {LocationDTO,TripRequestDTO} from '../../../api/sep_drive';
 import {MatSelect, MatSelectChange} from '@angular/material/select';
 
@@ -98,7 +98,7 @@ export class FahranfrageErstellenComponent implements OnInit {
       distinctUntilChanged(),
     ).subscribe({
       next: query => {
-        return this.tripService.suggestions(query).subscribe({
+        return this.tripService.searchLocations(query).subscribe({
           next: locations => {
             console.log(locations)
             this.startLocations = locations
@@ -118,7 +118,7 @@ export class FahranfrageErstellenComponent implements OnInit {
       distinctUntilChanged(),
     ).subscribe({
       next: query => {
-        return this.tripService.suggestions(query).subscribe({
+        return this.tripService.searchLocations(query).subscribe({
           next: locations => {
             console.log(locations)
             this.endLocations = locations
@@ -178,8 +178,7 @@ export class FahranfrageErstellenComponent implements OnInit {
   submitRideRequest () {
     //send to backend
     const form = this.tripRequestForm.value;
-    const tripRequest: TripRequestDTO = {
-      email: "",
+    const tripRequestBody: TripRequestBody = {
       startLocation: this.start,
       endLocation: this.end,
       carType: form.carType,
@@ -187,7 +186,7 @@ export class FahranfrageErstellenComponent implements OnInit {
     };
 
 
-    this.tripService.createCurrentTripRequest(tripRequest).subscribe({
+    this.tripService.createCurrentActiveTripRequest(tripRequestBody).subscribe({
       next: (response) => {
         console.log('Fahrt erfolgreich erstellt!',response);
         alert('Fahrt wurde erfolgreich erstellt!');

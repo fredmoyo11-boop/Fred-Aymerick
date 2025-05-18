@@ -25,10 +25,10 @@ public class TripRequestDTO {
     @Schema(description = "The type of car requested.", requiredMode = RequiredMode.REQUIRED)
     private String carType;
 
-    @Schema(description = "Optional notes by customer", requiredMode = RequiredMode.NOT_REQUIRED)
+    @Schema(description = "The optional notes for the driver.", requiredMode = RequiredMode.NOT_REQUIRED)
     private String note;
 
-    @Schema(description = "Shows current status. Either ACTIVE, INPROGRESS or COMPLETED")
+    @Schema(description = "The current status of the trip. Either ACTIVE or DELETED.")
     private String status;
 
     public static TripRequestDTO from(TripRequestEntity tripRequestEntity) {

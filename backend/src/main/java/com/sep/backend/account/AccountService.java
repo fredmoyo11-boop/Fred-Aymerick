@@ -1,5 +1,6 @@
 package com.sep.backend.account;
 
+import com.sep.backend.CarType;
 import com.sep.backend.ErrorMessages;
 import com.sep.backend.NotFoundException;
 import com.sep.backend.Roles;
@@ -213,6 +214,11 @@ public class AccountService {
             case Roles.DRIVER -> {
                 log.debug("Saving driver: {} ({})", username, email);
                 var driverEntity = createAccountEntity(data, profilePictureUrl, DriverEntity.class);
+                if(CarType.DELUXE.equals(data.getCarType())|| CarType.MEDIUM.equals(data.getCarType())|| CarType.LARGE.equals(data.getCarType())) {
+                    driverEntity.setCarType(data.getCarType());
+                }else {
+                    throw new RegistrationException( ErrorMessages.INVALID_CAR_TYPE);
+                }
                 driverRepository.save(driverEntity);
                 log.info("Saving driver: {} ({})", username, email);
             }

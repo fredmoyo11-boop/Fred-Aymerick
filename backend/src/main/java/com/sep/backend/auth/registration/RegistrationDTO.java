@@ -43,4 +43,8 @@ public class RegistrationDTO {
     @Schema(description = "The role of the user. Either CUSTOMER or DRIVER.", requiredMode = RequiredMode.REQUIRED)
     private String role;
 
+    @Schema(description = "The type of car associated only  with the driver account" , allowableValues = {"SMALL", "MEDIUM", "DELUXE"},
+            requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+    private String carType;
+
 }

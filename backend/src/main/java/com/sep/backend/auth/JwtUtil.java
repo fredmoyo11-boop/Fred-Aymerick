@@ -75,9 +75,10 @@ public class JwtUtil {
      * @param claimsResolver The claims resolver.
      * @param <T>            The class of the claim to be extracted.
      * @return The extracted claim.
-     * @throws ExpiredJwtException
+     * @throws ExpiredJwtException      If the token is expired.
+     * @throws IllegalArgumentException If the token is null or empty.
      */
-    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) throws ExpiredJwtException {
+    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) throws ExpiredJwtException, IllegalArgumentException {
         Claims claims = Jwts.parser()
                 .verifyWith(getSigningKey())
                 .build()
@@ -113,7 +114,7 @@ public class JwtUtil {
      * @param token The token.
      * @return The extracted email.
      */
-    public String extractEmail(String token) {
+    public String extractEmail(String token) throws ExpiredJwtException, IllegalArgumentException {
         return extractClaim(token, Claims::getSubject);
     }
 

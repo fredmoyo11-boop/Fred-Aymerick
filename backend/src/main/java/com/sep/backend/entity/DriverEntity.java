@@ -11,8 +11,6 @@ import lombok.*;
 @Table(name = "driver")
 @Entity
 public class DriverEntity extends AccountEntity {
-    @Column(name = "car_type", nullable = false)
-    @NotBlank
-    @Pattern(regexp = "MEDIUM|LARGE|DELUXE", message = "Invalid car type. Accepted values are: MEDIUM, LARGE, DELUXE.")
+    @Column(name = "car_type", nullable = true)
     private String carType;
 }

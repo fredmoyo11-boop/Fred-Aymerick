@@ -20,14 +20,14 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(LoginException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ResponseEntity<Map<String, String>> handleLoginException(LoginException ex) {
-        log.error(ex.getMessage());
+        log.error("LoginException: {}", ex.getMessage());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", ex.getMessage()));
     }
 
     @ExceptionHandler(RegistrationException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ResponseEntity<Map<String, String>> handleRegistrationException(RegistrationException ex) {
-        log.error(ex.getMessage());
+        log.error("RegistrationException: {}", ex.getMessage());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", ex.getMessage()));
     }
 

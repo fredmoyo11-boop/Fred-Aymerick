@@ -11,20 +11,20 @@ import com.sep.backend.entity.DriverEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+@Slf4j
 @AllArgsConstructor
 @Service
 public class AccountService {
-    private final Logger log = LoggerFactory.getLogger(AccountService.class);
-
     private final CustomerRepository customerRepository;
     private final DriverRepository driverRepository;
     private final ProfilePictureStorageService profilePictureStorageService;
@@ -74,12 +74,90 @@ public class AccountService {
     }
 
     /**
+     * Returns an optional containing the customer entity. Optional is empty if the customer with a specified username does not exist.
+     *
+     * @param username The username of the customer.
+     * @return The optional containing the customer entity.
+     */
+    public Optional<CustomerEntity> findCustomerByUsername(String username) {
+        return customerRepository.findByUsername(username);
+    }
+
+    /**
+     * Returns an optional containing the driver entity. Optional is empty if the driver with a specified username doesn't exist.
+     *
+     * @param username The username of the driver.
+     * @return The optional containing the driver entity.
+     */
+    public Optional<DriverEntity> findDriverByUsername(String username) {
+        return driverRepository.findByUsername(username);
+    }
+
+    /**
+     * Returns an optional containing the role of the specified username. Either CUSTOMER or DRIVER. Optional is empty if the username does not exist.
+     *
+     * @param username The username.
+     * @return The optional containing the role.
+     */
+    public Optional<String> getRoleByUsername(String username) {
+        if (existsCustomerUsername(username)) {
+            return Optional.of(Roles.CUSTOMER);
+        } else if (existsDriverUsername(username)) {
+            return Optional.of(Roles.DRIVER);
+        } else {
+            return Optional.empty();
+        }
+    }
+
+
+    /**
+     * Returns the account
+     *
+     * @param principal
+     * @return
+     * @throws NotFoundException
+     */
+    public AccountDTO getCurrentAccount(Principal principal) throws NotFoundException {
+        String email = principal.getName();
+        String role = getRoleByEmail(email);
+        return switch (role) {
+            case Roles.CUSTOMER -> {
+                var customerEntity = getCustomerByEmail(email);
+                yield getCustomerDTO(customerEntity);
+            }
+            case Roles.DRIVER -> {
+                var driverEntity = getDriverByEmail(email);
+                yield getDriverDTO(driverEntity);
+            }
+            default -> throw new NotFoundException(ErrorMessages.NOT_FOUND_USER);
+        };
+    }
+
+
+    /**
+     * Returns an optional containing the email for the provided username. Returns an empty optional if the username is unknown.
+     *
+     * @param username The username.
+     * @return The optional containing the email. Might be empty if the username is unknown.
+     */
+    public Optional<String> findEmailByUsername(String username) {
+        if (existsCustomerUsername(username)) {
+            return customerRepository.findByUsername(username).map(CustomerEntity::getEmail);
+        } else if (existsDriverUsername(username)) {
+            return driverRepository.findByUsername(username).map(DriverEntity::getEmail);
+        } else {
+            return Optional.empty();
+        }
+    }
+
+
+    /**
      * Verifies account with specified email.
      *
      * @param email The email address of the account.
      * @throws NotFoundException If no account with specified email exists.
      */
-    public void verifyAccount(String email) throws RegistrationException {
+    public void verifyAccount(String email) throws NotFoundException {
         String role = getRoleByEmail(email);
         switch (role) {
             case Roles.CUSTOMER -> {
@@ -96,6 +174,22 @@ public class AccountService {
             }
             default -> throw new NotFoundException(ErrorMessages.NOT_FOUND_USER);
         }
+    }
+
+    /**
+     * Returns whether the user with the specified email is verified or not.
+     *
+     * @param email The email of the user.
+     * @return Whether the user is verified or not.
+     * @throws NotFoundException If user with specified username does not exist.
+     */
+    public boolean isVerified(String email) throws NotFoundException {
+        String role = getRoleByEmail(email);
+        return switch (role) {
+            case Roles.CUSTOMER -> getCustomerByEmail(email).getVerified();
+            case Roles.DRIVER -> getDriverByEmail(email).getVerified();
+            default -> throw new NotFoundException(ErrorMessages.NOT_FOUND_USER);
+        };
     }
 
     /**
@@ -129,7 +223,8 @@ public class AccountService {
         }
     }
 
-    public List<AccountDTO> SearchUser(String part) {
+
+    public List<AccountDTO> searchUser(String part) {
         List<AccountDTO> accountDTOS = new ArrayList<>();
         List<DriverEntity> drivers = driverRepository.findByUsernameContainingIgnoreCase(part);
         List<CustomerEntity> customers = customerRepository.findByUsernameContainingIgnoreCase(part);
@@ -137,9 +232,9 @@ public class AccountService {
             throw new NotFoundException("Kein Kunde mit Benutzername " + " " + part + " " + "gefunden.");
         } else if (drivers.isEmpty()) {
             accountDTOS.addAll(mapToCustomerDTO(customers));
-        }else if (customers.isEmpty()) {
+        } else if (customers.isEmpty()) {
             accountDTOS.addAll(mapToDriverDTO(drivers));
-        }else{
+        } else {
             accountDTOS.addAll(mapToAccountDTOs(customers, drivers));
         }
         return accountDTOS;
@@ -172,7 +267,7 @@ public class AccountService {
     }
 
     @Schema(description = "get the account of  user BASED OF THE username .Die Methode ist erstmal für Unterstützung des frontend Features : klickbares profil gedacht")
-    public AccountDTO getAccountprofile(String username) {
+    public AccountDTO getAccountProfile(String username) {
         Optional<CustomerEntity> customerEntity = customerRepository.findByUsername(username);
         if (customerEntity.isPresent()) {
             return getCustomerDTO(customerEntity.get());
@@ -180,12 +275,12 @@ public class AccountService {
             Optional<DriverEntity> driverEntity = driverRepository.findByUsername(username);
             if (driverEntity.isPresent()) {
                 return getDriverDTO(driverEntity.get());
-            }else {
+            } else {
                 throw new NotFoundException(ErrorMessages.NOT_FOUND_USER);
             }
         }
     }
- 
+
 
     public static AccountDTO getCustomerDTO(CustomerEntity customerEntity) {
         AccountDTO customerDTO = new AccountDTO();
@@ -219,17 +314,17 @@ public class AccountService {
 
 
     /**
-     * Returns if an account with specified username exists.
+     * Returns if an account with the specified username exists.
      *
      * @param username The username.
-     * @return Whether account with username exists or not.
+     * @return Whether an account with the username exists or not.
      */
     public boolean existsUsername(String username) {
         return existsCustomerUsername(username) || existsDriverUsername(username);
     }
 
     /**
-     * Returns if a customer with specified username exists.
+     * Returns if a customer with the specified username exists.
      *
      * @param username The username.
      * @return Whether customer with username exists or not.
@@ -308,32 +403,33 @@ public class AccountService {
             throw new RuntimeException("Failed to create account entity of type " + clazz.getName(), e);
         }
     }
-     @Schema(description = "Updates the account of the authenticated user")
+
+    @Schema(description = "Updates the account of the authenticated user")
     public void saveAccountChanges(String email, UpdateAccountDTO updateAccountDTO, MultipartFile file) {
-            if(isOwner(email)) {
-                if (existsCustomerEmail(email)) {
-                    updateCustomer(email, updateAccountDTO, file);
-                } else if (existsDriverEmail(email)) {
-                    updateDriver(email, updateAccountDTO, file);
-                } else {
-                    throw new NotFoundException(ErrorMessages.NOT_FOUND_USER);
-                }
-            }else{
-                throw new RuntimeException("You are not allowed to update this account.") ;
+        if (isOwner(email)) {
+            if (existsCustomerEmail(email)) {
+                updateCustomer(email, updateAccountDTO, file);
+            } else if (existsDriverEmail(email)) {
+                updateDriver(email, updateAccountDTO, file);
+            } else {
+                throw new NotFoundException(ErrorMessages.NOT_FOUND_USER);
             }
+        } else {
+            throw new RuntimeException("You are not allowed to update this account.");
+        }
     }
 
-    public void updateCustomer(String email, UpdateAccountDTO updateAccountDTO, MultipartFile file)  {
+    public void updateCustomer(String email, UpdateAccountDTO updateAccountDTO, MultipartFile file) {
 
-        try{
+        try {
             CustomerEntity customerEntity = customerRepository.findByEmail(email)
                     .orElseThrow(() -> new NotFoundException(ErrorMessages.NOT_FOUND_USER));
 
 
-            if(updateAccountDTO.getUsername()!= null && !customerEntity.getUsername().equals(updateAccountDTO.getUsername())){
+            if (updateAccountDTO.getUsername() != null && !customerEntity.getUsername().equals(updateAccountDTO.getUsername())) {
                 if (existsCustomerUsername(updateAccountDTO.getUsername()) || existsDriverUsername(updateAccountDTO.getUsername())) {
                     throw new IllegalArgumentException("Username already exists");
-                }else{
+                } else {
                     customerEntity.setUsername(updateAccountDTO.getUsername());
                 }
             }
@@ -353,7 +449,7 @@ public class AccountService {
             // Kunde speichern
             customerRepository.save(customerEntity);
             log.info("Updated customer {} with username {}", customerEntity.getUsername(), customerEntity.getEmail());
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException("Failed to update account entity of type " + CustomerEntity.class.getName(), e);
         }
 
@@ -365,9 +461,9 @@ public class AccountService {
             DriverEntity driverEntity = driverRepository.findByEmail(email)
                     .orElseThrow(() -> new NotFoundException(ErrorMessages.NOT_FOUND_USER));
             if (updateAccountDTO.getUsername() != null && !updateAccountDTO.getUsername().equals(driverEntity.getUsername())) {
-                if (existsDriverUsername(updateAccountDTO.getUsername())|| existsCustomerUsername(updateAccountDTO.getUsername())) {
+                if (existsDriverUsername(updateAccountDTO.getUsername()) || existsCustomerUsername(updateAccountDTO.getUsername())) {
                     throw new IllegalArgumentException("Username already exists,update failed!");
-                }else {
+                } else {
                     driverEntity.setUsername(updateAccountDTO.getUsername());
                 }
             }
@@ -396,7 +492,7 @@ public class AccountService {
     }
 
     public boolean isOwner(String email) {
-        return SecurityContextHolder.getContext().getAuthentication().getName().equals(email) ;
+        return SecurityContextHolder.getContext().getAuthentication().getName().equals(email);
     }
 
 }

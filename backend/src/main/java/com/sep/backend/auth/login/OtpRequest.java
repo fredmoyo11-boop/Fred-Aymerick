@@ -14,9 +14,8 @@ import lombok.Setter;
 public class OtpRequest {
 
     @NotBlank
-    @Email
-    @Schema(description = "The email of the user.", requiredMode = RequiredMode.REQUIRED)
-    private String email;
+    @Schema(description = "The unique identifier of the user.", requiredMode = RequiredMode.REQUIRED)
+    private String uniqueIdentifier;
 
     @Size(min = 6, max = 6)
     @Schema(description = "The OTP of the user.", requiredMode = RequiredMode.REQUIRED)

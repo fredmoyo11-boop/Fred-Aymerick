@@ -1,0 +1,61 @@
+
+
+
+<div class="profil-info">
+  <img [src]="account.profilePictureUrl || 'https://th.bing.com/th/id/OIP.Y-oQ-cmHGUVYt2R-y85gbwHaDt?rs=1&pid=ImgDetMain'"
+       alt="{{account.username.charAt(0).toUpperCase()}}">
+  <hr>
+  <div class="info-zeile">
+    <p class="beschreibung">Benutzername:</p>
+    <p class="wert">{{account.username}}</p>
+  </div>
+
+  <div class="info-zeile">
+    <p class="beschreibung">Vorname:</p>
+    <p class="wert name">{{account.firstName}}</p>
+  </div>
+
+  <div class="info-zeile">
+    <p class="beschreibung">Nachname:</p>
+    <p class="wert name">{{account.lastName}}</p>
+  </div>
+
+  <div class="info-zeile">
+    <p class="beschreibung">Email:</p>
+    <p class="wert">{{account.email}}</p>
+  </div>
+
+  <div class="info-zeile">
+    <p class="beschreibung">Geburtsdatum:</p>
+    <p class="wert">{{account.birthday}}</p>
+  </div>
+
+  <div class="info-zeile">
+    <p class="beschreibung">Rolle:</p>
+    <p class="wert role">{{account.role.toLowerCase()}}</p>
+  </div>
+
+  <div class="info-zeile">
+    <p class="beschreibung">Bewertungen:</p>
+    <p class="wert">inhalt</p>
+  </div>
+
+  <div class="info-zeile">
+    <p class="beschreibung">Gesamtanzahl der Fahrten:</p>
+    <p class="wert">{{account.totalNumberOfRides}}</p>
+  </div>
+
+  <div class="info-zeile" *ngIf ="account.carType">
+    <p class="beschreibung">Autotyp:</p>
+    <p class="wert cartype">{{account.carType.charAt(0)+account.carType.substr(1).toLowerCase()}}</p>
+  </div>
+
+</div>
+
+
+
+
+
+
+
+

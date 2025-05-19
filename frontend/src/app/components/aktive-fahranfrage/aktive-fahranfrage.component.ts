@@ -30,12 +30,10 @@ export class AktiveFahranfrageComponent implements OnInit {
 
   constructor(
     private dialogRef: MatDialog,
-    private auth: AngularAuthService,
-    private tripService: TripRequestService
-  ) {
+    private tripService: TripRequestService) {
   }
-
   ngOnInit() {
+    // gets triprequest from backend if exists
     this.tripService.getCurrentActiveTripRequest().subscribe({
       next: (response) => {
         console.log('Backend-Antwort:', response); // Debug-Ausgabe

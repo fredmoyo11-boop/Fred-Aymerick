@@ -1,6 +1,7 @@
 package com.sep.backend.auth.registration;
 
 import com.sep.backend.ErrorMessages;
+import com.sep.backend.NotFoundException;
 import com.sep.backend.account.AccountService;
 import com.sep.backend.account.ProfilePictureStorageService;
 import com.sep.backend.auth.JwtUtil;
@@ -103,15 +104,18 @@ public class RegistrationService {
 
 
     /**
-     * Resends a new verification link to the email.
+     * Resends a new verification link to the email belonging to the user with the specified unique identifier.
      *
-     * @param email The email.
+     * @param uniqueIdentifier The unique identifier of the user.
      * @return
      */
-    public String resendVerificationEmail(@Valid @Email String email) {
-        log.debug("RESEND VERIFICATION EMAIL: Resending verification link for {}", email);
+    public String resendVerificationEmail(String uniqueIdentifier) {
+        log.debug("RESEND VERIFICATION EMAIL: Resending verification link for {}", uniqueIdentifier);
+        String email = accountService.getEmailByUniqueIdentifier(uniqueIdentifier)
+                .orElseThrow(() -> new NotFoundException(ErrorMessages.NOT_FOUND_USER));
+        log.debug("RESEND VERIFICATION EMAIL: Found email for {}", uniqueIdentifier);
         sendVerificationEmail(email);
-        log.info("RESEND VERIFICATION EMAIL: Resent verification link for {}", email);
+        log.debug("RESEND VERIFICATION EMAIL: Resent verification link for {}", email);
         return "Verification link resent.";
     }
 

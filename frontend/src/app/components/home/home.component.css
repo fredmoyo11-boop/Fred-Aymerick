@@ -1,0 +1,16 @@
+.bold {
+  font-weight: bold;
+}
+
+.bold:hover {
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.container {
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}

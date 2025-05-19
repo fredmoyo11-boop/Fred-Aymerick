@@ -27,10 +27,8 @@ export class VerifyEmailComponent implements OnInit {
     this.token = this.route.snapshot.queryParamMap.get("token") || "";
     this.authService.verifyEmail(this.token).subscribe({
       next: (res) => {
-        console.log(res);
         this.angularAuthService.consumeAuthResponse(res);
         this.verified = true;
-        this.router.navigate(["/"]).then(of)
       },
       error: (err) => {
         console.error(err);

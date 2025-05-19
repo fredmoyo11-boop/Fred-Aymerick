@@ -135,6 +135,21 @@ public class AccountService {
         };
     }
 
+    /**
+     * Returns an optional containing email belonging to the provided unique identifier.
+     *
+     * @param uniqueIdentifier The unique identifier.
+     * @return The optional containing the email. Might be empty if id was unknown email.
+     */
+    public Optional<String> getEmailByUniqueIdentifier(String uniqueIdentifier) {
+        //if unique identifier contains @ it must be an email, else it is treated as a username
+        if (uniqueIdentifier.contains("@")) {
+            return Optional.of(uniqueIdentifier);
+        } else {
+            return findEmailByUsername(uniqueIdentifier);
+        }
+    }
+
 
     /**
      * Returns an optional containing the email for the provided username. Returns an empty optional if the username is unknown.

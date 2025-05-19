@@ -41,20 +41,6 @@ public class LoginService {
         this.accountService = accountService;
     }
 
-    /**
-     * Returns an optional containing email belonging to the provided unique identifier.
-     *
-     * @param uniqueIdentifier The unique identifier.
-     * @return The optional containing the email. Might be empty if id was unknown email.
-     */
-    private Optional<String> getEmailByUniqueIdentifier(String uniqueIdentifier) {
-        //if unique identifier contains @ it must be an email, else it is treated as a username
-        if (uniqueIdentifier.contains("@")) {
-            return Optional.of(uniqueIdentifier);
-        } else {
-            return accountService.findEmailByUsername(uniqueIdentifier);
-        }
-    }
 
     /**
      * Starts the login process by authenticating the user and sending OTP.
@@ -65,7 +51,7 @@ public class LoginService {
     public String login(@Valid LoginRequest loginRequest) {
         String uniqueIdentifier = loginRequest.getUniqueIdentifier().toLowerCase();
 
-        String email = getEmailByUniqueIdentifier(uniqueIdentifier)
+        String email = accountService.getEmailByUniqueIdentifier(uniqueIdentifier)
                 // if optional is empty, it was an invalid username, therefore, must be invalid credentials
                 .orElseThrow(() -> new LoginException(ErrorMessages.INVALID_CREDENTIALS));
         String password = loginRequest.getPassword();
@@ -112,7 +98,7 @@ public class LoginService {
     public AuthResponse verifyOtp(@Valid OtpRequest otpRequest, HttpServletResponse response) {
         String uniqueIdentifier = otpRequest.getUniqueIdentifier();
 
-        String email = getEmailByUniqueIdentifier(uniqueIdentifier)
+        String email = accountService.getEmailByUniqueIdentifier(uniqueIdentifier)
                 // if optional is empty, it was an invalid username, therefore, must be invalid credentials (should not be reached at any time)
                 .orElseThrow(() -> new LoginException(ErrorMessages.INVALID_CREDENTIALS));
         String otp = otpRequest.getOtp();

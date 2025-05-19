@@ -10,7 +10,7 @@ import {catchError, of} from 'rxjs';
 import {AngularAuthService} from '../../services/angular-auth.service';
 import {HttpErrorResponse} from '@angular/common/http';
 import {MatSnackBar} from '@angular/material/snack-bar';
-import {ActionSnackbarComponent} from '../login-snackbar/action-snackbar.component';
+import {ActionSnackbarComponent} from '../action-snackbar/action-snackbar.component';
 
 @Component({
   selector: 'app-login',
@@ -45,6 +45,7 @@ export class LoginComponent {
   loginRequestSent: boolean = false;
   loginRequestErrorMessage: string = "";
 
+  otpRequestErrorMessage: string = "";
 
   @ViewChildren("otpInput") inputs!: QueryList<ElementRef>
 
@@ -121,7 +122,37 @@ export class LoginComponent {
         this.router.navigate(["/"]).then(of)
       },
       error: err => {
-        console.error(err);
+        let actionButtonIcon = ""
+        let actionButtonClick: (() => void) | undefined = undefined;
+        this.otpRequestErrorMessage = "";
+
+        if (err instanceof HttpErrorResponse && err.status === 401) {
+          const errorMessage = err.error.message;
+          console.log(errorMessage)
+          if (errorMessage === "OTP not found." || errorMessage === "OTP expired." || errorMessage === "OTP invalid.") {
+            this.otpRequestErrorMessage = "Das von dir eingegbene OTP ist ungültig. Erneut senden?"
+            actionButtonIcon = "restart_alt"
+            actionButtonClick = () => {
+              this.sendLoginRequest()
+              this._snackBar.open("OTP erneut gesendet.", "Okay")
+            }
+          } else {
+            this.otpRequestErrorMessage = "Bei der Verifizierung des OTP is ein unbekannter Fehler aufgetreten. Bitte versuche es später erneut."
+          }
+        }
+        if (!this.otpRequestErrorMessage) {
+          this.otpRequestErrorMessage = "Unbekannter Fehler beim Login. Bitte versuche es später erneut."
+        }
+
+        console.log(this.otpRequestErrorMessage, actionButtonIcon, actionButtonClick)
+
+        this._snackBar.openFromComponent(ActionSnackbarComponent, {
+          data: {
+            message: this.otpRequestErrorMessage,
+            actionButtonIcon: actionButtonIcon,
+            actionButtonClick: actionButtonClick
+          }
+        })
       }
     })
   }

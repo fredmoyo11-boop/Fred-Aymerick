@@ -93,7 +93,7 @@ public class TripRequestService {
      * @return The trip request entity
      */
     @Transactional
-    public TripRequestEntity createCurrentActiveTripRequest(@Valid TripRequestBody tripRequestBody, Principal principal) {
+    public TripRequestEntity createCurrentActiveTripRequest(@Valid TripRequestBody tripRequestBody, Principal principal) throws TripRequestException {
         String email = principal.getName();
 
         String role = accountService.getRoleByEmail(email);

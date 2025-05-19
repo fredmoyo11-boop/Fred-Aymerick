@@ -1,6 +1,7 @@
 package com.sep.backend.trip.request;
 
 import com.sep.backend.HttpStatus;
+import com.sep.backend.NotFoundException;
 import com.sep.backend.Tags;
 import com.sep.backend.trip.nominatim.data.LocationDTO;
 import com.sep.backend.trip.nominatim.NominatimService;
@@ -53,7 +54,7 @@ public class TripRequestController {
             tags = {Tags.TRIP_REQUEST},
             responses = {@ApiResponse(responseCode = HttpStatus.OK, description = "Trip request created successfully.",
                     content = @Content(schema = @Schema(implementation = TripRequestDTO.class)))})
-    public TripRequestDTO createCurrentActiveTripRequest(@RequestBody @Valid TripRequestBody tripRequestBody, Principal principal) {
+    public TripRequestDTO createCurrentActiveTripRequest(@RequestBody @Valid TripRequestBody tripRequestBody, Principal principal) throws TripRequestException {
         return TripRequestDTO.from(tripRequestService.createCurrentActiveTripRequest(tripRequestBody, principal));
     }
 
@@ -64,7 +65,7 @@ public class TripRequestController {
                     @ApiResponse(responseCode = HttpStatus.OK, description = "Active trip request deleted successfully."),
                     @ApiResponse(responseCode = HttpStatus.NOT_FOUND, description = "Active trip request does not exist for current customer."),
             })
-    public void deleteCurrentActiveTripRequest(Principal principal) {
+    public void deleteCurrentActiveTripRequest(Principal principal) throws NotFoundException {
         tripRequestService.deleteCurrentActiveTripRequest(principal);
     }
 

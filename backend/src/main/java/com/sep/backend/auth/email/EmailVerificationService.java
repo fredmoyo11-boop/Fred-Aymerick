@@ -34,17 +34,17 @@ public class EmailVerificationService {
     @Transactional
     public EmailVerificationTokenEntity save(String email) {
         // delete verification token if unverified token exists
-        if (tokenRepository.existsByEmail(email)) {
+        if (tokenRepository.existsByEmailIgnoreCase(email)) {
             log.debug("Deleting email verification token for {}", email);
-            tokenRepository.deleteByEmail(email);
+            tokenRepository.deleteByEmailIgnoreCase(email);
             log.info("Deleted email verification token for {}", email);
-            log.debug("Still exists? {}", tokenRepository.existsByEmail(email));
+            log.debug("Still exists? {}", tokenRepository.existsByEmailIgnoreCase(email));
         }
 
         log.debug("Generating email verification token for {}", email);
         String verificationToken = UUID.randomUUID().toString();
         var emailVerificationTokenEntity = new EmailVerificationTokenEntity();
-        emailVerificationTokenEntity.setEmail(email);
+        emailVerificationTokenEntity.setEmail(email.toLowerCase());
         emailVerificationTokenEntity.setToken(verificationToken);
         emailVerificationTokenEntity.setExpirationTime(LocalDateTime.now().plusHours(24));
         log.info("Generated email verification token for {}", email);

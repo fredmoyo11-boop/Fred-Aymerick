@@ -6,6 +6,8 @@ import {StandardLayoutComponent} from './layouts/standard-layout/standard-layout
 import {HomeComponent} from './components/home/home.component';
 import {FahranfrageErstellenComponent} from './components/fahranfrage-erstellen/fahranfrage-erstellen.component';
 import {AktiveFahranfrageComponent} from './components/aktive-fahranfrage/aktive-fahranfrage.component';
+import {MapComponent} from './components/map/map.component';
+import {authGuard} from './guards/auth.guard';
 
 export const routes: Routes = [
   {path: "register", component: RegisterComponent},
@@ -18,9 +20,19 @@ export const routes: Routes = [
   {
     path: "", component: StandardLayoutComponent, children: [
       {path: "", component: HomeComponent},
-      {path: "fahranfrage", component: FahranfrageErstellenComponent},
-      {path: "aktiveFahranfrage", component: AktiveFahranfrageComponent},
-
+      {
+        path: "fahranfrage",
+        component: FahranfrageErstellenComponent,
+        canActivate: [authGuard],
+        data: {roles: ["CUSTOMER"]}
+      },
+      {
+        path: "aktiveFahranfrage",
+        component: AktiveFahranfrageComponent,
+        canActivate: [authGuard],
+        data: {roles: ["CUSTOMER"]}
+      },
+      {path: "map", component: MapComponent, canActivate: [authGuard], data: {roles: ["CUSTOMER", "DRIVER"]}},
     ]
   },
   {path: "**", redirectTo: ""}

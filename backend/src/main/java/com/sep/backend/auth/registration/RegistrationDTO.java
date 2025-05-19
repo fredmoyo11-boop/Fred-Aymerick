@@ -1,5 +1,6 @@
 package com.sep.backend.auth.registration;
 
+import com.sep.backend.CarType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 import jakarta.validation.constraints.Email;
@@ -43,7 +44,7 @@ public class RegistrationDTO {
     @Schema(description = "The role of the user. Either CUSTOMER or DRIVER.", requiredMode = RequiredMode.REQUIRED)
     private String role;
 
-    @Schema(description = "The type of car associated only  with the driver account" , allowableValues = {"SMALL", "MEDIUM", "DELUXE"},
+    @Schema(description = "The type of the car by the driver. Either SMALL, MEDIUM or DELUXE. Might be null if user is a customer.", allowableValues = {CarType.SMALL, CarType.MEDIUM, CarType.DELUXE},
             requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private String carType;
 

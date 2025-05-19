@@ -1,17 +1,20 @@
-.header {
+.header{
   padding: 16px;
-  background-color: #f5f5f5;
+  background-color: lightgray;
   display: flex;
-  gap: 12px;
+  gap: 10px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  align-items: flex-start;
+  align-items: center;
 }
 .card{
   color: black;
   width: 600px;
-  background-color: gray;
+  background-color: bisque;
 }
 h2{
   font-weight: bold;
   color: #495057;
+  text-align: center;
+  font-size: 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }

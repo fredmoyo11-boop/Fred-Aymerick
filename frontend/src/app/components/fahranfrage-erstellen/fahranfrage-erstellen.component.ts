@@ -11,8 +11,8 @@ import {
 import {MatRadioButton, MatRadioGroup} from '@angular/material/radio';
 import {MatButton, MatIconButton} from '@angular/material/button';
 import {MatFormField, MatInput, MatLabel, MatSuffix} from '@angular/material/input';
-import {MatAutocomplete, MatAutocompleteTrigger, MatOption} from '@angular/material/autocomplete';
-import {AsyncPipe, NgIf} from '@angular/common';
+import {MatOption} from '@angular/material/autocomplete';
+import {NgIf} from '@angular/common';
 import {debounceTime, distinctUntilChanged, Observable, tap} from 'rxjs';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatIcon} from '@angular/material/icon';
@@ -60,14 +60,13 @@ export class FahranfrageErstellenComponent implements OnInit {
   lat: number | null = null;
   lon: number | null = null;
   error: string | null = null;
+  private activeRequest: TripRequestDTO |null = null;
 
   constructor(private router: Router,
               private dialog: MatDialog,
               private tripService: TripRequestService) {
 
   }
-  filteredStartAddressOptions!: Observable<Array<LocationDTO>>;
-  filteredEndAddressOptions!:Observable<Array<LocationDTO>>;
 
   start!:LocationDTO;
   startLocations: LocationDTO[] = []
@@ -83,13 +82,15 @@ export class FahranfrageErstellenComponent implements OnInit {
     this.end = event.value
   }
 
-
-  noSameStartEndValidator(group:AbstractControl):ValidationErrors | null{
-    if (this.start == this.end) {
-      return {sameDestination: true}
-    }
+  noSameStartEndValidator(group: AbstractControl): ValidationErrors | null {
+    const start = group.get('startQuery')?.value;
+    const end = group.get('endQuery')?.value;
+    if (start === end) {
+        return {sameStartEndLocation: true}
+      }
     return null;
-  };
+  }
+
 
   ngOnInit(): void {
     this.tripRequestForm.get("startQuery")!.valueChanges.pipe(
@@ -153,25 +154,37 @@ export class FahranfrageErstellenComponent implements OnInit {
 
   }
 
-  userHasActiveRideRequest() {
-    // check if user has an activ ride from backend
-    return false;
-  }
-
-  checkActiveRide() {
-    if (this.tripRequestForm.invalid){
+  checkActiveRide(): void {
+    if (this.tripRequestForm.invalid) {
       this.tripRequestForm.markAllAsTouched();
       return;
     }
 
-    if (this.userHasActiveRideRequest()){
-      this.dialog.open(ActiveRideDialogComponent,{
-        width: '350px',
-        data:{message: 'Du hast bereits eine aktive Fahranfrage'}
-      });
-    }else {
-      this.submitRideRequest();
-    }
+    this.tripService.getCurrentActiveTripRequest().subscribe({
+      next: response => {
+        console.log('Aktive Fahranfrage gefunden:', response);
+        if (!response) {
+          this.submitRideRequest();
+          return;
+        }
+
+        // Aktive Fahrt existiert, zeige Dialog und KEIN submit
+        this.activeRequest = response;
+        this.dialog.open(ActiveRideDialogComponent, {
+          width: '350px',
+          data: { message: 'Du hast bereits eine aktive Fahranfrage. Bitte beende sie zuerst.' }
+        });
+      },
+      error: error => {
+        // Wenn keine aktive Fahrt existiert, dann erstelle neue
+        if (error.status === 404) {
+          this.submitRideRequest();
+        } else {
+          console.error('Fehler beim Prüfen der aktiven Fahrtanfrage:', error);
+          alert('Ein Fehler ist aufgetreten. Bitte versuche es später erneut.');
+        }
+      }
+    });
   }
 
 

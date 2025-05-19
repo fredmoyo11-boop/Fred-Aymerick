@@ -1,0 +1,51 @@
+<div>
+    <form>
+        <mat-form-field>
+            <mat-label>Suchen nach Benutzername:</mat-label>
+            <input matInput [formControl]="searchControl">
+        </mat-form-field>
+    </form>
+
+    <div class="card-container">
+        <div class="card" *ngFor="let account of filteredAccounts">
+            <a [routerLink]="['/profile/',account.username]">
+                <div class="profil-info">
+                    <div class="info-container">
+                        <div>
+                            <img src="{{account.profilePictureUrl}}" alt="" style="width: 50px; height: 50px;">
+                        </div>
+
+
+                        <div class="info-details">
+                            <div class="info-zeile">
+                                <p class="beschreibung">Benutzername:</p>
+                                <p class="wert">{{ account.username }}</p>
+                            </div>
+
+                            <div class="info-zeile">
+                                <p class="beschreibung">Vorname:</p>
+                                <p class="wert name">{{ account.firstName }}</p>
+                            </div>
+
+                            <div class="info-zeile">
+                                <p class="beschreibung">Nachname:</p>
+                                <p class="wert name">{{ account.lastName }}</p>
+                            </div>
+
+                            <div class="info-zeile">
+                                <p class="beschreibung">Email:</p>
+                                <p class="wert">{{ account.email }}</p>
+                            </div>
+
+                            <div class="info-zeile">
+                                <p class="beschreibung">Rolle:</p>
+                                <p class="wert role">{{ getLocalizedRole(account.role) }}</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>

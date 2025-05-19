@@ -8,6 +8,8 @@ import {FahranfrageErstellenComponent} from './components/fahranfrage-erstellen/
 import {AktiveFahranfrageComponent} from './components/aktive-fahranfrage/aktive-fahranfrage.component';
 import {MapComponent} from './components/map/map.component';
 import {authGuard} from './guards/auth.guard';
+import {ProfileComponent} from './components/profile/profile.component';
+import {ProfileSearchComponent} from './components/profile-search/profile-search.component';
 
 export const routes: Routes = [
   {path: "register", component: RegisterComponent},
@@ -33,6 +35,18 @@ export const routes: Routes = [
         data: {roles: ["CUSTOMER"]}
       },
       {path: "map", component: MapComponent, canActivate: [authGuard], data: {roles: ["CUSTOMER", "DRIVER"]}},
+      {
+        path: "social",
+        component: ProfileSearchComponent,
+        canActivate: [authGuard],
+        data: {roles: ["CUSTOMER", "DRIVER"]}
+      },
+      {
+        path: "profile/:username",
+        component: ProfileComponent,
+        canActivate: [authGuard],
+        data: {roles: ["CUSTOMER", "DRIVER"]}
+      }
     ]
   },
   {path: "**", redirectTo: ""}

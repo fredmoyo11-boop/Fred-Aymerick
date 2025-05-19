@@ -24,7 +24,6 @@ export class ActionSnackbarComponent {
   }
 
   onActionClick(): void {
-    console.log("Action clicked")
     if (this.data.actionButtonClick) {
       this.data.actionButtonClick()
     }

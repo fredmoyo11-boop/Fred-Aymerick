@@ -28,7 +28,11 @@ export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next: 
         const noRefreshEndpoints = [
           '/api/auth/login',
           '/api/auth/register',
-          '/api/auth/refresh'
+          '/api/auth/refresh',
+          '/api/auth/logout',
+          '/api/auth/verify/otp',
+          '/api/auth/verify/email',
+          '/api/auth/verify/email/resend',
         ];
 
         if (noRefreshEndpoints.some(url => req.url.includes(url))) {

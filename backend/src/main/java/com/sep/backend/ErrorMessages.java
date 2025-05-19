@@ -17,7 +17,7 @@ public class ErrorMessages {
 
     public static final String INVALID_PROFILE_PICTURE_FORMAT = "Invalid profile picture format.";
 
-    public static final String INVALID_CAR_TYPE = "Invalid car type";
+    public static final String INVALID_CAR_TYPE = "Invalid car type.";
 
 
     public static final String NOT_FOUND_CUSTOMER = "Customer not found.";

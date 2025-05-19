@@ -24,7 +24,7 @@ public class EmailService {
      */
     public void sendOtp(String email, String otp) {
         log.debug("Sending OTP to {}", email);
-        sendEmail(email, "Srive: OTP Code", "Your OTP is: " + otp);
+        sendEmail(email, "SEP-Drive: OTP Code", "Dein OTP-Code ist: " + otp);
         log.info("Sent OTP to {}", email);
     }
 
@@ -36,7 +36,7 @@ public class EmailService {
      */
     public void sendVerificationLink(String to, String link) {
         log.debug("Sending verification link to {}", to);
-        sendEmail(to, "Srive: Verification Link", "Your verification link is: " + link);
+        sendEmail(to, "SEP-Drive: Verifizierungs-Link", "Dein Verifizierungs-Link ist: " + link);
         log.info("Sent verification link to {}", to);
     }
 

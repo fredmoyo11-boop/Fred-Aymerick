@@ -63,7 +63,7 @@ public class LoginService {
      * @return
      */
     public String login(@Valid LoginRequest loginRequest) {
-        String uniqueIdentifier = loginRequest.getUniqueIdentifier();
+        String uniqueIdentifier = loginRequest.getUniqueIdentifier().toLowerCase();
 
         String email = getEmailByUniqueIdentifier(uniqueIdentifier)
                 // if optional is empty, it was an invalid username, therefore, must be invalid credentials

@@ -8,14 +8,11 @@ import com.sep.backend.trip.nominatim.NominatimService;
 import com.sep.backend.trip.nominatim.data.LocationDTO;
 import com.sep.backend.trip.nominatim.data.LocationRepository;
 import com.sep.backend.trip.request.*;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.security.Principal;
@@ -59,7 +56,7 @@ class TripRequestTest {
         testCustomer.setVerified(true);
         testCustomer.setBirthday("1990-01-01");
         testCustomer.setProfilePictureUrl("d.png");
-        if (!customerRepository.existsByEmail("johndoe@mail.com")) {
+        if (!customerRepository.existsByEmailIgnoreCase("johndoe@mail.com")) {
             customerRepository.save(testCustomer);
         }
 

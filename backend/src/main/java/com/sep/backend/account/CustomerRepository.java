@@ -11,13 +11,13 @@ import java.util.Optional;
 
 @Repository
 public interface CustomerRepository extends JpaRepository<CustomerEntity, Long> {
-    Optional<CustomerEntity> findByEmail(@Email @NotBlank String email);
+    Optional<CustomerEntity> findByEmailIgnoreCase(@Email @NotBlank String email);
 
-    Optional<CustomerEntity> findByUsername(@NotBlank String username);
+    Optional<CustomerEntity> findByUsernameIgnoreCase(@NotBlank String username);
 
-    boolean existsByEmail(@Email @NotBlank String email);
+    boolean existsByEmailIgnoreCase(@Email @NotBlank String email);
 
-    boolean existsByUsername(@NotBlank String username);
+    boolean existsByUsernameIgnoreCase(@NotBlank String username);
 
     List<CustomerEntity> findByUsernameContainingIgnoreCase(@NotNull String part);
 }

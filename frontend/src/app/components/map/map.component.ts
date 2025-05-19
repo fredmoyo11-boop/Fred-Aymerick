@@ -93,7 +93,7 @@ export class MapComponent implements OnInit {
 
         this.routeLayer.clearLayers()
 
-        const coordinates: LatLngExpression[] = data.map(wp => [Number(wp.latitude), Number(wp.longitude)]).slice(1, -1) as LatLngExpression[];
+        const coordinates: LatLngExpression[] = data.map(wp => [Number(wp.latitude), Number(wp.longitude)]).slice() as LatLngExpression[];
 
         L.polyline(coordinates, {color: "blue"}).addTo(this.routeLayer);
 

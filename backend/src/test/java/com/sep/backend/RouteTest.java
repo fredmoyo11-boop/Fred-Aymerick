@@ -362,6 +362,7 @@ public class RouteTest {
 //        assertEquals("7.0131", waypointRepository.findByRouteIdAndIndex(Long.valueOf(route3Id),771L).orElseThrow().getLongitude());
 //        assertEquals("51.450727", waypointRepository.findByRouteIdAndIndex(Long.valueOf(route3Id),771L).orElseThrow().getLatitude());
 //        assertEquals(2L, routeService.getRouteById(Long.valueOf(route3Id)).getMidpointCount());
+//        assertEquals(768L, waypointRepository.countByRouteIdAndType(Long.valueOf(route3Id), WaypointType.POINT));
 //
 //        assertEquals("6.924997", waypointRepository.findByRouteIdAndIndex(Long.valueOf(route4Id),2L).orElseThrow().getLongitude());
 //        assertEquals("51.433167", waypointRepository.findByRouteIdAndIndex(Long.valueOf(route4Id),2L).orElseThrow().getLatitude());

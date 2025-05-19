@@ -17,7 +17,11 @@ public interface WaypointRepository extends JpaRepository<WaypointEntity, Long> 
 
     List<WaypointEntity> findAllPointsByRouteId(@NotBlank Long routeId);
 
+    List<WaypointEntity> findAllPointsByRouteIdOrderByIndexAsc(@NotBlank Long routeId);
+
     List<WaypointEntity> findAllPointsByRouteIdAndType(@NotBlank Long routeId, @NotBlank String type);
+
+    List<WaypointEntity> findAllPointsByRouteIdAndTypeOrderByIndexAsc(@NotBlank Long routeId, @NotBlank String type);
 
     Optional<WaypointEntity> findByRouteIdAndIndex(@NotBlank Long routeId, @NotBlank Long index);
 

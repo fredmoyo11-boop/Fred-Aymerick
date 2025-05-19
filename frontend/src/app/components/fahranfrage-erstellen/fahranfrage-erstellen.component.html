@@ -4,12 +4,14 @@
     <button mat-raised-button color="accent" [routerLink]="'/aktiveFahranfrage'">Aktive Fahranfrage</button>
   </nav>
 </div><br>
+<!--banner with picture-->
 <div class="banner">
   <h2> Deine Fahrt. Unser Weg... </h2>
 </div>
+
 <div class="container">
   <form [formGroup]="tripRequestForm" (ngSubmit)="checkActiveRide()">
-    <!--start position options-->
+    <!--start location input box-->
     <div class="start">
       <p>
         <mat-icon style="color: coral;">location_on</mat-icon>
@@ -21,15 +23,18 @@
                formControlName="startQuery">
         <button matTooltip="Aktuelle Position suchen" type="button" mat-icon-button matSuffix
                 (click)="currentLocation()">
-          <mat-icon>my_location</mat-icon></button><br>
-          <mat-select [(value)]="start" (selectionChange)="onStartChange($event)">
-            @for (location of startLocations; track idx; let idx = $index) {
-              <mat-option [value]="location">{{ location.display_name }}</mat-option>
-            }
-          </mat-select>
+          <mat-icon>my_location</mat-icon>
+        </button>
+        <br>
+        <mat-select [(value)]="start" (selectionChange)="onStartChange($event)">
+          @for (location of startLocations; track idx; let idx = $index) {
+            <mat-option [value]="location">{{ location.display_name }}</mat-option>
+          }
+        </mat-select>
       </mat-form-field>
 
     </div>
+    <!--end location input box-->
     <div>
       <p>
         <mat-icon style="color: coral;">pin_drop</mat-icon>
@@ -69,17 +74,17 @@
         </p>
       </mat-radio-group>
     </div>
-
+    <!-- input box for user's additional wish -->
     <div class="note-box">
-      <label color="orange"><strong>Bemerkung</strong>(optional)</label>
+      <label><strong>Notiz</strong>(optional)</label>
       <p>
         <mat-form-field class="bem-field">
-          <mat-label>Kommentar eingeben</mat-label>
+          <mat-label>Haben Sie einen zusätzlichen Wunsch?</mat-label>
           <input type="text"
                  aria-label="Kommentare eingeben"
                  class='form-control'
                  matInput
-                 formControlName="note" placeholder="Bsp.Seien Sie bitte pünktlich">
+                 formControlName="note" placeholder="z.B: Seien Sie bitte pünktlich">
         </mat-form-field>
       </p>
     </div>

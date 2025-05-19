@@ -11,8 +11,8 @@ import {
 import {MatRadioButton, MatRadioGroup} from '@angular/material/radio';
 import {MatButton, MatIconButton} from '@angular/material/button';
 import {MatFormField, MatInput, MatLabel, MatSuffix} from '@angular/material/input';
-import {MatAutocomplete, MatAutocompleteTrigger, MatOption} from '@angular/material/autocomplete';
-import {AsyncPipe, NgIf} from '@angular/common';
+import {MatOption} from '@angular/material/autocomplete';
+import {NgIf} from '@angular/common';
 import {debounceTime, distinctUntilChanged, Observable, tap} from 'rxjs';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatIcon} from '@angular/material/icon';
@@ -54,12 +54,14 @@ export class FahranfrageErstellenComponent implements OnInit {
     endQuery: new FormControl("", [Validators.required]),
     carType: new FormControl('',[Validators.required]),
     note: new FormControl()
-  },{validators: this.noSameStartEndValidator.bind(this)}
+  }
+  //,{validators: this.noSameStartEndValidator.bind(this)}
   );
 
   lat: number | null = null;
   lon: number | null = null;
   error: string | null = null;
+  private activeRequest: TripRequestDTO |null = null;
 
   constructor(private router: Router,
               private dialog: MatDialog,
@@ -73,21 +75,14 @@ export class FahranfrageErstellenComponent implements OnInit {
   end!:LocationDTO;
   endLocations: LocationDTO[] = []
 
+  // get selected start location
   onStartChange(event: MatSelectChange) {
     this.start = event.value
   }
-
+  // get selected end location
   onEndChange(event: MatSelectChange) {
     this.end = event.value
   }
-
-
-  noSameStartEndValidator(group:AbstractControl):ValidationErrors | null{
-    if (this.start == this.end) {
-      return {sameDestination: true}
-    }
-    return null;
-  };
 
   ngOnInit(): void {
     this.tripRequestForm.get("startQuery")!.valueChanges.pipe(
@@ -131,7 +126,7 @@ export class FahranfrageErstellenComponent implements OnInit {
     });
 
   }
-
+  // from internet
   currentLocation() {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition((position) => {
@@ -139,42 +134,65 @@ export class FahranfrageErstellenComponent implements OnInit {
           this.lon = position.coords.longitude;
           console.log(this.lat);
           console.log(this.lon);
+          // stores lng and lat in var startQuery
           this.tripRequestForm.get("startQuery")!.setValue(`${this.lat}, ${this.lon}`)
         },
         (err) => {
           this.error = 'Error getting location' + err.message;
         });
-      // send lng and lat to backend
     } else {
       this.error = 'Geolocation is not supported by this browser.';
     }
 
   }
+  // check if user has an active triprequest and if Locations are different
+  checkActiveRide(): void {
+    // Start und Ziel dürfen nicht gleich sein
+    const sameLocation =
+      this.start.lat === this.end.lat &&
+      this.start.lon === this.end.lon &&
+      this.start.display_name === this.end.display_name;
 
-  userHasActiveRideRequest() {
-    // check if user has an activ ride from backend
-    return false;
-  }
-
-  checkActiveRide() {
-    if (this.tripRequestForm.invalid){
+    if (sameLocation) {
+      this.tripRequestForm.setErrors({ sameStartEndLocation: true });
+      alert('Start- und Zieladresse dürfen nicht gleich sein.');
+      return;
+    } else {
+      this.tripRequestForm.setErrors(null);
+    }
+    if (this.tripRequestForm.invalid) {
       this.tripRequestForm.markAllAsTouched();
       return;
     }
-
-    if (this.userHasActiveRideRequest()){
-      this.dialog.open(ActiveRideDialogComponent,{
-        width: '350px',
-        data:{message: 'Du hast bereits eine aktive Fahranfrage'}
-      });
-    }else {
-      this.submitRideRequest();
-    }
+    // checks if active trip request exist
+    this.tripService.getCurrentActiveTripRequest().subscribe({
+      next: response => {
+        console.log('Aktive Fahranfrage gefunden:', response);
+        if (!response) {
+          this.submitRideRequest();
+          return;
+        }
+        // active Trip request exist, show dialog and do not submit
+        this.activeRequest = response;
+        this.dialog.open(ActiveRideDialogComponent, {
+          width: '350px',
+          data: { message: 'Du hast bereits eine aktive Fahranfrage. Bitte beende sie zuerst.' }
+        });
+      },
+      error: error => {
+        // else create one
+        if (error.status === 404) {
+          this.submitRideRequest();
+        } else {
+          console.error('Fehler beim Prüfen der aktiven Fahrtanfrage:', error);
+          alert('Ein Fehler ist aufgetreten. Bitte versuche es später erneut.');
+        }
+      }
+    });
   }
 
 
   submitRideRequest () {
-    //send to backend
     const form = this.tripRequestForm.value;
     const tripRequestBody: TripRequestBody = {
       startLocation: this.start,
@@ -197,8 +215,7 @@ export class FahranfrageErstellenComponent implements OnInit {
       }
     });
   }
-
-
+  // rests form after creation of a trip request
   resetForm(): void {
     this.tripRequestForm.reset();
   }

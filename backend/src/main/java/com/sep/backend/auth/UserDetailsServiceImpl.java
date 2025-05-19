@@ -20,7 +20,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         // UserDetailsService expects username, we use email instead
-        String email = username;
+        String email = username.toLowerCase();
         String role = accountService.getRoleByEmail(email);
 
         var password = (switch (role) {
@@ -30,7 +30,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         }).getPassword();
 
         return User.builder()
-                .username(email)
+                .username(email.toLowerCase())
                 .password(password)
                 .roles(role)
                 .build();

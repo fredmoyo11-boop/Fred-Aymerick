@@ -80,6 +80,10 @@
   gap: 1rem;
 }
 
+.profile-container:hover {
+  cursor: pointer;
+}
+
 .profile-avatar {
   border-radius: 50%;
   overflow: hidden;

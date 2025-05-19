@@ -48,8 +48,8 @@ public class RegistrationService {
      * @return
      */
     public String register(@Valid RegistrationDTO data, MultipartFile file) {
-        String email = data.getEmail();
-        String username = data.getUsername();
+        String email = data.getEmail().toLowerCase();
+        String username = data.getUsername().toLowerCase();
 
         // check if email already registered
         if (accountService.existsEmail(email)) {

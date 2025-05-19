@@ -41,7 +41,7 @@ public class AccountService {
      */
     public CustomerEntity getCustomerByEmail(String email) throws NotFoundException {
         return customerRepository
-                .findByEmail(email)
+                .findByEmailIgnoreCase(email)
                 .orElseThrow(() -> new NotFoundException(ErrorMessages.NOT_FOUND_CUSTOMER));
     }
 
@@ -54,7 +54,7 @@ public class AccountService {
      */
     public DriverEntity getDriverByEmail(String email) throws NotFoundException {
         return driverRepository
-                .findByEmail(email)
+                .findByEmailIgnoreCase(email)
                 .orElseThrow(() -> new NotFoundException(ErrorMessages.NOT_FOUND_DRIVER));
     }
 
@@ -82,7 +82,7 @@ public class AccountService {
      * @return The optional containing the customer entity.
      */
     public Optional<CustomerEntity> findCustomerByUsername(String username) {
-        return customerRepository.findByUsername(username);
+        return customerRepository.findByUsernameIgnoreCase(username);
     }
 
     /**
@@ -92,7 +92,7 @@ public class AccountService {
      * @return The optional containing the driver entity.
      */
     public Optional<DriverEntity> findDriverByUsername(String username) {
-        return driverRepository.findByUsername(username);
+        return driverRepository.findByUsernameIgnoreCase(username);
     }
 
     /**
@@ -113,10 +113,10 @@ public class AccountService {
 
 
     /**
-     * Returns the account
+     * Returns the account of the current user.
      *
-     * @param principal
-     * @return
+     * @param principal The principal.
+     * @return The account information.
      * @throws NotFoundException
      */
     public AccountDTO getCurrentAccount(Principal principal) throws NotFoundException {
@@ -144,9 +144,9 @@ public class AccountService {
      */
     public Optional<String> findEmailByUsername(String username) {
         if (existsCustomerUsername(username)) {
-            return customerRepository.findByUsername(username).map(CustomerEntity::getEmail);
+            return customerRepository.findByUsernameIgnoreCase(username).map(CustomerEntity::getEmail);
         } else if (existsDriverUsername(username)) {
-            return driverRepository.findByUsername(username).map(DriverEntity::getEmail);
+            return driverRepository.findByUsernameIgnoreCase(username).map(DriverEntity::getEmail);
         } else {
             return Optional.empty();
         }
@@ -275,11 +275,11 @@ public class AccountService {
 
     @Schema(description = "get the account of  user BASED OF THE username .Die Methode ist erstmal für Unterstützung des frontend Features : klickbares profil gedacht")
     public AccountDTO getAccountProfile(String username) {
-        Optional<CustomerEntity> customerEntity = customerRepository.findByUsername(username);
+        Optional<CustomerEntity> customerEntity = customerRepository.findByUsernameIgnoreCase(username);
         if (customerEntity.isPresent()) {
             return getCustomerDTO(customerEntity.get());
         } else {
-            Optional<DriverEntity> driverEntity = driverRepository.findByUsername(username);
+            Optional<DriverEntity> driverEntity = driverRepository.findByUsernameIgnoreCase(username);
             if (driverEntity.isPresent()) {
                 return getDriverDTO(driverEntity.get());
             } else {
@@ -337,7 +337,7 @@ public class AccountService {
      * @return Whether customer with username exists or not.
      */
     private boolean existsCustomerUsername(String username) {
-        return customerRepository.existsByUsername(username);
+        return customerRepository.existsByUsernameIgnoreCase(username);
     }
 
     /**
@@ -347,7 +347,7 @@ public class AccountService {
      * @return Whether driver with username exists or not.
      */
     private boolean existsDriverUsername(String username) {
-        return driverRepository.existsByUsername(username);
+        return driverRepository.existsByUsernameIgnoreCase(username);
     }
 
     /**
@@ -357,9 +357,7 @@ public class AccountService {
      * @return Whether account with email address exists or not.
      */
     public boolean existsEmail(String email) {
-
         return existsCustomerEmail(email) || existsDriverEmail(email);
-
     }
 
 
@@ -370,7 +368,7 @@ public class AccountService {
      * @return Whether customer with email address exists or not.
      */
     private boolean existsCustomerEmail(String email) {
-        return customerRepository.existsByEmail(email);
+        return customerRepository.existsByEmailIgnoreCase(email);
     }
 
     /**
@@ -380,7 +378,7 @@ public class AccountService {
      * @return Whether driver with email address exists or not.
      */
     private boolean existsDriverEmail(String email) {
-        return driverRepository.existsByEmail(email);
+        return driverRepository.existsByEmailIgnoreCase(email);
     }
 
 
@@ -396,9 +394,9 @@ public class AccountService {
     private <T extends AccountEntity> T createAccountEntity(@Valid RegistrationDTO data, String profilePictureUrl, Class<T> clazz) {
         try {
             T account = clazz.getDeclaredConstructor().newInstance();
-            account.setEmail(data.getEmail());
+            account.setEmail(data.getEmail().toLowerCase());
             account.setPassword(data.getPassword());
-            account.setUsername(data.getUsername());
+            account.setUsername(data.getUsername().toLowerCase());
             account.setFirstName(data.getFirstName());
             account.setLastName(data.getLastName());
             account.setBirthday(data.getBirthday());
@@ -429,7 +427,7 @@ public class AccountService {
     public void updateCustomer(String email, UpdateAccountDTO updateAccountDTO, MultipartFile file) {
 
         try {
-            CustomerEntity customerEntity = customerRepository.findByEmail(email)
+            CustomerEntity customerEntity = customerRepository.findByEmailIgnoreCase(email)
                     .orElseThrow(() -> new NotFoundException(ErrorMessages.NOT_FOUND_USER));
 
 
@@ -465,7 +463,7 @@ public class AccountService {
 
     public void updateDriver(String email, UpdateAccountDTO updateAccountDTO, MultipartFile file) {
         try {
-            DriverEntity driverEntity = driverRepository.findByEmail(email)
+            DriverEntity driverEntity = driverRepository.findByEmailIgnoreCase(email)
                     .orElseThrow(() -> new NotFoundException(ErrorMessages.NOT_FOUND_USER));
             if (updateAccountDTO.getUsername() != null && !updateAccountDTO.getUsername().equals(driverEntity.getUsername())) {
                 if (existsDriverUsername(updateAccountDTO.getUsername()) || existsCustomerUsername(updateAccountDTO.getUsername())) {

@@ -4,17 +4,18 @@
     <button mat-raised-button color="accent" [routerLink]="'/aktiveFahranfrage'">Aktive Fahranfrage</button>
   </nav>
 </div><br>
+<!--banner with picture-->
 <div class="banner">
-  <h2> FINDE EINE FAHRT </h2>
+  <h2> Deine Fahrt. Unser Weg... </h2>
 </div>
+
 <div class="container">
   <form [formGroup]="tripRequestForm" (ngSubmit)="checkActiveRide()">
-    <!--start position options-->
+    <!--start location input box-->
     <div class="start">
       <p>
-        <mat-icon>location_on</mat-icon>
-        <label>Von</label></p>
-      <br>
+        <mat-icon style="color: coral;">location_on</mat-icon>
+        <label><strong>Von</strong></label></p>
       <mat-form-field class="start-address-form-field">
         <mat-label>Startadresse/Startkoordinaten(lat,lng) eingeben</mat-label>
         <input type="text"
@@ -24,39 +25,43 @@
                 (click)="currentLocation()">
           <mat-icon>my_location</mat-icon>
         </button>
-      </mat-form-field>
-      <mat-select [(value)]="start" (selectionChange)="onStartChange($event)">
+        <br>
+        <mat-select [(value)]="start" (selectionChange)="onStartChange($event)">
           @for (location of startLocations; track idx; let idx = $index) {
             <mat-option [value]="location">{{ location.display_name }}</mat-option>
           }
-      </mat-select>
+        </mat-select>
+      </mat-form-field>
+
     </div>
+    <!--end location input box-->
     <div>
       <p>
-        <mat-icon>location_on</mat-icon>
-        <label>Nach</label>
+        <mat-icon style="color: coral;">pin_drop</mat-icon>
+        <label><strong>Nach</strong></label>
       </p>
       <mat-form-field class="end-address-form-field">
         <mat-label>Zieladresse/Zielkoordinaten(lat,lng) eingeben</mat-label>
         <input type="text"
                matInput
                formControlName="endQuery">
-      </mat-form-field>
-      <mat-select [(value)]="end" (selectionChange)="onEndChange($event)">
+        <mat-select [(value)]="end" (selectionChange)="onEndChange($event)">
           @for (location of endLocations; track idx; let idx = $index) {
             <mat-option [value]="location">{{ location.display_name }}</mat-option>
           }
-      </mat-select>
+        </mat-select>
+      </mat-form-field>
+
     </div>
-    <div *ngIf="tripRequestForm.hasError('sameAddress') && tripRequestForm.touched" class="error"
+    <div *ngIf="tripRequestForm.hasError('sameStartEndLocation') && tripRequestForm.touched" class="error"
          style="color: red;">
       Start- und Zieladresse dürfen nicht gleich sein.
     </div>
-    <br><br>
+    <br>
 
     <!-- Vehicle class options -->
     <div class="vehicleClass">
-      <label>F A H R Z E U G K L A S S E</label><br>
+      <label><strong>F A H R Z E U G K L A S S E</strong></label><br>
       <mat-radio-group class='form-control' formControlName="carType" aria-label="Select an option">
         <p>
           <mat-radio-button value="SMALL"> K L E I N</mat-radio-button>
@@ -69,17 +74,17 @@
         </p>
       </mat-radio-group>
     </div>
-
+    <!-- input box for user's additional wish -->
     <div class="note-box">
-      <label><strong>Bemerkung</strong>(optional)</label>
+      <label><strong>Notiz</strong>(optional)</label>
       <p>
         <mat-form-field class="bem-field">
-          <mat-label>Kommentar eingeben</mat-label>
+          <mat-label>Haben Sie einen zusätzlichen Wunsch?</mat-label>
           <input type="text"
                  aria-label="Kommentare eingeben"
                  class='form-control'
                  matInput
-                 formControlName="note" placeholder="Bsp.Seien Sie bitte pünktlich">
+                 formControlName="note" placeholder="z.B: Seien Sie bitte pünktlich">
         </mat-form-field>
       </p>
     </div>
@@ -87,7 +92,7 @@
 
     <div class="search_button">
       <button type="submit" mat-raised-button [disabled]="!tripRequestForm.valid">
-        FAHRT SUCHEN
+        FAHRTANFRAGE ERSTELLEN
       </button>
     </div>
 

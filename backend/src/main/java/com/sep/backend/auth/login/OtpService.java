@@ -42,7 +42,7 @@ public class OtpService {
 
         // update existing or create new one
         var otpVerificationToken = repository
-                .findByEmail(email)
+                .findByEmailIgnoreCase(email)
                 .orElse(new OtpVerificationTokenEntity(email));
         otpVerificationToken.setOtp(otp);
         otpVerificationToken.setExpirationTime(expirationTime);
@@ -72,7 +72,7 @@ public class OtpService {
 
         log.debug("Retrieving OTP for {}", email);
         var otpVerificationToken = repository
-                .findByEmail(email)
+                .findByEmailIgnoreCase(email)
                 .orElseThrow(() -> new LoginException(ErrorMessages.NOT_FOUND_OTP));
         log.debug("Retrieved OTP for {}", email);
 
@@ -87,7 +87,7 @@ public class OtpService {
         }
 
         // prevent multiple login with same otp
-        repository.deleteByEmail(email);
+        repository.deleteByEmailIgnoreCase(email);
         log.info("Deleted used OTP for {}", email);
         log.info("Verified OTP for {}", email);
         return true;

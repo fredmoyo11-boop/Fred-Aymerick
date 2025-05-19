@@ -5,7 +5,6 @@ import {FormsModule} from '@angular/forms';
 import {MatButton} from '@angular/material/button';
 import {NgIf} from '@angular/common';
 import {MatDialog} from '@angular/material/dialog';
-//import { DeleteRideDialogComponent } from '../delete-ride-dialog/delete-ride-dialog.component';
 import {AngularAuthService} from "../../services/angular-auth.service";
 import {TripRequestService} from '../../../api/sep_drive';
 import {TripRequestDTO} from '../../../api/sep_drive';
@@ -31,12 +30,10 @@ export class AktiveFahranfrageComponent implements OnInit {
 
   constructor(
     private dialogRef: MatDialog,
-    private auth: AngularAuthService,
-    private tripService: TripRequestService
-  ) {
+    private tripService: TripRequestService) {
   }
-
   ngOnInit() {
+    // gets triprequest from backend if exists
     this.tripService.getCurrentActiveTripRequest().subscribe({
       next: (response) => {
         console.log('Backend-Antwort:', response); // Debug-Ausgabe

@@ -60,7 +60,7 @@ public class JwtUtil {
      */
     private String generateToken(String email, String role, long expiration) {
         return Jwts.builder()
-                .subject(email)
+                .subject(email.toLowerCase())
                 .claim("role", role)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + expiration))

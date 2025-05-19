@@ -44,7 +44,7 @@ public class ProfilePictureStorageService {
     public String save(MultipartFile file, String username) {
         try {
             String fileExtension = getFileExtension(file);
-            String fileName = username + "." + fileExtension;
+            String fileName = username.toLowerCase() + "." + fileExtension;
 
             Path destination = root
                     .resolve(Paths.get(fileName))

@@ -12,9 +12,9 @@ import java.util.Optional;
 public interface OtpVerificationTokenRepository extends JpaRepository<OtpVerificationTokenEntity, Long> {
 
 
-    boolean existsByEmail(@Email @NotBlank String email);
+    boolean existsByEmailIgnoreCase(@Email @NotBlank String email);
 
-    void deleteByEmail(@Email @NotBlank String email);
+    void deleteByEmailIgnoreCase(@Email @NotBlank String email);
 
-    Optional<OtpVerificationTokenEntity> findByEmail(@Email @NotBlank String email);
+    Optional<OtpVerificationTokenEntity> findByEmailIgnoreCase(@Email @NotBlank String email);
 }

@@ -10,19 +10,26 @@ import java.util.List;
 
 @Service
 public class NominatimService {
-
+    //Sets the restClient base URL
     private final RestClient restClient = RestClient.builder()
             .baseUrl("https://nominatim.openstreetmap.org")
             .build();
 
-    public List<LocationDTO> getSuggestions(String location) throws Exception {
+    /**
+     * Takes the input by the user and forwards it too nominatim.openstreetmap.org.
+     *
+     * @param location Input of user
+     * @return A list of suggestions based on the query by nominatim
+     * @throws Exception If location not found
+     */
+    public List<LocationDTO> searchLocations(String location) throws Exception {
         try {
             ObjectMapper mapper = new ObjectMapper();
 
             String response = restClient.get()
                     .uri(uriBuilder -> uriBuilder
                             .path("/search")
-                            .queryParam("format", "json") //TODO GeoJSON benutzen -> Entity/DTO ändern
+                            .queryParam("format", "json") //TODO GeoJSON benutzen
                             .queryParam("q", location)
                             .build())
                     .retrieve()

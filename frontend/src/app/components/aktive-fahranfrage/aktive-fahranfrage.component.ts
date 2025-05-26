@@ -1,52 +1,47 @@
-import { Component } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {RouterLink} from '@angular/router';
-import {MatSlideToggle} from '@angular/material/slide-toggle';
 import {MatCard, MatCardActions, MatCardContent} from '@angular/material/card';
 import {FormsModule} from '@angular/forms';
 import {MatButton} from '@angular/material/button';
-import {RideRequestService,RideRequest} from '../../services/ride-request.service';
 import {NgIf} from '@angular/common';
 import {MatDialog} from '@angular/material/dialog';
-import {DeleteRideDialogComponent} from '../delete-ride-dialog/delete-ride-dialog.component';
 import {AngularAuthService} from "../../services/angular-auth.service";
-import {TripRequestService} from "../../services/trip-request.service";
-import {TripRequestDTO} from '../../models/trip-request.model';
+import {TripRequestService} from '../../../api/sep_drive';
+import {TripRequestDTO} from '../../../api/sep_drive';
+import {DeleteRideDialogComponent} from '../delete-ride-dialog/delete-ride-dialog.component';
 
 @Component({
   selector: 'app-aktive-fahranfrage',
+  standalone: true,
   imports: [
     MatButton,
     RouterLink,
-    MatSlideToggle,
     MatCardContent,
     MatCard,
     MatCardActions,
     FormsModule,
-    MatButton,
     NgIf
   ],
   templateUrl: './aktive-fahranfrage.component.html',
   styleUrl: './aktive-fahranfrage.component.css'
 })
-export class AktiveFahranfrageComponent {
+export class AktiveFahranfrageComponent implements OnInit {
   tripData: TripRequestDTO | null = null;
-  activeRide : RideRequest | null = null;
-  constructor(private rideRequestService: RideRequestService,
-              private dialogRef: MatDialog,
-              private auth:AngularAuthService,
-              private tripService: TripRequestService) {
+
+  constructor(
+    private dialogRef: MatDialog,
+    private tripService: TripRequestService) {
   }
   ngOnInit() {
-    this.activeRide = this.rideRequestService.getRideRequest();
-    const email = this.getCurrentUserEmail();
-    if (!email) {
-      alert('Benutzer nicht eingeloggt');
-      return;
-    }
-
-    this.tripService.viewTripRequest(email).subscribe({
-      next: (data) => this.tripData = data,
-      error: err => console.error('Fehler beim Laden der Fahranfrage:', err)
+    // gets triprequest from backend if exists
+    this.tripService.getCurrentActiveTripRequest().subscribe({
+      next: (response) => {
+        console.log('Backend-Antwort:', response); // Debug-Ausgabe
+        this.tripData = response;
+      },
+      error: (error) => {
+        console.error('Fehler beim Laden der Fahranfrage:', error);
+      }
     });
   }
 
@@ -54,29 +49,17 @@ export class AktiveFahranfrageComponent {
     const dialogRef = this.dialogRef.open(DeleteRideDialogComponent);
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        const email = this.getCurrentUserEmail();
-        // if user is not logged in
-        if(!email){
-          return;
-        }
-        this.tripService.deleteTripRequest(email).subscribe({
+        this.tripService.deleteCurrentActiveTripRequest().subscribe({
           next: () => {
-            this.rideRequestService.clearRideRequest();
             this.tripData = null;
-            this.activeRide = null;
-            console.log('Fahranfrage gelöscht');
+            alert('Fahranfrage wurde erfolgreich gelöscht.');
           },
-          error: err => {
+          error: (err) => {
             console.error('Fehler beim Löschen:', err);
-            alert('Löschen fehlgeschlagen.');
+            alert('Löschen fehlgeschlagen. Bitte versuchen Sie es später erneut.');
           }
         });
       }
     });
-  }
-
-  getCurrentUserEmail():string | null {
-    return this.auth.getEmailFromAccessToken();
-
   }
 }

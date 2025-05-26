@@ -1,7 +1,7 @@
 <div class="container">
   <div class="content">
     @if (registerRequestSuccess) {
-      <h1>Verification email sent</h1>
+      <h1>Verifizierungs-Email erfolgreich versandt!</h1>
     } @else {
       <div class="login-container">
         <span>Hast du bereits einen Account?</span>
@@ -17,6 +17,16 @@
             <mat-icon fontIcon="local_taxi"></mat-icon>
           </mat-button-toggle>
         </mat-button-toggle-group>
+        @if (this.registerForm.get("role")?.value === "DRIVER") {
+          <mat-form-field>
+            <mat-label>Fahrzeugtyp</mat-label>
+            <mat-select formControlName="carType">
+              <mat-option value="SMALL">Klein</mat-option>
+              <mat-option value="MEDIUM">Mittel</mat-option>
+              <mat-option value="DELUXE">Deluxe</mat-option>
+            </mat-select>
+          </mat-form-field>
+        }
         <div class="register-fields">
           <div class="register-pair">
             <mat-form-field>

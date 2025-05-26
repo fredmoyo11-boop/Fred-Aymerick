@@ -12,13 +12,13 @@ import java.util.Optional;
 import jakarta.validation.constraints.NotNull;
 @Repository
 public interface DriverRepository extends JpaRepository<DriverEntity, Long> {
-    Optional<DriverEntity> findByEmail(@Email @NotBlank String email);
+    Optional<DriverEntity> findByEmailIgnoreCase(@Email @NotBlank String email);
 
-    Optional<DriverEntity> findByUsername(@NotBlank String username);
+    Optional<DriverEntity> findByUsernameIgnoreCase(@NotBlank String username);
 
-    boolean existsByEmail(@Email @NotBlank String email);
+    boolean existsByEmailIgnoreCase(@Email @NotBlank String email);
 
-    boolean existsByUsername(@NotBlank String username);
+    boolean existsByUsernameIgnoreCase(@NotBlank String username);
 
     List<DriverEntity> findByUsernameContainingIgnoreCase(@NotNull String part);
 }

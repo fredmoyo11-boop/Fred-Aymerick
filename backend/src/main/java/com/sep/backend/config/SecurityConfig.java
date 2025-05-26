@@ -58,7 +58,7 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**", "/v3/api-docs").permitAll()
+                        .requestMatchers("/api/auth/**", "/v3/api-docs", "/uploads/profile/picture/**").permitAll()
                         // add matchers for endpoints as needed
                         .anyRequest().authenticated())
                 .exceptionHandling(x -> {

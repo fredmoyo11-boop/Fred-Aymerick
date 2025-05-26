@@ -68,7 +68,7 @@ class AccountServiceTest {
     @Test
     void shouldSaveAccount() {
 
-        List<AccountDTO> driverList = accountService.SearchUser("hi");
+        List<AccountDTO> driverList = accountService.searchUser("hi");
         AccountDTO driver = driverList.getFirst();
 
         assertEquals("hii", driver.getUsername());
@@ -82,7 +82,7 @@ class AccountServiceTest {
         assertEquals(5, driver.getTotalNumberOfRides());
 
 
-        List<AccountDTO> resultList = accountService.SearchUser("te");
+        List<AccountDTO> resultList = accountService.searchUser("te");
         AccountDTO result = resultList.getFirst();
 
         assertEquals("test", result.getUsername());
@@ -101,7 +101,7 @@ class AccountServiceTest {
     @Test
     void searchUser() {
 
-        List<AccountDTO> driverList = accountService.SearchUser("h");
+        List<AccountDTO> driverList = accountService.searchUser("h");
         AccountDTO driver = driverList.getFirst();
         assertEquals("hii", driver.getUsername());
         assertEquals("ok@example.com", driver.getEmail());
@@ -114,7 +114,7 @@ class AccountServiceTest {
         assertEquals(5, driver.getTotalNumberOfRides());
 
 
-        List<AccountDTO> resultList = accountService.SearchUser("t");
+        List<AccountDTO> resultList = accountService.searchUser("t");
         AccountDTO result = resultList.getFirst();
         assertEquals("test", result.getUsername());
         assertEquals("test@example.com", result.getEmail());
@@ -129,9 +129,9 @@ class AccountServiceTest {
     }
 
     @Test
-    void getAccountprofile() {
+    void getAccountProfile() {
 
-        AccountDTO driver = accountService.getAccountprofile("hii");
+        AccountDTO driver = accountService.getAccountProfile("hii");
         assertEquals("hii", driver.getUsername());
         assertEquals("ok@example.com", driver.getEmail());
         assertEquals("DRIVER", driver.getRole());
@@ -143,7 +143,7 @@ class AccountServiceTest {
         assertEquals(5, driver.getTotalNumberOfRides());
 
 
-        AccountDTO CustomerResult = accountService.getAccountprofile("test");
+        AccountDTO CustomerResult = accountService.getAccountProfile("test");
         assertEquals("test", CustomerResult.getUsername());
         assertEquals("test@example.com", CustomerResult.getEmail());
         assertEquals("CUSTOMER", CustomerResult.getRole());
@@ -160,7 +160,7 @@ class AccountServiceTest {
     // Ausgabe bei leerem String testen
     @Test
     void UserSearchTest() {
-        List<AccountDTO> result = accountService.SearchUser("");
+        List<AccountDTO> result = accountService.searchUser("");
         assertEquals(2, result.size());
         assertEquals("test", result.get(0).getUsername());
         assertEquals("hii", result.get(1).getUsername());

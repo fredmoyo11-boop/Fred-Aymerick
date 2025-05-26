@@ -4,7 +4,13 @@ import {MatIcon} from '@angular/material/icon';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatDatepicker, MatDatepickerInput, MatDatepickerToggle} from '@angular/material/datepicker';
-import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, provideNativeDateAdapter} from '@angular/material/core';
+import {
+  DateAdapter,
+  MAT_DATE_FORMATS,
+  MAT_DATE_LOCALE,
+  MatOption,
+  provideNativeDateAdapter
+} from '@angular/material/core';
 import {
   AbstractControl,
   FormControl,
@@ -22,6 +28,7 @@ import {AuthService} from '../../../api/sep_drive';
 import {MomentDateAdapter} from '@angular/material-moment-adapter';
 import {HttpErrorResponse} from '@angular/common/http';
 import {MatSnackBar} from '@angular/material/snack-bar';
+import {MatSelect} from '@angular/material/select';
 
 export const MY_DATE_FORMATS = {
   parse: {
@@ -50,7 +57,9 @@ export const MY_DATE_FORMATS = {
     MatButton,
     MatDivider,
     RouterLink,
-    MatIconButton
+    MatIconButton,
+    MatSelect,
+    MatOption
   ],
   providers: [{provide: MAT_DATE_LOCALE, useValue: 'de'},
     {provide: DateAdapter, useClass: MomentDateAdapter},
@@ -75,7 +84,8 @@ export class RegisterComponent {
     email: new FormControl('', [Validators.required, Validators.email]),
     emailConfirmation: new FormControl('', [Validators.required, Validators.email]),
     password: new FormControl('', [Validators.required]),
-    passwordConfirmation: new FormControl('', [Validators.required])
+    passwordConfirmation: new FormControl('', [Validators.required]),
+    carType: new FormControl("MEDIUM")
   }, {validators: [emailMatchValidator, passwordMatchValidator]})
 
   selectedFile: File | null = null;
@@ -108,7 +118,7 @@ export class RegisterComponent {
   sendRegisterRequest() {
     const value = this.registerForm.value;
 
-    const registerDTO = {
+    let registrationDTO = {
       email: value.email!,
       password: value.password!,
       firstName: value.firstName!,
@@ -116,9 +126,14 @@ export class RegisterComponent {
       username: value.username!,
       birthday: this.convertDate(value.birthday!),
       role: value.role!,
+      carType: ""
     };
 
-    this.authService.register(registerDTO, this.selectedFile || undefined).subscribe({
+    if (registrationDTO.role === "DRIVER") {
+      registrationDTO.carType = value.carType!;
+    }
+
+    this.authService.register(registrationDTO, this.selectedFile || undefined).subscribe({
       next: success => {
         console.log(success)
         this.registerRequestSuccess = true;

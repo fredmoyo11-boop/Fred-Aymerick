@@ -4,19 +4,15 @@
     <button mat-raised-button color="accent" [routerLink]="'/aktiveFahranfrage'">Aktive Fahranfrage</button>
   </nav>
 </div>
-<div *ngIf="tripData; else noTrip" class = "container">
+<div *ngIf="tripData; else noTrip">
   <h2>Meine aktive Fahranfragen</h2>
-<div class="card" *ngIf="activeRide">
+<div class="card">
   <mat-card appearance="outlined">
     <mat-card-content>
-      <p><strong>Start:</strong>{{activeRide.startAddress}}</p>
-      <p><strong>Ziel:</strong>{{ activeRide.endAddress }}</p>
-      <p><strong>Fahrzeugklasse:</strong>{{activeRide.carType}}</p>
-      <p><strong>Notiz:</strong> {{ tripData.note || '-' }}</p>
-      <div class="slide-btn">
-        <p><label><strong>Status</strong></label>
-          <mat-slide-toggle labelPosition="before" [(ngModel)] ="activeRide.status" > </mat-slide-toggle></p>
-      </div>
+      <p><strong>Start :</strong>{{tripData.startLocation.display_name}}</p>
+      <p><strong>Ziel :</strong>{{ tripData.endLocation.display_name }}</p>
+      <p><strong>Fahrzeugklasse :</strong>{{tripData.carType}}</p>
+      <p><strong>Notiz :</strong> {{ tripData.note || '-' }}</p>
 
     </mat-card-content>
     <mat-card-actions align="end">
@@ -26,5 +22,5 @@
  </div>
 </div>
 <ng-template #noTrip>
-    <p>Keine Fahranfrage vorhanden.</p>
+    <p>Keine aktive Fahranfrage vorhanden.</p>
 </ng-template>

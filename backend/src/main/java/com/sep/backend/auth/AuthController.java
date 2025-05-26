@@ -79,8 +79,8 @@ public class AuthController {
             tags = {Tags.AUTH},
             responses = {
                     @ApiResponse(responseCode = HttpStatus.OK, description = "Logged out user successfully.")})
-    public void logout(HttpServletResponse res, Principal principal) {
-        loginService.logout(res, principal);
+    public void logout(HttpServletResponse res) {
+        loginService.logout(res);
     }
 
     @PostMapping("/refresh")
@@ -120,8 +120,8 @@ public class AuthController {
             responses = {
                     @ApiResponse(responseCode = HttpStatus.OK, description = "Verification mail resend successfully.",
                             content = @Content(schema = @Schema(implementation = StringResponse.class)))})
-    public StringResponse resendVerificationEmail(@RequestBody @Valid @Email String email) {
-        return new StringResponse(registrationService.resendVerificationEmail(email));
+    public StringResponse resendVerificationEmail(@RequestBody @Valid @Email String uniqueIdentifier) {
+        return new StringResponse(registrationService.resendVerificationEmail(uniqueIdentifier));
     }
 
 }

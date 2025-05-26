@@ -42,13 +42,13 @@ public class RouteService {
 
     public List<WaypointResponse> getMidpointsById(Long id) {
         List<WaypointResponse> midpointList = new ArrayList<WaypointResponse>();
-        midpointList.addAll(mapWaypointEntityToWaypointResponse(waypointRepository.findAllPointsByRouteIdAndType(id,WaypointType.MID)));
+        midpointList.addAll(mapWaypointEntityToWaypointResponse(waypointRepository.findAllPointsByRouteIdAndTypeOrderByIndexAsc(id,WaypointType.MID)));
         return midpointList;
     }
 
     public List<WaypointResponse> getFullRouteById(Long id) {
         List<WaypointResponse> waypointList = new ArrayList<WaypointResponse>();
-        waypointList.addAll(mapWaypointEntityToWaypointResponse(waypointRepository.findAllPointsByRouteId(id)));
+        waypointList.addAll(mapWaypointEntityToWaypointResponse(waypointRepository.findAllPointsByRouteIdOrderByIndexAsc(id)));
         return waypointList;
     }
 

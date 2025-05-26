@@ -1,7 +1,6 @@
 package com.sep.backend.auth.login;
 
 import com.sep.backend.ErrorMessages;
-import com.sep.backend.NotFoundException;
 import com.sep.backend.account.AccountService;
 import com.sep.backend.auth.JwtUtil;
 import com.sep.backend.auth.email.EmailService;
@@ -32,6 +31,7 @@ public class LoginService {
     private final AccountService accountService;
 
     private static final String REFRESH_TOKEN_COOKIE_NAME = "refreshToken";
+    private static final String REFRESH_TOKEN_COOKIE_PATH = "/api/auth/refresh";
 
     public LoginService(JwtUtil jwtUtil, OtpService otpService, EmailService emailService, AuthenticationManager authenticationManager, AccountService accountService) {
         this.jwtUtil = jwtUtil;
@@ -41,20 +41,6 @@ public class LoginService {
         this.accountService = accountService;
     }
 
-    /**
-     * Returns an optional containing email belonging to the provided unique identifier.
-     *
-     * @param uniqueIdentifier The unique identifier.
-     * @return The optional containing the email. Might be empty if id was unknown email.
-     */
-    private Optional<String> getEmailByUniqueIdentifier(String uniqueIdentifier) {
-        //if unique identifier contains @ it must be an email, else it is treated as a username
-        if (uniqueIdentifier.contains("@")) {
-            return Optional.of(uniqueIdentifier);
-        } else {
-            return accountService.getEmailByUsername(uniqueIdentifier);
-        }
-    }
 
     /**
      * Starts the login process by authenticating the user and sending OTP.
@@ -63,9 +49,9 @@ public class LoginService {
      * @return
      */
     public String login(@Valid LoginRequest loginRequest) {
-        String uniqueIdentifier = loginRequest.getUniqueIdentifier();
+        String uniqueIdentifier = loginRequest.getUniqueIdentifier().toLowerCase();
 
-        String email = getEmailByUniqueIdentifier(uniqueIdentifier)
+        String email = accountService.getEmailByUniqueIdentifier(uniqueIdentifier)
                 // if optional is empty, it was an invalid username, therefore, must be invalid credentials
                 .orElseThrow(() -> new LoginException(ErrorMessages.INVALID_CREDENTIALS));
         String password = loginRequest.getPassword();
@@ -95,11 +81,10 @@ public class LoginService {
      *
      * @param res The response
      */
-    public void logout(HttpServletResponse res, Principal principal) {
-        log.debug("LOGOUT: Logging out {}", principal.getName());
-        setRefreshTokenCookie("", res);
-        SecurityContextHolder.clearContext();
-        log.debug("LOGOUT: Logged out {}", principal.getName());
+    public void logout(HttpServletResponse res) {
+        log.debug("LOGOUT: Logging out current user");
+        clearRefreshTokenCookie(res);
+        log.debug("LOGOUT: Logged out current user");
     }
 
 
@@ -113,7 +98,7 @@ public class LoginService {
     public AuthResponse verifyOtp(@Valid OtpRequest otpRequest, HttpServletResponse response) {
         String uniqueIdentifier = otpRequest.getUniqueIdentifier();
 
-        String email = getEmailByUniqueIdentifier(uniqueIdentifier)
+        String email = accountService.getEmailByUniqueIdentifier(uniqueIdentifier)
                 // if optional is empty, it was an invalid username, therefore, must be invalid credentials (should not be reached at any time)
                 .orElseThrow(() -> new LoginException(ErrorMessages.INVALID_CREDENTIALS));
         String otp = otpRequest.getOtp();
@@ -140,7 +125,7 @@ public class LoginService {
     public AuthResponse refresh(HttpServletRequest req) {
         String refreshToken = extractRefreshTokenCookie(req);
 
-        if (refreshToken == null || !jwtUtil.validateToken(refreshToken)) {
+        if (refreshToken == null || refreshToken.isEmpty() || !jwtUtil.validateToken(refreshToken)) {
             log.debug("Invalid refresh token {}", refreshToken);
             throw new LoginException(ErrorMessages.INVALID_REFRESH_TOKEN);
         }
@@ -163,7 +148,7 @@ public class LoginService {
         cookie.setHttpOnly(true);
         // not suitable locally
         // cookie.setSecure(true);
-        cookie.setPath("/api/auth/refresh");
+        cookie.setPath(REFRESH_TOKEN_COOKIE_PATH);
         int maxAge = 7 * 24 * 60 * 60; // 7 Days
         cookie.setMaxAge(maxAge);
         log.debug("Created new refresh token cookie");
@@ -171,6 +156,21 @@ public class LoginService {
         log.debug("Adding new cookie to response");
         res.addCookie(cookie);
         log.debug("Added new cookie to response");
+    }
+
+    /**
+     * Clears the refresh token cookie.
+     *
+     * @param res The response.
+     */
+    private void clearRefreshTokenCookie(HttpServletResponse res) {
+        log.debug("Clearing refresh token cookie");
+        Cookie cookie = new Cookie(REFRESH_TOKEN_COOKIE_NAME, null);
+        cookie.setHttpOnly(true);
+        cookie.setPath(REFRESH_TOKEN_COOKIE_PATH);
+        cookie.setMaxAge(0);
+        res.addCookie(cookie);
+        log.debug("Cleared refresh token cookie");
     }
 
     /**

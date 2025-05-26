@@ -29,14 +29,11 @@ public class NominatimService {
             String response = restClient.get()
                     .uri(uriBuilder -> uriBuilder
                             .path("/search")
-                            .queryParam("format", "json") //TODO GeoJSON benutzen
+                            .queryParam("format", "geojson") //TODO GeoJSON benutzen
                             .queryParam("q", location)
                             .build())
                     .retrieve()
                     .body(String.class);
-
-            System.out.println(response);
-
             return mapper.readValue(response, new TypeReference<List<LocationDTO>>() {});
         } catch (Exception e) {
             throw new Exception("Could not find location", e);

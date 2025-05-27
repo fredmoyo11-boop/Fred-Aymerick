@@ -6,7 +6,10 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 
 @Getter
 @Setter
@@ -34,7 +37,11 @@ public abstract class AbstractEntity {
         creationTime = System.currentTimeMillis();
         modificationTime = creationTime;
     }
-
+    public String getFormattedCreatedTime() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH'h'mm");
+        LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(creationTime),ZoneId.systemDefault());
+        return localDateTime.format(formatter);
+    }
     @PreUpdate
     protected void onUpdate() {
         modificationTime = System.currentTimeMillis();

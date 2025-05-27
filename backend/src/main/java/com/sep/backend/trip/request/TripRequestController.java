@@ -68,5 +68,10 @@ public class TripRequestController {
     public void deleteCurrentActiveTripRequest(Principal principal) throws NotFoundException {
         tripRequestService.deleteCurrentActiveTripRequest(principal);
     }
+    @GetMapping("/available")
+    public List<AvailableTripRequestDTO> getAvailableRequests(@RequestBody LocationDTO locationDTO ) {
+        return tripRequestService.getAvailableRequests(locationDTO);
+    }
+
 
 }

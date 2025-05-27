@@ -7,6 +7,9 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -47,6 +50,10 @@ public class TripRequestEntity extends AbstractEntity{
     @Column(name = "status")
     @Schema(description = "The status of the request form.", requiredMode = RequiredMode.REQUIRED)
     private String requestStatus;
+
+    @CreationTimestamp
+    @Column(updatable = false)
+    private LocalDate creationDate;
 
     //AcceptedByDriverEntity?
 }

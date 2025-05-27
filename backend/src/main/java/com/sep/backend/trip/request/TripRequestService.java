@@ -6,15 +6,22 @@ import com.sep.backend.NotFoundException;
 import com.sep.backend.Roles;
 import com.sep.backend.account.AccountService;
 import com.sep.backend.entity.TripRequestEntity;
+import com.sep.backend.trip.nominatim.NominatimService;
 import com.sep.backend.trip.nominatim.data.LocationDTO;
 import com.sep.backend.entity.LocationEntity;
 import com.sep.backend.trip.nominatim.data.LocationRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class TripRequestService {
@@ -23,11 +30,13 @@ public class TripRequestService {
     private final LocationRepository locationRepository;
 
     private final AccountService accountService;
+    private final NominatimService nominatimService;
 
-    public TripRequestService(TripRequestRepository tripRequestRepository, LocationRepository locationRepository, AccountService accountService) {
+    public TripRequestService(TripRequestRepository tripRequestRepository, LocationRepository locationRepository, AccountService accountService, NominatimService nominatimService) {
         this.tripRequestRepository = tripRequestRepository;
         this.locationRepository = locationRepository;
         this.accountService = accountService;
+        this.nominatimService = nominatimService;
     }
 
     /**
@@ -141,5 +150,31 @@ public class TripRequestService {
         tripRequestRepository.save(tripRequestEntity);
     }
 
+    public AvailableTripRequestDTO getAvailableTripRequest(Long id , LocalDate creationDate , String creationTime, String username , String note , String carType, Double distance)  {
+        AvailableTripRequestDTO availableTripRequestDTO = new AvailableTripRequestDTO();
+        availableTripRequestDTO.setId(id);
+        availableTripRequestDTO.setCreationDate(creationDate.toString());
+        availableTripRequestDTO.setCreationTime(creationTime);
+        availableTripRequestDTO.setUsername(username);
+        availableTripRequestDTO.setNote(note);
+        availableTripRequestDTO.setCarType(carType);
+        availableTripRequestDTO.setDistance(distance);
+        return availableTripRequestDTO;
 
+    }
+
+    public List<AvailableTripRequestDTO> getAvailableRequests(LocationDTO locationDTO) {
+
+        List <AvailableTripRequestDTO> availableTripRequestDTOS = new ArrayList<>();
+         List <TripRequestEntity> trips = tripRequestRepository.findAll();
+
+
+
+        return trips.stream().map(trip -> {
+            double reqLat = trip.getStartLocation().getLat();
+            double reqLon = trip.getStartLocation().getLon();
+            double distance = nominatimService.getDistanceToTripRequests(locationDTO.getLatitude(),locationDTO.getLongitude(),reqLat,reqLon);
+            return  getAvailableTripRequest(trip.getId(),trip.getCreationDate(),trip.getFormattedCreatedTime(),trip.getCustomer().getUsername(),trip.getNote(),trip.getCarType(),distance);
+        }).collect(Collectors.toList());
+    }
 }

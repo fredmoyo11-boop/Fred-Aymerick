@@ -6,7 +6,10 @@ import com.sep.backend.entity.LocationEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
-@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
 @Schema(description = "Represents a DTO for a location.")
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class LocationDTO {

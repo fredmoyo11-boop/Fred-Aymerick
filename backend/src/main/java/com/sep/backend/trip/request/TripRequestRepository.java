@@ -9,8 +9,8 @@ import java.util.Optional;
 @Repository
 public interface TripRequestRepository extends JpaRepository<TripRequestEntity, Long> {
     
-    boolean existsByCustomer_EmailAndRequestStatus(String email, String status);
+    boolean existsByCustomer_Email(String email);
 
-    Optional<TripRequestEntity> findByCustomer_EmailAndRequestStatus(String customerEmail, String requestStatus);
+    Optional<TripRequestEntity> findByCustomer_Email(String customerEmail);
 
 }

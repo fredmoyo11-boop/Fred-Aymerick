@@ -1,4 +1,4 @@
-package com.sep.backend.trip.nominatim.data;
+package com.sep.backend.nominatim.data;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -9,9 +9,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-@Schema(description = "Represents a GeoJSON property.")
+@AllArgsConstructor
+@Schema(description = "Represents the properties of a nominatim feature.")
 public class NominatimProperties {
 
     @JsonProperty("place_id")
@@ -19,7 +19,7 @@ public class NominatimProperties {
     private String placeId;
 
     @JsonProperty("osm_type")
-    @Schema(description = "The osm typeof the feature.", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "The osm type of the feature.", requiredMode = Schema.RequiredMode.REQUIRED)
     private String osmType;
 
     @JsonProperty("osm_id")

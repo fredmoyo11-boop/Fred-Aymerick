@@ -1,4 +1,4 @@
-package com.sep.backend.trip.nominatim.data;
+package com.sep.backend.ors.data;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -11,10 +11,10 @@ import java.util.List;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-@Schema(description = "Represents a GeoJSON feature.")
-public class NominatimFeature {
+@AllArgsConstructor
+@Schema(description = "Represents a GeoJSON Feature as standardized by RFC 7946.")
+public class ORSFeature {
 
     @JsonProperty("type")
     @Schema(description = "The feature type.", requiredMode = Schema.RequiredMode.REQUIRED)
@@ -26,9 +26,9 @@ public class NominatimFeature {
 
     @JsonProperty("properties")
     @Schema(description = "The properties.", requiredMode = Schema.RequiredMode.REQUIRED)
-    private NominatimProperties properties;
+    private ORSProperties properties;
 
     @JsonProperty("geometry")
     @Schema(description = "The geometry.", requiredMode = Schema.RequiredMode.REQUIRED)
-    private NominatimGeometry geometry;
+    private ORSGeometry geometry;
 }

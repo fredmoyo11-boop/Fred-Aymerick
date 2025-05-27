@@ -1,4 +1,4 @@
-package com.sep.backend.trip.nominatim.data;
+package com.sep.backend.ors.data;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -13,14 +13,14 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Schema(description = "Represents a GeoJSON Geometry.")
-public class NominatimGeometry {
+@Schema(description = "Represents the GeoJSON geometry.")
+public class ORSGeometry {
 
     @JsonProperty("type")
     @Schema(description = "The geometry type.", requiredMode = Schema.RequiredMode.REQUIRED)
     private String type;
 
     @JsonProperty("coordinates")
-    @Schema(description = "The coordinates of the geometry.")
-    private List<Double> coordinates;
+    @Schema(description = "The coordinates of the geometry.", requiredMode = Schema.RequiredMode.REQUIRED)
+    private List<List<Double>> coordinates;
 }

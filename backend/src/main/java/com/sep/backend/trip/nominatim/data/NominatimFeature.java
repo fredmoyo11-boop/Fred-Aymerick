@@ -26,7 +26,7 @@ public class NominatimFeature {
 
     @JsonProperty("properties")
     @Schema(description = "The properties.", requiredMode = Schema.RequiredMode.REQUIRED)
-    private List<NominatimProperties> properties;
+    private NominatimProperties properties;
 
     @JsonProperty("geometry")
     @Schema(description = "The geometry.", requiredMode = Schema.RequiredMode.REQUIRED)

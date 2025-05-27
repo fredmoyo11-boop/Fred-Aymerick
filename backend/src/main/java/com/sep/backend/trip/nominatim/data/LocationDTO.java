@@ -12,15 +12,12 @@ import lombok.*;
 public class LocationDTO {
 
     @Schema(description = "The display name of the location.", requiredMode = Schema.RequiredMode.REQUIRED)
-    @JsonProperty("display_name")
     private String displayName;
 
     @Schema(description = "The latitude of the location.", requiredMode = Schema.RequiredMode.REQUIRED)
-    @JsonProperty("lat")
     private Double latitude;
 
     @Schema(description = "The longitude of the location.", requiredMode = Schema.RequiredMode.REQUIRED)
-    @JsonProperty("lon")
     private Double longitude;
 
 

@@ -2,7 +2,9 @@ package com.sep.backend.trip.nominatim;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sep.backend.trip.nominatim.data.LocationDTO;
+import com.sep.backend.entity.LocationEntity;
+import com.sep.backend.trip.nominatim.data.*;
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
@@ -10,6 +12,13 @@ import java.util.List;
 
 @Service
 public class NominatimService {
+
+    private final LocationRepository locationRepository;
+
+    public NominatimService(LocationRepository locationRepository) {
+        this.locationRepository = locationRepository;
+    }
+
     //Sets the restClient base URL
     private final RestClient restClient = RestClient.builder()
             .baseUrl("https://nominatim.openstreetmap.org")
@@ -22,7 +31,7 @@ public class NominatimService {
      * @return A list of suggestions based on the query by nominatim
      * @throws Exception If location not found
      */
-    public List<LocationDTO> searchLocations(String location) throws Exception {
+    public NominatimFeatureCollection searchLocations(String location) throws Exception {
         try {
             ObjectMapper mapper = new ObjectMapper();
 
@@ -34,9 +43,23 @@ public class NominatimService {
                             .build())
                     .retrieve()
                     .body(String.class);
-            return mapper.readValue(response, new TypeReference<List<LocationDTO>>() {});
+            return mapper.readValue(response, NominatimFeatureCollection.class);
         } catch (Exception e) {
             throw new Exception("Could not find location", e);
         }
+    }
+
+    public LocationEntity saveLocation(@Valid NominatimFeature feature) {
+        NominatimProperties properties = feature.getProperties();
+        NominatimGeometry geometry = feature.getGeometry();
+
+        List<Double> coordinate = geometry.getCoordinates();
+
+        var locationEntity = new LocationEntity();
+        locationEntity.setDisplay_name(properties.getDisplayName());
+        locationEntity.setLat(coordinate.getFirst());
+        locationEntity.setLon(coordinate.getLast());
+
+        return locationRepository.save(locationEntity);
     }
 }

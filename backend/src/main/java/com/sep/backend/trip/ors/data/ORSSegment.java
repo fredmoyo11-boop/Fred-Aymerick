@@ -1,0 +1,30 @@
+package com.sep.backend.trip.ors.data;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.util.List;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Schema(description = "Represents a segment.")
+public class ORSSegment {
+
+    @JsonProperty("distance")
+    @Schema(description = "The distance for the segment.", requiredMode = Schema.RequiredMode.REQUIRED)
+    private double distance;
+
+    @JsonProperty("duration")
+    @Schema(description = "The duration for the segment.", requiredMode = Schema.RequiredMode.REQUIRED)
+    private double duration;
+
+    @JsonProperty("steps")
+    @Schema(description = "The steps of the segment.", requiredMode = Schema.RequiredMode.REQUIRED)
+    private List<ORSStep> steps;
+}

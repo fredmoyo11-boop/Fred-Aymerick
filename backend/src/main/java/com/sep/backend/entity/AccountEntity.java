@@ -1,6 +1,7 @@
 package com.sep.backend.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.MappedSuperclass;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -9,27 +10,15 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @Setter
 @MappedSuperclass
-public abstract class AccountEntity extends AbstractEntity {
-
+public abstract sealed class AccountEntity extends AbstractEntity permits CustomerEntity, DriverEntity {
     @Email
     @NotBlank
     @Column(name = "email", unique = true, nullable = false)
     private String email;
-
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "account_id")
-    @NotNull
-    private List<Rating> rating = new ArrayList<>();
-
-    @NotNull
-    @Column(name = "totalNumberOfRides", nullable = false)
-    private  int totalNumberOfRides =0;
 
     @NotBlank
     @Column(name = "username", unique = true, nullable = false)
@@ -57,6 +46,9 @@ public abstract class AccountEntity extends AbstractEntity {
 
     @Column(name = "profile_picture_url")
     private String profilePictureUrl;
+
+    @Column(name = "balance")
+    private Double balance = 0.0;
 
     public void setBirthday(String birthday) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");

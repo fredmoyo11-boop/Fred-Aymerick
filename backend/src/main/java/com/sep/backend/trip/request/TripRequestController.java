@@ -3,8 +3,8 @@ package com.sep.backend.trip.request;
 import com.sep.backend.HttpStatus;
 import com.sep.backend.NotFoundException;
 import com.sep.backend.Tags;
-import com.sep.backend.trip.nominatim.data.LocationDTO;
-import com.sep.backend.trip.nominatim.NominatimService;
+import com.sep.backend.location.Location;
+import com.sep.backend.nominatim.NominatimService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -34,9 +34,9 @@ public class TripRequestController {
             tags = {Tags.TRIP_REQUEST},
             responses = {
                     @ApiResponse(responseCode = HttpStatus.OK, description = "Suggested list successful send",
-                            content = @Content(array = @ArraySchema(schema = @Schema(implementation = LocationDTO.class))))})
-    public List<LocationDTO> searchLocations(@Parameter(description = "Searched Location") @RequestParam String query) throws Exception {
-        return nominatimService.searchLocations(query);
+                            content = @Content(array = @ArraySchema(schema = @Schema(implementation = Location.class))))})
+    public List<Location> searchLocations(@Parameter(description = "Searched Location") @RequestParam String query) throws Exception {
+        return nominatimService.search(query);
     }
 
     @GetMapping("/current")

@@ -1,14 +1,14 @@
 package com.sep.backend.trip.request;
 
-import com.sep.backend.CarType;
+import com.sep.backend.CarTypes;
 import com.sep.backend.ErrorMessages;
 import com.sep.backend.NotFoundException;
 import com.sep.backend.Roles;
 import com.sep.backend.account.AccountService;
 import com.sep.backend.entity.TripRequestEntity;
-import com.sep.backend.trip.nominatim.data.LocationDTO;
+import com.sep.backend.location.Location;
+import com.sep.backend.nominatim.LocationRepository;
 import com.sep.backend.entity.LocationEntity;
-import com.sep.backend.trip.nominatim.data.LocationRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
@@ -37,18 +37,19 @@ public class TripRequestService {
      * @return Whether the customer has A active request or not
      */
     public boolean existsActiveTripRequest(String email) {
-        return tripRequestRepository.existsByCustomer_EmailAndRequestStatus(email, TripRequestStatus.ACTIVE);
+        return tripRequestRepository.existsByCustomer_Email(email);
     }
 
     /**
      * Saves A LocationEntity to the Repository.
      *
-     * @param locationDTO Location chosen by customer.
+     * @param location Location chosen by customer.
      * @return The location entity.
      */
-    private LocationEntity saveLocation(@Valid LocationDTO locationDTO) {
-        var locationEntity = LocationEntity.from(locationDTO);
-        return locationRepository.save(locationEntity);
+    private LocationEntity saveLocation(@Valid Location location) {
+//        var locationEntity = LocationEntity.from(locationDTO);
+//        return locationRepository.save(locationEntity);
+        return new LocationEntity();
     }
 
     /**
@@ -59,7 +60,7 @@ public class TripRequestService {
      * @return The optional containing the trip request entity.
      */
     public Optional<TripRequestEntity> findTripRequestByEmailAndStatus(String email, String requestStatus) {
-        return tripRequestRepository.findByCustomer_EmailAndRequestStatus(email, requestStatus);
+        return tripRequestRepository.findByCustomer_Email(email);
     }
 
     /**
@@ -102,7 +103,7 @@ public class TripRequestService {
             throw new TripRequestException("User must be a customer.");
         }
         //checks if car type in request is valid
-        if (!CarType.isValidCarType(tripRequestBody.getCarType())) {
+        if (!CarTypes.isValidCarType(tripRequestBody.getCarType())) {
             throw new TripRequestException(ErrorMessages.INVALID_CAR_TYPE);
         }
         //only one active trip request at a time
@@ -110,15 +111,15 @@ public class TripRequestService {
             throw new TripRequestException(ErrorMessages.ALREADY_EXISTS_TRIP_REQUEST);
         }
 
-        LocationEntity startAddress = saveLocation(tripRequestBody.getStartLocation());
-        LocationEntity endAddress = saveLocation(tripRequestBody.getEndLocation());
+//        LocationEntity startAddress = saveLocation(tripRequestBody.getStartLocation());
+//        LocationEntity endAddress = saveLocation(tripRequestBody.getEndLocation());
 
         var tripRequestEntity = new TripRequestEntity();
-        tripRequestEntity.setStartLocation(startAddress);
-        tripRequestEntity.setEndLocation(endAddress);
-        tripRequestEntity.setCarType(tripRequestBody.getCarType());
-        tripRequestEntity.setNote(tripRequestBody.getNote());
-        tripRequestEntity.setRequestStatus(TripRequestStatus.ACTIVE);
+//        tripRequestEntity.setStartLocation(startAddress);
+//        tripRequestEntity.setEndLocation(endAddress);
+//        tripRequestEntity.setCarType(tripRequestBody.getCarType());
+//        tripRequestEntity.setNote(tripRequestBody.getNote());
+//        tripRequestEntity.setRequestStatus(TripRequestStatus.ACTIVE);
 
         var customerEntity = accountService.getCustomerByEmail(email);
         tripRequestEntity.setCustomer(customerEntity);
@@ -136,7 +137,7 @@ public class TripRequestService {
         String email = principal.getName();
         TripRequestEntity tripRequestEntity = findActiveTripRequestByEmail(email)
                 .orElseThrow(() -> new NotFoundException("Current customer does not have an active trip request."));
-        tripRequestEntity.setRequestStatus(TripRequestStatus.DELETED);
+//        tripRequestEntity.setRequestStatus(TripRequestStatus.DELETED);
 
         tripRequestRepository.save(tripRequestEntity);
     }

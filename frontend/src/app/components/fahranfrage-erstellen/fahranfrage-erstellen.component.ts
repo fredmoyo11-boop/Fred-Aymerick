@@ -4,16 +4,14 @@ import {
   FormGroup,
   FormControl,
   FormsModule,
-  Validators,
-  AbstractControl,
-  ValidationErrors
+  Validators
 } from '@angular/forms';
 import {MatRadioButton, MatRadioGroup} from '@angular/material/radio';
 import {MatButton, MatIconButton} from '@angular/material/button';
 import {MatFormField, MatInput, MatLabel, MatSuffix} from '@angular/material/input';
 import {MatOption} from '@angular/material/autocomplete';
 import {NgIf} from '@angular/common';
-import {debounceTime, distinctUntilChanged, Observable, tap} from 'rxjs';
+import {debounceTime, distinctUntilChanged, tap} from 'rxjs';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatIcon} from '@angular/material/icon';
 import {RouterLink} from '@angular/router';
@@ -134,7 +132,7 @@ export class FahranfrageErstellenComponent implements OnInit {
           this.lon = position.coords.longitude;
           console.log(this.lat);
           console.log(this.lon);
-          // stores lng and lat in var startQuery
+          // stores lon and lat in var startQuery
           this.tripRequestForm.get("startQuery")!.setValue(`${this.lat}, ${this.lon}`)
         },
         (err) => {
@@ -192,7 +190,7 @@ export class FahranfrageErstellenComponent implements OnInit {
   }
 
 
-  submitRideRequest () {
+  submitRideRequest () {2
     const form = this.tripRequestForm.value;
     const tripRequestBody: TripRequestBody = {
       startLocation: this.start,

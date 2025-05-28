@@ -84,7 +84,7 @@ public class NominatimService {
 
 
             String response = orsClient.post()
-                    .uri("/ors/v2/directions/driving-car/geojson")
+                    .uri("/v2/directions/driving-car/geojson")
                     .header("Authorization", apiKey)
                     .body("""
                 {

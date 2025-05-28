@@ -13,9 +13,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-
 @Schema(description = "Represents a GeoJSON Feature as standardized by RFC 7946.")
-
 public class ORSFeature {
 
     @JsonProperty("type")
@@ -33,5 +31,4 @@ public class ORSFeature {
     @JsonProperty("geometry")
     @Schema(description = "The geometry.", requiredMode = Schema.RequiredMode.REQUIRED)
     private ORSGeometry geometry;
-
 }

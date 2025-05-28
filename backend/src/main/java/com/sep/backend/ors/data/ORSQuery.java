@@ -2,9 +2,11 @@ package com.sep.backend.ors.data;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
 
 import java.util.List;
 
+@Data
 @Schema(description = "Represents a query.")
 public class ORSQuery {
 

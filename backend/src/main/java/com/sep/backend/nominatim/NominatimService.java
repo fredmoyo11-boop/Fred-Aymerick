@@ -13,6 +13,7 @@ import java.util.List;
 
 @Service
 public class NominatimService {
+
     @Value("${ors.api.key}")
     private String apiKey;
 
@@ -20,11 +21,6 @@ public class NominatimService {
 
     private final RestClient restClient = RestClient.builder()
             .baseUrl("https://nominatim.openstreetmap.org")
-            .build();
-
-    private final RestClient orsClient = RestClient.builder()
-            .baseUrl("https://api.openrouteservice.org")
-            .defaultHeader("Authorization", apiKey) // ⬅ API Key wird im Header mitgegeben
             .build();
 
 
@@ -81,6 +77,12 @@ public class NominatimService {
 
     public Double getDistanceToTripRequests(Double startLat, Double startLon, Double endLat, Double endLon) throws DistanceNotFoundException {
         try {
+            RestClient orsClient = RestClient.builder()
+                    .baseUrl("https://api.openrouteservice.org")
+                    .defaultHeader("Authorization", apiKey)
+                    .build();
+
+
             String response = orsClient.post()
                     .uri("/ors/v2/directions/driving-car/geojson")
                     .header("Authorization", apiKey)
@@ -95,8 +97,7 @@ public class NominatimService {
                     .retrieve()
                     .body(String.class);
 
-            ObjectMapper mapper = new ObjectMapper();
-            ORSFeatureCollection result = mapper.readValue(response, ORSFeatureCollection.class);
+            ORSFeatureCollection result = this.mapper.readValue(response, ORSFeatureCollection.class);
 
             return result
                     .getFeatures()

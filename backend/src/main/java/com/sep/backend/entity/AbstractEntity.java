@@ -6,11 +6,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-
 @Getter
 @Setter
 @MappedSuperclass
@@ -22,7 +17,6 @@ public abstract class AbstractEntity {
     @Column(name = "id")
     @Schema(description = "The id of the entity.", requiredMode = RequiredMode.REQUIRED)
     private Long id;
-
 
     @Column(name = "creation_time")
     @Schema(description = "The creation time of the entity.", requiredMode = RequiredMode.REQUIRED)
@@ -37,11 +31,7 @@ public abstract class AbstractEntity {
         creationTime = System.currentTimeMillis();
         modificationTime = creationTime;
     }
-    public String getFormattedCreatedTime() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH'h'mm");
-        LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(creationTime),ZoneId.systemDefault());
-        return localDateTime.format(formatter);
-    }
+
     @PreUpdate
     protected void onUpdate() {
         modificationTime = System.currentTimeMillis();

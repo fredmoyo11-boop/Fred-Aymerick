@@ -1,6 +1,6 @@
 package com.sep.backend.account;
 
-import com.sep.backend.CarType;
+import com.sep.backend.CarTypes;
 import com.sep.backend.ErrorMessages;
 import com.sep.backend.NotFoundException;
 import com.sep.backend.Roles;
@@ -231,7 +231,7 @@ public class AccountService {
                 log.debug("Saving driver: {} ({})", username, email);
                 var driverEntity = createAccountEntity(data, profilePictureUrl, DriverEntity.class);
                 String carType = data.getCarType();
-                if (!CarType.isValidCarType(carType)) {
+                if (!CarTypes.isValidCarType(carType)) {
                     throw new RegistrationException(ErrorMessages.INVALID_CAR_TYPE);
                 }
                 driverEntity.setCarType(carType);
@@ -307,7 +307,6 @@ public class AccountService {
     public static AccountDTO getCustomerDTO(CustomerEntity customerEntity) {
         AccountDTO customerDTO = new AccountDTO();
         customerDTO.setEmail(customerEntity.getEmail());
-        customerDTO.setRatings(customerEntity.getRating());
         customerDTO.setRole(Roles.CUSTOMER);
         customerDTO.setBirthday(customerEntity.getBirthday().toString());
         customerDTO.setUsername(customerEntity.getUsername());
@@ -322,7 +321,7 @@ public class AccountService {
     public static AccountDTO getDriverDTO(DriverEntity driverEntity) {
         AccountDTO driverDTO = new AccountDTO();
         driverDTO.setEmail(driverEntity.getEmail());
-        driverDTO.setRatings(driverEntity.getRating());
+
         driverDTO.setRole(Roles.DRIVER);
         driverDTO.setUsername(driverEntity.getUsername());
         driverDTO.setFirstName(driverEntity.getFirstName());
@@ -415,7 +414,6 @@ public class AccountService {
             account.setFirstName(data.getFirstName());
             account.setLastName(data.getLastName());
             account.setBirthday(data.getBirthday());
-            account.setTotalNumberOfRides(0);
             account.setVerified(false);
             account.setProfilePictureUrl(profilePictureUrl);
             return account;
@@ -497,7 +495,7 @@ public class AccountService {
             if (updateAccountDTO.getBirthday() != null) {
                 driverEntity.setBirthday(updateAccountDTO.getBirthday());
             }
-            if (Set.of(CarType.ALL).contains(updateAccountDTO.getCarType())) {
+            if (CarTypes.isValidCarType(updateAccountDTO.getCarType())) {
                 driverEntity.setCarType(updateAccountDTO.getCarType());
             }
             if (file != null) {

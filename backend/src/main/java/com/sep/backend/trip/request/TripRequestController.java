@@ -82,7 +82,7 @@ public class TripRequestController {
                     content = @Content(mediaType = "application/json",
                             array = @ArraySchema(schema = @Schema(implementation = AvailableTripRequestDTO.class))))})
     @PostMapping("/available")
-    public ResponseEntity<List<AvailableTripRequestDTO>> getAvailableRequests( @RequestBody @Valid LocationDTO driverLocation){
+    public ResponseEntity<List<AvailableTripRequestDTO>> getAvailableRequests(@RequestBody @Valid LocationDTO driverLocation){
 //            @RequestParam(defaultValue = "distanceInKm") String sort,
 //            @RequestParam(defaultValue = "asc") String direction)
 

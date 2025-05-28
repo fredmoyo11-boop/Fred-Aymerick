@@ -87,12 +87,9 @@ public class TripRequestController {
                     content = @Content)
     })
     @PostMapping("/available")
-    public ResponseEntity<List<AvailableTripRequestDTO>> getAvailableRequests(
-            @RequestBody @Valid LocationDTO driverLocation,
-            @RequestParam(defaultValue = "distanceInKm") String sort,
-            @RequestParam(defaultValue = "asc") String direction) {
+    public ResponseEntity<List<AvailableTripRequestDTO>> getAvailableRequests(@RequestBody @Valid LocationDTO driverLocation, @RequestParam(defaultValue = "distanceInKm") String sort, @RequestParam(defaultValue = "asc") String direction) {
 
-        List<AvailableTripRequestDTO> result = tripRequestService.getAvailableRequests(driverLocation, sort, direction);
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(tripRequestService.getAvailableRequests(driverLocation, sort, direction));
+
     }
 }

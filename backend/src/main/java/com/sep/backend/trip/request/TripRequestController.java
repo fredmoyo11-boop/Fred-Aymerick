@@ -3,6 +3,7 @@ package com.sep.backend.trip.request;
 import com.sep.backend.HttpStatus;
 import com.sep.backend.NotFoundException;
 import com.sep.backend.Tags;
+import com.sep.backend.account.AccountDTO;
 import com.sep.backend.entity.TripHistoryEntity;
 import com.sep.backend.location.Location;
 import com.sep.backend.nominatim.NominatimService;
@@ -76,13 +77,10 @@ public class TripRequestController {
 
     @Operation(
             summary = "Verfügbare Fahranfragen abrufen",
-            description = "Gibt eine Liste aller offenen Fahranfragen zurück."
-    )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Liste verfügbarer Fahranfragen",
+            description = "Gibt eine Liste aller offenen Fahranfragen zurück.",
+    responses = {@ApiResponse(responseCode = "200", description = "Liste verfügbarer Fahranfragen",
                     content = @Content(mediaType = "application/json",
-                            array = @ArraySchema(schema = @Schema(implementation = AvailableTripRequestDTO.class)))),
-    })
+                            array = @ArraySchema(schema = @Schema(implementation = AvailableTripRequestDTO.class))))})
     @PostMapping("/available")
     public ResponseEntity<List<AvailableTripRequestDTO>> getAvailableRequests( @RequestBody @Valid LocationDTO driverLocation){
 //            @RequestParam(defaultValue = "distanceInKm") String sort,
@@ -93,15 +91,12 @@ public class TripRequestController {
     }
 
 
-    @Operation(
-            description ="Fahranfrage-History eines Fahrers oder eines Kundens "
-    )
-    @ApiResponses(value = {
-            @ApiResponse( responseCode =HttpStatus.OK,
-            content = @Content(mediaType ="application/json",
-                    array= @ArraySchema(schema= @Schema (implementation= TripHistoryDTO.class)))),
-    })
-    @GetMapping("/history")
+    @Operation(description ="Fahranfrage-History eines Fahrers oder eines Kundens ",
+     tags= {Tags.TRIP_REQUEST},
+    responses ={@ApiResponse(responseCode = HttpStatus.OK,
+                content = @Content(mediaType = "application/json",
+                        array = @ArraySchema(schema = @Schema(implementation = TripHistoryDTO.class))))})
+            @GetMapping("/history")
     public ResponseEntity<List<TripHistoryDTO>> getTripHistory(Principal principal) {
         return  ResponseEntity.ok(tripRequestService.geTripHistory(principal));
     }

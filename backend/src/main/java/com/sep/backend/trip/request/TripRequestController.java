@@ -82,10 +82,6 @@ public class TripRequestController {
             @ApiResponse(responseCode = "200", description = "Liste verfügbarer Fahranfragen",
                     content = @Content(mediaType = "application/json",
                             array = @ArraySchema(schema = @Schema(implementation = AvailableTripRequestDTO.class)))),
-            @ApiResponse(responseCode = "400", description = "Ungültige Anfrageparameter",
-                    content = @Content),
-            @ApiResponse(responseCode = "500", description = "Interner Serverfehler",
-                    content = @Content)
     })
     @PostMapping("/available")
     public ResponseEntity<List<AvailableTripRequestDTO>> getAvailableRequests( @RequestBody @Valid LocationDTO driverLocation){

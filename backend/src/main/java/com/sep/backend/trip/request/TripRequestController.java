@@ -75,7 +75,7 @@ public class TripRequestController {
 
     @Operation(
             summary = "Verfügbare Fahranfragen abrufen",
-            description = "Gibt eine Liste aller offenen Fahranfragen zurück, sortiert nach der gewünschten Spalte ( Distanz, Fahrzeugtyp, Bewertung)."
+            description = "Gibt eine Liste aller offenen Fahranfragen zurück."
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Liste verfügbarer Fahranfragen",
@@ -87,12 +87,11 @@ public class TripRequestController {
                     content = @Content)
     })
     @PostMapping("/available")
-    public ResponseEntity<List<AvailableTripRequestDTO>> getAvailableRequests(
-            @RequestBody @Valid LocationDTO driverLocation,
-            @RequestParam(defaultValue = "distanceInKm") String sort,
-            @RequestParam(defaultValue = "asc") String direction) {
+    public ResponseEntity<List<AvailableTripRequestDTO>> getAvailableRequests( @RequestBody @Valid LocationDTO driverLocation){
+//            @RequestParam(defaultValue = "distanceInKm") String sort,
+//            @RequestParam(defaultValue = "asc") String direction)
 
-        return ResponseEntity.ok(tripRequestService.getAvailableRequests(driverLocation, sort, direction));
-
+        List<AvailableTripRequestDTO> result = tripRequestService.getAvailableRequests(driverLocation);
+        return ResponseEntity.ok(result);
     }
 }

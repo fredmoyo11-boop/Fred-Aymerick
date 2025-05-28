@@ -148,6 +148,21 @@ public class TripRequestService {
         tripRequestRepository.save(tripRequestEntity);
     }
 
+    public List<TripHistoryDTO> geTripHistory(Principal principal) {
+        String email = principal.getName();
+        if (accountService.existsEmail(email)) {
+            if(Roles.CUSTOMER.equals(accountService.getRoleByEmail(email))) {
+                var customerEntity = accountService.getCustomerByEmail(email);
+                return TripHistoryDTO.getTripHistoryDTO(tripHistoryRepository.findByCustomer(customerEntity));
+            } else {
+                var driverEntity = accountService.getDriverByEmail(email);
+                return TripHistoryDTO.getTripHistoryDTO(tripHistoryRepository.findByDriver(driverEntity));
+            }
+        }else{
+            throw new TripRequestException(ErrorMessages.HISTORY_NOT_FOUND);
+        }
+    }
+
     public List<AvailableTripRequestDTO> getAvailableRequests(LocationDTO driverLocation) {
 
         List<TripRequestEntity> activeRequests = tripRequestRepository.findByStatus(TripRequestStatus.ACTIVE);

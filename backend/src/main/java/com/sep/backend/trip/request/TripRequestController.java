@@ -3,6 +3,7 @@ package com.sep.backend.trip.request;
 import com.sep.backend.HttpStatus;
 import com.sep.backend.NotFoundException;
 import com.sep.backend.Tags;
+import com.sep.backend.entity.TripHistoryEntity;
 import com.sep.backend.location.Location;
 import com.sep.backend.nominatim.NominatimService;
 import com.sep.backend.nominatim.data.LocationDTO;
@@ -94,4 +95,19 @@ public class TripRequestController {
         List<AvailableTripRequestDTO> result = tripRequestService.getAvailableRequests(driverLocation);
         return ResponseEntity.ok(result);
     }
+
+
+    @Operation(
+            description ="Fahranfrage-History eines Fahrers oder eines Kundens "
+    )
+    @ApiResponses(value = {
+            @ApiResponse( responseCode =HttpStatus.OK,
+            content = @Content(mediaType ="application/json",
+                    array= @ArraySchema(schema= @Schema (implementation= TripHistoryDTO.class)))),
+    })
+    @GetMapping("/history")
+    public ResponseEntity<List<TripHistoryDTO>> getTripHistory(Principal principal) {
+        return  ResponseEntity.ok(tripRequestService.geTripHistory(principal));
+    }
+
 }

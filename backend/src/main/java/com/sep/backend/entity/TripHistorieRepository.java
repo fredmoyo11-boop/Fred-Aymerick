@@ -10,4 +10,6 @@ import java.util.List;
 public interface TripHistorieRepository extends JpaRepository<TripRequestEntity, Long> {
 
     List<TripHistoryEntity>findByCustomer(CustomerEntity customer);
+
+    List<TripHistoryEntity>findByDriver(DriverEntity driverEntity);
 }

@@ -153,11 +153,11 @@ public class TripRequestService {
         List<TripRequestEntity> activeRequests = tripRequestRepository.findByStatus(TripRequestStatus.ACTIVE);
 
         return activeRequests.stream()
-                .map(request -> {
-                    CustomerEntity customer = request.getCustomer();
+                .map(activeRequest -> {
+                    CustomerEntity customer = activeRequest.getCustomer();
 
                     // Startlocation ist  erste Stop aus der Route.  TOdo Mats fragen
-                    LocationEntity start = request.getRoute().getStops().getFirst();
+                    LocationEntity start = activeRequest.getRoute().getStops().getFirst();
 
                     Double distance= 0.0;
                     try {
@@ -178,11 +178,11 @@ public class TripRequestService {
                             .orElse(0.0);
 
                     return new AvailableTripRequestDTO(
-                            request.getId(),
-                            request.getRequestTime(),
+                            activeRequest.getId(),
+                            activeRequest.getRequestTime(),
                             customer.getUsername(),
                             avgRating,
-                            request.getCarType(),
+                            activeRequest.getCarType(),
                             distance
                     );
                 })

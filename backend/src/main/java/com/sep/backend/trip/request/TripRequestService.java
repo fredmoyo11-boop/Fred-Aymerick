@@ -144,6 +144,9 @@ public class TripRequestService {
 
         // 6. RouteEntity erstellen und FeatureCollection setzen
         RouteEntity route = new RouteEntity();
+        route.setStartLocation(start);
+        route.setEndLocation(end);
+        route.setStops(new ArrayList<>());
         route.setGeoJSON(featureCollection);
 
         // 7. TripRequestEntity aufbauen
@@ -192,30 +195,32 @@ public class TripRequestService {
     }
 
     public List<AvailableTripRequestDTO> getAvailableRequests(LocationDTO driverLocation) {
-
         List<TripRequestEntity> activeRequests = tripRequestRepository.findByStatus(TripRequestStatus.ACTIVE);
 
         return activeRequests.stream().map(activeRequest ->
         {
-                    CustomerEntity customer = activeRequest.getCustomer();
 
-                    // Startlocation ist  erste Stop aus der Route.  TOdo Mats fragen
-                    LocationEntity start = activeRequest.getRoute().getStops().getFirst();
+          LocationEntity start = activeRequest.getRoute().getStartLocation();
+
+                        LocationDTO tripStartLocation = new LocationDTO();
+                        tripStartLocation.setLatitude(start.getLongitude());
+                        tripStartLocation.setLongitude(start.getLatitude());
+                        tripStartLocation.setDisplayName(start.getDisplayName());
+
 
                     Double distance= 0.0;
+
                     try {
-                        distance = nominatimservice.getDistanceToTripRequests(
-                                driverLocation.getLatitude(),
-                                driverLocation.getLongitude(),
-                                start.getLatitude(),
-                                start.getLongitude()
-                        );
+                        distance = nominatimservice.getDistanceToTripRequests(driverLocation, tripStartLocation);
+
                     } catch (DistanceNotFoundException e) {
-                        throw new RuntimeException(e);
+                        throw new RuntimeException(ErrorMessages.HISTORY_NOT_FOUND);
                     }
 
+
                     // Durchschnittliche Bewertung
-                    double avgRating = tripHistoryRepository.findByCustomer(customer).stream()
+            CustomerEntity customer = activeRequest.getCustomer();
+            double avgRating = tripHistoryRepository.findByCustomer(customer).stream()
                             .mapToInt(TripHistoryEntity::getCustomerRating)
                             .average()
                             .orElse(0.0);

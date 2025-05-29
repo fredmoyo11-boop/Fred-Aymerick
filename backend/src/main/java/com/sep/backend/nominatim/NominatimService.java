@@ -2,6 +2,7 @@ package com.sep.backend.nominatim;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sep.backend.location.Location;
+import com.sep.backend.nominatim.data.LocationDTO;
 import com.sep.backend.nominatim.data.NominatimFeatureCollection;
 import com.sep.backend.ors.data.ORSFeatureCollection;
 import jakarta.validation.constraints.NotBlank;
@@ -75,7 +76,7 @@ public class NominatimService {
 
 
 
-    public Double getDistanceToTripRequests(Double startLat, Double startLon, Double endLat, Double endLon) throws DistanceNotFoundException {
+    public Double getDistanceToTripRequests(LocationDTO driverLocation , LocationDTO tripStartLocation) throws DistanceNotFoundException {
         try {
             RestClient orsClient = RestClient.builder()
                     .baseUrl("https://api.openrouteservice.org")
@@ -93,7 +94,7 @@ public class NominatimService {
                     [%f, %f]
                   ]
                 }
-                """.formatted(startLon, startLat, endLon, endLat))
+                """.formatted(driverLocation.getLongitude(), driverLocation.getLatitude(), tripStartLocation.getLongitude(), tripStartLocation.getLatitude()))
                     .retrieve()
                     .body(String.class);
 

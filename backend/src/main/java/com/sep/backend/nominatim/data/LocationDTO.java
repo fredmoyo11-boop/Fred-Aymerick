@@ -16,4 +16,9 @@ public class LocationDTO {
     @NotNull
     private Double longitude;
 
+    @Schema(description = "The displayName of the location.", requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNull
+    private String displayName;
+
+
 }

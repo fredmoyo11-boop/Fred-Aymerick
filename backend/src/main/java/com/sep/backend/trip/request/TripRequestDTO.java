@@ -36,7 +36,7 @@ public class TripRequestDTO {
         dto.setEmail(tripRequestEntity.getCustomer().getUsername());
 //        dto.setStartLocation(LocationDTO.from(tripRequestEntity.getStartLocation()));
 //        dto.setEndLocation(LocationDTO.from(tripRequestEntity.getEndLocation()));
-//        dto.setCarType(tripRequestEntity.getCarType());
+//        dto.setDesiredCarType(tripRequestEntity.getDesiredCarType());
 //        dto.setNote(tripRequestEntity.getNote());
 //        dto.setStatus(tripRequestEntity.getRequestStatus());
         return dto;

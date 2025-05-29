@@ -109,7 +109,7 @@ public class TripRequestService {
             throw new TripRequestException("User must be a customer.");
         }
         //checks if car type in request is valid
-        if (!CarTypes.isValidCarType(tripRequestBody.getCarType())) {
+        if (!CarTypes.isValidCarType(tripRequestBody.getDesiredCarType())) {
             throw new TripRequestException(ErrorMessages.INVALID_CAR_TYPE);
         }
         //only one active trip request at a time
@@ -123,7 +123,7 @@ public class TripRequestService {
         var tripRequestEntity = new TripRequestEntity();
 //        tripRequestEntity.setStartLocation(startAddress);
 //        tripRequestEntity.setEndLocation(endAddress);
-//        tripRequestEntity.setCarType(tripRequestBody.getCarType());
+//       tripRequestEntity.setDesiredCarType(tripRequestBody.getDesiredCarType());
 //        tripRequestEntity.setNote(tripRequestBody.getNote());
 //        tripRequestEntity.setRequestStatus(TripRequestStatus.ACTIVE);
 
@@ -167,8 +167,8 @@ public class TripRequestService {
 
         List<TripRequestEntity> activeRequests = tripRequestRepository.findByStatus(TripRequestStatus.ACTIVE);
 
-        return activeRequests.stream()
-                .map(activeRequest -> {
+        return activeRequests.stream().map(activeRequest ->
+        {
                     CustomerEntity customer = activeRequest.getCustomer();
 
                     // Startlocation ist  erste Stop aus der Route.  TOdo Mats fragen
@@ -197,11 +197,10 @@ public class TripRequestService {
                             activeRequest.getRequestTime(),
                             customer.getUsername(),
                             avgRating,
-                            activeRequest.getCarType(),
+                            activeRequest.getDesiredCarType(),
                             distance
                     );
-                })
-                .toList();
+        }).toList();
 
 
 //        Comparator<AvailableTripRequestDTO> comparator = getComparator(sort);
@@ -220,12 +219,12 @@ public class TripRequestService {
 //            case "requestTime" -> Comparator.comparing(AvailableTripRequestDTO::getRequestTime);
 //            case "customerUsername" -> Comparator.comparing(AvailableTripRequestDTO::getCustomerUsername, String.CASE_INSENSITIVE_ORDER);
 //            case "customerRating" -> Comparator.comparing(AvailableTripRequestDTO::getCustomerRating);
-//            case "carType" ->  Comparator.comparingInt(dto ->
-//                switch (dto.getCarType()) {
+//            case "desiredCarType" ->  Comparator.comparingInt(dto ->
+//                switch (dto.getDesiredCarType()) {
 //                case "SMALL" -> 1;
 //                case "MEDIUM" -> 2;
 //                case "DELUXE" -> 3;
-//                   default -> throw new IllegalStateException("Unexpected value: " + dto.getCarType());
+//                   default -> throw new IllegalStateException("Unexpected value: " + dto.getDesiredCarType());
 //            });
 //            default -> Comparator.comparing(AvailableTripRequestDTO::getDistanceInKm);
 //        };

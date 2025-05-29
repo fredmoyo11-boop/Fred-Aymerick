@@ -32,7 +32,7 @@ public class TripRequestEntity extends AbstractEntity {
     private List<TripOfferEntity> offers = new ArrayList<>();
 
     @Column(name = "car_type", nullable = false)
-    private String carType;
+    private String desiredCarType;
 
     @Column(name = "status", nullable = false)
     private String status;

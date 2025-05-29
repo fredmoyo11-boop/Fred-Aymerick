@@ -10,20 +10,28 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Schema(  requiredMode = Schema.RequiredMode.REQUIRED)
+
+@Schema(description = " Tabelle-Informationen der verfügbaren Fahranfragen ", requiredMode = Schema.RequiredMode.REQUIRED)
+
 public class AvailableTripRequestDTO {
 
-    @Schema(  requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "requestId der Fahrt ",requiredMode = Schema.RequiredMode.REQUIRED)
     private Long requestId;
-    @Schema(  requiredMode = Schema.RequiredMode.REQUIRED)
+
+    @Schema(description = " Erstellungsdatum und-uhrzeit der Fahranfrage ",requiredMode = Schema.RequiredMode.REQUIRED)
     private LocalDateTime requestTime;
-    @Schema(  requiredMode = Schema.RequiredMode.REQUIRED)
+
+    @Schema(description = " Kundenname",  requiredMode = Schema.RequiredMode.REQUIRED)
     private String customerUsername;
-    @Schema(  requiredMode = Schema.RequiredMode.REQUIRED)
+
+    @Schema(description = "Kundenbewertung", requiredMode = Schema.RequiredMode.REQUIRED)
     private double customerRating;
-    @Schema(  requiredMode = Schema.RequiredMode.REQUIRED)
-    private String carType;
-    @Schema(  requiredMode = Schema.RequiredMode.REQUIRED)
+
+    @Schema(description = " Gewünschte Fahrzeugklasse",requiredMode = Schema.RequiredMode.REQUIRED)
+    private String desiredCarType;
+
+    @Schema(description = "Entfernung zwischen der aktuellen Position des Fahrers und dem Startpunkt der Fahrt",requiredMode = Schema.RequiredMode.REQUIRED)
     private double distanceInKm;
+
 }
 

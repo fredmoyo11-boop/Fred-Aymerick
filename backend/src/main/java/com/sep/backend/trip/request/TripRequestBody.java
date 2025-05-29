@@ -1,13 +1,19 @@
 package com.sep.backend.trip.request;
 
+import com.sep.backend.entity.LocationEntity;
 import com.sep.backend.location.Location;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Schema(description = "Represents the body of a creation request for a trip.")
 public class TripRequestBody {
 
+    @Schema(description = "The Stops location of the trip.", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+    private List<LocationEntity> stops ;
 
     @Schema(description = "The start location of the trip.", requiredMode = Schema.RequiredMode.REQUIRED)
     private Location startLocation;

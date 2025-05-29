@@ -21,7 +21,7 @@ public class TripRequestEntity extends AbstractEntity {
     @JoinColumn(name = "customer_id", nullable = false)
     private CustomerEntity customer;
 
-    @OneToOne(cascade=CascadeType.ALL, orphanRemoval=true)
+    @OneToOne( cascade=CascadeType.ALL, orphanRemoval=true)
     @JoinColumn(name = "route_id", nullable = false)
     private RouteEntity route;
 

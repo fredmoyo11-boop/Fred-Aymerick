@@ -5,12 +5,14 @@ import com.sep.backend.nominatim.data.NominatimFeature;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @NoArgsConstructor
+@AllArgsConstructor
 @Data
 public class Location {
 
@@ -32,6 +34,8 @@ public class Location {
     @NotNull
     @Schema(description = "The Nominatim GeoJSON for the location.", requiredMode = Schema.RequiredMode.REQUIRED)
     private NominatimFeature geoJSON;
+
+
 
     public static Location from(NominatimFeature feature) {
         var location = new Location();

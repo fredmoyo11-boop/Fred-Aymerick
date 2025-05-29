@@ -1,5 +1,6 @@
 package com.sep.backend.trip.request;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sep.backend.HttpStatus;
 import com.sep.backend.NotFoundException;
 import com.sep.backend.Tags;
@@ -55,8 +56,8 @@ public class TripRequestController {
     @Operation(description = "Creates a trip request for the current customer.",
             tags = {Tags.TRIP_REQUEST},
             responses = {@ApiResponse(responseCode = HttpStatus.OK, description = "Trip request created successfully.",
-                    content = @Content(schema = @Schema(implementation = TripRequestDTO.class)))})
-    public TripRequestDTO createCurrentActiveTripRequest(@RequestBody @Valid TripRequestBody tripRequestBody, Principal principal) throws TripRequestException {
+                    content = @Content(schema = @Schema(implementation = TripRequestBody.class)))})
+    public TripRequestDTO createCurrentActiveTripRequest(@RequestBody @Valid TripRequestBody tripRequestBody, Principal principal) throws JsonProcessingException {
         return TripRequestDTO.from(tripRequestService.createCurrentActiveTripRequest(tripRequestBody, principal));
     }
 

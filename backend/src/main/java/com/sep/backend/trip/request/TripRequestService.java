@@ -1,5 +1,6 @@
 package com.sep.backend.trip.request;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sep.backend.CarTypes;
 import com.sep.backend.ErrorMessages;
 import com.sep.backend.NotFoundException;
@@ -11,14 +12,17 @@ import com.sep.backend.nominatim.DistanceNotFoundException;
 import com.sep.backend.nominatim.LocationRepository;
 import com.sep.backend.nominatim.NominatimService;
 import com.sep.backend.nominatim.data.LocationDTO;
+import com.sep.backend.nominatim.data.NominatimFeature;
 import com.sep.backend.ors.data.ORSFeature;
 import com.sep.backend.ors.data.ORSFeatureCollection;
 import com.sep.backend.ors.data.ORSGeometry;
+import com.sep.backend.route.RouteRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -30,14 +34,15 @@ public class TripRequestService {
     private final TripHistorieRepository tripHistoryRepository;
     private final TripRequestRepository tripRequestRepository;
     private final LocationRepository locationRepository;
-
+    private final RouteRepository routeRepository;
     private final AccountService accountService;
 
-    public TripRequestService(NominatimService nominatimservice, TripHistorieRepository tripHistoryRepository, TripRequestRepository tripRequestRepository, LocationRepository locationRepository, AccountService accountService) {
+    public TripRequestService(NominatimService nominatimservice, TripHistorieRepository tripHistoryRepository, TripRequestRepository tripRequestRepository, LocationRepository locationRepository, RouteRepository routeRepository, AccountService accountService) {
         this.nominatimservice = nominatimservice;
         this.tripHistoryRepository = tripHistoryRepository;
         this.tripRequestRepository = tripRequestRepository;
         this.locationRepository = locationRepository;
+        this.routeRepository = routeRepository;
         this.accountService = accountService;
     }
 
@@ -57,10 +62,14 @@ public class TripRequestService {
      * @param location Location chosen by customer.
      * @return The location entity.
      */
-    private LocationEntity saveLocation(@Valid Location location) {
-//        var locationEntity = LocationEntity.from(locationDTO);
-//        return locationRepository.save(locationEntity);
-        return new LocationEntity();
+    private LocationEntity saveLocation(@Valid Location location) throws JsonProcessingException {
+        LocationEntity locationEntity = new LocationEntity();
+        NominatimFeature geoJson = nominatimservice.reverse(location.getLatitude().toString(),location.getLongitude().toString()).getFeatures().getFirst();
+        locationEntity.setGeoJSON(geoJson);
+        locationEntity.setLatitude(location.getLatitude());
+        locationEntity.setLongitude(location.getLongitude());
+        locationEntity.setDisplayName(location.getDisplayName());
+        return locationRepository.save(locationEntity);
     }
 
     /**
@@ -105,63 +114,73 @@ public class TripRequestService {
      * @return The trip request entity
      */
     @Transactional
-    public TripRequestEntity createCurrentActiveTripRequest(@Valid TripRequestBody tripRequestBody, Principal principal) throws TripRequestException {
-        String email = principal.getName();
+    public TripRequestEntity createCurrentActiveTripRequest(@Valid TripRequestBody tripRequestBody, Principal principal) {
+      try {
+            String email = principal.getName();
 
-        String role = accountService.getRoleByEmail(email);
-        //checks if role of user is customer
-        if (!Roles.CUSTOMER.equals(role)) {
-            throw new TripRequestException("User must be a customer.");
-        }
-        //checks if car type in request is valid
-        if (!CarTypes.isValidCarType(tripRequestBody.getDesiredCarType())) {
-            throw new TripRequestException(ErrorMessages.INVALID_CAR_TYPE);
-        }
-        //only one active trip request at a time
-        if (existsActiveTripRequest(email)) {
-            throw new TripRequestException(ErrorMessages.ALREADY_EXISTS_TRIP_REQUEST);
-        }
+            String role = accountService.getRoleByEmail(email);
+            //checks if role of user is customer
+            if (!Roles.CUSTOMER.equals(role)) {
+                throw new TripRequestException("User must be a customer.");
+            }
+            //checks if car type in request is valid
+            if (!CarTypes.isValidCarType(tripRequestBody.getDesiredCarType())) {
+                throw new TripRequestException(ErrorMessages.INVALID_CAR_TYPE);
+            }
+            //only one active trip request at a time
+            if (existsActiveTripRequest(email)) {
+                throw new TripRequestException(ErrorMessages.ALREADY_EXISTS_TRIP_REQUEST);
+            }
 
-        LocationEntity start = saveLocation(tripRequestBody.getStartLocation());
-        LocationEntity end = saveLocation(tripRequestBody.getEndLocation());
+            LocationEntity start = saveLocation(tripRequestBody.getStartLocation());
+            LocationEntity end = saveLocation(tripRequestBody.getEndLocation());
 
-        // 2. Koordinatenliste vorbereiten: [ [lon, lat], [lon, lat] ]
-        List<List<Double>> coordinates = new ArrayList<>();
-        coordinates.add(Arrays.asList(start.getLongitude(), start.getLatitude()));
-        coordinates.add(Arrays.asList(end.getLongitude(), end.getLatitude()));
+            // 2. Koordinatenliste vorbereiten: [ [lon, lat], [lon, lat] ]
+            List<List<Double>> coordinates = new ArrayList<>();
+            coordinates.add(Arrays.asList(tripRequestBody.getStartLocation().getLongitude(), tripRequestBody.getStartLocation().getLatitude()));
+            coordinates.add(Arrays.asList(tripRequestBody.getEndLocation().getLongitude(), tripRequestBody.getEndLocation().getLatitude()));
 
-        // 3. ORSGeometry erstellen und Koordinaten setzen
-        ORSGeometry geometry = new ORSGeometry();
-        geometry.setCoordinates(coordinates);
+            // 3. ORSGeometry erstellen und Koordinaten setzen
+            ORSGeometry geometry = new ORSGeometry();
+            geometry.setCoordinates(coordinates);
 
-        // 4. ORSFeature erstellen und Geometrie setzen
-        ORSFeature feature = new ORSFeature();
-        feature.setGeometry(geometry);
+            // 4. ORSFeature erstellen und Geometrie setzen
+            ORSFeature feature = new ORSFeature();
+            feature.setGeometry(geometry);
 
-        // 5. ORSFeatureCollection erstellen und Feature setzen
-        ORSFeatureCollection featureCollection = new ORSFeatureCollection();
-        featureCollection.setFeatures(List.of(feature));
+            // 5. ORSFeatureCollection erstellen und Feature setzen
+            ORSFeatureCollection featureCollection = new ORSFeatureCollection();
+            featureCollection.setFeatures(List.of(feature));
 
-        // 6. RouteEntity erstellen und FeatureCollection setzen
-        RouteEntity route = new RouteEntity();
-        route.setStartLocation(start);
-        route.setEndLocation(end);
-        route.setStops(new ArrayList<>());
-        route.setGeoJSON(featureCollection);
+            // 6. RouteEntity erstellen und FeatureCollection setzen
+            RouteEntity route = new RouteEntity();
+            route.setStartLocation(start);
+            route.setEndLocation(end);
+            route.setStops(tripRequestBody.getStops());
+            route.setGeoJSON(featureCollection);
+            routeRepository.save(route);
 
-        // 7. TripRequestEntity aufbauen
-        TripRequestEntity tripRequestEntity = new TripRequestEntity();
-        tripRequestEntity.setRoute(route);                     // Route mit Geo-Daten
-        tripRequestEntity.setDesiredCarType(tripRequestBody.getDesiredCarType());
-        tripRequestEntity.setNote(tripRequestBody.getNote());
-        tripRequestEntity.setStatus(TripRequestStatus.ACTIVE);
+            // 7. TripRequestEntity aufbauen
+            TripRequestEntity tripRequestEntity = new TripRequestEntity();
+            tripRequestEntity.setRoute(route);                     // Route mit Geo-Daten
+            tripRequestEntity.setDesiredCarType(tripRequestBody.getDesiredCarType());
+            tripRequestEntity.setNote(tripRequestBody.getNote());
+            tripRequestEntity.setStatus(TripRequestStatus.ACTIVE);
+            tripRequestEntity.setCustomer(accountService.getCustomerByEmail(email));
+            tripRequestEntity.setRequestTime(LocalDateTime.now());
 
-        // 8. Customer-Entity setzen
-        CustomerEntity customerEntity = accountService.getCustomerByEmail(email);
-        tripRequestEntity.setCustomer(customerEntity);
+            // 8. Customer-Entity setzen
+            CustomerEntity customerEntity = accountService.getCustomerByEmail(email);
+            tripRequestEntity.setCustomer(customerEntity);
 
-        // 9. Persistieren
-        return tripRequestRepository.save(tripRequestEntity);
+            // 9. Persistieren
+            return tripRequestRepository.save(tripRequestEntity);
+        }catch ( JsonProcessingException e){
+          throw new TripRequestException(ErrorMessages.GEOJSON_PROCESSING_FAILED);
+      }catch ( Exception e){
+          throw new TripRequestException(ErrorMessages.CREATION_FAILED);
+      }
+
     }
 
     /**

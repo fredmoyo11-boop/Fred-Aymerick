@@ -1,5 +1,6 @@
 package com.sep.backend.trip.request;
 
+import com.sep.backend.entity.LocationEntity;
 import com.sep.backend.entity.TripRequestEntity;
 import com.sep.backend.location.Location;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -32,13 +33,27 @@ public class TripRequestDTO {
     private String status;
 
     public static TripRequestDTO from(TripRequestEntity tripRequestEntity) {
-        var dto = new TripRequestDTO();
-        dto.setEmail(tripRequestEntity.getCustomer().getUsername());
-//        dto.setStartLocation(LocationDTO.from(tripRequestEntity.getStartLocation()));
-//        dto.setEndLocation(LocationDTO.from(tripRequestEntity.getEndLocation()));
-//        dto.setDesiredCarType(tripRequestEntity.getDesiredCarType());
-//        dto.setNote(tripRequestEntity.getNote());
-//        dto.setStatus(tripRequestEntity.getRequestStatus());
+        Location startLocation = getLocation(tripRequestEntity.getRoute().getStartLocation());
+
+        Location endLocation = getLocation(tripRequestEntity.getRoute().getEndLocation());
+
+        TripRequestDTO dto = new TripRequestDTO();
+        dto.setEmail(tripRequestEntity.getCustomer().getEmail());
+        dto.setStartLocation(startLocation);
+        dto.setEndLocation(endLocation);
+        dto.setNote(tripRequestEntity.getNote());
+        dto.setCarType(tripRequestEntity.getDesiredCarType());
+        dto.setStatus(tripRequestEntity.getStatus());
         return dto;
+    }
+
+    public  static Location getLocation(LocationEntity locationEntity) {
+        Location location = new Location();
+        location.setLocationId(locationEntity.getId());
+        location.setDisplayName(locationEntity.getDisplayName());
+        location.setLongitude(locationEntity.getLongitude());
+        location.setLatitude(locationEntity.getLatitude());
+        location.setGeoJSON(locationEntity.getGeoJSON());
+        return location;
     }
 }

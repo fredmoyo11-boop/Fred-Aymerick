@@ -41,6 +41,9 @@ public class ErrorMessages {
     public static final String PENDING_VERIFICATION = "Pending verification.";
 
     public static final String HISTORY_NOT_FOUND = "Trip history not found.";
+    public static final String CREATION_FAILED = "Allgemeiner Fehler beim Erstellen der Fahrtanfrage.";
+    public static final String GEOJSON_PROCESSING_FAILED = "Fehler beim Verarbeiten der GeoJSON-Daten.";
+    public static final String NOT_FOUND_ADDRESS = "Keine gültige Adresse gefunden für die Koordinaten.";
 
     public ErrorMessages() {
         throw new UnsupportedOperationException("Cannot instantiate ErrorMessages.");

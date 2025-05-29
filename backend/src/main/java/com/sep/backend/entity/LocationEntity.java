@@ -1,44 +1,40 @@
 package com.sep.backend.entity;
 
-import com.sep.backend.trip.nominatim.data.LocationDTO;
-import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import com.sep.backend.nominatim.data.NominatimFeature;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
+@Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
+@Table(name = "location")
 public class LocationEntity extends AbstractEntity {
 
-    @NotBlank
-    @Schema(description = "The display name of the location.", requiredMode = Schema.RequiredMode.REQUIRED)
-    @Column(name = "display_name")
-    String display_name;
+    @Column(name = "display_name", nullable = false)
+    private String displayName;
 
-    @NotNull
-    @Schema(description = "The latitude of the location.", requiredMode = Schema.RequiredMode.REQUIRED)
-    @Column(name = "latitude")
-    Double lat;
+    @Column(name = "longitude", nullable = false)
+    private double longitude;
 
-    @NotNull
-    @Schema(description = "The longitude of the location.", requiredMode = Schema.RequiredMode.REQUIRED)
-    @Column(name = "longitude")
-    Double lon;
+    @Column(name = "latitude", nullable = false)
+    private double latitude;
 
-    public static LocationEntity from(@Valid LocationDTO locationDTO) {
-        LocationEntity locationEntity = new LocationEntity();
-        locationEntity.setDisplay_name(locationDTO.getDisplayName());
-        locationEntity.setLat(locationDTO.getLatitude());
-        locationEntity.setLon(locationDTO.getLongitude());
-        return locationEntity;
-    }
+    @ManyToOne
+    @JoinColumn(name = "route_id")
+    private RouteEntity route;
+
+    @ManyToOne
+    @JoinColumn(name = "trip_request_id")
+    private TripRequestEntity tripRequest;
+
+    @Column(name = "geo_json", nullable = false, columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
+    private NominatimFeature geoJSON;
 }

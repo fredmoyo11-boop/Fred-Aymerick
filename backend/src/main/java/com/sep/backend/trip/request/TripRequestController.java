@@ -3,8 +3,9 @@ package com.sep.backend.trip.request;
 import com.sep.backend.HttpStatus;
 import com.sep.backend.NotFoundException;
 import com.sep.backend.Tags;
-import com.sep.backend.trip.nominatim.data.LocationDTO;
-import com.sep.backend.trip.nominatim.NominatimService;
+import com.sep.backend.location.Location;
+import com.sep.backend.nominatim.NominatimService;
+import com.sep.backend.nominatim.data.LocationDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -13,6 +14,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -34,9 +36,9 @@ public class TripRequestController {
             tags = {Tags.TRIP_REQUEST},
             responses = {
                     @ApiResponse(responseCode = HttpStatus.OK, description = "Suggested list successful send",
-                            content = @Content(array = @ArraySchema(schema = @Schema(implementation = LocationDTO.class))))})
-    public List<LocationDTO> searchLocations(@Parameter(description = "Searched Location") @RequestParam String query) throws Exception {
-        return nominatimService.searchLocations(query);
+                            content = @Content(array = @ArraySchema(schema = @Schema(implementation = Location.class))))})
+    public List<Location> searchLocations(@Parameter(description = "Searched Location") @RequestParam String query) throws Exception {
+        return nominatimService.search(query);
     }
 
     @GetMapping("/current")
@@ -67,6 +69,33 @@ public class TripRequestController {
             })
     public void deleteCurrentActiveTripRequest(Principal principal) throws NotFoundException {
         tripRequestService.deleteCurrentActiveTripRequest(principal);
+    }
+
+
+    @Operation(
+            summary = "Verfügbare Fahranfragen abrufen",
+            description = "Gibt eine Liste aller offenen Fahranfragen zurück.",
+    responses = {@ApiResponse(responseCode = "200", description = "Liste verfügbarer Fahranfragen",
+                    content = @Content(mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = AvailableTripRequestDTO.class))))})
+    @PostMapping("/available")
+    public ResponseEntity<List<AvailableTripRequestDTO>> getAvailableRequests(@RequestBody @Valid LocationDTO driverLocation){
+//            @RequestParam(defaultValue = "distanceInKm") String sort,
+//            @RequestParam(defaultValue = "asc") String direction)
+
+        List<AvailableTripRequestDTO> result = tripRequestService.getAvailableRequests(driverLocation);
+        return ResponseEntity.ok(result);
+    }
+
+
+    @Operation(description ="Fahranfrage-History eines Fahrers oder eines Kundens ",
+     tags= {Tags.TRIP_REQUEST},
+    responses ={@ApiResponse(responseCode = HttpStatus.OK,
+                content = @Content(mediaType = "application/json",
+                        array = @ArraySchema(schema = @Schema(implementation = TripHistoryDTO.class))))})
+            @GetMapping("/history")
+    public ResponseEntity<List<TripHistoryDTO>> getTripHistory(Principal principal) {
+        return  ResponseEntity.ok(tripRequestService.geTripHistory(principal));
     }
 
 }

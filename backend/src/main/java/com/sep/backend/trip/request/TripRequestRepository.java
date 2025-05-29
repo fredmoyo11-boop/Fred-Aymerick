@@ -4,13 +4,15 @@ import com.sep.backend.entity.TripRequestEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface TripRequestRepository extends JpaRepository<TripRequestEntity, Long> {
     
-    boolean existsByCustomer_EmailAndRequestStatus(String email, String status);
+    boolean existsByCustomer_Email(String email);
 
-    Optional<TripRequestEntity> findByCustomer_EmailAndRequestStatus(String customerEmail, String requestStatus);
+    Optional<TripRequestEntity> findByCustomer_Email(String customerEmail);
 
+    List<TripRequestEntity> findByStatus(String active);
 }

@@ -6,8 +6,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
-
 @Getter
 @Setter
 @MappedSuperclass
@@ -19,7 +17,6 @@ public abstract class AbstractEntity {
     @Column(name = "id")
     @Schema(description = "The id of the entity.", requiredMode = RequiredMode.REQUIRED)
     private Long id;
-
 
     @Column(name = "creation_time")
     @Schema(description = "The creation time of the entity.", requiredMode = RequiredMode.REQUIRED)

@@ -1,17 +1,43 @@
 package com.sep.backend.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+
+import com.sep.backend.ors.data.ORSFeatureCollection;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
+import java.util.List;
 
 @Getter
 @Setter
 @NoArgsConstructor
-@Table(name = "route")
+@AllArgsConstructor
 @Entity
 public class RouteEntity extends AbstractEntity {
+
+    @OneToMany(mappedBy = "route", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderColumn(name = "stop_order")
+    private List<LocationEntity> stops;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "start_location_id")
+    private LocationEntity startLocation;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "end_location_id")
+    private LocationEntity endLocation;
+
+    @OneToOne(mappedBy = "route", cascade = CascadeType.ALL, orphanRemoval = true)
+    private TripRequestEntity tripRequest;
+
+    @Column(name = "geo_json", nullable = false, columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
+    private ORSFeatureCollection geoJSON;
+
+
 
 }

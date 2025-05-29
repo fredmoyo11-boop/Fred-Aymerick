@@ -1,52 +1,45 @@
 package com.sep.backend.entity;
 
-
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Schema(description = "Represents a request form by a customer.")
-public class TripRequestEntity extends AbstractEntity{
+public class TripRequestEntity extends AbstractEntity {
 
-
-    @NotNull
     @ManyToOne
-    @Schema(description = "The customer who made the request.", requiredMode = RequiredMode.REQUIRED)
+    @JoinColumn(name = "customer_id", nullable = false)
     private CustomerEntity customer;
 
-    @NotNull
-    @OneToOne
-    @JoinColumn(name = "start_location_id")
-    @Schema(description = "The start location of the request.", requiredMode = RequiredMode.REQUIRED)
-    private LocationEntity startLocation;
+    @OneToOne(cascade=CascadeType.ALL, orphanRemoval=true)
+    @JoinColumn(name = "route_id", nullable = false)
+    private RouteEntity route;
 
-    @NotNull
-    @OneToOne
-    @JoinColumn(name = "end_location_id")
-    @Schema(description = "The end location of the request.", requiredMode = RequiredMode.REQUIRED)
-    private LocationEntity endLocation;
+    @Column(name = "request_time", nullable = false)
+    private LocalDateTime requestTime;
 
-    @Column(name = "note")
-    @Schema(description = "Optional note which the customer can add.", requiredMode = RequiredMode.NOT_REQUIRED)
+    @OneToMany(mappedBy = "tripRequest", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TripOfferEntity> offers = new ArrayList<>();
+
+    @Column(name = "car_type", nullable = false)
+    private String desiredCarType;
+
+    @Column(name = "status", nullable = false)
+    private String status;
+
+    @Column(name = "price", nullable = false)
+    private Double price; // in euro
+
+    @Column( name = "note", nullable = true)
     private String note;
-
-    @NotBlank
-    @Column(name = "car_type")
-    @Schema(description = "The type of the car requested.", requiredMode = RequiredMode.REQUIRED)
-    private String carType;
-
-    @NotBlank
-    @Column(name = "status")
-    @Schema(description = "The status of the request form.", requiredMode = RequiredMode.REQUIRED)
-    private String requestStatus;
-
-    //AcceptedByDriverEntity?
 }

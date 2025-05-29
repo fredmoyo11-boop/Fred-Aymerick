@@ -40,6 +40,8 @@ public class ErrorMessages {
 
     public static final String PENDING_VERIFICATION = "Pending verification.";
 
+    public static final String HISTORY_NOT_FOUND = "Trip history not found.";
+
     public ErrorMessages() {
         throw new UnsupportedOperationException("Cannot instantiate ErrorMessages.");
     }

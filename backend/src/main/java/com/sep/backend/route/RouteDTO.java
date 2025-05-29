@@ -1,21 +1,23 @@
 package com.sep.backend.route;
 
+import com.sep.backend.location.Location;
+import com.sep.backend.ors.data.ORSFeatureCollection;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Schema(description = "Represents a Route Request.")
+import java.util.List;
+
+@Data
+@Schema(description = "Represents a Route request.")
 public class RouteDTO {
 
-    @NotBlank
-    @Schema(description = "The id of the route.", requiredMode = RequiredMode.REQUIRED)
-    private Long routeId;
+    @Schema(description = "The route id.", implementation = RouteDTO.class, requiredMode = RequiredMode.REQUIRED)
+    private Long id;
 
+    @Schema(description = "A list of stops.")
+    private List<Location> stops;
+
+    @Schema(description = "GeoJSON provided by ORS for the route.")
+    private ORSFeatureCollection geojson;
 }

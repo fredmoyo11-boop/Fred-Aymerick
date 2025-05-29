@@ -2,7 +2,9 @@ package com.sep.backend.ors.data;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
 
+@Data
 @Schema(description = "Represents the meta data produces by ORS.")
 public class ORSMetadata {
 

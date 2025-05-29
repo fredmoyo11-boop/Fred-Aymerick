@@ -11,11 +11,16 @@ import com.sep.backend.nominatim.DistanceNotFoundException;
 import com.sep.backend.nominatim.LocationRepository;
 import com.sep.backend.nominatim.NominatimService;
 import com.sep.backend.nominatim.data.LocationDTO;
+import com.sep.backend.ors.data.ORSFeature;
+import com.sep.backend.ors.data.ORSFeatureCollection;
+import com.sep.backend.ors.data.ORSGeometry;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -117,19 +122,42 @@ public class TripRequestService {
             throw new TripRequestException(ErrorMessages.ALREADY_EXISTS_TRIP_REQUEST);
         }
 
-//        LocationEntity startAddress = saveLocation(tripRequestBody.getStartLocation());
-//        LocationEntity endAddress = saveLocation(tripRequestBody.getEndLocation());
+        LocationEntity start = saveLocation(tripRequestBody.getStartLocation());
+        LocationEntity end = saveLocation(tripRequestBody.getEndLocation());
 
-        var tripRequestEntity = new TripRequestEntity();
-//        tripRequestEntity.setStartLocation(startAddress);
-//        tripRequestEntity.setEndLocation(endAddress);
-//       tripRequestEntity.setDesiredCarType(tripRequestBody.getDesiredCarType());
-//        tripRequestEntity.setNote(tripRequestBody.getNote());
-//        tripRequestEntity.setRequestStatus(TripRequestStatus.ACTIVE);
+        // 2. Koordinatenliste vorbereiten: [ [lon, lat], [lon, lat] ]
+        List<List<Double>> coordinates = new ArrayList<>();
+        coordinates.add(Arrays.asList(start.getLongitude(), start.getLatitude()));
+        coordinates.add(Arrays.asList(end.getLongitude(), end.getLatitude()));
 
-        var customerEntity = accountService.getCustomerByEmail(email);
+        // 3. ORSGeometry erstellen und Koordinaten setzen
+        ORSGeometry geometry = new ORSGeometry();
+        geometry.setCoordinates(coordinates);
+
+        // 4. ORSFeature erstellen und Geometrie setzen
+        ORSFeature feature = new ORSFeature();
+        feature.setGeometry(geometry);
+
+        // 5. ORSFeatureCollection erstellen und Feature setzen
+        ORSFeatureCollection featureCollection = new ORSFeatureCollection();
+        featureCollection.setFeatures(List.of(feature));
+
+        // 6. RouteEntity erstellen und FeatureCollection setzen
+        RouteEntity route = new RouteEntity();
+        route.setGeoJSON(featureCollection);
+
+        // 7. TripRequestEntity aufbauen
+        TripRequestEntity tripRequestEntity = new TripRequestEntity();
+        tripRequestEntity.setRoute(route);                     // Route mit Geo-Daten
+        tripRequestEntity.setDesiredCarType(tripRequestBody.getDesiredCarType());
+        tripRequestEntity.setNote(tripRequestBody.getNote());
+        tripRequestEntity.setStatus(TripRequestStatus.ACTIVE);
+
+        // 8. Customer-Entity setzen
+        CustomerEntity customerEntity = accountService.getCustomerByEmail(email);
         tripRequestEntity.setCustomer(customerEntity);
 
+        // 9. Persistieren
         return tripRequestRepository.save(tripRequestEntity);
     }
 
@@ -143,7 +171,7 @@ public class TripRequestService {
         String email = principal.getName();
         TripRequestEntity tripRequestEntity = findActiveTripRequestByEmail(email)
                 .orElseThrow(() -> new NotFoundException("Current customer does not have an active trip request."));
-//        tripRequestEntity.setRequestStatus(TripRequestStatus.DELETED);
+        tripRequestEntity.setStatus(TripRequestStatus.DELETED);
 
         tripRequestRepository.save(tripRequestEntity);
     }

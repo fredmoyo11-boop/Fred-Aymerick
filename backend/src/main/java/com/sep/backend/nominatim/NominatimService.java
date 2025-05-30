@@ -20,7 +20,7 @@ import java.util.Optional;
 public class NominatimService {
 
     private final String apiKey;
-    private final ObjectMapper mapper ;
+    private final ObjectMapper mapper;
     private final RestClient restClient;
     private final RestClient orsClient;
 
@@ -39,6 +39,7 @@ public class NominatimService {
                 .baseUrl("https://nominatim.openstreetmap.org")
                 .build();
     }
+
     /**
      * Returns a NominatimFeatureCollection containing locations based on the given query.
      *
@@ -117,7 +118,7 @@ public class NominatimService {
 
 
         } catch (Exception e) {
-            throw new DistanceNotFoundException( "Fehler bei der Distanzberechnung: " + e.getMessage());
+            throw new DistanceNotFoundException("Fehler bei der Distanzberechnung: " + e.getMessage());
         }
     }
 
@@ -129,8 +130,8 @@ public class NominatimService {
         coordinates.add(List.of(start.getLongitude(), start.getLatitude()));
 
         stops.ifPresent(stopList -> coordinates.addAll(stopList.stream()
-                                                                          .map(locationPair->List.of(locationPair.getLongitude(),locationPair.getLatitude()))
-                                                                          .toList()));
+                .map(locationPair -> List.of(locationPair.getLongitude(), locationPair.getLatitude()))
+                .toList()));
         coordinates.add(List.of(end.getLongitude(), end.getLatitude()));
 
         String body = """

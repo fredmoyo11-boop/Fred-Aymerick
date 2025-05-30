@@ -29,6 +29,7 @@ public class NominatimService {
     private final RestClient orsClient;
 
     public NominatimService(@Value("${ors.api.key}") String apiKey) {
+
         this.apiKey = apiKey;
 
         this.orsClient = RestClient.builder()

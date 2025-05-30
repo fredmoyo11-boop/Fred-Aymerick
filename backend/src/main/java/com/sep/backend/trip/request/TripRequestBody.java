@@ -2,6 +2,7 @@ package com.sep.backend.trip.request;
 
 import com.sep.backend.entity.LocationEntity;
 import com.sep.backend.location.Location;
+import com.sep.backend.nominatim.data.LocationDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -13,14 +14,14 @@ import java.util.List;
 public class TripRequestBody {
 
     @Schema(description = "The Stops location of the trip.", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-    private List<Location> stops ;
+    private List<LocationDTO> stops =new ArrayList<>();
 
     @Schema(description = "The start location of the trip.", requiredMode = Schema.RequiredMode.REQUIRED)
-    private Location startLocation;
+    private LocationDTO startLocation;
 
 
     @Schema(description = "The end location of the trip.", requiredMode = Schema.RequiredMode.REQUIRED)
-    private Location endLocation;
+    private LocationDTO endLocation;
 
 
     @Schema(description = "The type of car requested.", requiredMode = Schema.RequiredMode.REQUIRED)

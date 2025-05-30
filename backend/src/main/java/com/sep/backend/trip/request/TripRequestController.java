@@ -74,13 +74,13 @@ public class TripRequestController {
 
     @Operation(
             summary = "Verfügbare Fahranfragen abrufen",
-            tags  = {Tags.TRIP_REQUEST},
+            tags = {Tags.TRIP_REQUEST},
             description = "Gibt eine Liste aller offenen Fahranfragen zurück.",
-    responses = {@ApiResponse(responseCode = "200", description = "Liste verfügbarer Fahranfragen",
+            responses = {@ApiResponse(responseCode = HttpStatus.OK, description = "Liste verfügbarer Fahranfragen",
                     content = @Content(mediaType = "application/json",
                             array = @ArraySchema(schema = @Schema(implementation = AvailableTripRequestDTO.class))))})
     @GetMapping("/available")
-    public ResponseEntity<List<AvailableTripRequestDTO>> getAvailableRequests(@RequestBody @Valid LocationDTO driverLocation){
+    public ResponseEntity<List<AvailableTripRequestDTO>> getAvailableRequests(@RequestBody @Valid LocationDTO driverLocation) {
 //            @RequestParam(defaultValue = "distanceInKm") String sort,
 //            @RequestParam(defaultValue = "asc") String direction)
 
@@ -89,14 +89,14 @@ public class TripRequestController {
     }
 
 
-    @Operation(description ="Fahranfrage-History eines Fahrers oder eines Kundens ",
-     tags= {Tags.TRIP_REQUEST},
-    responses ={@ApiResponse(responseCode = HttpStatus.OK,
-                content = @Content(mediaType = "application/json",
-                        array = @ArraySchema(schema = @Schema(implementation = TripHistoryDTO.class))))})
-            @GetMapping("/history")
+    @Operation(description = "Fahranfrage-History eines Fahrers oder eines Kunden ",
+            tags = {Tags.TRIP_REQUEST},
+            responses = {@ApiResponse(responseCode = HttpStatus.OK,
+                    content = @Content(mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = TripHistoryDTO.class))))})
+    @GetMapping("/history")
     public ResponseEntity<List<TripHistoryDTO>> getTripHistory(Principal principal) {
-        return  ResponseEntity.ok(tripRequestService.getTripHistory(principal));
+        return ResponseEntity.ok(tripRequestService.getTripHistory(principal));
     }
 
 }

@@ -3,18 +3,26 @@ package com.sep.backend.trip.request;
 import com.sep.backend.entity.LocationEntity;
 import com.sep.backend.entity.TripRequestEntity;
 import com.sep.backend.location.Location;
+import com.sep.backend.ors.data.ORSFeatureCollection;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Schema(description = "Represents a request for a drive.")
+@Schema(description = "Represents a request for a drive.",requiredMode = RequiredMode.REQUIRED)
 public class TripRequestDTO {
+
+    @Schema(description = "Eindeutige ID der Fahranfrage",requiredMode = RequiredMode.REQUIRED)
+    private Long tripRequestId;
+
+    @Schema(description = "Zeitpunkt der Anfrage", requiredMode = RequiredMode.REQUIRED)
+    private LocalDateTime createdAt;
 
     @Schema(description = "The customer requesting drive.", requiredMode = RequiredMode.REQUIRED)
     private String email;
@@ -37,6 +45,10 @@ public class TripRequestDTO {
     @Schema(description = "The current status of the trip. Either ACTIVE or DELETED.")
     private String status;
 
+    @Schema(description = "Die Gesamte Route von der Fahrt", requiredMode = RequiredMode.REQUIRED)
+    private ORSFeatureCollection geoJson;
+
+
     public static TripRequestDTO from(TripRequestEntity tripRequestEntity) {
         Location startLocation = getLocation(tripRequestEntity.getRoute().getStartLocation());
 
@@ -44,11 +56,15 @@ public class TripRequestDTO {
 
         TripRequestDTO dto = new TripRequestDTO();
         dto.setEmail(tripRequestEntity.getCustomer().getEmail());
+        dto.setTripRequestId(tripRequestEntity.getId());
+        dto.setCreatedAt(tripRequestEntity.getRequestTime());
         dto.setStartLocation(startLocation);
         dto.setEndLocation(endLocation);
         dto.setNote(tripRequestEntity.getNote());
         dto.setDesiredCarType(tripRequestEntity.getDesiredCarType());
         dto.setStatus(tripRequestEntity.getStatus());
+        dto.setGeoJson(tripRequestEntity.getRoute().getGeoJSON());
+        dto.setEmail(tripRequestEntity.getCustomer().getEmail());
         return dto;
     }
 

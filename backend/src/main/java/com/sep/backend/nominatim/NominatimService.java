@@ -10,6 +10,7 @@ import com.sep.backend.nominatim.data.NominatimFeature;
 import com.sep.backend.nominatim.data.NominatimFeatureCollection;
 import com.sep.backend.ors.data.ORSFeatureCollection;
 import com.sep.backend.trip.request.TripRequestException;
+import jakarta.annotation.PostConstruct;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -22,21 +23,23 @@ import java.util.Optional;
 @Service
 public class NominatimService {
 
-    @Value("${ors.api.key}")
-    private String apiKey;
-
+    private final String apiKey;
     private final ObjectMapper mapper = new ObjectMapper();
+    private final RestClient restClient;
+    private final RestClient orsClient;
 
-    RestClient orsClient = RestClient.builder()
-            .baseUrl("https://api.openrouteservice.org/v2/directions/driving-car/geojson")
-            .defaultHeader("Authorization", apiKey)
-            .build();
+    public NominatimService(@Value("${ors.api.key}") String apiKey) {
+        this.apiKey = apiKey;
 
-    private final RestClient restClient = RestClient.builder()
-            .baseUrl("https://nominatim.openstreetmap.org")
-            .build();
+        this.orsClient = RestClient.builder()
+                .baseUrl("https://api.openrouteservice.org/v2/directions/driving-car/geojson")
+                .defaultHeader("Authorization", apiKey)
+                .build();
 
-
+        this.restClient = RestClient.builder()
+                .baseUrl("https://nominatim.openstreetmap.org")
+                .build();
+    }
     /**
      * Returns a NominatimFeatureCollection containing locations based on the given query.
      *
@@ -87,20 +90,19 @@ public class NominatimService {
     }
 
 
-
-    public Double getDistanceToTripRequests(LocationDTO driverLocation , LocationDTO tripStartLocation) throws DistanceNotFoundException {
+    public Double getDistanceToTripRequests(LocationDTO driverLocation, LocationDTO tripStartLocation) throws DistanceNotFoundException {
         try {
 
             String response = orsClient.post()
                     .header("Authorization", apiKey)
                     .body("""
-                {
-                  "coordinates": [
-                    [%f, %f],
-                    [%f, %f]
-                  ]
-                }
-                """.formatted(driverLocation.getLongitude(), driverLocation.getLatitude(), tripStartLocation.getLongitude(), tripStartLocation.getLatitude()))
+                            {
+                              "coordinates": [
+                                [%f, %f],
+                                [%f, %f]
+                              ]
+                            }
+                            """.formatted(driverLocation.getLongitude(), driverLocation.getLatitude(), tripStartLocation.getLongitude(), tripStartLocation.getLatitude()))
                     .retrieve()
                     .body(String.class);
 
@@ -108,11 +110,11 @@ public class NominatimService {
 
             return result
                     .getFeatures()
-                       .getFirst()
-                          .getProperties()
-                             .getSegments()
-                               .getFirst()
-                                 .getDistance() / 1000.0;
+                    .getFirst()
+                    .getProperties()
+                    .getSegments()
+                    .getFirst()
+                    .getDistance() / 1000.0;
 
 
         } catch (Exception e) {
@@ -127,20 +129,20 @@ public class NominatimService {
 
         coordinates.add(List.of(start.getLongitude(), start.getLatitude()));
 
-         if(stops.isPresent()) {
+        if (stops.isPresent()) {
 
             for (LocationEntity stop : stops.get()) {
 
                 coordinates.add(List.of(stop.getLongitude(), stop.getLatitude()));
             }
-         }
+        }
         coordinates.add(List.of(end.getLongitude(), end.getLatitude()));
 
         String body = """
-        {
-          "coordinates": %s
-        }
-        """.formatted(new ObjectMapper().writeValueAsString(coordinates));
+                {
+                  "coordinates": %s
+                }
+                """.formatted(mapper.writeValueAsString(coordinates));
 
         String response = orsClient.post()
                 .header("Authorization", apiKey)

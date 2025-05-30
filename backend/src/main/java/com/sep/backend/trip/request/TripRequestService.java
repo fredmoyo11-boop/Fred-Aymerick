@@ -158,7 +158,6 @@ public class TripRequestService {
 
 
 
-
         String carType = tripRequestBody.getDesiredCarType();
 
         Double calculatedPrice = getTotalPreis( geoJson , carType);

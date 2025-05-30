@@ -13,7 +13,7 @@ import java.util.List;
 public class TripRequestBody {
 
     @Schema(description = "The Stops location of the trip.", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-    private List<LocationEntity> stops ;
+    private List<Location> stops ;
 
     @Schema(description = "The start location of the trip.", requiredMode = Schema.RequiredMode.REQUIRED)
     private Location startLocation;

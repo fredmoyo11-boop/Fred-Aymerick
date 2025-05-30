@@ -1,6 +1,10 @@
 package com.sep.backend.trip.request;
 
+import ch.qos.logback.core.joran.spi.HttpUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
 import com.sep.backend.CarTypes;
 import com.sep.backend.ErrorMessages;
 import com.sep.backend.NotFoundException;
@@ -13,18 +17,17 @@ import com.sep.backend.nominatim.LocationRepository;
 import com.sep.backend.nominatim.NominatimService;
 import com.sep.backend.nominatim.data.LocationDTO;
 import com.sep.backend.nominatim.data.NominatimFeature;
-import com.sep.backend.ors.data.ORSFeature;
 import com.sep.backend.ors.data.ORSFeatureCollection;
-import com.sep.backend.ors.data.ORSGeometry;
 import com.sep.backend.route.RouteRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClient;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -114,74 +117,89 @@ public class TripRequestService {
      * @return The trip request entity
      */
     @Transactional
-    public TripRequestEntity createCurrentActiveTripRequest(@Valid TripRequestBody tripRequestBody, Principal principal) {
-      try {
+    public TripRequestEntity createCurrentActiveTripRequest(@Valid TripRequestBody tripRequestBody, Principal principal) throws JsonProcessingException {
+
             String email = principal.getName();
 
             String role = accountService.getRoleByEmail(email);
-            //checks if role of user is customer
             if (!Roles.CUSTOMER.equals(role)) {
                 throw new TripRequestException("User must be a customer.");
             }
-            //checks if car type in request is valid
             if (!CarTypes.isValidCarType(tripRequestBody.getDesiredCarType())) {
                 throw new TripRequestException(ErrorMessages.INVALID_CAR_TYPE);
             }
-            //only one active trip request at a time
             if (existsActiveTripRequest(email)) {
                 throw new TripRequestException(ErrorMessages.ALREADY_EXISTS_TRIP_REQUEST);
             }
+            LocationEntity start = createLocationWithGeoJson(tripRequestBody.getStartLocation());
 
-            LocationEntity start = saveLocation(tripRequestBody.getStartLocation());
-            LocationEntity end = saveLocation(tripRequestBody.getEndLocation());
+            LocationEntity end = createLocationWithGeoJson(tripRequestBody.getEndLocation());
 
-            // 2. Koordinatenliste vorbereiten: [ [lon, lat], [lon, lat] ]
-            List<List<Double>> coordinates = new ArrayList<>();
-            coordinates.add(Arrays.asList(tripRequestBody.getStartLocation().getLongitude(), tripRequestBody.getStartLocation().getLatitude()));
-            coordinates.add(Arrays.asList(tripRequestBody.getEndLocation().getLongitude(), tripRequestBody.getEndLocation().getLatitude()));
+            List<LocationEntity> stops = tripRequestBody.getStops().isEmpty() ? null : tripRequestBody.getStops()
+                                                                                                      .stream()
+                                                                                                      .map(stopDTO->createLocationWithGeoJson(stopDTO))
+                                                                                                      .toList();
 
-            // 3. ORSGeometry erstellen und Koordinaten setzen
-            ORSGeometry geometry = new ORSGeometry();
-            geometry.setCoordinates(coordinates);
+        RouteEntity route = new RouteEntity();
 
-            // 4. ORSFeature erstellen und Geometrie setzen
-            ORSFeature feature = new ORSFeature();
-            feature.setGeometry(geometry);
+        ORSFeatureCollection geoJson = nominatimservice.requestORSRoute(start, end, Optional.ofNullable(stops));
 
-            // 5. ORSFeatureCollection erstellen und Feature setzen
-            ORSFeatureCollection featureCollection = new ORSFeatureCollection();
-            featureCollection.setFeatures(List.of(feature));
+        double distanceKm = getDistance(geoJson)/ 1000.0;
+        route.setStartLocation(start);
+        route.setEndLocation(end);
+        route.setStops(stops);
+        route.setGeoJSON(geoJson);
+        routeRepository.save(route);
 
-            // 6. RouteEntity erstellen und FeatureCollection setzen
-            RouteEntity route = new RouteEntity();
-            route.setStartLocation(start);
-            route.setEndLocation(end);
-            route.setStops(tripRequestBody.getStops());
-            route.setGeoJSON(featureCollection);
-            routeRepository.save(route);
 
-            // 7. TripRequestEntity aufbauen
-            TripRequestEntity tripRequestEntity = new TripRequestEntity();
-            tripRequestEntity.setRoute(route);                     // Route mit Geo-Daten
-            tripRequestEntity.setDesiredCarType(tripRequestBody.getDesiredCarType());
-            tripRequestEntity.setNote(tripRequestBody.getNote());
-            tripRequestEntity.setStatus(TripRequestStatus.ACTIVE);
-            tripRequestEntity.setCustomer(accountService.getCustomerByEmail(email));
-            tripRequestEntity.setRequestTime(LocalDateTime.now());
+        String carType = tripRequestBody.getDesiredCarType();
+        Double pricePerKm = getPricePerKm(carType);
+        Double calculatedPrice = distanceKm * pricePerKm;
+        start.setRoute(route);
+        end.setRoute(route);
+        stops= (stops == null || stops.isEmpty() )?null: stops.stream()
+                                                         .peek(stop -> stop.setRoute(route))
+                                                         .toList();
 
-            // 8. Customer-Entity setzen
-            CustomerEntity customerEntity = accountService.getCustomerByEmail(email);
-            tripRequestEntity.setCustomer(customerEntity);
 
-            // 9. Persistieren
-            return tripRequestRepository.save(tripRequestEntity);
-        }catch ( JsonProcessingException e){
-          throw new TripRequestException(ErrorMessages.GEOJSON_PROCESSING_FAILED);
-      }catch ( Exception e){
-          throw new TripRequestException(ErrorMessages.CREATION_FAILED);
-      }
+        // 5. TripRequestEntity erstellen
+        TripRequestEntity trip = new TripRequestEntity();
+        trip.setCustomer(accountService.getCustomerByEmail(email));
+        trip.setRoute(route);
+        trip.setDesiredCarType(tripRequestBody.getDesiredCarType());
+        trip.setNote(tripRequestBody.getNote());
+        trip.setRequestTime(LocalDateTime.now());
+        trip.setStatus(TripRequestStatus.ACTIVE);
+        trip.setPrice(calculatedPrice);
 
+        return tripRequestRepository.save(trip);
     }
+
+    public  double getDistance(ORSFeatureCollection routeGeoJson) {
+        return routeGeoJson.getFeatures().getFirst().getProperties().getSummary().getDistance()/10000;
+    }
+
+    public  Double getPricePerKm(String carType) {
+        return switch (carType) {
+            case CarTypes.SMALL -> 1.0;
+            case CarTypes.MEDIUM -> 2.0;
+            case CarTypes.DELUXE -> 10.0;
+            default -> throw new TripRequestException(ErrorMessages.INVALID_CAR_TYPE);
+        };
+    }
+
+    public  LocationEntity createLocationWithGeoJson(Location dto) {
+        NominatimFeature geoJSON = nominatimservice.reverse(dto.getLatitude().toString(), dto.getLongitude().toString()).getFeatures().getFirst();
+        LocationEntity loc = new LocationEntity();
+        loc.setLatitude(dto.getLatitude());
+        loc.setLongitude(dto.getLongitude());
+        loc.setDisplayName(dto.getDisplayName());
+        loc.setGeoJSON(geoJSON);
+        return loc;
+    }
+
+    // Hilfsmethode: Anfrage an ORS stellen und GeoJSON-Route erhalten
+
 
     /**
      * Deletes the current active trip request.
@@ -237,7 +255,6 @@ public class TripRequestService {
                     }
 
 
-                    // Durchschnittliche Bewertung
             CustomerEntity customer = activeRequest.getCustomer();
             double avgRating = tripHistoryRepository.findByCustomer(customer).stream()
                             .mapToInt(TripHistoryEntity::getCustomerRating)
@@ -250,7 +267,9 @@ public class TripRequestService {
                             customer.getUsername(),
                             avgRating,
                             activeRequest.getDesiredCarType(),
-                            distance
+                            distance,
+                            getDistance(activeRequest.getRoute().getGeoJSON()),
+                            activeRequest.getPrice()
                     );
         }).toList();
 

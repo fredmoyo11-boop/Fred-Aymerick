@@ -3,6 +3,7 @@ package com.sep.backend.nominatim;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sep.backend.ErrorMessages;
+import com.sep.backend.entity.LocationEntity;
 import com.sep.backend.location.Location;
 import com.sep.backend.nominatim.data.LocationDTO;
 import com.sep.backend.nominatim.data.NominatimFeature;
@@ -14,7 +15,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class NominatimService {
@@ -116,6 +119,41 @@ public class NominatimService {
         } catch (Exception e) {
             throw new DistanceNotFoundException("Fehler bei der Distanzberechnung: " + e.getMessage());
         }
+    }
+
+    public ORSFeatureCollection requestORSRoute(LocationEntity start, LocationEntity end, Optional<List<LocationEntity>> stops) throws JsonProcessingException {
+        RestClient orsClient = RestClient.builder()
+                .baseUrl("https://api.openrouteservice.org")
+                .defaultHeader("Authorization", apiKey)
+                .build();
+
+        List<List<Double>> coordinates = new ArrayList<>();
+
+        coordinates.add(List.of(start.getLongitude(), start.getLatitude()));
+
+         if(stops.isPresent()) {
+
+            for (LocationEntity stop : stops.get()) {
+
+                coordinates.add(List.of(stop.getLongitude(), stop.getLatitude()));
+            }
+         }
+        coordinates.add(List.of(end.getLongitude(), end.getLatitude()));
+
+        String body = """
+        {
+          "coordinates": %s
+        }
+        """.formatted(new ObjectMapper().writeValueAsString(coordinates));
+
+        String response = restClient.post()
+                .uri("/v2/directions/driving-car/geojson")
+                .header("Authorization", apiKey)
+                .body(body)
+                .retrieve()
+                .body(String.class);
+
+        return mapper.readValue(response, ORSFeatureCollection.class);
     }
 
 }

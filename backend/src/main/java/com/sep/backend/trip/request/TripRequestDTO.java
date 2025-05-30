@@ -7,6 +7,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -24,7 +26,10 @@ public class TripRequestDTO {
     private Location endLocation;
 
     @Schema(description = "The type of car requested.", requiredMode = RequiredMode.REQUIRED)
-    private String carType;
+    private String desiredCarType;
+
+    @Schema(description = "Die Optionale Zwischenstops während der Fahrt ", requiredMode = RequiredMode.NOT_REQUIRED)
+    private List<Location> stops ;
 
     @Schema(description = "The optional notes for the driver.", requiredMode = RequiredMode.NOT_REQUIRED)
     private String note;
@@ -42,7 +47,7 @@ public class TripRequestDTO {
         dto.setStartLocation(startLocation);
         dto.setEndLocation(endLocation);
         dto.setNote(tripRequestEntity.getNote());
-        dto.setCarType(tripRequestEntity.getDesiredCarType());
+        dto.setDesiredCarType(tripRequestEntity.getDesiredCarType());
         dto.setStatus(tripRequestEntity.getStatus());
         return dto;
     }

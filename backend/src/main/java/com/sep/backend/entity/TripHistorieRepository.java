@@ -7,7 +7,7 @@ import java.util.Collection;
 import java.util.List;
 
 @Repository
-public interface TripHistorieRepository extends JpaRepository<TripRequestEntity, Long> {
+public interface TripHistorieRepository extends JpaRepository<TripHistoryEntity, Long> {
 
     List<TripHistoryEntity>findByCustomer(CustomerEntity customer);
 

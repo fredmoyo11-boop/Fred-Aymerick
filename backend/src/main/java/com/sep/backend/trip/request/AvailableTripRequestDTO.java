@@ -1,5 +1,6 @@
 package com.sep.backend.trip.request;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,6 +19,7 @@ public class AvailableTripRequestDTO {
     private Long requestId;
 
     @Schema(description = " Erstellungsdatum und-uhrzeit der Fahranfrage ",requiredMode = Schema.RequiredMode.REQUIRED)
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime requestTime;
 
     @Schema(description = " Kundenname",  requiredMode = Schema.RequiredMode.REQUIRED)
@@ -36,7 +38,7 @@ public class AvailableTripRequestDTO {
     private double totalDistanceInKm;
 
     @Schema(description = "Gesamte Preis der Fahrt ",requiredMode = Schema.RequiredMode.REQUIRED)
-    private Double preis;
+    private Double price;
 
     @Schema(description = "Gesamte Dauer der Fahrt in Sekunde ",requiredMode = Schema.RequiredMode.REQUIRED)
     private Double duration;

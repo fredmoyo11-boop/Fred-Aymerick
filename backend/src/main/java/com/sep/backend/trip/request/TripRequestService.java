@@ -7,7 +7,6 @@ import com.sep.backend.NotFoundException;
 import com.sep.backend.Roles;
 import com.sep.backend.account.AccountService;
 import com.sep.backend.entity.*;
-import com.sep.backend.location.Location;
 import com.sep.backend.nominatim.DistanceNotFoundException;
 import com.sep.backend.nominatim.LocationRepository;
 import com.sep.backend.nominatim.NominatimService;
@@ -58,15 +57,6 @@ public class TripRequestService {
      * @param location Location chosen by customer.
      * @return The location entity.
      */
-    private LocationEntity saveLocation(@Valid Location location) throws JsonProcessingException {
-        LocationEntity locationEntity = new LocationEntity();
-        NominatimFeature geoJson = nominatimservice.reverse(location.getLatitude().toString(),location.getLongitude().toString()).getFeatures().getFirst();
-        locationEntity.setGeoJSON(geoJson);
-        locationEntity.setLatitude(location.getLatitude());
-        locationEntity.setLongitude(location.getLongitude());
-        locationEntity.setDisplayName(location.getDisplayName());
-        return locationRepository.save(locationEntity);
-    }
 
     /**
      * Returns the trip request entity by email and status.
@@ -142,7 +132,7 @@ public class TripRequestService {
         ORSFeatureCollection geoJson = nominatimservice.requestORSRoute(start, end, Optional.ofNullable(stops));
 
 
-        stops= (stops == null || stops.isEmpty() )? null: stops.stream()
+        stops= (stops == null) ? null: stops.stream()
                 .peek(stop -> stop.setRoute(route))
                 .toList();
 
@@ -194,7 +184,7 @@ public class TripRequestService {
     }
 
 
-    public  LocationEntity createLocationWithGeoJson(Location dto) {
+    public  LocationEntity createLocationWithGeoJson(LocationDTO dto) {
         NominatimFeature geoJSON = nominatimservice.reverse(dto.getLatitude().toString(), dto.getLongitude().toString()).getFeatures().getFirst();
         LocationEntity loc = new LocationEntity();
         loc.setLatitude(dto.getLatitude());

@@ -89,7 +89,7 @@ public class TripRequestController {
     }
 
 
-    @Operation(description ="Fahranfrage-History eines Fahrers oder eines Kundens ",
+    @Operation(description ="Fahranfrage-History eines Fahrers oder eines Kunden ",
      tags= {Tags.TRIP_REQUEST},
     responses ={@ApiResponse(responseCode = HttpStatus.OK,
                 content = @Content(mediaType = "application/json",

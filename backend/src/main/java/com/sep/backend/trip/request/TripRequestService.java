@@ -150,6 +150,11 @@ public class TripRequestService {
         ORSFeatureCollection geoJson = nominatimservice.requestORSRoute(start, end, Optional.ofNullable(stops));
 
         double distanceKm = getDistance(geoJson)/ 1000.0;
+
+        stops= (stops == null || stops.isEmpty() )? null: stops.stream()
+                .peek(stop -> stop.setRoute(route))
+                .toList();
+
         route.setStartLocation(start);
         route.setEndLocation(end);
         route.setStops(stops);
@@ -164,9 +169,6 @@ public class TripRequestService {
 
         start.setRoute(route);
         end.setRoute(route);
-        stops= (stops == null || stops.isEmpty() )? null: stops.stream()
-                                                         .peek(stop -> stop.setRoute(route))
-                                                         .toList();
 
 
 
@@ -219,7 +221,7 @@ public class TripRequestService {
      * @param principal The user.
      * @throws NotFoundException If no active trip request found.
      */
-    public void deleteCurrentActiveTripRequest(Principal principal) throws NotFoundException {
+    public void deleteCurrentActiveTripRequest(Principal principal)  {
         String email = principal.getName();
         TripRequestEntity tripRequestEntity = findActiveTripRequestByEmail(email)
                 .orElseThrow(() -> new NotFoundException("Current customer does not have an active trip request."));

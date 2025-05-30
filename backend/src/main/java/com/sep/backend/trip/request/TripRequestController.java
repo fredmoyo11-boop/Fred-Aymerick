@@ -56,7 +56,7 @@ public class TripRequestController {
     @Operation(description = "Creates a trip request for the current customer.",
             tags = {Tags.TRIP_REQUEST},
             responses = {@ApiResponse(responseCode = HttpStatus.OK, description = "Trip request created successfully.",
-                    content = @Content(schema = @Schema(implementation = TripRequestBody.class)))})
+                    content = @Content(schema = @Schema(implementation = TripRequestDTO.class)))})
     public TripRequestDTO createCurrentActiveTripRequest(@RequestBody @Valid TripRequestBody tripRequestBody, Principal principal) throws JsonProcessingException {
         return TripRequestDTO.from(tripRequestService.createCurrentActiveTripRequest(tripRequestBody, principal));
     }
@@ -68,18 +68,19 @@ public class TripRequestController {
                     @ApiResponse(responseCode = HttpStatus.OK, description = "Active trip request deleted successfully."),
                     @ApiResponse(responseCode = HttpStatus.NOT_FOUND, description = "Active trip request does not exist for current customer."),
             })
-    public void deleteCurrentActiveTripRequest(Principal principal) throws NotFoundException {
+    public void deleteCurrentActiveTripRequest(Principal principal) {
         tripRequestService.deleteCurrentActiveTripRequest(principal);
     }
 
 
     @Operation(
             summary = "Verfügbare Fahranfragen abrufen",
+            tags  = {Tags.TRIP_REQUEST},
             description = "Gibt eine Liste aller offenen Fahranfragen zurück.",
     responses = {@ApiResponse(responseCode = "200", description = "Liste verfügbarer Fahranfragen",
                     content = @Content(mediaType = "application/json",
                             array = @ArraySchema(schema = @Schema(implementation = AvailableTripRequestDTO.class))))})
-    @PostMapping("/available")
+    @GetMapping("/available")
     public ResponseEntity<List<AvailableTripRequestDTO>> getAvailableRequests(@RequestBody @Valid LocationDTO driverLocation){
 //            @RequestParam(defaultValue = "distanceInKm") String sort,
 //            @RequestParam(defaultValue = "asc") String direction)

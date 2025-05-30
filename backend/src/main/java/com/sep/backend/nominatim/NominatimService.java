@@ -128,8 +128,8 @@ public class NominatimService {
 
         coordinates.add(List.of(start.getLongitude(), start.getLatitude()));
 
-        stops.ifPresent(list -> coordinates.addAll(list.stream()
-                                                                          .map(location->List.of(location.getLongitude(),location.getLatitude()))
+        stops.ifPresent(stopList -> coordinates.addAll(stopList.stream()
+                                                                          .map(locationPair->List.of(locationPair.getLongitude(),locationPair.getLatitude()))
                                                                           .toList()));
         coordinates.add(List.of(end.getLongitude(), end.getLatitude()));
 

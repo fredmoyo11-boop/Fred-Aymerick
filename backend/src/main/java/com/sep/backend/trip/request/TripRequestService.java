@@ -122,7 +122,7 @@ public class TripRequestService {
 
             List<LocationEntity> stops = tripRequestBody.getStops().isEmpty() ? null : tripRequestBody.getStops()
                                                                                                       .stream()
-                                                                                                      .map(stopDTO->createLocationWithGeoJson(stopDTO))
+                                                                                                      .map(this::createLocationWithGeoJson)
                                                                                                       .toList();
 
 
@@ -136,20 +136,25 @@ public class TripRequestService {
                 .peek(stop -> stop.setRoute(route))
                 .toList();
 
+
         route.setStartLocation(start);
         route.setEndLocation(end);
         route.setStops(stops);
         route.setGeoJSON(geoJson);
         routeRepository.save(route);
 
+        start.setRoute(route);
+        end.setRoute(route);
+        stops = stops== null ? null : stops.stream()
+                                       .map(locationRepository::save)
+                                       .toList();
+        locationRepository.save(start);
+        locationRepository.save(end);
 
 
         String carType = tripRequestBody.getDesiredCarType();
 
         Double calculatedPrice = getTotalPreis( geoJson , carType);
-
-        start.setRoute(route);
-        end.setRoute(route);
 
 
 
@@ -180,7 +185,7 @@ public class TripRequestService {
     }
 
     public  double getTotalPreis(ORSFeatureCollection routeGeoJson , String carType) {
-        return routeGeoJson.getFeatures().getFirst().getProperties().getSummary().getDistance()/10000 * getPricePerKm(carType);
+        return (routeGeoJson.getFeatures().getFirst().getProperties().getSummary().getDistance()/10000) * getPricePerKm(carType);
     }
 
 

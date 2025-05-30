@@ -1,10 +1,6 @@
 package com.sep.backend.trip.request;
 
-import ch.qos.logback.core.joran.spi.HttpUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
 import com.sep.backend.CarTypes;
 import com.sep.backend.ErrorMessages;
 import com.sep.backend.NotFoundException;
@@ -21,14 +17,10 @@ import com.sep.backend.ors.data.ORSFeatureCollection;
 import com.sep.backend.route.RouteRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClient;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -149,7 +141,6 @@ public class TripRequestService {
 
         ORSFeatureCollection geoJson = nominatimservice.requestORSRoute(start, end, Optional.ofNullable(stops));
 
-        double distanceKm = getDistance(geoJson)/ 1000.0;
 
         stops= (stops == null || stops.isEmpty() )? null: stops.stream()
                 .peek(stop -> stop.setRoute(route))
@@ -230,7 +221,7 @@ public class TripRequestService {
         tripRequestRepository.save(tripRequestEntity);
     }
 
-    public List<TripHistoryDTO> geTripHistory(Principal principal) {
+    public List<TripHistoryDTO> getTripHistory(Principal principal) {
         String email = principal.getName();
         if (accountService.existsEmail(email)) {
             if(Roles.CUSTOMER.equals(accountService.getRoleByEmail(email))) {

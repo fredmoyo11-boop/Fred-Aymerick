@@ -2,7 +2,6 @@ package com.sep.backend.trip.request;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sep.backend.HttpStatus;
-import com.sep.backend.NotFoundException;
 import com.sep.backend.Tags;
 import com.sep.backend.location.Location;
 import com.sep.backend.nominatim.NominatimService;
@@ -97,7 +96,7 @@ public class TripRequestController {
                         array = @ArraySchema(schema = @Schema(implementation = TripHistoryDTO.class))))})
             @GetMapping("/history")
     public ResponseEntity<List<TripHistoryDTO>> getTripHistory(Principal principal) {
-        return  ResponseEntity.ok(tripRequestService.geTripHistory(principal));
+        return  ResponseEntity.ok(tripRequestService.getTripHistory(principal));
     }
 
 }

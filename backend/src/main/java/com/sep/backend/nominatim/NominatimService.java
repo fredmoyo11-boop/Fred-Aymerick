@@ -117,7 +117,7 @@ public class NominatimService {
 
 
         } catch (Exception e) {
-            throw new DistanceNotFoundException("Fehler bei der Distanzberechnung: " + e.getMessage());
+            throw new DistanceNotFoundException( "Fehler bei der Distanzberechnung: " + e.getMessage());
         }
     }
 
@@ -128,13 +128,9 @@ public class NominatimService {
 
         coordinates.add(List.of(start.getLongitude(), start.getLatitude()));
 
-        if (stops.isPresent()) {
-
-            for (LocationEntity stop : stops.get()) {
-
-                coordinates.add(List.of(stop.getLongitude(), stop.getLatitude()));
-            }
-        }
+        stops.ifPresent(list -> coordinates.addAll(list.stream()
+                                                                          .map(location->List.of(location.getLongitude(),location.getLatitude()))
+                                                                          .toList()));
         coordinates.add(List.of(end.getLongitude(), end.getLatitude()));
 
         String body = """

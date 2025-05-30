@@ -94,7 +94,7 @@ public class TripRequestController {
     responses ={@ApiResponse(responseCode = HttpStatus.OK,
                 content = @Content(mediaType = "application/json",
                         array = @ArraySchema(schema = @Schema(implementation = TripHistoryDTO.class))))})
-            @GetMapping("/history")
+    @GetMapping("/history")
     public ResponseEntity<List<TripHistoryDTO>> getTripHistory(Principal principal) {
         return  ResponseEntity.ok(tripRequestService.getTripHistory(principal));
     }

@@ -1,6 +1,7 @@
 package com.sep.backend.trip.request;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.sep.backend.entity.TripHistoryEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -20,6 +21,7 @@ public class TripHistoryDTO {
     private Long tripId;
 
     @Schema(description = " Das Abschlussdatum und die Uhrzeit",requiredMode = Schema.RequiredMode.REQUIRED)
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime endTime;
 
     @Schema(description = " Die gefahrene Distanz",requiredMode = Schema.RequiredMode.REQUIRED)

@@ -1,5 +1,6 @@
 package com.sep.backend.trip.request;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.sep.backend.entity.LocationEntity;
 import com.sep.backend.entity.TripRequestEntity;
 import com.sep.backend.location.Location;
@@ -22,6 +23,7 @@ public class TripRequestDTO {
     private Long tripRequestId;
 
     @Schema(description = "Zeitpunkt der Anfrage", requiredMode = RequiredMode.REQUIRED)
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime createdAt;
 
     @Schema(description = "The customer requesting drive.", requiredMode = RequiredMode.REQUIRED)

@@ -2,15 +2,11 @@ package com.sep.backend.nominatim;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sep.backend.ErrorMessages;
 import com.sep.backend.entity.LocationEntity;
 import com.sep.backend.location.Location;
 import com.sep.backend.nominatim.data.LocationDTO;
-import com.sep.backend.nominatim.data.NominatimFeature;
 import com.sep.backend.nominatim.data.NominatimFeatureCollection;
 import com.sep.backend.ors.data.ORSFeatureCollection;
-import com.sep.backend.trip.request.TripRequestException;
-import jakarta.annotation.PostConstruct;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -24,13 +20,15 @@ import java.util.Optional;
 public class NominatimService {
 
     private final String apiKey;
-    private final ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper ;
     private final RestClient restClient;
     private final RestClient orsClient;
 
-    public NominatimService(@Value("${ors.api.key}") String apiKey) {
+    public NominatimService(@Value("${ors.api.key}") String apiKey, ObjectMapper mapper) {
 
         this.apiKey = apiKey;
+
+        this.mapper = mapper;
 
         this.orsClient = RestClient.builder()
                 .baseUrl("https://api.openrouteservice.org/v2/directions/driving-car/geojson")

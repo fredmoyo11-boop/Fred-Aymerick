@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 
 @Schema(description = " Tabelle-Informationen der verfügbaren Fahranfragen ", requiredMode = Schema.RequiredMode.REQUIRED)
-
 public class AvailableTripRequestDTO {
 
     @Schema(description = "requestId der Fahrt ",requiredMode = Schema.RequiredMode.REQUIRED)
@@ -32,6 +31,16 @@ public class AvailableTripRequestDTO {
 
     @Schema(description = "Entfernung zwischen der aktuellen Position des Fahrers und dem Startpunkt der Fahrt",requiredMode = Schema.RequiredMode.REQUIRED)
     private double distanceInKm;
+
+    @Schema(description = "Gesamte Distance der Fahrt ",requiredMode = Schema.RequiredMode.REQUIRED)
+    private double totalDistanceInKm;
+
+    @Schema(description = "Gesamte Preis der Fahrt ",requiredMode = Schema.RequiredMode.REQUIRED)
+    private Double preis;
+
+    @Schema(description = "Gesamte Dauer der Fahrt in Sekunde ",requiredMode = Schema.RequiredMode.REQUIRED)
+    private Double duration;
+
 
 }
 

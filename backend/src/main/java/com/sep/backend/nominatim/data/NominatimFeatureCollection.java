@@ -1,5 +1,6 @@
 package com.sep.backend.nominatim.data;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -13,6 +14,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 @Schema(description = "Represents a GeoJSON FeatureCollection as standardized by RFC 7946.")
 public class NominatimFeatureCollection {
     @JsonProperty("type")

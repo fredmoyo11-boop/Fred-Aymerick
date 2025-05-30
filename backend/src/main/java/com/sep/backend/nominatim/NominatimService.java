@@ -27,6 +27,11 @@ public class NominatimService {
 
     private final ObjectMapper mapper = new ObjectMapper();
 
+    RestClient orsClient = RestClient.builder()
+            .baseUrl("https://api.openrouteservice.org/v2/directions/driving-car/geojson")
+            .defaultHeader("Authorization", apiKey)
+            .build();
+
     private final RestClient restClient = RestClient.builder()
             .baseUrl("https://nominatim.openstreetmap.org")
             .build();
@@ -85,14 +90,8 @@ public class NominatimService {
 
     public Double getDistanceToTripRequests(LocationDTO driverLocation , LocationDTO tripStartLocation) throws DistanceNotFoundException {
         try {
-            RestClient orsClient = RestClient.builder()
-                    .baseUrl("https://api.openrouteservice.org")
-                    .defaultHeader("Authorization", apiKey)
-                    .build();
-
 
             String response = orsClient.post()
-                    .uri("/v2/directions/driving-car/geojson")
                     .header("Authorization", apiKey)
                     .body("""
                 {
@@ -122,10 +121,7 @@ public class NominatimService {
     }
 
     public ORSFeatureCollection requestORSRoute(LocationEntity start, LocationEntity end, Optional<List<LocationEntity>> stops) throws JsonProcessingException {
-        RestClient orsClient = RestClient.builder()
-                .baseUrl("https://api.openrouteservice.org")
-                .defaultHeader("Authorization", apiKey)
-                .build();
+
 
         List<List<Double>> coordinates = new ArrayList<>();
 
@@ -146,8 +142,7 @@ public class NominatimService {
         }
         """.formatted(new ObjectMapper().writeValueAsString(coordinates));
 
-        String response = restClient.post()
-                .uri("/v2/directions/driving-car/geojson")
+        String response = orsClient.post()
                 .header("Authorization", apiKey)
                 .body(body)
                 .retrieve()

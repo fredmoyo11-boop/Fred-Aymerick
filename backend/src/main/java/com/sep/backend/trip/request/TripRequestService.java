@@ -27,6 +27,7 @@ import org.springframework.web.client.RestClient;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -131,6 +132,8 @@ public class TripRequestService {
             if (existsActiveTripRequest(email)) {
                 throw new TripRequestException(ErrorMessages.ALREADY_EXISTS_TRIP_REQUEST);
             }
+
+
             LocationEntity start = createLocationWithGeoJson(tripRequestBody.getStartLocation());
 
             LocationEntity end = createLocationWithGeoJson(tripRequestBody.getEndLocation());
@@ -139,6 +142,8 @@ public class TripRequestService {
                                                                                                       .stream()
                                                                                                       .map(stopDTO->createLocationWithGeoJson(stopDTO))
                                                                                                       .toList();
+
+
 
         RouteEntity route = new RouteEntity();
 
@@ -152,17 +157,21 @@ public class TripRequestService {
         routeRepository.save(route);
 
 
+
+
         String carType = tripRequestBody.getDesiredCarType();
-        Double pricePerKm = getPricePerKm(carType);
-        Double calculatedPrice = distanceKm * pricePerKm;
+
+        Double calculatedPrice = getTotalPreis( geoJson , carType);
+
         start.setRoute(route);
         end.setRoute(route);
-        stops= (stops == null || stops.isEmpty() )?null: stops.stream()
+        stops= (stops == null || stops.isEmpty() )? null: stops.stream()
                                                          .peek(stop -> stop.setRoute(route))
                                                          .toList();
 
 
-        // 5. TripRequestEntity erstellen
+
+
         TripRequestEntity trip = new TripRequestEntity();
         trip.setCustomer(accountService.getCustomerByEmail(email));
         trip.setRoute(route);
@@ -188,6 +197,11 @@ public class TripRequestService {
         };
     }
 
+    public  double getTotalPreis(ORSFeatureCollection routeGeoJson , String carType) {
+        return routeGeoJson.getFeatures().getFirst().getProperties().getSummary().getDistance()/10000 * getPricePerKm(carType);
+    }
+
+
     public  LocationEntity createLocationWithGeoJson(Location dto) {
         NominatimFeature geoJSON = nominatimservice.reverse(dto.getLatitude().toString(), dto.getLongitude().toString()).getFeatures().getFirst();
         LocationEntity loc = new LocationEntity();
@@ -198,7 +212,6 @@ public class TripRequestService {
         return loc;
     }
 
-    // Hilfsmethode: Anfrage an ORS stellen und GeoJSON-Route erhalten
 
 
     /**
@@ -261,6 +274,7 @@ public class TripRequestService {
                             .average()
                             .orElse(0.0);
 
+            Double  tripDuration = activeRequest.getRoute().getGeoJSON().getFeatures().getFirst().getProperties().getSummary().getDuration();
                     return new AvailableTripRequestDTO(
                             activeRequest.getId(),
                             activeRequest.getRequestTime(),
@@ -269,7 +283,8 @@ public class TripRequestService {
                             activeRequest.getDesiredCarType(),
                             distance,
                             getDistance(activeRequest.getRoute().getGeoJSON()),
-                            activeRequest.getPrice()
+                            activeRequest.getPrice(),
+                            tripDuration
                     );
         }).toList();
 

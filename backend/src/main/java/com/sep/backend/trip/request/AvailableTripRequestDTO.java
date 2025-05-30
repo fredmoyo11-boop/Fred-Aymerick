@@ -38,5 +38,9 @@ public class AvailableTripRequestDTO {
     @Schema(description = "Gesamte Preis der Fahrt ",requiredMode = Schema.RequiredMode.REQUIRED)
     private Double preis;
 
+    @Schema(description = "Gesamte Dauer der Fahrt in Sekunde ",requiredMode = Schema.RequiredMode.REQUIRED)
+    private Double duration;
+
+
 }
 

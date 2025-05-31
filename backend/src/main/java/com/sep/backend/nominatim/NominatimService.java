@@ -97,7 +97,7 @@ public class NominatimService {
     }
 
 
-    public Double getDistanceToTripRequests(@Valid LocationDTO driverLocation, @Valid LocationDTO tripStartLocation) {
+    public Double requestDistanceToTripRequests(@Valid LocationDTO driverLocation, @Valid LocationDTO tripStartLocation) {
         try {
 
             String response = orsClient.post()

@@ -81,8 +81,8 @@ public class AccountService {
      * @param username The username of the customer.
      * @return The optional containing the customer entity.
      */
-    public Optional<CustomerEntity> findCustomerByUsername(String username) {
-        return customerRepository.findByUsernameIgnoreCase(username);
+    public CustomerEntity findCustomerByUsername(String username) {
+        return customerRepository.findByUsernameIgnoreCase(username).orElseThrow(()-> new NotFoundException(ErrorMessages.NOT_FOUND_CUSTOMER));
     }
 
     /**
@@ -91,8 +91,8 @@ public class AccountService {
      * @param username The username of the driver.
      * @return The optional containing the driver entity.
      */
-    public Optional<DriverEntity> findDriverByUsername(String username) {
-        return driverRepository.findByUsernameIgnoreCase(username);
+    public DriverEntity findDriverByUsername(String username) {
+        return driverRepository.findByUsernameIgnoreCase(username).orElseThrow(()-> new NotFoundException(ErrorMessages.NOT_FOUND_DRIVER));
     }
 
     /**
@@ -101,13 +101,13 @@ public class AccountService {
      * @param username The username.
      * @return The optional containing the role.
      */
-    public Optional<String> getRoleByUsername(String username) {
+    public String getRoleByUsername(String username) {
         if (existsCustomerUsername(username)) {
-            return Optional.of(Roles.CUSTOMER);
+            return Roles.CUSTOMER;
         } else if (existsDriverUsername(username)) {
-            return Optional.of(Roles.DRIVER);
+            return Roles.DRIVER;
         } else {
-            return Optional.empty();
+            throw new NotFoundException(ErrorMessages.NOT_FOUND_USER);
         }
     }
 
@@ -512,5 +512,6 @@ public class AccountService {
     public boolean isOwner(String email) {
         return SecurityContextHolder.getContext().getAuthentication().getName().equals(email);
     }
+
 
 }

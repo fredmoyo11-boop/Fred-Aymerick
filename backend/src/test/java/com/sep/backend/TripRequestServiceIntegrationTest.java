@@ -51,7 +51,7 @@ public class TripRequestServiceIntegrationTest {
         body.setDesiredCarType("SMALL");
         body.setNote("Bitte nicht rauchen.");
 
-        // Start und Ziel setzen (Koordinaten z. B. Ruhrgebiet)
+        // Start und Ziel setzen
         LocationDTO start = new LocationDTO();
         start.setLatitude(51.4501);
         start.setLongitude(7.0131);

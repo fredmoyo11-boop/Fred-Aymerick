@@ -89,14 +89,6 @@ public class TripRequestController {
     }
 
 
-    @Operation(description = "Fahranfrage-History eines Fahrers oder eines Kunden ",
-            tags = {Tags.TRIP_REQUEST},
-            responses = {@ApiResponse(responseCode = HttpStatus.OK,
-                    content = @Content(mediaType = "application/json",
-                            array = @ArraySchema(schema = @Schema(implementation = TripHistoryDTO.class))))})
-    @GetMapping("/history")
-    public ResponseEntity<List<TripHistoryDTO>> getTripHistory(Principal principal) {
-        return ResponseEntity.ok(tripRequestService.getTripHistory(principal));
-    }
+
 
 }

@@ -7,8 +7,8 @@ import com.sep.backend.NotFoundException;
 import com.sep.backend.Roles;
 import com.sep.backend.account.AccountService;
 import com.sep.backend.entity.*;
-import com.sep.backend.nominatim.LocationRepository;
 import com.sep.backend.nominatim.NominatimService;
+import com.sep.backend.nominatim.LocationRepository;
 import com.sep.backend.nominatim.data.LocationDTO;
 import com.sep.backend.nominatim.data.NominatimFeature;
 import com.sep.backend.ors.data.ORSFeatureCollection;
@@ -24,15 +24,15 @@ import java.util.Optional;
 
 @Service
 public class TripRequestService {
-    private final NominatimService nominatimservice;
+    private final NominatimService nominatimService;
     private final TripHistorieRepository tripHistoryRepository;
     private final TripRequestRepository tripRequestRepository;
     private final LocationRepository locationRepository;
     private final RouteRepository routeRepository;
     private final AccountService accountService;
 
-    public TripRequestService(NominatimService nominatimservice, TripHistorieRepository tripHistoryRepository, TripRequestRepository tripRequestRepository, LocationRepository locationRepository, RouteRepository routeRepository, AccountService accountService) {
-        this.nominatimservice = nominatimservice;
+    public TripRequestService(NominatimService nominatimService, TripHistorieRepository tripHistoryRepository, TripRequestRepository tripRequestRepository, LocationRepository locationRepository, RouteRepository routeRepository, AccountService accountService) {
+        this.nominatimService = nominatimService;
         this.tripHistoryRepository = tripHistoryRepository;
         this.tripRequestRepository = tripRequestRepository;
         this.locationRepository = locationRepository;
@@ -120,7 +120,7 @@ public class TripRequestService {
 
         List<LocationEntity> stops = getStopsEntities(tripRequestBody);
 
-        ORSFeatureCollection geoJson = nominatimservice.requestORSRoute(start, end, Optional.ofNullable(stops));
+        ORSFeatureCollection geoJson = nominatimService.requestORSRoute(start, end, Optional.ofNullable(stops));
 
         RouteEntity route = getRouteEntity(start, end, stops, geoJson);
 
@@ -184,7 +184,7 @@ public class TripRequestService {
 
 
     public LocationEntity createLocationWithGeoJson(@Valid LocationDTO dto) {
-        NominatimFeature geoJSON = nominatimservice.reverse(dto.getLatitude().toString(), dto.getLongitude().toString()).getFeatures().getFirst();
+        NominatimFeature geoJSON = nominatimService.reverse(dto.getLatitude().toString(), dto.getLongitude().toString()).getFeatures().getFirst();
         LocationEntity loc = new LocationEntity();
         loc.setLatitude(dto.getLatitude());
         loc.setLongitude(dto.getLongitude());
@@ -209,20 +209,7 @@ public class TripRequestService {
         tripRequestRepository.save(tripRequestEntity);
     }
 
-    public List<TripHistoryDTO> getTripHistory(Principal principal) {
-        String email = principal.getName();
-        if (accountService.existsEmail(email)) {
-            if (Roles.CUSTOMER.equals(accountService.getRoleByEmail(email))) {
-                var customerEntity = accountService.getCustomerByEmail(email);
-                return TripHistoryDTO.getTripHistoryDTO(tripHistoryRepository.findByCustomer(customerEntity));
-            } else {
-                var driverEntity = accountService.getDriverByEmail(email);
-                return TripHistoryDTO.getTripHistoryDTO(tripHistoryRepository.findByDriver(driverEntity));
-            }
-        } else {
-            throw new TripRequestException(ErrorMessages.HISTORY_NOT_FOUND);
-        }
-    }
+
 
     public List<AvailableTripRequestDTO> getAvailableRequests(LocationDTO driverLocation) {
         List<TripRequestEntity> activeRequests = tripRequestRepository.findByStatus(TripRequestStatus.ACTIVE);
@@ -240,7 +227,7 @@ public class TripRequestService {
 
             Double distance = 0.0;
 
-            distance = nominatimservice.getDistanceToTripRequests(driverLocation, tripStartLocation);
+            distance = nominatimService.requestDistanceToTripRequests(driverLocation, tripStartLocation);
 
 
             CustomerEntity customer = activeRequest.getCustomer();

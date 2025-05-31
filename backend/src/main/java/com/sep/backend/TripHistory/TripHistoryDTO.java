@@ -1,4 +1,4 @@
-package com.sep.backend.trip.request;
+package com.sep.backend.TripHistory;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -50,23 +50,4 @@ public class TripHistoryDTO {
 
     @Schema(description = "Benutzername des Fahrers ",requiredMode = Schema.RequiredMode.REQUIRED)
     private String driverUsername;
-
-
-    public static List<TripHistoryDTO> getTripHistoryDTO(List <TripHistoryEntity> tripHistoryEntity) {
-        return tripHistoryEntity.stream().map(tripHistory -> {
-                   TripHistoryDTO dto = new TripHistoryDTO();
-                    dto.setTripId(tripHistory.getId());
-                    dto.setEndTime(tripHistory.getEndTime());
-                    dto.setDistance(tripHistory.getDistance());
-                    dto.setDuration(tripHistory.getDuration());
-                    dto.setPrice(tripHistory.getPrice());
-                    dto.setCustomerRating(tripHistory.getCustomerRating());
-                    dto.setCustomerName(tripHistory.getCustomer().getFirstName() + " " + tripHistory.getCustomer().getLastName());
-                    dto.setCustomerUsername(tripHistory.getCustomer().getUsername());
-                    dto.setDriverRating(tripHistory.getDriverRating());
-                    dto.setDriverName(tripHistory.getDriver().getFirstName() + " " + tripHistory.getDriver().getLastName());
-                    dto.setDriverUsername(tripHistory.getDriver().getUsername());
-            return dto;
-        }).toList();
-    }
 }

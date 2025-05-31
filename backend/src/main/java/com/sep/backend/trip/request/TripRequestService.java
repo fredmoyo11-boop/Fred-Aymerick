@@ -16,7 +16,6 @@ import com.sep.backend.ors.data.ORSFeatureCollection;
 import com.sep.backend.route.RouteRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
@@ -116,22 +115,15 @@ public class TripRequestService {
             throw new TripRequestException(ErrorMessages.ALREADY_EXISTS_TRIP_REQUEST);
         }
 
-
         LocationEntity start = createLocationWithGeoJson(tripRequestBody.getStartLocation());
 
         LocationEntity end = createLocationWithGeoJson(tripRequestBody.getEndLocation());
 
-        List<LocationEntity> stops = tripRequestBody.getStops().isEmpty() ? null : tripRequestBody.getStops()
-                .stream()
-                .map(this::createLocationWithGeoJson)
-                .toList();
-
-
+        List<LocationEntity> stops = getStopsEntities(tripRequestBody);
 
         ORSFeatureCollection geoJson = nominatimservice.requestORSRoute(start, end, Optional.ofNullable(stops));
 
         RouteEntity route = getRouteEntity(start, end, stops, geoJson);
-
 
         stops = stops == null ? null : stops.stream()
                 .peek(stop -> stop.setRoute(route))
@@ -141,7 +133,6 @@ public class TripRequestService {
         end.setRoute(route);
         locationRepository.save(start);
         locationRepository.save(end);
-
 
         String carType = tripRequestBody.getDesiredCarType();
 
@@ -160,7 +151,15 @@ public class TripRequestService {
         return tripRequestRepository.save(trip);
     }
 
-    private  RouteEntity getRouteEntity(LocationEntity start, LocationEntity end, List<LocationEntity> stops, ORSFeatureCollection geoJson) {
+    public List<LocationEntity> getStopsEntities(TripRequestBody tripRequestBody) {
+        List<LocationEntity> stops = tripRequestBody.getStops().isEmpty() ? null : tripRequestBody.getStops()
+                .stream()
+                .map(this::createLocationWithGeoJson)
+                .toList();
+        return stops;
+    }
+
+    public RouteEntity getRouteEntity(LocationEntity start, LocationEntity end, List<LocationEntity> stops, ORSFeatureCollection geoJson) {
         RouteEntity route = new RouteEntity();
         route.setStartLocation(start);
         route.setEndLocation(end);

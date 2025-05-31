@@ -16,6 +16,7 @@ import com.sep.backend.ors.data.ORSFeatureCollection;
 import com.sep.backend.route.RouteRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
@@ -129,12 +130,7 @@ public class TripRequestService {
 
         ORSFeatureCollection geoJson = nominatimservice.requestORSRoute(start, end, Optional.ofNullable(stops));
 
-        RouteEntity route = new RouteEntity();
-        route.setStartLocation(start);
-        route.setEndLocation(end);
-        route.setStops(stops);
-        route.setGeoJSON(geoJson);
-        routeRepository.save(route);
+        RouteEntity route = getRouteEntity(start, end, stops, geoJson);
 
 
         stops = stops == null ? null : stops.stream()
@@ -162,6 +158,16 @@ public class TripRequestService {
         trip.setPrice(calculatedPrice);
 
         return tripRequestRepository.save(trip);
+    }
+
+    private  RouteEntity getRouteEntity(LocationEntity start, LocationEntity end, List<LocationEntity> stops, ORSFeatureCollection geoJson) {
+        RouteEntity route = new RouteEntity();
+        route.setStartLocation(start);
+        route.setEndLocation(end);
+        route.setStops(stops);
+        route.setGeoJSON(geoJson);
+
+        return routeRepository.save(route);
     }
 
     public double getDistance(ORSFeatureCollection routeGeoJson) {

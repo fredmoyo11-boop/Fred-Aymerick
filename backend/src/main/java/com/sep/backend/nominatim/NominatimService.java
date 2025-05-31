@@ -2,6 +2,7 @@ package com.sep.backend.nominatim;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sep.backend.ErrorMessages;
 import com.sep.backend.entity.LocationEntity;
 import com.sep.backend.location.Location;
 import com.sep.backend.nominatim.data.LocationDTO;
@@ -122,32 +123,38 @@ public class NominatimService {
         }
     }
 
-    public ORSFeatureCollection requestORSRoute(LocationEntity start, LocationEntity end, Optional<List<LocationEntity>> stops) throws JsonProcessingException {
+    public ORSFeatureCollection requestORSRoute(LocationEntity start, LocationEntity end, Optional<List<LocationEntity>> stops) {
 
+        try {
+            List<List<Double>> coordinates = new ArrayList<>();
 
-        List<List<Double>> coordinates = new ArrayList<>();
+            //startpunkt - coordinate nehmen
+            coordinates.add(List.of(start.getLongitude(), start.getLatitude()));
 
-        coordinates.add(List.of(start.getLongitude(), start.getLatitude()));
+            //zwischenstopps-coordinate nehmen wenn sie existieren
+            stops.ifPresent(stopList -> coordinates.addAll(stopList.stream()
+                    .map(locationPair -> List.of(locationPair.getLongitude(), locationPair.getLatitude()))
+                    .toList()));
 
-        stops.ifPresent(stopList -> coordinates.addAll(stopList.stream()
-                .map(locationPair -> List.of(locationPair.getLongitude(), locationPair.getLatitude()))
-                .toList()));
+            //endpunkt - coordinate nehmen
+            coordinates.add(List.of(end.getLongitude(), end.getLatitude()));
 
-        coordinates.add(List.of(end.getLongitude(), end.getLatitude()));
+            String body = """
+                    {
+                      "coordinates": %s
+                    }
+                    """.formatted(mapper.writeValueAsString(coordinates));
 
-        String body = """
-                {
-                  "coordinates": %s
-                }
-                """.formatted(mapper.writeValueAsString(coordinates));
+            String response = orsClient.post()
+                    .header("Authorization", apiKey)
+                    .body(body)
+                    .retrieve()
+                    .body(String.class);
 
-        String response = orsClient.post()
-                .header("Authorization", apiKey)
-                .body(body)
-                .retrieve()
-                .body(String.class);
-
-        return mapper.readValue(response, ORSFeatureCollection.class);
+            return mapper.readValue(response, ORSFeatureCollection.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(ErrorMessages.ORS_PROCESSING_FAILED);
+        }
     }
 
 }

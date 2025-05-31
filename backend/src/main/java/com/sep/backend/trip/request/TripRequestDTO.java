@@ -44,7 +44,7 @@ public class TripRequestDTO {
     @Schema(description = "The optional notes for the driver.", requiredMode = RequiredMode.NOT_REQUIRED)
     private String note;
 
-    @Schema(description = "The current status of the trip. Either ACTIVE or DELETED.")
+    @Schema(description = "The current status of the trip. Either ACTIVE or DELETED.",requiredMode =RequiredMode.REQUIRED )
     private String status;
 
     @Schema(description = "Die Gesamte Route von der Fahrt", requiredMode = RequiredMode.REQUIRED)

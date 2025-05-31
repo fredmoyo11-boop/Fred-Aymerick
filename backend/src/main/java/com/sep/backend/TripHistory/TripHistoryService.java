@@ -2,13 +2,13 @@ package com.sep.backend.TripHistory;
 import com.sep.backend.ErrorMessages;
 import com.sep.backend.Roles;
 import com.sep.backend.account.AccountService;
-import com.sep.backend.entity.TripHistorieRepository;
-import com.sep.backend.entity.TripHistoryEntity;
+import com.sep.backend.entity.*;
 import com.sep.backend.trip.request.TripRequestException;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
 import java.security.Principal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -21,6 +21,31 @@ public class TripHistoryService {
         this.accountService = accountService;
     }
     @Schema(description = "Methode zum Erstellen und Speichern  einer abgeschlossenen Fahrt ")
+    public TripHistoryEntity saveTripHistoryFromOffer(
+            TripOfferEntity offer,
+            Double distance,
+            Integer duration,
+            Integer driverRating,
+            Integer customerRating
+    ) {
+        TripRequestEntity request = offer.getTripRequest();
+        CustomerEntity customer = request.getCustomer();
+        DriverEntity driver = offer.getDriver();
+
+        TripHistoryEntity history = new TripHistoryEntity();
+        history.setTripOfferId(offer.getId());
+        history.setCustomer(customer);
+        history.setDriver(driver);
+        history.setDistance(distance);
+        history.setDuration(duration);
+        history.setEndTime(LocalDateTime.now());
+        history.setPrice(request.getPrice());
+
+        history.setCustomerRating(customerRating);
+        history.setDriverRating(driverRating);
+
+        return tripHistorieRepository.save(history);
+    }
     public TripHistoryEntity saveTripHistory(@Valid TripHistoryDTO tripHistoryDTO) {
         TripHistoryEntity tripHistoryEntity = new TripHistoryEntity();
         tripHistoryEntity.setTripOfferId(tripHistoryEntity.getTripOfferId());

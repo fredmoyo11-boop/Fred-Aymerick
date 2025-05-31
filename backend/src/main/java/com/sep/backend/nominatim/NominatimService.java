@@ -43,7 +43,7 @@ public class NominatimService {
 
         this.restClient = RestClient.builder()
                 .baseUrl("https://nominatim.openstreetmap.org")
-                .defaultHeader("Content-Type", "application/json") // <- hier
+                .defaultHeader("Content-Type", "application/json")
                 .build();
     }
 
@@ -157,7 +157,7 @@ public class NominatimService {
             log.info("Starte ORS-Routenberechnung von '{}' nach '{}'", start.getDisplayName(), end.getDisplayName());
             String response = orsClient.post()
                     .header("Authorization", apiKey)
-                    .header("Content-Type", "application/json") // <- das hier hinzufügen!
+                    .header("Content-Type", "application/json")
                     .body(body)
                     .retrieve()
                     .body(String.class);

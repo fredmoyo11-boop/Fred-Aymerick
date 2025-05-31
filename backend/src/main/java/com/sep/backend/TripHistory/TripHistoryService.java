@@ -20,7 +20,7 @@ public class TripHistoryService {
         this.tripHistorieRepository = tripHistorieRepository;
         this.accountService = accountService;
     }
-    @Schema(description = "Methode zum Speichern einer TripHistory nach der Durchführung einer Fahrt")
+    @Schema(description = "Methode zum Erstellen und Speichern  einer abgeschlossenen Fahrt ")
     public TripHistoryEntity saveTripHistory(@Valid TripHistoryDTO tripHistoryDTO) {
         TripHistoryEntity tripHistoryEntity = new TripHistoryEntity();
         tripHistoryEntity.setTripOfferId(tripHistoryEntity.getTripOfferId());

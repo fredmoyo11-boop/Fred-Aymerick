@@ -27,15 +27,15 @@ public class TripHistoryDTO {
 
     @Schema(description = " Die gefahrene Distanz",requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
-    private Double distance; // in m
+    private Double distance;
 
     @Schema(description = "  Die Fahrtdauer",requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
-    private Integer duration; // in s
+    private Integer duration;
 
     @Schema(description = "Das gezahlte oder erhaltene Geld",requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull
-    private Double price; // in euro
+    private Double price;
 
     @Schema(description = " Die Bewertung des Kundens ",requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull

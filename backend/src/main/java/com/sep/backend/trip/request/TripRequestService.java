@@ -138,7 +138,6 @@ public class TripRequestService {
 
         Double calculatedPrice = getTotalPreis(geoJson, carType);
 
-
         TripRequestEntity trip = new TripRequestEntity();
         trip.setCustomer(accountService.getCustomerByEmail(email));
         trip.setRoute(route);
@@ -185,7 +184,7 @@ public class TripRequestService {
     }
 
 
-    public LocationEntity createLocationWithGeoJson(LocationDTO dto) {
+    public LocationEntity createLocationWithGeoJson(@Valid LocationDTO dto) {
         NominatimFeature geoJSON = nominatimservice.reverse(dto.getLatitude().toString(), dto.getLongitude().toString()).getFeatures().getFirst();
         LocationEntity loc = new LocationEntity();
         loc.setLatitude(dto.getLatitude());

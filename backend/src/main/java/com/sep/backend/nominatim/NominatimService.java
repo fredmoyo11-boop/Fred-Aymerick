@@ -132,6 +132,7 @@ public class NominatimService {
         stops.ifPresent(stopList -> coordinates.addAll(stopList.stream()
                 .map(locationPair -> List.of(locationPair.getLongitude(), locationPair.getLatitude()))
                 .toList()));
+
         coordinates.add(List.of(end.getLongitude(), end.getLatitude()));
 
         String body = """

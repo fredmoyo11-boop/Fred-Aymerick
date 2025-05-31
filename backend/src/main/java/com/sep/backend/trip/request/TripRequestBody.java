@@ -4,6 +4,9 @@ import com.sep.backend.entity.LocationEntity;
 import com.sep.backend.location.Location;
 import com.sep.backend.nominatim.data.LocationDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -17,14 +20,18 @@ public class TripRequestBody {
     private List<LocationDTO> stops =new ArrayList<>();
 
     @Schema(description = "The start location of the trip.", requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNull
     private LocationDTO startLocation;
 
 
     @Schema(description = "The end location of the trip.", requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNull
     private LocationDTO endLocation;
 
 
     @Schema(description = "The type of car requested.", requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotBlank
+    @Pattern(regexp = "SMALL|MEDIUM|DELUXE")
     private String desiredCarType;
 
 

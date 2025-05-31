@@ -152,11 +152,10 @@ public class TripRequestService {
     }
 
     public List<LocationEntity> getStopsEntities(TripRequestBody tripRequestBody) {
-        List<LocationEntity> stops = tripRequestBody.getStops().isEmpty() ? null : tripRequestBody.getStops()
+        return tripRequestBody.getStops().isEmpty() ? null : tripRequestBody.getStops()
                 .stream()
                 .map(this::createLocationWithGeoJson)
                 .toList();
-        return stops;
     }
 
     public RouteEntity getRouteEntity(LocationEntity start, LocationEntity end, List<LocationEntity> stops, ORSFeatureCollection geoJson) {
@@ -165,7 +164,6 @@ public class TripRequestService {
         route.setEndLocation(end);
         route.setStops(stops);
         route.setGeoJSON(geoJson);
-
         return routeRepository.save(route);
     }
 

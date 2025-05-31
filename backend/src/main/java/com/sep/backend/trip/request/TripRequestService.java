@@ -126,27 +126,23 @@ public class TripRequestService {
                 .toList();
 
 
-        RouteEntity route = new RouteEntity();
 
         ORSFeatureCollection geoJson = nominatimservice.requestORSRoute(start, end, Optional.ofNullable(stops));
 
-
-        stops = (stops == null) ? null : stops.stream()
-                .peek(stop -> stop.setRoute(route))
-                .toList();
-
-
+        RouteEntity route = new RouteEntity();
         route.setStartLocation(start);
         route.setEndLocation(end);
         route.setStops(stops);
         route.setGeoJSON(geoJson);
         routeRepository.save(route);
 
-        start.setRoute(route);
-        end.setRoute(route);
+
         stops = stops == null ? null : stops.stream()
+                .peek(stop -> stop.setRoute(route))
                 .map(locationRepository::save)
                 .toList();
+        start.setRoute(route);
+        end.setRoute(route);
         locationRepository.save(start);
         locationRepository.save(end);
 
@@ -236,8 +232,8 @@ public class TripRequestService {
             LocationEntity start = activeRequest.getRoute().getStartLocation();
 
             LocationDTO tripStartLocation = new LocationDTO();
-            tripStartLocation.setLatitude(start.getLongitude());
-            tripStartLocation.setLongitude(start.getLatitude());
+            tripStartLocation.setLatitude(start.getLatitude());
+            tripStartLocation.setLongitude(start.getLongitude());
             tripStartLocation.setDisplayName(start.getDisplayName());
 
 

@@ -30,14 +30,16 @@ public class TripRequestService {
     private final LocationRepository locationRepository;
     private final RouteRepository routeRepository;
     private final AccountService accountService;
+    private final DurableRepository durableRepository;
 
-    public TripRequestService(NominatimService nominatimService, TripHistorieRepository tripHistoryRepository, TripRequestRepository tripRequestRepository, LocationRepository locationRepository, RouteRepository routeRepository, AccountService accountService) {
+    public TripRequestService(NominatimService nominatimService, TripHistorieRepository tripHistoryRepository, TripRequestRepository tripRequestRepository, LocationRepository locationRepository, RouteRepository routeRepository, AccountService accountService, DurableRepository durableRepository) {
         this.nominatimService = nominatimService;
         this.tripHistoryRepository = tripHistoryRepository;
         this.tripRequestRepository = tripRequestRepository;
         this.locationRepository = locationRepository;
         this.routeRepository = routeRepository;
         this.accountService = accountService;
+        this.durableRepository = durableRepository;
     }
 
     /**
@@ -206,6 +208,10 @@ public class TripRequestService {
                 .orElseThrow(() -> new NotFoundException("Current customer does not have an active trip request."));
         tripRequestEntity.setStatus(TripRequestStatus.DELETED);
 
+        DurableEntity durableEntity = new DurableEntity();
+        durableEntity.setId(tripRequestEntity.getId());
+        durableEntity.setDeleted(true);
+        durableRepository.save(durableEntity);
         tripRequestRepository.save(tripRequestEntity);
     }
 

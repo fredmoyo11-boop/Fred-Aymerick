@@ -255,7 +255,7 @@ public class TripRequestService {
                     .average()
                     .orElse(0.0);
 
-            Double tripDuration = activeRequest.getRoute().getGeoJSON().getFeatures().getFirst().getProperties().getSummary().getDuration();
+            double tripDuration = activeRequest.getRoute().getGeoJSON().getFeatures().getFirst().getProperties().getSummary().getDuration();
             return new AvailableTripRequestDTO(
                     activeRequest.getId(),
                     activeRequest.getRequestTime(),

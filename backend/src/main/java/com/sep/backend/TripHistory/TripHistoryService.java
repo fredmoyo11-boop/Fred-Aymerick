@@ -1,14 +1,13 @@
 package com.sep.backend.TripHistory;
-
 import com.sep.backend.ErrorMessages;
 import com.sep.backend.Roles;
 import com.sep.backend.account.AccountService;
 import com.sep.backend.entity.TripHistorieRepository;
 import com.sep.backend.entity.TripHistoryEntity;
 import com.sep.backend.trip.request.TripRequestException;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
-
 import java.security.Principal;
 import java.util.List;
 
@@ -21,8 +20,7 @@ public class TripHistoryService {
         this.tripHistorieRepository = tripHistorieRepository;
         this.accountService = accountService;
     }
-
-
+    @Schema(description = "Methode zum Speichern einer TripHistory nach der Durchführung einer Fahrt")
     public TripHistoryEntity saveTripHistory(@Valid TripHistoryDTO tripHistoryDTO) {
         TripHistoryEntity tripHistoryEntity = new TripHistoryEntity();
         tripHistoryEntity.setTripOfferId(tripHistoryEntity.getTripOfferId());
@@ -37,15 +35,15 @@ public class TripHistoryService {
         return tripHistorieRepository.save(tripHistoryEntity);
     }
 
-    public List<TripHistoryDTO> getTripHistoryDTOs(Principal principal) {
+    public List<TripHistoryDTO> getCurrentTripHistory(Principal principal) {
         String email = principal.getName();
         if (accountService.existsEmail(email)) {
             if (Roles.CUSTOMER.equals(accountService.getRoleByEmail(email))) {
                 var customerEntity = accountService.getCustomerByEmail(email);
-                return getTripHistoryDTO(tripHistorieRepository.findByCustomer(customerEntity));
+                return MapToTripHistoryDTO(tripHistorieRepository.findByCustomer(customerEntity));
             } else {
                 var driverEntity = accountService.getDriverByEmail(email);
-                return getTripHistoryDTO(tripHistorieRepository.findByDriver(driverEntity));
+                return MapToTripHistoryDTO(tripHistorieRepository.findByDriver(driverEntity));
             }
         } else {
             throw new TripRequestException(ErrorMessages.HISTORY_NOT_FOUND);
@@ -53,8 +51,7 @@ public class TripHistoryService {
     }
 
 
-
-    public  List<TripHistoryDTO> getTripHistoryDTO(List <TripHistoryEntity> tripHistoryEntities) {
+    public List<TripHistoryDTO> MapToTripHistoryDTO(List<TripHistoryEntity> tripHistoryEntities) {
         return tripHistoryEntities.stream().map(tripHistory -> {
             TripHistoryDTO dto = new TripHistoryDTO();
             dto.setTripId(tripHistory.getId());

@@ -4,11 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sep.backend.account.CustomerRepository;
 import com.sep.backend.entity.CustomerEntity;
 import com.sep.backend.entity.TripRequestEntity;
-import com.sep.backend.account.AccountService;
 import com.sep.backend.nominatim.data.LocationDTO;
 import com.sep.backend.trip.request.TripRequestBody;
 import com.sep.backend.trip.request.TripRequestService;
-import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,14 +20,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @TestPropertySource(locations = "classpath:application-test.properties")
-@Transactional
 public class TripRequestServiceIntegrationTest {
 
     @Autowired
     private TripRequestService tripRequestService;
-
-    @Autowired
-    private AccountService accountService;
 
     @Autowired
     private CustomerRepository customerRepository;

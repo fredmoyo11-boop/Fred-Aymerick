@@ -84,8 +84,7 @@ public class TripRequestController {
 //            @RequestParam(defaultValue = "distanceInKm") String sort,
 //            @RequestParam(defaultValue = "asc") String direction)
 
-        List<AvailableTripRequestDTO> result = tripRequestService.getAvailableRequests(driverLocation);
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(tripRequestService.getAvailableRequests(driverLocation));
     }
 
 

@@ -7,7 +7,6 @@ import com.sep.backend.NotFoundException;
 import com.sep.backend.Roles;
 import com.sep.backend.account.AccountService;
 import com.sep.backend.entity.*;
-import com.sep.backend.nominatim.DistanceNotFoundException;
 import com.sep.backend.nominatim.LocationRepository;
 import com.sep.backend.nominatim.NominatimService;
 import com.sep.backend.nominatim.data.LocationDTO;
@@ -48,7 +47,7 @@ public class TripRequestService {
      * @return Whether the customer has A active request or not
      */
     public boolean existsActiveTripRequest(String email) {
-        return tripRequestRepository.existsByCustomer_Email(email);
+        return tripRequestRepository.existsByCustomer_EmailAndStatus(email,TripRequestStatus.ACTIVE);
     }
 
     /**
@@ -66,7 +65,7 @@ public class TripRequestService {
      * @return The optional containing the trip request entity.
      */
     public Optional<TripRequestEntity> findTripRequestByEmailAndStatus(String email, String requestStatus) {
-        return tripRequestRepository.findByCustomer_Email(email);
+        return tripRequestRepository.findByCustomer_EmailAndStatus(email,requestStatus);
     }
 
     /**
@@ -241,12 +240,7 @@ public class TripRequestService {
 
             Double distance = 0.0;
 
-            try {
-                distance = nominatimservice.getDistanceToTripRequests(driverLocation, tripStartLocation);
-
-            } catch (DistanceNotFoundException e) {
-                throw new RuntimeException(ErrorMessages.HISTORY_NOT_FOUND);
-            }
+            distance = nominatimservice.getDistanceToTripRequests(driverLocation, tripStartLocation);
 
 
             CustomerEntity customer = activeRequest.getCustomer();

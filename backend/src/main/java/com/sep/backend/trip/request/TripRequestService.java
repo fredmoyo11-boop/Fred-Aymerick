@@ -45,7 +45,7 @@ public class TripRequestService {
      * @return Whether the customer has A active request or not
      */
     public boolean existsActiveTripRequest(String email) {
-        return tripRequestRepository.existsByCustomer_EmailAndStatus(email,TripRequestStatus.ACTIVE);
+        return tripRequestRepository.existsByCustomer_EmailAndStatus(email, TripRequestStatus.ACTIVE);
     }
 
     /**
@@ -63,7 +63,7 @@ public class TripRequestService {
      * @return The optional containing the trip request entity.
      */
     public Optional<TripRequestEntity> findTripRequestByEmailAndStatus(String email, String requestStatus) {
-        return tripRequestRepository.findByCustomer_EmailAndStatus(email,requestStatus);
+        return tripRequestRepository.findByCustomer_EmailAndStatus(email, requestStatus);
     }
 
     /**
@@ -97,7 +97,7 @@ public class TripRequestService {
      * @return The trip request entity
      */
     @Transactional
-    public TripRequestEntity createCurrentActiveTripRequest( @Valid TripRequestBody tripRequestBody, Principal principal) {
+    public TripRequestEntity createCurrentActiveTripRequest(@Valid TripRequestBody tripRequestBody, Principal principal) {
 
         String email = principal.getName();
 
@@ -113,8 +113,8 @@ public class TripRequestService {
         }
 
 
-        List<LocationEntity> stops = List.of(tripRequestBody.getStartLocation(),tripRequestBody.getEndLocation()).stream()
-                .map(stop->Location.from(nominatimService.reverse(stop.getLatitude().toString(),stop.getLongitude().toString()).getFeatures().getFirst()))
+        List<LocationEntity> stops = List.of(tripRequestBody.getStartLocation(), tripRequestBody.getEndLocation()).stream()
+                .map(stop -> Location.from(nominatimService.reverse(stop.getLatitude().toString(), stop.getLongitude().toString()).getFeatures().getFirst()))
                 .map(locationService::saveLocation)
                 .toList();
         ORSFeatureCollection geoJson = nominatimService.requestORSRoute(stops);
@@ -137,8 +137,7 @@ public class TripRequestService {
     }
 
 
-
-    public RouteEntity saveRoute(List<LocationEntity> stops,  ORSFeatureCollection geoJson) {
+    public RouteEntity saveRoute(List<LocationEntity> stops, ORSFeatureCollection geoJson) {
         RouteEntity route = new RouteEntity();
         route.setStops(stops);
         route.setGeoJSON(geoJson);
@@ -169,7 +168,6 @@ public class TripRequestService {
     }
 
 
-
     public List<AvailableTripRequestDTO> getAvailableRequests(@Valid Location driverLocation) {
         List<TripRequestEntity> activeRequests = tripRequestRepository.findByStatus(TripRequestStatus.ACTIVE);
 
@@ -177,25 +175,20 @@ public class TripRequestService {
         {
 
             LocationEntity start = activeRequest.getRoute().getStops().getFirst();
-
+            CustomerEntity customer = activeRequest.getCustomer();
             Location tripStartLocation = new Location();
             tripStartLocation.setLatitude(start.getLatitude());
             tripStartLocation.setLongitude(start.getLongitude());
             tripStartLocation.setDisplayName(start.getDisplayName());
 
 
-            Double distance = 0.0;
-
-            distance = nominatimService.requestDistanceToTripRequests(driverLocation, tripStartLocation);
-
-
-            CustomerEntity customer = activeRequest.getCustomer();
+            Double distance = nominatimService.requestDistanceToTripRequests(driverLocation, tripStartLocation);
+            double tripDuration = activeRequest.getRoute().getGeoJSON().getFeatures().getFirst().getProperties().getSummary().getDuration();
             double avgRating = tripHistoryRepository.findByCustomer(customer).stream()
                     .mapToInt(TripHistoryEntity::getCustomerRating)
                     .average()
                     .orElse(0.0);
 
-            double tripDuration = activeRequest.getRoute().getGeoJSON().getFeatures().getFirst().getProperties().getSummary().getDuration();
             return new AvailableTripRequestDTO(
                     activeRequest.getId(),
                     activeRequest.getRequestTime(),

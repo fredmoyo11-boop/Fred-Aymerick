@@ -17,7 +17,7 @@ import java.security.Principal;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/api/trip", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/trip/history", produces = MediaType.APPLICATION_JSON_VALUE)
 
 public class TripHistoryController {
 
@@ -33,7 +33,7 @@ public class TripHistoryController {
             responses = {@ApiResponse(responseCode = HttpStatus.OK,
                     content = @Content(mediaType = "application/json",
                             array = @ArraySchema(schema = @Schema(implementation = TripHistoryDTO.class))))})
-    @GetMapping("/history")
+    @GetMapping
     public ResponseEntity<List<TripHistoryDTO>> getTripHistory(Principal principal) {
         return ResponseEntity.ok(tripHistoryService.getCurrentTripHistory(principal));
     }

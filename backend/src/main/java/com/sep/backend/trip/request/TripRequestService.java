@@ -123,7 +123,7 @@ public class TripRequestService {
 
         String carType = tripRequestBody.getDesiredCarType();
 
-        Double calculatedPrice = getTotalPrice(geoJson, carType);
+        Double tripPrice = calculateTripPrice(geoJson,carType);
 
         TripRequestEntity trip = new TripRequestEntity();
         trip.setCustomer(accountService.getCustomerByEmail(email));
@@ -132,7 +132,7 @@ public class TripRequestService {
         trip.setNote(tripRequestBody.getNote());
         trip.setRequestTime(LocalDateTime.now());
         trip.setStatus(TripRequestStatus.ACTIVE);
-        trip.setPrice(calculatedPrice);
+        trip.setPrice(tripPrice);
         return tripRequestRepository.save(trip);
     }
 
@@ -148,7 +148,7 @@ public class TripRequestService {
         return routeGeoJson.getFeatures().getFirst().getProperties().getSummary().getDistance() / 10000;
     }
 
-    public double getTotalPrice(ORSFeatureCollection routeGeoJson, String carType) {
+    public double calculateTripPrice(ORSFeatureCollection routeGeoJson, String carType) {
         return (routeGeoJson.getFeatures().getFirst().getProperties().getSummary().getDistance() / 10000) * CarTypes.getPricePerKilometer(carType);
     }
 
@@ -182,7 +182,7 @@ public class TripRequestService {
             tripStartLocation.setDisplayName(start.getDisplayName());
 
 
-            Double distance = nominatimService.requestDistanceToTripRequests(driverLocation, tripStartLocation);
+            double distance = nominatimService.requestDistanceToTripRequests(driverLocation, tripStartLocation);
             double tripDuration = activeRequest.getRoute().getGeoJSON().getFeatures().getFirst().getProperties().getSummary().getDuration();
             double avgRating = tripHistoryRepository.findByCustomer(customer).stream()
                     .mapToInt(TripHistoryEntity::getCustomerRating)

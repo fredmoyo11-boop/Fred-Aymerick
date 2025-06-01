@@ -131,6 +131,7 @@ public class NominatimService {
 
         try {
             List<List<Double>> coordinates = new ArrayList<>();
+
             if(stops==null||stops.size()<2) {
                 throw new ORSRequestException(ErrorMessages.ORS_PROCESSING_FAILED);
             }

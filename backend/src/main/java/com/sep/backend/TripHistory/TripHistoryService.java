@@ -21,7 +21,7 @@ public class TripHistoryService {
         this.accountService = accountService;
     }
     @Schema(description = "Methode zum Erstellen und Speichern  einer abgeschlossenen Fahrt ")
-    public TripHistoryEntity saveTripHistoryFromOffer(
+    public TripHistoryEntity saveTripHistory(
             TripOfferEntity offer,
             Double distance,
             Integer duration,

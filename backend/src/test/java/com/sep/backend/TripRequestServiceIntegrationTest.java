@@ -1,6 +1,5 @@
 package com.sep.backend;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sep.backend.account.CustomerRepository;
 import com.sep.backend.entity.CustomerEntity;
 import com.sep.backend.entity.TripRequestEntity;

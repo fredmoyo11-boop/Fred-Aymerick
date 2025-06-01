@@ -15,7 +15,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
 import java.security.Principal;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -46,7 +45,7 @@ public class TripRequestServiceIntegrationTest {
     }
 
     @Test
-    void testCreateTripRequest_Success() throws JsonProcessingException {
+    void testCreateTripRequest_Success()  {
         // TripRequestBody vorbereiten
         TripRequestBody body = new TripRequestBody();
         body.setDesiredCarType("SMALL");

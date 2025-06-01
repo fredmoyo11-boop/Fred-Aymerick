@@ -5,7 +5,6 @@ import com.sep.backend.HttpStatus;
 import com.sep.backend.Tags;
 import com.sep.backend.location.Location;
 import com.sep.backend.nominatim.NominatimService;
-import com.sep.backend.nominatim.data.LocationDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -80,7 +79,7 @@ public class TripRequestController {
                     content = @Content(mediaType = "application/json",
                             array = @ArraySchema(schema = @Schema(implementation = AvailableTripRequestDTO.class))))})
     @GetMapping("/available")
-    public ResponseEntity<List<AvailableTripRequestDTO>> getAvailableRequests(@RequestBody @Valid LocationDTO driverLocation) {
+    public ResponseEntity<List<AvailableTripRequestDTO>> getAvailableRequests(@RequestBody @Valid Location driverLocation) {
 //            @RequestParam(defaultValue = "distanceInKm") String sort,
 //            @RequestParam(defaultValue = "asc") String direction)
 

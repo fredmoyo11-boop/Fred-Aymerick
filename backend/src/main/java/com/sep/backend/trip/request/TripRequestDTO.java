@@ -52,9 +52,9 @@ public class TripRequestDTO {
 
 
     public static TripRequestDTO from(TripRequestEntity tripRequestEntity) {
-        Location startLocation = getLocation(tripRequestEntity.getRoute().getStartLocation());
+        Location startLocation = getLocation(tripRequestEntity.getRoute().getStops().getFirst());
 
-        Location endLocation = getLocation(tripRequestEntity.getRoute().getEndLocation());
+        Location endLocation = getLocation(tripRequestEntity.getRoute().getStops().getLast());
 
         TripRequestDTO dto = new TripRequestDTO();
         dto.setEmail(tripRequestEntity.getCustomer().getEmail());

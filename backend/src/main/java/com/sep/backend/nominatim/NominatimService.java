@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sep.backend.ErrorMessages;
 import com.sep.backend.entity.LocationEntity;
 import com.sep.backend.location.Location;
-import com.sep.backend.nominatim.data.LocationDTO;
 import com.sep.backend.nominatim.data.NominatimFeatureCollection;
 import com.sep.backend.ors.data.ORSFeatureCollection;
 import com.sep.backend.trip.request.ORSRequestException;
@@ -19,7 +18,6 @@ import org.springframework.web.client.RestClient;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class NominatimService {
@@ -97,7 +95,7 @@ public class NominatimService {
     }
 
 
-    public Double requestDistanceToTripRequests(@Valid LocationDTO driverLocation, @Valid LocationDTO tripStartLocation) {
+    public Double requestDistanceToTripRequests(@Valid Location driverLocation, @Valid Location tripStartLocation) {
         try {
 
             String response = orsClient.post()
@@ -129,32 +127,27 @@ public class NominatimService {
         }
     }
 
-    public ORSFeatureCollection requestORSRoute(LocationEntity start, LocationEntity end, Optional<List<LocationEntity>> stops) {
+    public ORSFeatureCollection requestORSRoute(List<LocationEntity> stops) {
 
         try {
             List<List<Double>> coordinates = new ArrayList<>();
+            if(stops==null||stops.size()<2) {
+                throw new ORSRequestException(ErrorMessages.ORS_PROCESSING_FAILED);
+            }
+            stops =  stops.stream()
+                    .peek (stop-> coordinates.add(List.of(stop.getLongitude(), stop.getLatitude())))
+                    .toList();
 
-            //startpunkt - coordinate nehmen
-            coordinates.add(List.of(start.getLongitude(), start.getLatitude()));
-
-            //zwischenstopps-coordinate nehmen wenn sie existieren
-            stops.ifPresent(stopList -> coordinates.addAll(stopList.stream()
-                    .map(locationPair -> List.of(locationPair.getLongitude(), locationPair.getLatitude()))
-                    .toList()));
-
-            //endpunkt - coordinate nehmen
-            coordinates.add(List.of(end.getLongitude(), end.getLatitude()));
             log.info("Gesendete Koordinaten an ORS: {}", coordinates);
 
 
-            //Body der post-request
             String body = """
                     {
                       "coordinates": %s
                     }
                     """.formatted(mapper.writeValueAsString(coordinates));
 
-            log.info("Starte ORS-Routenberechnung von '{}' nach '{}'", start.getDisplayName(), end.getDisplayName());
+            log.info("Starte ORS-Routenberechnung von '{}' nach '{}'", stops.getFirst().getDisplayName(), stops.getLast().getDisplayName());
             String response = orsClient.post()
                     .header("Authorization", apiKey)
                     .header("Content-Type", "application/json")

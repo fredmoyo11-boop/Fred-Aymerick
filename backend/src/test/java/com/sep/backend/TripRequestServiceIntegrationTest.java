@@ -4,9 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sep.backend.account.CustomerRepository;
 import com.sep.backend.entity.CustomerEntity;
 import com.sep.backend.entity.TripRequestEntity;
-import com.sep.backend.nominatim.data.LocationDTO;
+import com.sep.backend.location.Location;
 import com.sep.backend.trip.request.TripRequestBody;
 import com.sep.backend.trip.request.TripRequestService;
+import com.sep.backend.trip.request.TripRequestStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
 import java.security.Principal;
-import java.util.Collections;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -52,19 +53,18 @@ public class TripRequestServiceIntegrationTest {
         body.setNote("Bitte nicht rauchen.");
 
         // Start und Ziel setzen
-        LocationDTO start = new LocationDTO();
+        Location start = new Location();
         start.setLatitude(51.4501);
         start.setLongitude(7.0131);
         start.setDisplayName("Universität Duisburg-Essen");
 
-        LocationDTO end = new LocationDTO();
+        Location end = new Location();
         end.setLatitude(51.4982);
         end.setLongitude(6.8676);
         end.setDisplayName("Hbf Oberhausen");
 
         body.setStartLocation(start);
         body.setEndLocation(end);
-        body.setStops(Collections.emptyList()); // keine Zwischenstopps
 
         // Principal simulieren
         Principal principal = () -> testEmail;
@@ -75,11 +75,13 @@ public class TripRequestServiceIntegrationTest {
         // Validierungen
         assertNotNull(result);
         assertNotNull(result.getId());
-        assertEquals(com.sep.backend.trip.request.TripRequestStatus.ACTIVE, result.getStatus());
+        assertEquals(TripRequestStatus.ACTIVE, result.getStatus());
         assertEquals("SMALL", result.getDesiredCarType());
         assertEquals("Bitte nicht rauchen.", result.getNote());
         assertEquals(testEmail, result.getCustomer().getEmail());
         assertNotNull(result.getRoute());
+        // assertEquals(List.of(start.getLongitude(),start.getLatitude()),result.getRoute().getGeoJSON().getFeatures().getFirst().getGeometry().getCoordinates().getFirst());
+        // assertEquals(List.of(end.getLongitude(),end.getLatitude()),result.getRoute().getGeoJSON().getFeatures().getFirst().getGeometry().getCoordinates().getLast());
         assertTrue(result.getPrice() > 0);
     }
 }

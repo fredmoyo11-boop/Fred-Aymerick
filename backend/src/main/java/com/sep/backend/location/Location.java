@@ -31,8 +31,7 @@ public class Location {
     @Schema(description = "The display name of the location.", requiredMode = Schema.RequiredMode.REQUIRED)
     private String displayName;
 
-    @NotNull
-    @Schema(description = "The Nominatim GeoJSON for the location.", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "The Nominatim GeoJSON for the location.", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private NominatimFeature geoJSON;
 
 

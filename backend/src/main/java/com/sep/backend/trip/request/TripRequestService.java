@@ -1,6 +1,5 @@
 package com.sep.backend.trip.request;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sep.backend.CarTypes;
 import com.sep.backend.ErrorMessages;
 import com.sep.backend.NotFoundException;
@@ -10,12 +9,10 @@ import com.sep.backend.entity.*;
 import com.sep.backend.location.Location;
 import com.sep.backend.location.LocationService;
 import com.sep.backend.nominatim.NominatimService;
-import com.sep.backend.nominatim.data.NominatimFeature;
 import com.sep.backend.ors.data.ORSFeatureCollection;
 import com.sep.backend.route.RouteRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
@@ -173,7 +170,7 @@ public class TripRequestService {
 
 
 
-    public List<AvailableTripRequestDTO> getAvailableRequests(Location driverLocation) {
+    public List<AvailableTripRequestDTO> getAvailableRequests(@Valid Location driverLocation) {
         List<TripRequestEntity> activeRequests = tripRequestRepository.findByStatus(TripRequestStatus.ACTIVE);
 
         return activeRequests.stream().map(activeRequest ->

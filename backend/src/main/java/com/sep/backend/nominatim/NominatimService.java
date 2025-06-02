@@ -36,12 +36,11 @@ public class NominatimService {
 
         this.orsClient = RestClient.builder()
                 .baseUrl("https://api.openrouteservice.org/v2/directions/driving-car/geojson")
-                .defaultHeader("Authorization", apiKey)
+                .defaultHeader("Content-Type", "application/json")
                 .build();
 
         this.restClient = RestClient.builder()
                 .baseUrl("https://nominatim.openstreetmap.org")
-                .defaultHeader("Content-Type", "application/json")
                 .build();
     }
 
@@ -97,17 +96,18 @@ public class NominatimService {
 
     public Double requestDistanceToTripRequests(@Valid Location driverLocation, @Valid Location tripStartLocation) {
         try {
-
-            String response = orsClient.post()
-                    .header("Authorization", apiKey)
-                    .body("""
+            String body = """
                             {
                               "coordinates": [
                                 [%f, %f],
                                 [%f, %f]
                               ]
                             }
-                            """.formatted(driverLocation.getLongitude(), driverLocation.getLatitude(), tripStartLocation.getLongitude(), tripStartLocation.getLatitude()))
+                            """.formatted(driverLocation.getLongitude(), driverLocation.getLatitude(), tripStartLocation.getLongitude(), tripStartLocation.getLatitude());
+
+            String response = orsClient.post()
+                    .header("Authorization", this.apiKey)
+                    .body(body)
                     .retrieve()
                     .body(String.class);
 
@@ -136,7 +136,7 @@ public class NominatimService {
                 throw new ORSRequestException(ErrorMessages.ORS_PROCESSING_FAILED);
             }
             stops =  stops.stream()
-                    .peek (stop-> coordinates.add(List.of(stop.getLongitude(), stop.getLatitude())))
+                    .peek(stop-> coordinates.add(List.of(stop.getLongitude(), stop.getLatitude())))
                     .toList();
 
             log.info("Gesendete Koordinaten an ORS: {}", coordinates);
@@ -150,8 +150,7 @@ public class NominatimService {
 
             log.info("Starte ORS-Routenberechnung von '{}' nach '{}'", stops.getFirst().getDisplayName(), stops.getLast().getDisplayName());
             String response = orsClient.post()
-                    .header("Authorization", apiKey)
-                    .header("Content-Type", "application/json")
+                    .header("Authorization", this.apiKey)
                     .body(body)
                     .retrieve()
                     .body(String.class);

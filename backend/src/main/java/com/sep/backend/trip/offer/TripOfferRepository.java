@@ -4,9 +4,7 @@ import com.sep.backend.entity.TripOfferEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
-
 @Repository
 public interface TripOfferRepository  extends JpaRepository<TripOfferEntity, Long> {
-
+    public boolean existsByDriver_EmailAndStatus(String email, String status);
 }

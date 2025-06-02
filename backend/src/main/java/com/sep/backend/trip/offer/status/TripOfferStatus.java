@@ -1,4 +1,4 @@
-package com.sep.backend.trip.offer.options;
+package com.sep.backend.trip.offer.status;
 
 public class TripOfferStatus {
     public static final String OPEN = "OPEN";

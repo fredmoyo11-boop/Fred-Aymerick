@@ -24,7 +24,7 @@ public class ORSService {
             })
             .build();
 
-    public ORSFeatureCollection getRouteDirections(List<Coordinate> coordinates) throws ORSException, JsonProcessingException {
+    public ORSFeatureCollection getRouteDirections(List<Coordinate> coordinates) throws ORSException {
         //ORS expects coordinates in the form of [longitude, latitude]
         ObjectMapper mapper = new ObjectMapper();
 

@@ -12,6 +12,8 @@ public class Tags {
 
     public static final String NOMINATIM = "Nominatim";
 
+    public static final String ORS = "ORS";
+
 
     public Tags() {
         throw new UnsupportedOperationException("Tags cannot be instantiated");

@@ -9,11 +9,13 @@ import com.sep.backend.entity.TripRequestEntity;
 import com.sep.backend.location.Location;
 import com.sep.backend.nominatim.LocationRepository;
 import com.sep.backend.entity.LocationEntity;
+import com.sep.backend.route.RouteService;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -23,11 +25,13 @@ public class TripRequestService {
     private final LocationRepository locationRepository;
 
     private final AccountService accountService;
+    private final RouteService routeService;
 
-    public TripRequestService(TripRequestRepository tripRequestRepository, LocationRepository locationRepository, AccountService accountService) {
+    public TripRequestService(TripRequestRepository tripRequestRepository, LocationRepository locationRepository, AccountService accountService, RouteService routeService) {
         this.tripRequestRepository = tripRequestRepository;
         this.locationRepository = locationRepository;
         this.accountService = accountService;
+        this.routeService = routeService;
     }
 
     /**
@@ -110,19 +114,20 @@ public class TripRequestService {
         if (existsActiveTripRequest(email)) {
             throw new TripRequestException(ErrorMessages.ALREADY_EXISTS_TRIP_REQUEST);
         }
+        var customer = accountService.getCustomerByEmail(email);
+        var routeEntity = routeService.createRoute(tripRequestBody.getGeojson(), tripRequestBody.getLocations());
 
-//        LocationEntity startAddress = saveLocation(tripRequestBody.getStartLocation());
-//        LocationEntity endAddress = saveLocation(tripRequestBody.getEndLocation());
+        double price = (routeEntity.getGeoJSON().getFeatures().getFirst().getProperties().getSummary().getDistance() / 1000.0)
+                * CarTypes.getPricePerKilometer(tripRequestBody.getCarType());
 
         var tripRequestEntity = new TripRequestEntity();
-//        tripRequestEntity.setStartLocation(startAddress);
-//        tripRequestEntity.setEndLocation(endAddress);
-//        tripRequestEntity.setCarType(tripRequestBody.getCarType());
-//        tripRequestEntity.setNote(tripRequestBody.getNote());
-//        tripRequestEntity.setRequestStatus(TripRequestStatus.ACTIVE);
-
-        var customerEntity = accountService.getCustomerByEmail(email);
-        tripRequestEntity.setCustomer(customerEntity);
+        tripRequestEntity.setCustomer(customer);
+        tripRequestEntity.setRoute(routeEntity);
+        tripRequestEntity.setRequestTime(LocalDateTime.now());
+        tripRequestEntity.setCarType(tripRequestBody.getCarType());
+        tripRequestEntity.setStatus(TripRequestStatus.ACTIVE);
+        tripRequestEntity.setNote(tripRequestBody.getNote());
+        tripRequestEntity.setPrice(price);
 
         return tripRequestRepository.save(tripRequestEntity);
     }

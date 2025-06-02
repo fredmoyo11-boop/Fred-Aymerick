@@ -39,4 +39,7 @@ public class TripRequestEntity extends AbstractEntity {
 
     @Column(name = "price", nullable = false)
     private Double price; // in euro
+
+    @Column(name = "note", nullable = false)
+    private String note;
 }

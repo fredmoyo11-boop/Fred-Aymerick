@@ -20,13 +20,13 @@ public class TripHistoryService {
         this.tripHistorieRepository = tripHistorieRepository;
         this.accountService = accountService;
     }
-    @Schema(description = "Methode zum Erstellen und Speichern  einer abgeschlossenen Fahrt ")
+
     public TripHistoryEntity saveTripHistory(
             TripOfferEntity offer,
-            Double distance,
-            Integer duration,
-            Integer driverRating,
-            Integer customerRating
+            double distance,
+            int duration,
+            int driverRating,
+            int customerRating
     ) {
         TripRequestEntity request = offer.getTripRequest();
         CustomerEntity customer = request.getCustomer();

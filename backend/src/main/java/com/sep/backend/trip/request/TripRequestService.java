@@ -182,9 +182,12 @@ public class TripRequestService {
         return activeRequests.stream().map(activeRequest ->
         {
             List<LocationEntity> stops = activeRequest.getRoute().getStops();
-
-            if (stops == null || stops.isEmpty()) {
-                log.warn("Route '{}' hat keine Stops geladen!", activeRequest.getRoute().getId());
+            if(stops == null ) {
+                log.error("stops is null");
+                throw new RuntimeException("keine Aktive Fahranfrage");
+            }
+            if ( stops.isEmpty()) {
+                log.error("Route '{}' hat keine Stops geladen!", activeRequest.getRoute().getId());
 
                 throw new TripRequestException("Route enthält keine Stopps.");
             }

@@ -15,12 +15,10 @@ import java.util.List;
 
 @Service
 public class RouteService {
-    private final ORSService orsService;
     private final LocationService locationService;
     private final RouteRepository routeRepository;
 
-    public RouteService(ORSService orsService, LocationService locationService, RouteRepository routeRepository) {
-        this.orsService = orsService;
+    public RouteService(LocationService locationService, RouteRepository routeRepository) {
         this.locationService = locationService;
         this.routeRepository = routeRepository;
     }

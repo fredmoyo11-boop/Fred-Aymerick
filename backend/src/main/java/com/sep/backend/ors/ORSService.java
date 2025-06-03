@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
+import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -45,8 +46,8 @@ public class ORSService {
         try {
             //Tries to convert the string into the object ORSFeatureCollection
             return mapper.readValue(orsFeatureCollectionString, ORSFeatureCollection.class);
-        } catch (Exception e) { //TODO Be more specific with exceptions
-            throw new RuntimeException(e);
+        } catch (JsonProcessingException e) {
+            throw new ORSException("Could not parse ors feature collection");
         }
     }
 }

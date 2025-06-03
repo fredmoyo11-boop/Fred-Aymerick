@@ -5,7 +5,6 @@ import com.sep.backend.HttpStatus;
 import com.sep.backend.Tags;
 import com.sep.backend.location.Location;
 import com.sep.backend.nominatim.NominatimService;
-import com.sep.backend.nominatim.data.LocationDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -80,23 +79,14 @@ public class TripRequestController {
                     content = @Content(mediaType = "application/json",
                             array = @ArraySchema(schema = @Schema(implementation = AvailableTripRequestDTO.class))))})
     @GetMapping("/available")
-    public ResponseEntity<List<AvailableTripRequestDTO>> getAvailableRequests(@RequestBody @Valid LocationDTO driverLocation) {
+    public ResponseEntity<List<AvailableTripRequestDTO>> getAvailableRequests(@RequestBody @Valid Location driverLocation) {
 //            @RequestParam(defaultValue = "distanceInKm") String sort,
 //            @RequestParam(defaultValue = "asc") String direction)
 
-        List<AvailableTripRequestDTO> result = tripRequestService.getAvailableRequests(driverLocation);
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(tripRequestService.getAvailableRequests(driverLocation));
     }
 
 
-    @Operation(description = "Fahranfrage-History eines Fahrers oder eines Kunden ",
-            tags = {Tags.TRIP_REQUEST},
-            responses = {@ApiResponse(responseCode = HttpStatus.OK,
-                    content = @Content(mediaType = "application/json",
-                            array = @ArraySchema(schema = @Schema(implementation = TripHistoryDTO.class))))})
-    @GetMapping("/history")
-    public ResponseEntity<List<TripHistoryDTO>> getTripHistory(Principal principal) {
-        return ResponseEntity.ok(tripRequestService.getTripHistory(principal));
-    }
+
 
 }

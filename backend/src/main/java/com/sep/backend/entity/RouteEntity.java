@@ -23,13 +23,6 @@ public class RouteEntity extends AbstractEntity {
     @OrderColumn(name = "stop_order")
     private List<LocationEntity> stops;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "start_location_id")
-    private LocationEntity startLocation;
-
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "end_location_id")
-    private LocationEntity endLocation;
 
     @OneToOne(mappedBy = "route", cascade = CascadeType.ALL, orphanRemoval = true)
     private TripRequestEntity tripRequest;

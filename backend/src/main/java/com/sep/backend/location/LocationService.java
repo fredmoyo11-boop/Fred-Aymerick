@@ -17,7 +17,7 @@ public class LocationService {
     }
 
 
-    public LocationEntity saveLocation(Location location) {
+    public  LocationEntity saveLocation(Location location) {
         var locationEntity = new LocationEntity();
         locationEntity.setDisplayName(location.getDisplayName());
         locationEntity.setLongitude(location.getLongitude());

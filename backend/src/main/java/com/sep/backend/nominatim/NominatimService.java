@@ -2,19 +2,22 @@ package com.sep.backend.nominatim;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sep.backend.ErrorMessages;
 import com.sep.backend.entity.LocationEntity;
 import com.sep.backend.location.Location;
-import com.sep.backend.nominatim.data.LocationDTO;
 import com.sep.backend.nominatim.data.NominatimFeatureCollection;
 import com.sep.backend.ors.data.ORSFeatureCollection;
+import com.sep.backend.trip.request.ORSRequestException;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class NominatimService {
@@ -23,6 +26,7 @@ public class NominatimService {
     private final ObjectMapper mapper;
     private final RestClient restClient;
     private final RestClient orsClient;
+    private static final Logger log = LoggerFactory.getLogger(NominatimService.class);
 
     public NominatimService(@Value("${ors.api.key}") String apiKey, ObjectMapper mapper) {
 
@@ -32,7 +36,7 @@ public class NominatimService {
 
         this.orsClient = RestClient.builder()
                 .baseUrl("https://api.openrouteservice.org/v2/directions/driving-car/geojson")
-                .defaultHeader("Authorization", apiKey)
+                .defaultHeader("Content-Type", "application/json")
                 .build();
 
         this.restClient = RestClient.builder()
@@ -90,19 +94,20 @@ public class NominatimService {
     }
 
 
-    public Double getDistanceToTripRequests(LocationDTO driverLocation, LocationDTO tripStartLocation) throws DistanceNotFoundException {
+    public Double requestDistanceToTripRequests(@Valid Location driverLocation, @Valid Location tripStartLocation) {
         try {
-
-            String response = orsClient.post()
-                    .header("Authorization", apiKey)
-                    .body("""
+            String body = """
                             {
                               "coordinates": [
                                 [%f, %f],
                                 [%f, %f]
                               ]
                             }
-                            """.formatted(driverLocation.getLongitude(), driverLocation.getLatitude(), tripStartLocation.getLongitude(), tripStartLocation.getLatitude()))
+                            """.formatted(driverLocation.getLongitude(), driverLocation.getLatitude(), tripStartLocation.getLongitude(), tripStartLocation.getLatitude());
+
+            String response = orsClient.post()
+                    .header("Authorization", this.apiKey)
+                    .body(body)
                     .retrieve()
                     .body(String.class);
 
@@ -118,35 +123,44 @@ public class NominatimService {
 
 
         } catch (Exception e) {
-            throw new DistanceNotFoundException("Fehler bei der Distanzberechnung: " + e.getMessage());
+            throw new ORSRequestException(ErrorMessages.ORS_PROCESSING_FAILED + e.getMessage());
         }
     }
 
-    public ORSFeatureCollection requestORSRoute(LocationEntity start, LocationEntity end, Optional<List<LocationEntity>> stops) throws JsonProcessingException {
+    public ORSFeatureCollection requestORSRoute(List<LocationEntity> stops) {
+
+        try {
+            List<List<Double>> coordinates = new ArrayList<>();
+
+            if(stops==null||stops.size()<2) {
+                throw new ORSRequestException(ErrorMessages.ORS_PROCESSING_FAILED);
+            }
+            stops =  stops.stream()
+                    .peek(stop-> coordinates.add(List.of(stop.getLongitude(), stop.getLatitude())))
+                    .toList();
+
+            log.info("Gesendete Koordinaten an ORS: {}", coordinates);
 
 
-        List<List<Double>> coordinates = new ArrayList<>();
+            String body = """
+                    {
+                      "coordinates": %s
+                    }
+                    """.formatted(mapper.writeValueAsString(coordinates));
 
-        coordinates.add(List.of(start.getLongitude(), start.getLatitude()));
+            log.info("Starte ORS-Routenberechnung von '{}' nach '{}'", stops.getFirst().getDisplayName(), stops.getLast().getDisplayName());
+            String response = orsClient.post()
+                    .header("Authorization", this.apiKey)
+                    .body(body)
+                    .retrieve()
+                    .body(String.class);
 
-        stops.ifPresent(stopList -> coordinates.addAll(stopList.stream()
-                .map(locationPair -> List.of(locationPair.getLongitude(), locationPair.getLatitude()))
-                .toList()));
-        coordinates.add(List.of(end.getLongitude(), end.getLatitude()));
+            log.info("ORS-Route erfolgreich empfangen für {} Wegpunkte", coordinates.size());
+            return mapper.readValue(response, ORSFeatureCollection.class);
 
-        String body = """
-                {
-                  "coordinates": %s
-                }
-                """.formatted(mapper.writeValueAsString(coordinates));
-
-        String response = orsClient.post()
-                .header("Authorization", apiKey)
-                .body(body)
-                .retrieve()
-                .body(String.class);
-
-        return mapper.readValue(response, ORSFeatureCollection.class);
+        } catch (JsonProcessingException e) {
+            throw new ORSRequestException(ErrorMessages.ORS_PROCESSING_FAILED + e.getMessage());
+        }
     }
 
 }

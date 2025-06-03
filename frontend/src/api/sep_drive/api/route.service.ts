@@ -19,6 +19,8 @@ import { CustomHttpParameterCodec }                          from '../encoder';
 import { Observable }                                        from 'rxjs';
 
 // @ts-ignore
+import { ErrorResponse } from '../model/errorResponse';
+// @ts-ignore
 import { StringResponse } from '../model/stringResponse';
 // @ts-ignore
 import { WaypointResponse } from '../model/waypointResponse';

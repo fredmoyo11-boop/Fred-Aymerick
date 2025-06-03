@@ -1,4 +1,4 @@
-package com.sep.backend.config;
+package com.sep.backend;
 
 import com.sep.backend.account.FileStorageProperties;
 import org.springframework.context.annotation.Configuration;

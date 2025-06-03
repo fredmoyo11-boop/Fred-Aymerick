@@ -9,22 +9,19 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { Location } from './location';
 
 
 /**
- * Represents the body of a creation request for a trip.
+ * Represents an error response with status code and message.
  */
-export interface TripRequestBody { 
-    startLocation: Location;
-    endLocation: Location;
+export interface ErrorResponse { 
     /**
-     * The type of car requested.
+     * The status code of the error response.
      */
-    carType: string;
+    statusCode?: number;
     /**
-     * The optional notes by the customer.
+     * The message of the error response.
      */
-    note?: string;
+    message?: string;
 }
 

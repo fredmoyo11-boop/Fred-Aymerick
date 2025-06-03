@@ -4,6 +4,8 @@ api.module.ts
 api/account.service.ts
 api/api.ts
 api/auth.service.ts
+api/nominatim.service.ts
+api/notification.service.ts
 api/route.service.ts
 api/tripRequest.service.ts
 configuration.ts
@@ -12,9 +14,14 @@ git_push.sh
 index.ts
 model/accountDTO.ts
 model/authResponse.ts
-model/locationDTO.ts
+model/errorResponse.ts
+model/location.ts
 model/loginRequest.ts
 model/models.ts
+model/nominatimFeature.ts
+model/nominatimGeometry.ts
+model/nominatimProperties.ts
+model/notification.ts
 model/otpRequest.ts
 model/rating.ts
 model/stringResponse.ts

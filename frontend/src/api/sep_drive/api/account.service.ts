@@ -21,6 +21,8 @@ import { Observable }                                        from 'rxjs';
 // @ts-ignore
 import { AccountDTO } from '../model/accountDTO';
 // @ts-ignore
+import { ErrorResponse } from '../model/errorResponse';
+// @ts-ignore
 import { ModelString } from '../model/modelString';
 // @ts-ignore
 import { StringResponse } from '../model/stringResponse';

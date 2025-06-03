@@ -12,20 +12,16 @@
 
 
 /**
- * Represents a DTO for a location.
+ * Represents a GeoJSON Geometry as standardized by RFC 7946.
  */
-export interface LocationDTO { 
+export interface NominatimGeometry { 
     /**
-     * The display name of the location.
+     * The geometry type.
      */
-    display_name: string;
+    type: string;
     /**
-     * The latitude of the location.
+     * The coordinates of the geometry.
      */
-    lat: number;
-    /**
-     * The longitude of the location.
-     */
-    lon: number;
+    coordinates: Array<number>;
 }
 

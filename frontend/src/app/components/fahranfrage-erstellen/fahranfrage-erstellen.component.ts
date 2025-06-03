@@ -21,7 +21,7 @@ import {ActiveRideDialogComponent} from '../active-ride-dialog/active-ride-dialo
 import {TripRequestBody, TripRequestService} from '../../../api/sep_drive';
 import {LocationDTO,TripRequestDTO} from '../../../api/sep_drive';
 import {MatSelect, MatSelectChange} from '@angular/material/select';
-
+import {Location} from '../../../api/sep_drive';
 
 @Component({
   selector: 'app-fahranfrage-erstellen',
@@ -147,9 +147,9 @@ export class FahranfrageErstellenComponent implements OnInit {
   checkActiveRide(): void {
     // Start und Ziel dürfen nicht gleich sein
     const sameLocation =
-      this.start.lat === this.end.lat &&
-      this.start.lon === this.end.lon &&
-      this.start.display_name === this.end.display_name;
+      this.start.latitude === this.end.latitude &&
+      this.start.longitude === this.end.longitude &&
+      this.start.displayName === this.end.displayName;
 
     if (sameLocation) {
       this.tripRequestForm.setErrors({ sameStartEndLocation: true });
@@ -190,12 +190,12 @@ export class FahranfrageErstellenComponent implements OnInit {
   }
 
 
-  submitRideRequest () {2
+  submitRideRequest () {
     const form = this.tripRequestForm.value;
     const tripRequestBody: TripRequestBody = {
       startLocation: this.start,
       endLocation: this.end,
-      carType: form.carType,
+      desiredCarType: form.carType,
       note: form.note || ''
     };
 

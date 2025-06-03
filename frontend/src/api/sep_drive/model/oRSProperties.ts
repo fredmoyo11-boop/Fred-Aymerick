@@ -9,26 +9,22 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { LocationDTO } from './locationDTO';
+import { ORSSummary } from './oRSSummary';
+import { ORSSegment } from './oRSSegment';
 
 
 /**
- * Represents the body of a creation request for a trip.
+ * Represents the properties of a feature.
  */
-export interface TripRequestBody { 
+export interface ORSProperties { 
     /**
-     * The Stops location of the trip.
+     * The segments.
      */
-    stops?: Array<LocationDTO>;
-    startLocation: LocationDTO;
-    endLocation: LocationDTO;
+    segments: Array<ORSSegment>;
     /**
-     * The type of car requested.
+     * The way points.
      */
-    desiredCarType: string;
-    /**
-     * The optional notes by the customer.
-     */
-    note?: string;
+    way_points: Array<number>;
+    summary: ORSSummary;
 }
 

@@ -9,26 +9,19 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { LocationDTO } from './locationDTO';
 
 
 /**
- * Represents the body of a creation request for a trip.
+ * Represents the summary of a request made by ORS.
  */
-export interface TripRequestBody { 
+export interface ORSSummary { 
     /**
-     * The Stops location of the trip.
+     * The total distance.
      */
-    stops?: Array<LocationDTO>;
-    startLocation: LocationDTO;
-    endLocation: LocationDTO;
+    distance: number;
     /**
-     * The type of car requested.
+     * The total duration.
      */
-    desiredCarType: string;
-    /**
-     * The optional notes by the customer.
-     */
-    note?: string;
+    duration: number;
 }
 

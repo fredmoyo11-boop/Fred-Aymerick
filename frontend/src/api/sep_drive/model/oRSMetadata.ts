@@ -9,26 +9,27 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { LocationDTO } from './locationDTO';
+import { ORSEngine } from './oRSEngine';
+import { ORSQuery } from './oRSQuery';
 
 
 /**
- * Represents the body of a creation request for a trip.
+ * Represents the meta data produces by ORS.
  */
-export interface TripRequestBody { 
+export interface ORSMetadata { 
     /**
-     * The Stops location of the trip.
+     * The attribution.
      */
-    stops?: Array<LocationDTO>;
-    startLocation: LocationDTO;
-    endLocation: LocationDTO;
+    attribution: string;
     /**
-     * The type of car requested.
+     * The service.
      */
-    desiredCarType: string;
+    service: string;
     /**
-     * The optional notes by the customer.
+     * The timestamp.
      */
-    note?: string;
+    timestamp: number;
+    query: ORSQuery;
+    engine: ORSEngine;
 }
 

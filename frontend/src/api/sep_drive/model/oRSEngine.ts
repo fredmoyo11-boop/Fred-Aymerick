@@ -9,26 +9,23 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { LocationDTO } from './locationDTO';
 
 
 /**
- * Represents the body of a creation request for a trip.
+ * Represents the ORS engine information.
  */
-export interface TripRequestBody { 
+export interface ORSEngine { 
     /**
-     * The Stops location of the trip.
+     * The version of the engine.
      */
-    stops?: Array<LocationDTO>;
-    startLocation: LocationDTO;
-    endLocation: LocationDTO;
+    version: string;
     /**
-     * The type of car requested.
+     * The build date of the engine.
      */
-    desiredCarType: string;
+    build_date: string;
     /**
-     * The optional notes by the customer.
+     * The graph date of the engine.
      */
-    note?: string;
+    graph_date: string;
 }
 

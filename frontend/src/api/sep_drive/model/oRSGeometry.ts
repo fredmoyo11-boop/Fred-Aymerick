@@ -9,26 +9,19 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { LocationDTO } from './locationDTO';
 
 
 /**
- * Represents the body of a creation request for a trip.
+ * Represents the GeoJSON geometry.
  */
-export interface TripRequestBody { 
+export interface ORSGeometry { 
     /**
-     * The Stops location of the trip.
+     * The geometry type.
      */
-    stops?: Array<LocationDTO>;
-    startLocation: LocationDTO;
-    endLocation: LocationDTO;
+    type: string;
     /**
-     * The type of car requested.
+     * The coordinates of the geometry.
      */
-    desiredCarType: string;
-    /**
-     * The optional notes by the customer.
-     */
-    note?: string;
+    coordinates: Array<Array<number>>;
 }
 

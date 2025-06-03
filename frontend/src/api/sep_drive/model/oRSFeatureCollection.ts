@@ -9,26 +9,26 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { LocationDTO } from './locationDTO';
+import { ORSFeature } from './oRSFeature';
+import { ORSMetadata } from './oRSMetadata';
 
 
 /**
- * Represents the body of a creation request for a trip.
+ * Represents the GeoJSON FeatureCollection.
  */
-export interface TripRequestBody { 
+export interface ORSFeatureCollection { 
     /**
-     * The Stops location of the trip.
+     * The feature collection type.
      */
-    stops?: Array<LocationDTO>;
-    startLocation: LocationDTO;
-    endLocation: LocationDTO;
+    type: string;
     /**
-     * The type of car requested.
+     * The bounding box.
      */
-    desiredCarType: string;
+    bbox: Array<number>;
     /**
-     * The optional notes by the customer.
+     * The features.
      */
-    note?: string;
+    features: Array<ORSFeature>;
+    metadata: ORSMetadata;
 }
 

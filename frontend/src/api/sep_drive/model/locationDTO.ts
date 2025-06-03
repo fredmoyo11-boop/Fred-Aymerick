@@ -16,16 +16,16 @@
  */
 export interface LocationDTO { 
     /**
-     * The display name of the location.
-     */
-    display_name: string;
-    /**
      * The latitude of the location.
      */
-    lat: number;
+    latitude: number;
     /**
      * The longitude of the location.
      */
-    lon: number;
+    longitude: number;
+    /**
+     * The displayName of the location.
+     */
+    displayName: string;
 }
 

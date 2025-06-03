@@ -38,10 +38,10 @@ public class AvailableTripRequestDTO {
     private double totalDistanceInKm;
 
     @Schema(description = "Gesamte Preis der Fahrt ",requiredMode = Schema.RequiredMode.REQUIRED)
-    private Double price;
+    private double price;
 
     @Schema(description = "Gesamte Dauer der Fahrt in Sekunde ",requiredMode = Schema.RequiredMode.REQUIRED)
-    private Double duration;
+    private double duration;
 
 
 }

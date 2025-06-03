@@ -20,8 +20,8 @@ public class LocationService {
     public LocationEntity saveLocation(Location location) {
         var locationEntity = new LocationEntity();
         locationEntity.setDisplayName(location.getDisplayName());
-        locationEntity.setLongitude(location.getLongitude());
-        locationEntity.setLatitude(location.getLatitude());
+        locationEntity.setLongitude(location.getCoordinate().getLongitude());
+        locationEntity.setLatitude(location.getCoordinate().getLatitude());
         locationEntity.setGeoJSON(location.getGeoJSON());
         return locationRepository.save(locationEntity);
     }

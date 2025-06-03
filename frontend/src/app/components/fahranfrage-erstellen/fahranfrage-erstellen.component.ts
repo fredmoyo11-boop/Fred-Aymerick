@@ -154,8 +154,7 @@ export class FahranfrageErstellenComponent implements OnInit {
   checkActiveRide(): void {
     // Start und Ziel dürfen nicht gleich sein
     const sameLocation =
-      this.start.latitude === this.end.latitude &&
-      this.start.longitude === this.end.longitude &&
+      this.start == this.end &&
       this.start.displayName === this.end.displayName;
 
     if (sameLocation) {

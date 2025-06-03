@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.util.List;
 
 @RestController
@@ -30,7 +31,7 @@ public class RouteController {
 
     @GetMapping("/health")
     @Operation(description = "Returns the status of the route controller.",
-            tags={Tags.ROUTE},
+            tags = {Tags.ROUTE},
             responses = {
                     @ApiResponse(responseCode = HttpStatus.OK, description = "Route controller healthy.",
                             content = @Content(schema = @Schema(implementation = StringResponse.class)))})
@@ -40,7 +41,7 @@ public class RouteController {
 
     @GetMapping("/metadata/{id}")
     @Operation(description = "Returns start, end, count of midpoints and count of path waypoints from the route.",
-            tags={Tags.ROUTE},
+            tags = {Tags.ROUTE},
             responses = {
                     @ApiResponse(responseCode = HttpStatus.OK, description = "Route metadata returned.",
                             content = @Content(array = @ArraySchema(schema = @Schema(implementation = WaypointResponse.class))))}
@@ -51,7 +52,7 @@ public class RouteController {
 
     @GetMapping("/midpoints/{id}")
     @Operation(description = "Returns all midpoints from the route.",
-            tags={Tags.ROUTE},
+            tags = {Tags.ROUTE},
             responses = {
                     @ApiResponse(responseCode = HttpStatus.OK, description = "Route midpoints returned.",
                             content = @Content(array = @ArraySchema(schema = @Schema(implementation = WaypointResponse.class))))}
@@ -62,7 +63,7 @@ public class RouteController {
 
     @GetMapping("/full/{id}")
     @Operation(description = "Returns the full route.",
-            tags={Tags.ROUTE},
+            tags = {Tags.ROUTE},
             responses = {
                     @ApiResponse(responseCode = HttpStatus.OK, description = "Route returned.",
                             content = @Content(array = @ArraySchema(schema = @Schema(implementation = WaypointResponse.class))))}
@@ -73,7 +74,7 @@ public class RouteController {
 
     @PostMapping("/import/geojson")
     @Operation(description = "Accepts and Imports route from geoJSON.",
-            tags={Tags.ROUTE},
+            tags = {Tags.ROUTE},
             responses = {
                     @ApiResponse(responseCode = HttpStatus.OK, description = "geoJSON accepted.",
                             content = @Content(schema = @Schema(implementation = StringResponse.class)))},
@@ -85,5 +86,15 @@ public class RouteController {
             ))
     public StringResponse importRoute(@Parameter(description = "geoJSON file") @RequestPart(value = "file") MultipartFile file) {
         return new StringResponse(routeService.importGeoJson(file));
+    }
+
+
+    @GetMapping("/temp/route")
+    @Operation(description = "Access route.",
+            tags = {Tags.ROUTE},
+            responses = @ApiResponse(responseCode = HttpStatus.OK, description = "foo",
+                    content = @Content(schema = @Schema(implementation = Route.class))))
+    public Route getRoute() {
+        return new Route();
     }
 }

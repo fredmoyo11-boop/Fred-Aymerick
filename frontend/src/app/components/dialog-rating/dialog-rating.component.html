@@ -1,0 +1,19 @@
+<h2 mat-dialog-title>Rate your trip!</h2>
+<mat-dialog-content>
+  <div class="content">
+    <div class="star-container">
+      @for (i of [0, 1, 2, 3, 4]; track idx; let idx = $index) {
+        <button mat-icon-button (click)="setSelectedIndex(i)">
+          <mat-icon [ngClass]="{
+        'yellow-star': idx <= selectedIndex
+        }">star
+          </mat-icon>
+        </button>
+      }
+    </div>
+    <span style="font-weight: bold">If you don't rate the trip it will automatically be rated as five stars!</span>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button (click)="onConfirm()">Rate</button>
+</mat-dialog-actions>

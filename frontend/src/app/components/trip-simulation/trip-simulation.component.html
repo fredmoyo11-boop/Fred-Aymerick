@@ -1,0 +1,56 @@
+<div class="map-container">
+  <app-trip-visualizer [routeDTO]="routeDTO"
+                        [animationLayerGroup]="animationLayer"></app-trip-visualizer>
+  @if (animationInitialized && animationPaused && !isLocked) {
+    <div class="overlay-panel">
+      <mat-accordion>
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              Route
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <div cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
+            @for (stop of this.stops; track idx; let idx = $index) {
+              <div class="example-box" cdkDrag>
+                <span cdkDragHandle class="handle">☰</span>
+                <div class="stop-content" (click)="select(idx)">
+                  {{ idx + 1 }}.
+                  {{ stop.displayName }}
+                </div>
+                <button mat-icon-button (click)="remove(idx)">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            }
+          </div>
+          <button mat-icon-button (click)="add()">
+            <mat-icon>add</mat-icon>
+          </button>
+        </mat-expansion-panel>
+      </mat-accordion>
+    </div>
+  }
+</div>
+
+@if (isLocked) {
+  <p style="font-weight: bold">Animation is currently locked!</p>
+} @else {
+  <div class="control-container">
+    @if (!animationInitialized || animationPaused) {
+      <button mat-icon-button (click)="start()" [disabled]="animationCompleted">
+        <mat-icon>play_arrow</mat-icon>
+      </button>
+    } @else if (!animationPaused) {
+      <button mat-icon-button (click)="stop()" [disabled]="animationCompleted">
+        <mat-icon>pause</mat-icon>
+      </button>
+    }
+
+    <mat-slider min="3" max="30" step="1">
+      <input matSliderThumb [(ngModel)]="sliderDuration" (valueChange)="onSliderChange($event)"
+             [disabled]="animationCompleted">
+    </mat-slider>
+  </div>
+}
+

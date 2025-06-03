@@ -8,11 +8,14 @@ import com.sep.backend.account.AccountService;
 import com.sep.backend.entity.*;
 import com.sep.backend.location.Location;
 import com.sep.backend.location.LocationService;
+import com.sep.backend.nominatim.LocationRepository;
 import com.sep.backend.nominatim.NominatimService;
 import com.sep.backend.ors.data.ORSFeatureCollection;
 import com.sep.backend.route.RouteRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
@@ -28,6 +31,7 @@ public class TripRequestService {
     private final LocationService locationService;
     private final RouteRepository routeRepository;
     private final AccountService accountService;
+    private static final Logger log = LoggerFactory.getLogger(TripRequestService.class);
 
     public TripRequestService(NominatimService nominatimService, TripHistorieRepository tripHistoryRepository, TripRequestRepository tripRequestRepository, LocationService locationService, RouteRepository routeRepository, AccountService accountService) {
         this.nominatimService = nominatimService;
@@ -137,10 +141,11 @@ public class TripRequestService {
     }
 
 
-    public RouteEntity saveRoute(List<LocationEntity> stops, ORSFeatureCollection geoJson) {
+    public RouteEntity saveRoute(List<LocationEntity> stops,ORSFeatureCollection geoJson) {
         RouteEntity route = new RouteEntity();
         route.setStops(stops);
         route.setGeoJSON(geoJson);
+        stops.forEach(stop -> stop.setRoute(route)); // ← Beziehung rückwärts setzen!
         return routeRepository.save(route);
     }
 
@@ -167,12 +172,22 @@ public class TripRequestService {
         tripRequestRepository.save(tripRequestEntity);
     }
 
-
+    @Transactional
     public List<AvailableTripRequestDTO> getAvailableRequests(@Valid Location driverLocation) {
         List<TripRequestEntity> activeRequests = tripRequestRepository.findByStatus(TripRequestStatus.ACTIVE);
+        if (activeRequests == null || activeRequests.isEmpty()) {
+             throw new RuntimeException("keine Aktive Fahranfrage Verfügbar ");
+        }
 
         return activeRequests.stream().map(activeRequest ->
         {
+            List<LocationEntity> stops = activeRequest.getRoute().getStops();
+
+            if (stops == null || stops.isEmpty()) {
+                log.warn("Route '{}' hat keine Stops geladen!", activeRequest.getRoute().getId());
+
+                throw new TripRequestException("Route enthält keine Stopps.");
+            }
 
             LocationEntity start = activeRequest.getRoute().getStops().getFirst();
             CustomerEntity customer = activeRequest.getCustomer();

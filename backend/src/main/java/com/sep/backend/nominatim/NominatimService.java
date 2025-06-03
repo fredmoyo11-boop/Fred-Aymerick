@@ -96,14 +96,14 @@ public class NominatimService {
 
     public Double requestDistanceToTripRequests(@Valid Location driverLocation, @Valid Location tripStartLocation) {
         try {
-            String body = """
+            String body = String.format(java.util.Locale.US, """
                             {
                               "coordinates": [
                                 [%f, %f],
                                 [%f, %f]
                               ]
                             }
-                            """.formatted(driverLocation.getLongitude(), driverLocation.getLatitude(), tripStartLocation.getLongitude(), tripStartLocation.getLatitude());
+                            """,driverLocation.getLongitude(), driverLocation.getLatitude(), tripStartLocation.getLongitude(), tripStartLocation.getLatitude());
 
             String response = orsClient.post()
                     .header("Authorization", this.apiKey)

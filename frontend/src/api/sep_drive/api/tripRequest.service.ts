@@ -19,7 +19,9 @@ import { CustomHttpParameterCodec }                          from '../encoder';
 import { Observable }                                        from 'rxjs';
 
 // @ts-ignore
-import { LocationDTO } from '../model/locationDTO';
+import { ErrorResponse } from '../model/errorResponse';
+// @ts-ignore
+import { Location } from '../model/location';
 // @ts-ignore
 import { TripRequestBody } from '../model/tripRequestBody';
 // @ts-ignore
@@ -292,9 +294,9 @@ export class TripRequestService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public searchLocations(query: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<Array<LocationDTO>>;
-    public searchLocations(query: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<HttpResponse<Array<LocationDTO>>>;
-    public searchLocations(query: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<HttpEvent<Array<LocationDTO>>>;
+    public searchLocations(query: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<Array<Location>>;
+    public searchLocations(query: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<HttpResponse<Array<Location>>>;
+    public searchLocations(query: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<HttpEvent<Array<Location>>>;
     public searchLocations(query: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<any> {
         if (query === null || query === undefined) {
             throw new Error('Required parameter query was null or undefined when calling searchLocations.');
@@ -345,7 +347,7 @@ export class TripRequestService {
             }
         }
 
-        return this.httpClient.get<Array<LocationDTO>>(`${this.configuration.basePath}/api/trip/request/search`,
+        return this.httpClient.get<Array<Location>>(`${this.configuration.basePath}/api/trip/request/search`,
             {
                 context: localVarHttpContext,
                 params: localVarQueryParameters,

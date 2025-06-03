@@ -60,7 +60,7 @@ public class JwtUtil {
      */
     private String generateToken(String email, String role, long expiration) {
         return Jwts.builder()
-                .subject(email.toLowerCase())
+                .subject(email)
                 .claim("role", role)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + expiration))
@@ -75,10 +75,9 @@ public class JwtUtil {
      * @param claimsResolver The claims resolver.
      * @param <T>            The class of the claim to be extracted.
      * @return The extracted claim.
-     * @throws ExpiredJwtException      If the token is expired.
-     * @throws IllegalArgumentException If the token is null or empty.
+     * @throws ExpiredJwtException
      */
-    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) throws ExpiredJwtException, IllegalArgumentException {
+    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) throws ExpiredJwtException {
         Claims claims = Jwts.parser()
                 .verifyWith(getSigningKey())
                 .build()
@@ -114,8 +113,28 @@ public class JwtUtil {
      * @param token The token.
      * @return The extracted email.
      */
-    public String extractEmail(String token) throws ExpiredJwtException, IllegalArgumentException {
+    public String extractEmail(String token) {
         return extractClaim(token, Claims::getSubject);
+    }
+
+    public Optional<String> safeExtractEmail(String token) {
+        try {
+            return Optional.ofNullable(extractEmail(token));
+        } catch (ExpiredJwtException e) {
+            return Optional.empty();
+        }
+    }
+
+    public String extractRole(String token) {
+        return extractClaim(token, claims -> claims.get("role", String.class));
+    }
+
+    public Optional<String> safeExtractRole(String token) {
+        try {
+            return Optional.ofNullable(extractRole(token));
+        } catch (ExpiredJwtException e) {
+            return Optional.empty();
+        }
     }
 
 }

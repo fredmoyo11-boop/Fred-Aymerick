@@ -4,6 +4,8 @@ import { HttpClient } from '@angular/common/http';
 
 import { AccountService } from './api/account.service';
 import { AuthService } from './api/auth.service';
+import { NominatimService } from './api/nominatim.service';
+import { NotificationService } from './api/notification.service';
 import { RouteService } from './api/route.service';
 import { TripRequestService } from './api/tripRequest.service';
 

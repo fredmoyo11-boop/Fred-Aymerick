@@ -9,30 +9,26 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { Location } from './location';
+import { NominatimFeature } from './nominatimFeature';
 
 
-/**
- * Represents a request for a drive.
- */
-export interface TripRequestDTO { 
+export interface Location { 
     /**
-     * The customer requesting drive.
+     * The id of the location. Might be null if location does not have related entity.
      */
-    email: string;
-    startLocation: Location;
-    endLocation: Location;
+    locationId?: number;
     /**
-     * The type of car requested.
+     * The longitude of the location.
      */
-    carType: string;
+    longitude: number;
     /**
-     * The optional notes for the driver.
+     * The latitude of the location.
      */
-    note?: string;
+    latitude: number;
     /**
-     * The current status of the trip. Either ACTIVE or DELETED.
+     * The display name of the location.
      */
-    status?: string;
+    displayName: string;
+    geoJSON: NominatimFeature;
 }
 

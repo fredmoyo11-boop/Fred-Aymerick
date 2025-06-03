@@ -9,22 +9,23 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { Location } from './location';
+import { NominatimProperties } from './nominatimProperties';
+import { NominatimGeometry } from './nominatimGeometry';
 
 
 /**
- * Represents the body of a creation request for a trip.
+ * Represents a GeoJSON Feature as standardized by RFC 7946.
  */
-export interface TripRequestBody { 
-    startLocation: Location;
-    endLocation: Location;
+export interface NominatimFeature { 
     /**
-     * The type of car requested.
+     * The feature type.
      */
-    carType: string;
+    type: string;
     /**
-     * The optional notes by the customer.
+     * The bounding box.
      */
-    note?: string;
+    bbox: Array<number>;
+    properties: NominatimProperties;
+    geometry: NominatimGeometry;
 }
 

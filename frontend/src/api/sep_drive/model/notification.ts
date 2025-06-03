@@ -9,30 +9,23 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { Location } from './location';
 
 
 /**
- * Represents a request for a drive.
+ * Represents a notification.
  */
-export interface TripRequestDTO { 
+export interface Notification { 
     /**
-     * The customer requesting drive.
+     * The unique id of the notification.
      */
-    email: string;
-    startLocation: Location;
-    endLocation: Location;
+    id: number;
     /**
-     * The type of car requested.
+     * The type of the notification.
      */
-    carType: string;
+    notificationType: string;
     /**
-     * The optional notes for the driver.
+     * The message of the notification.
      */
-    note?: string;
-    /**
-     * The current status of the trip. Either ACTIVE or DELETED.
-     */
-    status?: string;
+    message: string;
 }
 

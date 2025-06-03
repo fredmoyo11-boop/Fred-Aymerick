@@ -1,4 +1,4 @@
-package com.sep.backend.config;
+package com.sep.backend;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Configuration;
 @OpenAPIDefinition(
         info = @Info(
                 title = "SEP-Drive Gruppe P API",
-                version = "0.0.1",
+                version = "2.0.0",
                 contact = @Contact(
                         name = "Mats Paul Tončik",
                         url = "https://tnck.dev",

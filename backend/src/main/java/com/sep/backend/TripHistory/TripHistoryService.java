@@ -4,7 +4,6 @@ import com.sep.backend.Roles;
 import com.sep.backend.account.AccountService;
 import com.sep.backend.entity.*;
 import com.sep.backend.trip.request.TripRequestException;
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
 import java.security.Principal;
@@ -13,11 +12,11 @@ import java.util.List;
 
 @Service
 public class TripHistoryService {
-    private final TripHistorieRepository tripHistorieRepository;
+    private final TripHistoryRepository tripHistoryRepository;
     private final AccountService accountService;
 
-    public TripHistoryService(TripHistorieRepository tripHistorieRepository, AccountService accountService) {
-        this.tripHistorieRepository = tripHistorieRepository;
+    public TripHistoryService(TripHistoryRepository tripHistoryRepository, AccountService accountService) {
+        this.tripHistoryRepository = tripHistoryRepository;
         this.accountService = accountService;
     }
 
@@ -44,7 +43,7 @@ public class TripHistoryService {
         history.setCustomerRating(customerRating);
         history.setDriverRating(driverRating);
 
-        return tripHistorieRepository.save(history);
+        return tripHistoryRepository.save(history);
     }
     public TripHistoryEntity saveTripHistory(@Valid TripHistoryDTO tripHistoryDTO) {
         TripHistoryEntity tripHistoryEntity = new TripHistoryEntity();
@@ -57,7 +56,7 @@ public class TripHistoryService {
         tripHistoryEntity.setCustomerRating(tripHistoryDTO.getCustomerRating());
         tripHistoryEntity.setDriverRating(tripHistoryDTO.getDriverRating());
         tripHistoryEntity.setPrice(tripHistoryDTO.getPrice());
-        return tripHistorieRepository.save(tripHistoryEntity);
+        return tripHistoryRepository.save(tripHistoryEntity);
     }
 
     public List<TripHistoryDTO> getCurrentTripHistory(Principal principal) {
@@ -65,10 +64,10 @@ public class TripHistoryService {
         if (accountService.existsEmail(email)) {
             if (Roles.CUSTOMER.equals(accountService.getRoleByEmail(email))) {
                 var customerEntity = accountService.getCustomerByEmail(email);
-                return MapToTripHistoryDTO(tripHistorieRepository.findByCustomer(customerEntity));
+                return MapToTripHistoryDTO(tripHistoryRepository.findByCustomer(customerEntity));
             } else {
                 var driverEntity = accountService.getDriverByEmail(email);
-                return MapToTripHistoryDTO(tripHistorieRepository.findByDriver(driverEntity));
+                return MapToTripHistoryDTO(tripHistoryRepository.findByDriver(driverEntity));
             }
         } else {
             throw new TripRequestException(ErrorMessages.HISTORY_NOT_FOUND);

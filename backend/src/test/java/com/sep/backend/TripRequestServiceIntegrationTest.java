@@ -1,5 +1,8 @@
 package com.sep.backend;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sep.backend.TripHistory.TripHistoryDTO;
+import com.sep.backend.TripHistory.TripHistoryService;
+import com.sep.backend.TripOffer.TripOfferRepository;
 import com.sep.backend.account.CustomerRepository;
 import com.sep.backend.account.DriverRepository;
 import com.sep.backend.entity.*;
@@ -23,6 +26,7 @@ import java.security.Principal;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -44,25 +48,39 @@ public class TripRequestServiceIntegrationTest {
     private LocationRepository locationRepository;
 
     @Autowired
+    private TripHistoryService tripHistoryService;
+    @Autowired
     private  DriverRepository driverRepository;
 
     @Autowired
     private NominatimService nominatimService;
+
+    @Autowired
+    private TripHistoryRepository  tripHistoryRepository;
+
+    @Autowired
+    private TripOfferRepository tripOfferRepository;
 
     private final String  email = "testoooo@gmail.com";
 
     @Autowired
     private CustomerRepository customerRepository;
 
-    private final String testEmail = "hello@example.com";
+    private final String testEmail = "hellokitit@example.com";
     @Autowired
     private MockMvc mockMvc;
 
     @BeforeEach
     void setUp() throws InterruptedException {
+        tripHistoryRepository.deleteAll();     // 1. History zuerst
+        tripOfferRepository.deleteAll();       // 2. dann Offers
+        tripRequestRepository.deleteAll();     // 3. dann TripRequests
+        locationRepository.deleteAll();        // 4. optional, falls du LocationEntities speicherst
+        driverRepository.deleteAll();          // 5. dann Driver
+        customerRepository.deleteAll();
         CustomerEntity customer = new CustomerEntity();
         customer.setEmail(testEmail);
-        customer.setUsername("testuser");
+        customer.setUsername("userrrr");
         customer.setPassword("pass123");
         customer.setFirstName("Max");
         customer.setLastName("Mustermann");
@@ -73,8 +91,8 @@ public class TripRequestServiceIntegrationTest {
 
 
         DriverEntity driver = new DriverEntity();
-        driver.setEmail("aymericko@gmail.com");
-        driver.setUsername("fredmoyo");
+        driver.setEmail("aymerickooo@gmail.com");
+        driver.setUsername("freddioii");
         driver.setPassword("fredmoyo");
         driver.setFirstName("Fred");
         driver.setLastName("Mustermann");
@@ -108,16 +126,35 @@ public class TripRequestServiceIntegrationTest {
 
 
 
-       tripRequestService.createCurrentActiveTripRequest(body, principal);
+       var trip = tripRequestService.createCurrentActiveTripRequest(body, principal);
 
 
+       TripOfferEntity tripOfferEntity = new TripOfferEntity();
+       tripOfferEntity.setTripRequest(trip);
+       tripOfferEntity.setDriver(driver);
+       tripOfferEntity.setStatus(TripRequestStatus.ACTIVE);
+       var offer = tripOfferRepository.save(tripOfferEntity);
+
+       var history = tripHistoryService.saveTripHistory(
+               offer,
+               trip.getRoute().getGeoJSON().getFeatures().getFirst().getProperties().getSummary().getDistance(),
+               (int) trip.getRoute().getGeoJSON().getFeatures().getFirst().getProperties().getSummary().getDuration(),
+               3,
+               2
+               );
 
     }
     @AfterEach
     void DeleteAllTripRequests() {
-        customerRepository.deleteAll();
-        tripRequestRepository.deleteAll();
-        driverRepository.deleteAll();
+
+            tripHistoryRepository.deleteAll();     // 1. History zuerst
+            tripOfferRepository.deleteAll();       // 2. dann Offers
+            tripRequestRepository.deleteAll();     // 3. dann TripRequests
+            locationRepository.deleteAll();        // 4. optional, falls du LocationEntities speicherst
+            driverRepository.deleteAll();          // 5. dann Driver
+            customerRepository.deleteAll();        // 6. zuletzt Customer
+
+
     }
 
     @Test
@@ -145,6 +182,9 @@ public class TripRequestServiceIntegrationTest {
         Principal principal = () -> testEmail;
 
         // Methode ausführen
+        if(tripRequestService.existsActiveTripRequest(testEmail)) {
+            tripRequestService.deleteCurrentActiveTripRequest(principal);
+        }
         TripRequestEntity result = tripRequestService.createCurrentActiveTripRequest(body, principal);
 
         // Validierungen
@@ -186,12 +226,38 @@ public class TripRequestServiceIntegrationTest {
                 response,
                 mapper.getTypeFactory().constructCollectionType(List.class, AvailableTripRequestDTO.class)
         );
-         String user = "testuser";
+         String user = "userrrr";
 
         assertNotNull(trips);
         assertFalse(trips.isEmpty());
         assertTrue(trips.getFirst().getDistanceInKm() > 0);
         assertEquals(user, trips.getFirst().getCustomerUsername());
+
+    }
+
+@Test
+    @WithMockUser(username = "aymerickooo@gmail.com", roles = Roles.DRIVER)
+    void testGetTripHistory_Success() throws Exception {
+
+        String response = mockMvc.perform(get("/api/trip/history")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
+        List<TripHistoryDTO> history = mapper.readValue(response ,mapper.getTypeFactory().constructCollectionType(List.class, TripHistoryDTO.class));
+
+                assertNotNull(history);
+                assertFalse(history.isEmpty());
+                TripHistoryDTO historyDTO = history.getFirst();
+                assertNotNull(historyDTO);
+        assertEquals("userrrr", history.getFirst().getCustomerUsername());
+        assertEquals("freddioii", history.getFirst().getDriverUsername());
+        assertEquals(2,history.getFirst().getCustomerRating());
+        assertEquals(3,history.getFirst().getDriverRating());
+
 
     }
 }

@@ -8,7 +8,6 @@ import com.sep.backend.account.AccountService;
 import com.sep.backend.entity.*;
 import com.sep.backend.location.Location;
 import com.sep.backend.location.LocationService;
-import com.sep.backend.nominatim.LocationRepository;
 import com.sep.backend.nominatim.NominatimService;
 import com.sep.backend.ors.data.ORSFeatureCollection;
 import com.sep.backend.route.RouteRepository;
@@ -26,14 +25,14 @@ import java.util.Optional;
 @Service
 public class TripRequestService {
     private final NominatimService nominatimService;
-    private final TripHistorieRepository tripHistoryRepository;
+    private final TripHistoryRepository tripHistoryRepository;
     private final TripRequestRepository tripRequestRepository;
     private final LocationService locationService;
     private final RouteRepository routeRepository;
     private final AccountService accountService;
     private static final Logger log = LoggerFactory.getLogger(TripRequestService.class);
 
-    public TripRequestService(NominatimService nominatimService, TripHistorieRepository tripHistoryRepository, TripRequestRepository tripRequestRepository, LocationService locationService, RouteRepository routeRepository, AccountService accountService) {
+    public TripRequestService(NominatimService nominatimService, TripHistoryRepository tripHistoryRepository, TripRequestRepository tripRequestRepository, LocationService locationService, RouteRepository routeRepository, AccountService accountService) {
         this.nominatimService = nominatimService;
         this.tripHistoryRepository = tripHistoryRepository;
         this.tripRequestRepository = tripRequestRepository;

@@ -145,7 +145,7 @@ public class TripRequestService {
         RouteEntity route = new RouteEntity();
         route.setStops(stops);
         route.setGeoJSON(geoJson);
-        stops.forEach(stop -> stop.setRoute(route)); // ← Beziehung rückwärts setzen!
+        stops.forEach(stop -> stop.setRoute(route));
         return routeRepository.save(route);
     }
 

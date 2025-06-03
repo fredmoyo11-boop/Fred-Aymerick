@@ -6,19 +6,13 @@ import com.sep.backend.entity.*;
 import com.sep.backend.location.Location;
 import com.sep.backend.nominatim.LocationRepository;
 import com.sep.backend.nominatim.NominatimService;
-import com.sep.backend.nominatim.data.NominatimFeature;
-import com.sep.backend.ors.data.ORSFeature;
-import com.sep.backend.ors.data.ORSFeatureCollection;
-import com.sep.backend.ors.data.ORSGeometry;
 import com.sep.backend.route.RouteRepository;
 import com.sep.backend.trip.request.*;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -26,8 +20,6 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.security.Principal;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -113,13 +105,19 @@ public class TripRequestServiceIntegrationTest {
 
         // Principal simulieren
         Principal principal = () ->   testEmail ;
-        ;
+
 
 
        tripRequestService.createCurrentActiveTripRequest(body, principal);
 
 
 
+    }
+    @AfterEach
+    void DeleteAllTripRequests() {
+        customerRepository.deleteAll();
+        tripRequestRepository.deleteAll();
+        driverRepository.deleteAll();
     }
 
     @Test
@@ -192,8 +190,8 @@ public class TripRequestServiceIntegrationTest {
 
         assertNotNull(trips);
         assertFalse(trips.isEmpty());
-        assertTrue(trips.get(0).getDistanceInKm() > 0);
-        assertEquals(user, trips.get(0).getCustomerUsername());
+        assertTrue(trips.getFirst().getDistanceInKm() > 0);
+        assertEquals(user, trips.getFirst().getCustomerUsername());
 
     }
 }

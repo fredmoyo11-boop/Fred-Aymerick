@@ -37,11 +37,45 @@ public class TripOfferService {
         this.driverRepository = driverRepository;
     }
 
+    /**
+     * Checks if driver has a pending offer or not.
+     *
+     * @param principal The principal of the current user.
+     * @return If an offer exists or not.
+     */
     public String hasActiveTripOffer(Principal principal) {
         if(checkIfActiveTripOfferExists(principal.getName())) {
             return TripOfferPresenceStatus.HAS_ACTIVE_OFFER;
         }
         return TripOfferPresenceStatus.NO_ACTIVE_OFFER;
+    }
+
+    /**
+     * Accepts an offer and declines all other offers for a customer.
+     *
+     * @param driverUsername Username of a driver
+     * @param principal Identifier of a customer
+     * @return
+     * @throws NotFoundException
+     */
+    public String acceptOffer(String driverUsername, Principal principal) throws NotFoundException {
+        throw new NotFoundException("");
+    }
+
+    /**
+     * Declines an offer.
+     *
+     * @param driverUsername Username of a driver
+     * @param principal Identifier of a customer
+     * @return
+     * @throws NotFoundException
+     */
+    public String declineOffer(String driverUsername, Principal principal) throws NotFoundException {
+        TripOfferEntity tripOfferEntity = tripOfferRepository.findByDriver_UsernameAndTripRequest_Customer_Email(driverUsername, principal.getName())
+                                                             .orElseThrow(() -> new NotFoundException(ErrorMessages.NOT_FOUND_TRIP_OFFER));
+        tripOfferEntity.setStatus(TripOfferStatus.DECLINED);
+        tripOfferRepository.save(tripOfferEntity);
+        return "Successfully declined trip offer";
     }
 
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!   needs implementation from History !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -54,7 +88,7 @@ public class TripOfferService {
             tripOffers.add(new TripOfferResponse(driver.getUsername(),
                                                  driver.getFirstName(),
                                                  driver.getLastName(),
-                                                 0.0D,
+                                                 5.0D,
                                                  0L,
                                                  0.0D));
         }

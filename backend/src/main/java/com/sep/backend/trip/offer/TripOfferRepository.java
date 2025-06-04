@@ -13,10 +13,13 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface TripOfferRepository  extends JpaRepository<TripOfferEntity, Long> {
-    public boolean existsByDriver_EmailAndStatus(String email, String status);
+    public boolean existsByDriver_EmailAndStatus(@Email @NotBlank String email, @NotBlank String status);
+
+    Optional<TripOfferEntity> findByDriver_UsernameAndTripRequest_Customer_Email(@NotBlank String driverUsername, @Email @NotBlank String email);
 
     List<TripOfferEntity> findAllByTripRequest_Customer_Email(@Email @NotBlank String tripRequestCustomerEmail);
 	

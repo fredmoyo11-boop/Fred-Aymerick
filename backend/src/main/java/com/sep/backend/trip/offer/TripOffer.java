@@ -27,7 +27,7 @@ public class TripOffer {
     @Schema(description = "The statistical information of the driver.", requiredMode = Schema.RequiredMode.REQUIRED)
     private DriverStatistics driverStatistics;
 
-    @Schema(description = "The status of the trip offer. Either PENDING, ACCEPTED, DECLINED or COMPLETED.", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "The status of the trip offer. Either PENDING, ACCEPTED, DECLINED, WITHDRAWN or COMPLETED.", requiredMode = Schema.RequiredMode.REQUIRED)
     private String status;
 
 

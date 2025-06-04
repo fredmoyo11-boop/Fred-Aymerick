@@ -37,6 +37,26 @@ public class TripOfferController {
         return new StringResponse(tripOfferService.hasActiveTripOffer(principal));
     }
 
+    @PostMapping("/customer/accept")
+    @Operation(description = "Accept an offer.",
+            tags = {Tags.TRIP_OFFER},
+            responses = {@ApiResponse(responseCode = HttpStatus.OK, description = "Trip offer accepted.",
+                    content = @Content(schema = @Schema(implementation = StringResponse.class))),
+                    @ApiResponse(responseCode = HttpStatus.NOT_FOUND, description = "Driver does not have an offer.")})
+    public StringResponse acceptOffer(String driverUsername, Principal principal) {
+        return new StringResponse(tripOfferService.acceptOffer(driverUsername, principal));
+    }
+
+    @PostMapping("/customer/decline")
+    @Operation(description = "Decline an offer.",
+            tags = {Tags.TRIP_OFFER},
+            responses = {@ApiResponse(responseCode = HttpStatus.OK, description = "Trip offer declined.",
+                    content = @Content(schema = @Schema(implementation = StringResponse.class))),
+                    @ApiResponse(responseCode = HttpStatus.NOT_FOUND, description = "Driver does not have an offer.")})
+    public StringResponse declineOffer(String driverUsername, Principal principal) {
+        return new StringResponse(tripOfferService.declineOffer(driverUsername, principal));
+    }
+
     @GetMapping("/customer/list")
     @Operation(description = "Returns the full offer list.",
             tags={Tags.TRIP_OFFER},

@@ -21,11 +21,10 @@ public class Location {
 
     @NotNull
     @Schema(description = "The longitude of the location.", requiredMode = Schema.RequiredMode.REQUIRED)
-    private Double longitude;
+    private double longitude;
 
-    @NotNull
     @Schema(description = "The latitude of the location.", requiredMode = Schema.RequiredMode.REQUIRED)
-    private Double latitude;
+    private double latitude;
 
     @NotBlank
     @Schema(description = "The display name of the location.", requiredMode = Schema.RequiredMode.REQUIRED)

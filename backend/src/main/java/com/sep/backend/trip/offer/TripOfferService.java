@@ -47,22 +47,6 @@ public class TripOfferService {
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!   needs implementation from History !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     public List<TripOfferResponse> getTripOfferList(Principal principal) {
-//        String sort;
-//        switch(sortArg) {
-//            case "RATING":
-//                sort = "avg(th.driverRating)";
-//                break;
-//            case "TOTAL_DRIVE_COUNT":
-//                sort = "count(th.tripOfferId)";
-//                break;
-//            case "TOTAL_DRIVE_DISTANCE":
-//                sort = "sum(th.distance)";
-//                break;
-//            default:
-//                sort = "d.username";
-//                break;
-//        }
-//        return tripOfferRepository.findTripOfferResponseByCustomer_Email(principal.getName(), sort, sortOrder);
         List<TripOfferResponse> tripOffers = new ArrayList<TripOfferResponse>();
         List<TripOfferEntity> tripOfferEntities = tripOfferRepository.findAllByTripRequest_Customer_Email(principal.getName());
         for(TripOfferEntity tripOfferEntity : tripOfferEntities) {
@@ -78,7 +62,7 @@ public class TripOfferService {
     }
 
     private boolean checkIfActiveTripOfferExists(String email) {
-        return tripOfferRepository.existsByDriver_EmailAndStatus(email, TripOfferStatus.OPEN);
+        return tripOfferRepository.existsByDriver_EmailAndStatus(email, TripOfferStatus.PENDING);
     }
 
     /**

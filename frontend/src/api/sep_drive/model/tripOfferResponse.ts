@@ -9,22 +9,35 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { Account } from './account';
-import { TripRequest } from './tripRequest';
-import { DriverStatistics } from './driverStatistics';
 
 
-export interface TripOffer { 
+/**
+ * Represents a trip offer.
+ */
+export interface TripOfferResponse { 
     /**
-     * The id of the trip offer.
+     * Username
      */
-    id: number;
-    tripRequest: TripRequest;
-    driver: Account;
-    driverStatistics: DriverStatistics;
+    username: string;
     /**
-     * The status of the trip offer. Either PENDING, ACCEPTED, DECLINED or COMPLETED.
+     * First name
      */
-    status: string;
+    firstName: string;
+    /**
+     * Last name
+     */
+    lastName: string;
+    /**
+     * Rating
+     */
+    rating?: number;
+    /**
+     * Total drive count
+     */
+    totalDriveCount: number;
+    /**
+     * Total drive distance
+     */
+    driveDistance: number;
 }
 

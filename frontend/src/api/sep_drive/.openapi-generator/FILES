@@ -7,6 +7,7 @@ api/auth.service.ts
 api/nominatim.service.ts
 api/notification.service.ts
 api/route.service.ts
+api/tripOffer.service.ts
 api/tripOfferController.service.ts
 api/tripRequest.service.ts
 api/tripSimulation.service.ts
@@ -45,6 +46,7 @@ model/simulationAction.ts
 model/simulationActionParameters.ts
 model/stringResponse.ts
 model/tripOffer.ts
+model/tripOfferResponse.ts
 model/tripRequest.ts
 model/tripRequestBody.ts
 model/tripRequestDTO.ts

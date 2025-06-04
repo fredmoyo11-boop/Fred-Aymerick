@@ -15,7 +15,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TripOffer {
-    @Schema(description = "The if of the trip offer.", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "The id of the trip offer.", requiredMode = Schema.RequiredMode.REQUIRED)
     private Long id;
 
     @Schema(description = "The trip request belonging to the trip offer.", requiredMode = Schema.RequiredMode.REQUIRED)
@@ -27,7 +27,7 @@ public class TripOffer {
     @Schema(description = "The statistical information of the driver.", requiredMode = Schema.RequiredMode.REQUIRED)
     private DriverStatistics driverStatistics;
 
-    @Schema(description = "The status of the trip offer. Either PENDING, ACCEPTED, REJECTED or COMPLETED.", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "The status of the trip offer. Either PENDING, ACCEPTED, DECLINED or COMPLETED.", requiredMode = Schema.RequiredMode.REQUIRED)
     private String status;
 
 

@@ -28,6 +28,7 @@ export * from './simulationAction';
 export * from './simulationActionParameters';
 export * from './stringResponse';
 export * from './tripOffer';
+export * from './tripOfferResponse';
 export * from './tripRequest';
 export * from './tripRequestBody';
 export * from './tripRequestDTO';

@@ -19,7 +19,5 @@ public interface TripOfferRepository  extends JpaRepository<TripOfferEntity, Lon
     public boolean existsByDriver_EmailAndStatus(String email, String status);
 
     List<TripOfferEntity> findAllByTripRequest_Customer_Email(@Email @NotBlank String tripRequestCustomerEmail);
-
-//    @Query("SELECT new com.sep.backend.trip.offer.response.TripOfferResponse(d.username, d.firstName, d.lastName, avg(th.driverRating), count(th.tripOfferId), sum(th.distance)) FROM CustomerEntity c RIGHT JOIN TripRequestEntity tr RIGHT JOIN TripOfferEntity to LEFT JOIN DriverEntity d LEFT JOIN TripHistoryEntity th WHERE ?1=c.email ORDER BY ?2 ?3")
-//    public List<TripOfferResponse> findTripOfferResponseByCustomer_Email(String email, String sort, String sortOrder);
+	
 }

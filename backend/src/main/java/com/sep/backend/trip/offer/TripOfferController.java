@@ -44,6 +44,15 @@ public class TripOfferController {
                             content = @Content(array = @ArraySchema(schema = @Schema(implementation = TripOfferResponse.class))))})
     public List<TripOfferResponse> getTripOfferList(Principal principal) {
         return tripOfferService.getTripOfferList(principal);
+	}
+
+    @GetMapping()
+    @Operation(description = "scan",
+            responses = {
+                    @ApiResponse(description = "scan", responseCode = HttpStatus.OK,
+                            content = {@Content(schema = @Schema(implementation = TripOffer.class))})})
+    public TripOffer getTripOffer() {
+        return new TripOffer();
     }
 
 }

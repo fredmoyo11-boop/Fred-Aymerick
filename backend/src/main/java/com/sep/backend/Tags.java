@@ -8,11 +8,15 @@ public class Tags {
 
     public static final String ROUTE = "Route";
 
-    public static final String TRIP_REQUEST =  "Trip_Request";
+    public static final String TRIP_REQUEST = "Trip_Request";
+
+    public static final String TRIP_SIMULATION = "Trip Simulation";
 
     public static final String TRIP_OFFER =  "Trip_Offer";
 
     public static final String NOMINATIM = "Nominatim";
+
+    public static final String NOTIFICATION = "Notification";
 
 
     public Tags() {

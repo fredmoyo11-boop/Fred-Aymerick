@@ -23,8 +23,6 @@ import { AvailableTripRequestDTO } from '../model/availableTripRequestDTO';
 // @ts-ignore
 import { Location } from '../model/location';
 // @ts-ignore
-import { LocationDTO } from '../model/locationDTO';
-// @ts-ignore
 import { TripHistoryDTO } from '../model/tripHistoryDTO';
 // @ts-ignore
 import { TripRequestBody } from '../model/tripRequestBody';
@@ -234,22 +232,16 @@ export class TripRequestService {
     /**
      * Verfügbare Fahranfragen abrufen
      * Gibt eine Liste aller offenen Fahranfragen zurück.
-     * @param driverLocation 
+     * @param location 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getAvailableRequests(driverLocation: LocationDTO, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<Array<AvailableTripRequestDTO>>;
-    public getAvailableRequests(driverLocation: LocationDTO, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<HttpResponse<Array<AvailableTripRequestDTO>>>;
-    public getAvailableRequests(driverLocation: LocationDTO, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<HttpEvent<Array<AvailableTripRequestDTO>>>;
-    public getAvailableRequests(driverLocation: LocationDTO, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<any> {
-        if (driverLocation === null || driverLocation === undefined) {
-            throw new Error('Required parameter driverLocation was null or undefined when calling getAvailableRequests.');
-        }
-
-        let localVarQueryParameters = new HttpParams({encoder: this.encoder});
-        if (driverLocation !== undefined && driverLocation !== null) {
-          localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-            <any>driverLocation, 'driverLocation');
+    public getAvailableRequests(location: Location, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<Array<AvailableTripRequestDTO>>;
+    public getAvailableRequests(location: Location, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<HttpResponse<Array<AvailableTripRequestDTO>>>;
+    public getAvailableRequests(location: Location, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<HttpEvent<Array<AvailableTripRequestDTO>>>;
+    public getAvailableRequests(location: Location, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<any> {
+        if (location === null || location === undefined) {
+            throw new Error('Required parameter location was null or undefined when calling getAvailableRequests.');
         }
 
         let localVarHeaders = this.defaultHeaders;
@@ -280,6 +272,15 @@ export class TripRequestService {
         }
 
 
+        // to determine the Content-Type header
+        const consumes: string[] = [
+            'application/json'
+        ];
+        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+        if (httpContentTypeSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+        }
+
         let responseType_: 'text' | 'json' | 'blob' = 'json';
         if (localVarHttpHeaderAcceptSelected) {
             if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
@@ -291,10 +292,10 @@ export class TripRequestService {
             }
         }
 
-        return this.httpClient.get<Array<AvailableTripRequestDTO>>(`${this.configuration.basePath}/api/trip/request/available`,
+        return this.httpClient.post<Array<AvailableTripRequestDTO>>(`${this.configuration.basePath}/api/trip/request/available`,
+            location,
             {
                 context: localVarHttpContext,
-                params: localVarQueryParameters,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
@@ -366,7 +367,7 @@ export class TripRequestService {
     }
 
     /**
-     * Fahranfrage-History eines Fahrers oder eines Kundens 
+     * Fahranfrage-History des aktuellen Fahrers oder  Kunden 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
@@ -414,7 +415,7 @@ export class TripRequestService {
             }
         }
 
-        return this.httpClient.get<Array<TripHistoryDTO>>(`${this.configuration.basePath}/api/trip/request/history`,
+        return this.httpClient.get<Array<TripHistoryDTO>>(`${this.configuration.basePath}/api/trip/history`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,

@@ -2,7 +2,6 @@ export * from './accountDTO';
 export * from './authResponse';
 export * from './availableTripRequestDTO';
 export * from './location';
-export * from './locationDTO';
 export * from './loginRequest';
 export * from './nominatimFeature';
 export * from './nominatimGeometry';

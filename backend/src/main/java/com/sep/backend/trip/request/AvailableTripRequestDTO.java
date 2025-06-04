@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 public class AvailableTripRequestDTO {
 
     @Schema(description = "requestId der Fahrt ",requiredMode = Schema.RequiredMode.REQUIRED)
-    private Long requestId;
+    private long requestId;
 
     @Schema(description = " Erstellungsdatum und-uhrzeit der Fahranfrage ",requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")

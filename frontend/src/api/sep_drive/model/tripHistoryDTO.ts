@@ -11,6 +11,9 @@
  */
 
 
+/**
+ *  Trip-history eines Fahrers oder Kunden 
+ */
 export interface TripHistoryDTO { 
     /**
      * die Id von der fahrt

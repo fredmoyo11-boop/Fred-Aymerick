@@ -24,7 +24,7 @@
 </div>
 
 </form>
-
+<div *ngIf="showTable">
 <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
 
   <!-- trip_id Column -->
@@ -92,8 +92,8 @@
   </ng-container>
 
   <!-- preis Column -->
-  <ng-container matColumnDef="preis">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by preis">
+  <ng-container matColumnDef="price">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by price">
       Preis
     </th>
     <td mat-cell *matCellDef="let element"> {{element.preis}} </td>

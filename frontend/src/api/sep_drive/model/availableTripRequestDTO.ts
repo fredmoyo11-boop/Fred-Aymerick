@@ -46,7 +46,7 @@ export interface AvailableTripRequestDTO {
     /**
      * Gesamte Preis der Fahrt 
      */
-    preis: number;
+    price: number;
     /**
      * Gesamte Dauer der Fahrt in Sekunde 
      */

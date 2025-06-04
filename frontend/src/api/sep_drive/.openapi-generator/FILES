@@ -15,7 +15,6 @@ model/accountDTO.ts
 model/authResponse.ts
 model/availableTripRequestDTO.ts
 model/location.ts
-model/locationDTO.ts
 model/loginRequest.ts
 model/models.ts
 model/nominatimFeature.ts

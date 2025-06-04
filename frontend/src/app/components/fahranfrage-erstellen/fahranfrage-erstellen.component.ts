@@ -19,10 +19,8 @@ import {Router} from '@angular/router';
 import {MatDialog} from '@angular/material/dialog';
 import {ActiveRideDialogComponent} from '../active-ride-dialog/active-ride-dialog.component';
 import {TripRequestBody, TripRequestService} from '../../../api/sep_drive';
-import {LocationDTO,TripRequestDTO} from '../../../api/sep_drive';
+import {Location,TripRequestDTO} from '../../../api/sep_drive';
 import {MatSelect, MatSelectChange} from '@angular/material/select';
-import {Location} from '../../../api/sep_drive';
-
 @Component({
   selector: 'app-fahranfrage-erstellen',
   imports: [
@@ -67,11 +65,11 @@ export class FahranfrageErstellenComponent implements OnInit {
 
   }
 
-  start!:LocationDTO;
-  startLocations: LocationDTO[] = []
+  start!:Location;
+  startLocations: Location[] = []
 
-  end!:LocationDTO;
-  endLocations: LocationDTO[] = []
+  end!:Location;
+  endLocations: Location[] = []
 
   // get selected start location
   onStartChange(event: MatSelectChange) {

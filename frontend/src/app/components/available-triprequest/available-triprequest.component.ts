@@ -15,14 +15,8 @@ import {MatIcon} from '@angular/material/icon';
 import {MatOption} from '@angular/material/core';
 import {MatSelect, MatSelectChange} from '@angular/material/select';
 import {MatTooltip} from '@angular/material/tooltip';
-import {AvailableTripRequestDTO, LocationDTO, TripRequestService} from '../../../api/sep_drive';
+import {AvailableTripRequestDTO, TripRequestService,Location} from '../../../api/sep_drive';
 import {debounceTime, distinctUntilChanged, tap} from 'rxjs';
-
-
-const ELEMENT_DATA: AvailableTripRequestDTO[] = [
-  {requestId: 2,requestTime: '12.05.2025 13:25',distanceInKm: 1000,customerUsername: 'Max',customerRating: 5,desiredCarType: 'SMALL', totalDistanceInKm: 10,preis: 20,duration: 20},{
-  requestId: 1,requestTime: '12.05.2025 13:25',distanceInKm: 1000,customerUsername: 'Max',customerRating: 5,desiredCarType: 'SMALL', totalDistanceInKm: 10,preis: 20,duration: 20
-  }];
 
 @Component({
   selector: 'app-available-triprequest',
@@ -40,10 +34,11 @@ export class AvailableTriprequestComponent implements AfterViewInit, OnInit{
   lon: number | null = null;
   error: string | null = null;
 
-  start!:LocationDTO;
-  startLocations: LocationDTO[] = [];
+  start!:Location;
+  startLocations: Location[] = [];
 
-  constructor(private tripService: TripRequestService) { }
+  constructor(
+    private tripService: TripRequestService) { }
 
 
   onStartChange(event: MatSelectChange) {
@@ -71,15 +66,8 @@ export class AvailableTriprequestComponent implements AfterViewInit, OnInit{
     });
   }
 
-  displayedColumns: string[] = ['requestId', 'requestTime', 'distanceInKm','customerUsername','customerRating','desiredCarType','totalDistanceInKm','preis','duration'];
-  dataSource = new MatTableDataSource(ELEMENT_DATA);
 
   @ViewChild(MatSort) sort!: MatSort;
-
-
-  ngAfterViewInit() {
-    this.dataSource.sort = this.sort;
-  }
 
   currentLocation() {
     if (navigator.geolocation) {
@@ -98,19 +86,29 @@ export class AvailableTriprequestComponent implements AfterViewInit, OnInit{
       this.error = 'Geolocation is not supported by this browser.';
     }
   }
+  // initialise datasource
+  dataSource = new MatTableDataSource();
+  displayedColumns: string[] = ['requestId', 'requestTime', 'distanceInKm','customerUsername','customerRating','desiredCarType','totalDistanceInKm','price','duration'];
+  showTable = false;
 
   onSave() {
     //send adress to backend and receive table data from the backend
-    const startAddress: LocationDTO = this.locationForm.value;
+    const startAddress: Location= this.locationForm.value;
     this.tripService.getAvailableRequests(startAddress).subscribe({
       next: (response) => {
-        console.log('got available trip request',response);
+        console.log('Backend response',response);
         this.dataSource.data = response;
+        this.showTable = true;
       },
       error: (err) => {
         console.error('Fehler bei der Suche von verfügbare Fahranfragen', err);
+        this.showTable = false;
       }
     })
+  }
+
+  ngAfterViewInit() {
+    this.dataSource.sort = this.sort;
   }
 }
 

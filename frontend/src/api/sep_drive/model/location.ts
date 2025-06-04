@@ -29,6 +29,6 @@ export interface Location {
      * The display name of the location.
      */
     displayName: string;
-    geoJSON: NominatimFeature;
+    geoJSON?: NominatimFeature;
 }
 

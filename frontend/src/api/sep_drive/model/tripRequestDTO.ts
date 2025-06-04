@@ -46,7 +46,7 @@ export interface TripRequestDTO {
     /**
      * The current status of the trip. Either ACTIVE or DELETED.
      */
-    status?: string;
+    status: string;
     geoJson: ORSFeatureCollection;
 }
 

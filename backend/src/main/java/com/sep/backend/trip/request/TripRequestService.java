@@ -13,6 +13,7 @@ import com.sep.backend.ors.data.ORSFeatureCollection;
 import com.sep.backend.route.RouteRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
@@ -20,6 +21,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 public class TripRequestService {
     private final NominatimService nominatimService;
@@ -170,7 +172,10 @@ public class TripRequestService {
 
     public List<AvailableTripRequestDTO> getAvailableRequests(@Valid Location driverLocation) {
         List<TripRequestEntity> activeRequests = tripRequestRepository.findByStatus(TripRequestStatus.ACTIVE);
-
+        if (activeRequests.isEmpty()) {
+            log.info("No active trip requests found.");
+            throw new NotFoundException("No active trip requests found.");
+        }
         return activeRequests.stream().map(activeRequest ->
         {
 

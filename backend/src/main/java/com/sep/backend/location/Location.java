@@ -17,17 +17,17 @@ import java.util.List;
 public class Location {
 
     @Schema(description = "The id of the location. Might be null if location does not have related entity.", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-    private Long locationId;
+    private long locationId;
 
-    @NotNull
     @Schema(description = "The longitude of the location.", requiredMode = Schema.RequiredMode.REQUIRED)
-    private double longitude;
+    @NotNull
+    private Double longitude;
 
     @Schema(description = "The latitude of the location.", requiredMode = Schema.RequiredMode.REQUIRED)
-    private double latitude;
+    private Double latitude;
 
-    @NotBlank
     @Schema(description = "The display name of the location.", requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotBlank
     private String displayName;
 
     @Schema(description = "The Nominatim GeoJSON for the location.", requiredMode = Schema.RequiredMode.NOT_REQUIRED)

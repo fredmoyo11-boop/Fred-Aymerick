@@ -11,4 +11,8 @@ public interface TripHistoryRepository extends JpaRepository<TripHistoryEntity, 
     List<TripHistoryEntity>findByCustomer(CustomerEntity customer);
 
     List<TripHistoryEntity>findByDriver(DriverEntity driverEntity);
+
+    boolean existsByDriver(DriverEntity driverEntity);
+
+    boolean existsByCustomer(CustomerEntity customerEntity);
 }

@@ -235,7 +235,7 @@ public class TripRequestServiceIntegrationTest {
 
     }
 
-@Test
+    @Test
     @WithMockUser(username = "aymerickooo@gmail.com", roles = Roles.DRIVER)
     void testGetTripHistory_Success() throws Exception {
 

@@ -6,9 +6,13 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface TripHistorieRepository extends JpaRepository<TripHistoryEntity, Long> {
+public interface TripHistoryRepository extends JpaRepository<TripHistoryEntity, Long> {
 
     List<TripHistoryEntity>findByCustomer(CustomerEntity customer);
 
     List<TripHistoryEntity>findByDriver(DriverEntity driverEntity);
+
+    boolean existsByDriver(DriverEntity driverEntity);
+
+    boolean existsByCustomer(CustomerEntity customerEntity);
 }

@@ -13,7 +13,8 @@ import com.sep.backend.ors.data.ORSFeatureCollection;
 import com.sep.backend.route.RouteRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
@@ -21,17 +22,17 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-@Slf4j
 @Service
 public class TripRequestService {
     private final NominatimService nominatimService;
-    private final TripHistorieRepository tripHistoryRepository;
+    private final TripHistoryRepository tripHistoryRepository;
     private final TripRequestRepository tripRequestRepository;
     private final LocationService locationService;
     private final RouteRepository routeRepository;
     private final AccountService accountService;
+    private static final Logger log = LoggerFactory.getLogger(TripRequestService.class);
 
-    public TripRequestService(NominatimService nominatimService, TripHistorieRepository tripHistoryRepository, TripRequestRepository tripRequestRepository, LocationService locationService, RouteRepository routeRepository, AccountService accountService) {
+    public TripRequestService(NominatimService nominatimService, TripHistoryRepository tripHistoryRepository, TripRequestRepository tripRequestRepository, LocationService locationService, RouteRepository routeRepository, AccountService accountService) {
         this.nominatimService = nominatimService;
         this.tripHistoryRepository = tripHistoryRepository;
         this.tripRequestRepository = tripRequestRepository;
@@ -139,10 +140,11 @@ public class TripRequestService {
     }
 
 
-    public RouteEntity saveRoute(List<LocationEntity> stops, ORSFeatureCollection geoJson) {
+    public RouteEntity saveRoute(List<LocationEntity> stops,ORSFeatureCollection geoJson) {
         RouteEntity route = new RouteEntity();
         route.setStops(stops);
         route.setGeoJSON(geoJson);
+        stops.forEach(stop -> stop.setRoute(route));
         return routeRepository.save(route);
     }
 
@@ -169,15 +171,25 @@ public class TripRequestService {
         tripRequestRepository.save(tripRequestEntity);
     }
 
-
+    @Transactional
     public List<AvailableTripRequestDTO> getAvailableRequests(@Valid Location driverLocation) {
         List<TripRequestEntity> activeRequests = tripRequestRepository.findByStatus(TripRequestStatus.ACTIVE);
-        if (activeRequests.isEmpty()) {
-            log.info("No active trip requests found.");
-            throw new NotFoundException("No active trip requests found.");
+        if (activeRequests == null || activeRequests.isEmpty()) {
+             throw new RuntimeException("keine Aktive Fahranfrage Verfügbar ");
         }
+
         return activeRequests.stream().map(activeRequest ->
         {
+            List<LocationEntity> stops = activeRequest.getRoute().getStops();
+            if(stops == null ) {
+                log.error("stops is null");
+                throw new RuntimeException("keine Aktive Fahranfrage");
+            }
+            if ( stops.isEmpty()) {
+                log.error("Route '{}' hat keine Stops geladen!", activeRequest.getRoute().getId());
+
+                throw new TripRequestException("Route enthält keine Stopps.");
+            }
 
             LocationEntity start = activeRequest.getRoute().getStops().getFirst();
             CustomerEntity customer = activeRequest.getCustomer();

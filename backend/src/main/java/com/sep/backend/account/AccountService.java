@@ -6,9 +6,7 @@ import com.sep.backend.NotFoundException;
 import com.sep.backend.Roles;
 import com.sep.backend.auth.registration.RegistrationDTO;
 import com.sep.backend.auth.registration.RegistrationException;
-import com.sep.backend.entity.AccountEntity;
-import com.sep.backend.entity.CustomerEntity;
-import com.sep.backend.entity.DriverEntity;
+import com.sep.backend.entity.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -24,13 +22,19 @@ import java.util.Optional;
 import java.util.Set;
 
 @Slf4j
-@AllArgsConstructor
 @Service
 public class AccountService {
-    private final CustomerRepository customerRepository;
-    private final DriverRepository driverRepository;
-    private final ProfilePictureStorageService profilePictureStorageService;
+    private final  CustomerRepository customerRepository;
+    private final  DriverRepository driverRepository;
+    private  final  ProfilePictureStorageService profilePictureStorageService;
+    private final TripHistoryRepository tripHistoryRepository;
 
+    public AccountService(CustomerRepository customerRepository, DriverRepository driverRepository, ProfilePictureStorageService profilePictureStorageService, TripHistoryRepository tripHistoryRepository) {
+        this.customerRepository = customerRepository;
+        this.driverRepository = driverRepository;
+        this.profilePictureStorageService = profilePictureStorageService;
+        this.tripHistoryRepository = tripHistoryRepository;
+    }
 
     /**
      * Returns the customer with the specified email.
@@ -304,7 +308,7 @@ public class AccountService {
     }
 
 
-    public static AccountDTO getCustomerDTO(CustomerEntity customerEntity) {
+    public  AccountDTO getCustomerDTO(CustomerEntity customerEntity) {
         AccountDTO customerDTO = new AccountDTO();
         customerDTO.setEmail(customerEntity.getEmail());
         customerDTO.setRole(Roles.CUSTOMER);
@@ -313,12 +317,24 @@ public class AccountService {
         customerDTO.setFirstName(customerEntity.getFirstName());
         customerDTO.setLastName(customerEntity.getLastName());
         customerDTO.setTotalNumberOfRides(5);
+        if(tripHistoryRepository.existsByCustomer(customerEntity)) {
+            var avgRating = tripHistoryRepository.findByCustomer(customerEntity).stream()
+                    .mapToInt(TripHistoryEntity::getCustomerRating)
+                    .average()
+                    .orElse(0.0);
+            var trips = tripHistoryRepository.findByCustomer(customerEntity).size();
+            customerDTO.setTotalNumberOfRides(trips);
+            customerDTO.setRatings(avgRating);
+
+        }else{
+            customerDTO.setRatings(0.0);
+        }
         customerDTO.setProfilePictureUrl(customerEntity.getProfilePictureUrl());
         return customerDTO;
     }
 
 
-    public static AccountDTO getDriverDTO(DriverEntity driverEntity) {
+    public  AccountDTO getDriverDTO(DriverEntity driverEntity) {
         AccountDTO driverDTO = new AccountDTO();
         driverDTO.setEmail(driverEntity.getEmail());
 
@@ -328,7 +344,19 @@ public class AccountService {
         driverDTO.setLastName(driverEntity.getLastName());
         driverDTO.setBirthday(driverEntity.getBirthday().toString());
         driverDTO.setCarType(driverEntity.getCarType());
-        driverDTO.setTotalNumberOfRides(5);
+        if(tripHistoryRepository.existsByDriver(driverEntity)) {
+           var avgRating = tripHistoryRepository.findByDriver(driverEntity).stream()
+                   .mapToInt(TripHistoryEntity::getCustomerRating)
+                   .average()
+                   .orElse(0.0);
+           var trips = tripHistoryRepository.findByDriver(driverEntity).size();
+           driverDTO.setTotalNumberOfRides(trips);
+           driverDTO.setRatings(avgRating);
+
+        }else{
+            driverDTO.setRatings(0.0);
+            driverDTO.setTotalNumberOfRides(0);
+        }
         driverDTO.setProfilePictureUrl(driverEntity.getProfilePictureUrl());
         return driverDTO;
     }
@@ -422,7 +450,6 @@ public class AccountService {
         }
     }
 
-    @Schema(description = "Updates the account of the authenticated user")
     public void saveAccountChanges(String email, UpdateAccountDTO updateAccountDTO, MultipartFile file) {
         if (isOwner(email)) {
             if (existsCustomerEmail(email)) {

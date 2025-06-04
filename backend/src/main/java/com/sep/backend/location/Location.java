@@ -65,13 +65,4 @@ public class Location {
         return location;
     }
 
-    public static  LocationEntity MapToLocationEntity(Location location) {
-        var locationEntity = new LocationEntity();
-        locationEntity.setDisplayName(location.getDisplayName());
-        locationEntity.setLongitude(location.getLongitude());
-        locationEntity.setLatitude(location.getLatitude());
-        locationEntity.setGeoJSON(location.getGeoJSON());
-        return locationEntity;
-    }
-
 }

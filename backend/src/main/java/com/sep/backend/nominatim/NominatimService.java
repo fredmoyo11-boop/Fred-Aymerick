@@ -8,7 +8,6 @@ import com.sep.backend.location.Location;
 import com.sep.backend.nominatim.data.NominatimFeatureCollection;
 import com.sep.backend.ors.data.ORSFeatureCollection;
 import com.sep.backend.trip.request.ORSRequestException;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,11 +21,11 @@ import java.util.List;
 @Service
 public class NominatimService {
 
+    private static final Logger log = LoggerFactory.getLogger(NominatimService.class);
     private final String apiKey;
     private final ObjectMapper mapper;
     private final RestClient restClient;
     private final RestClient orsClient;
-    private static final Logger log = LoggerFactory.getLogger(NominatimService.class);
 
     public NominatimService(@Value("${ors.api.key}") String apiKey, ObjectMapper mapper) {
 
@@ -94,18 +93,13 @@ public class NominatimService {
     }
 
 
-
-
     public ORSFeatureCollection requestORSRoute(List<LocationEntity> stops) {
 
         try {
             List<List<Double>> coordinates = new ArrayList<>();
 
-            if(stops==null||stops.size()<2) {
-                throw new ORSRequestException(ErrorMessages.ORS_PROCESSING_FAILED);
-            }
-            stops =  stops.stream()
-                    .peek(stop-> coordinates.add(List.of(stop.getLongitude(), stop.getLatitude())))
+            stops = stops.stream()
+                    .peek(stop -> coordinates.add(List.of(stop.getLongitude(), stop.getLatitude())))
                     .toList();
 
             log.info("Gesendete Koordinaten an ORS: {}", coordinates);

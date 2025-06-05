@@ -21,6 +21,7 @@ import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 @Service
 public class TripRequestService {
@@ -172,25 +173,27 @@ public class TripRequestService {
 
     @Transactional
     public List<AvailableTripRequestDTO> getAvailableRequests(@Valid Location driverLocation) {
+
         List<TripRequestEntity> activeRequests = tripRequestRepository.findByStatus(TripRequestStatus.ACTIVE);
+
         if (activeRequests == null || activeRequests.isEmpty()) {
-            throw new RuntimeException("keine Aktive Fahranfrage Verfügbar ");
+            throw new TripRequestException("keine Aktive Fahranfrage Verfügbar ");
         }
 
-        return activeRequests.stream().map(activeRequest ->
-        {
+        return activeRequests.stream().map(activeRequest -> {
+
             List<LocationEntity> stops = activeRequest.getRoute().getStops();
-            if (stops == null) {
-                log.error("stops is null");
-                throw new RuntimeException("keine Aktive Fahranfrage");
-            }
+
             if (stops.isEmpty()) {
-                log.error("Route '{}' hat keine Stops geladen!", activeRequest.getRoute().getId());
 
                 throw new TripRequestException("Route enthält keine Stopps.");
             }
 
-            LocationEntity tripStart = activeRequest.getRoute().getStops().getFirst();
+            LocationEntity tripStart = activeRequest
+                    .getRoute()
+                    .getStops()
+                    .getFirst();
+
             CustomerEntity customer = activeRequest.getCustomer();
             LocationEntity driverStart = new LocationEntity();
             driverStart.setLatitude(driverLocation.getLatitude());
@@ -205,7 +208,14 @@ public class TripRequestService {
                     .getFirst()
                     .getDistance() / 1000.0;
 
-            double tripDuration = activeRequest.getRoute().getGeoJSON().getFeatures().getFirst().getProperties().getSummary().getDuration();
+            double tripDuration = activeRequest
+                    .getRoute()
+                    .getGeoJSON()
+                    .getFeatures()
+                    .getFirst()
+                    .getProperties().
+                    getSummary().
+                    getDuration();
 
             double avgRating = tripHistoryRepository.findByCustomer(customer).stream()
                     .mapToInt(TripHistoryEntity::getCustomerRating)

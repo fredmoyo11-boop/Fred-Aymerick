@@ -24,13 +24,13 @@ import java.util.Optional;
 
 @Service
 public class TripRequestService {
+    private static final Logger log = LoggerFactory.getLogger(TripRequestService.class);
     private final NominatimService nominatimService;
     private final TripHistoryRepository tripHistoryRepository;
     private final TripRequestRepository tripRequestRepository;
     private final LocationService locationService;
     private final RouteRepository routeRepository;
     private final AccountService accountService;
-    private static final Logger log = LoggerFactory.getLogger(TripRequestService.class);
 
     public TripRequestService(NominatimService nominatimService, TripHistoryRepository tripHistoryRepository, TripRequestRepository tripRequestRepository, LocationService locationService, RouteRepository routeRepository, AccountService accountService) {
         this.nominatimService = nominatimService;
@@ -51,7 +51,7 @@ public class TripRequestService {
         return tripRequestRepository.existsByCustomer_EmailAndStatus(email, TripRequestStatus.ACTIVE);
     }
 
-    /**
+    /*
      * Saves A LocationEntity to the Repository.
      *
      * @param location Location chosen by customer.
@@ -126,7 +126,7 @@ public class TripRequestService {
 
         String carType = tripRequestBody.getDesiredCarType();
 
-        Double tripPrice = calculateTripPrice(geoJson,carType);
+        Double tripPrice = calculateTripPrice(geoJson, carType);
 
         TripRequestEntity trip = new TripRequestEntity();
         trip.setCustomer(accountService.getCustomerByEmail(email));
@@ -140,7 +140,7 @@ public class TripRequestService {
     }
 
 
-    public RouteEntity saveRoute(List<LocationEntity> stops,ORSFeatureCollection geoJson) {
+    public RouteEntity saveRoute(List<LocationEntity> stops, ORSFeatureCollection geoJson) {
         RouteEntity route = new RouteEntity();
         route.setStops(stops);
         route.setGeoJSON(geoJson);
@@ -175,31 +175,36 @@ public class TripRequestService {
     public List<AvailableTripRequestDTO> getAvailableRequests(@Valid Location driverLocation) {
         List<TripRequestEntity> activeRequests = tripRequestRepository.findByStatus(TripRequestStatus.ACTIVE);
         if (activeRequests == null || activeRequests.isEmpty()) {
-             throw new RuntimeException("keine Aktive Fahranfrage Verfügbar ");
+            throw new RuntimeException("keine Aktive Fahranfrage Verfügbar ");
         }
 
         return activeRequests.stream().map(activeRequest ->
         {
             List<LocationEntity> stops = activeRequest.getRoute().getStops();
-            if(stops == null ) {
+            if (stops == null) {
                 log.error("stops is null");
                 throw new RuntimeException("keine Aktive Fahranfrage");
             }
-            if ( stops.isEmpty()) {
+            if (stops.isEmpty()) {
                 log.error("Route '{}' hat keine Stops geladen!", activeRequest.getRoute().getId());
 
                 throw new TripRequestException("Route enthält keine Stopps.");
             }
 
-            LocationEntity start = activeRequest.getRoute().getStops().getFirst();
+            LocationEntity tripStart = activeRequest.getRoute().getStops().getFirst();
             CustomerEntity customer = activeRequest.getCustomer();
-            Location tripStartLocation = new Location();
-            tripStartLocation.setLatitude(start.getLatitude());
-            tripStartLocation.setLongitude(start.getLongitude());
-            tripStartLocation.setDisplayName(start.getDisplayName());
+            LocationEntity driverStart = new LocationEntity();
+            driverStart.setLatitude(driverLocation.getLatitude());
+            driverStart.setLongitude(driverLocation.getLongitude());
+            driverStart.setDisplayName(driverLocation.getDisplayName());
 
-
-            double distance = nominatimService.requestDistanceToTripRequests(driverLocation, tripStartLocation);
+            double distance = nominatimService.requestORSRoute(List.of(driverStart, tripStart))
+                    .getFeatures()
+                    .getFirst()
+                    .getProperties()
+                    .getSegments()
+                    .getFirst()
+                    .getDistance() / 1000.0;
             double tripDuration = activeRequest.getRoute().getGeoJSON().getFeatures().getFirst().getProperties().getSummary().getDuration();
             double avgRating = tripHistoryRepository.findByCustomer(customer).stream()
                     .mapToInt(TripHistoryEntity::getCustomerRating)

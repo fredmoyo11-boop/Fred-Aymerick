@@ -5,7 +5,6 @@ import com.sep.backend.entity.LocationEntity;
 import com.sep.backend.entity.RouteEntity;
 import com.sep.backend.location.Location;
 import com.sep.backend.location.LocationService;
-import com.sep.backend.ors.ORSService;
 import com.sep.backend.ors.data.ORSFeatureCollection;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;

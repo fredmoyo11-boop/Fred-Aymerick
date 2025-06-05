@@ -120,6 +120,7 @@ public class TripRequestService {
         List<LocationEntity> stops = List.of(tripRequestBody.getStartLocation(), tripRequestBody.getEndLocation()).stream()
                 .map(stop -> Location.from(nominatimService.reverse(stop.getLatitude().toString(), stop.getLongitude().toString()).getFeatures().getFirst()))
                 .map(locationService::saveLocation).toList();
+
         ORSFeatureCollection geoJson = nominatimService.requestORSRoute(stops);
 
         RouteEntity route = saveRoute(stops, geoJson);
@@ -190,9 +191,9 @@ public class TripRequestService {
             }
 
             LocationEntity tripStart = activeRequest
-                    .getRoute()
-                    .getStops()
-                    .getFirst();
+                                       .getRoute()
+                                       .getStops()
+                                       .getFirst();
 
             CustomerEntity customer = activeRequest.getCustomer();
             LocationEntity driverStart = new LocationEntity();
@@ -213,9 +214,9 @@ public class TripRequestService {
                     .getGeoJSON()
                     .getFeatures()
                     .getFirst()
-                    .getProperties().
-                    getSummary().
-                    getDuration();
+                    .getProperties()
+                    .getSummary()
+                    .getDuration();
 
             double avgRating = tripHistoryRepository.findByCustomer(customer).stream()
                     .mapToInt(TripHistoryEntity::getCustomerRating)

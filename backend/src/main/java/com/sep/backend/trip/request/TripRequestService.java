@@ -205,7 +205,9 @@ public class TripRequestService {
                     .getSegments()
                     .getFirst()
                     .getDistance() / 1000.0;
+
             double tripDuration = activeRequest.getRoute().getGeoJSON().getFeatures().getFirst().getProperties().getSummary().getDuration();
+
             double avgRating = tripHistoryRepository.findByCustomer(customer).stream()
                     .mapToInt(TripHistoryEntity::getCustomerRating)
                     .average()

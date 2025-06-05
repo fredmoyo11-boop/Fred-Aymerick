@@ -94,38 +94,7 @@ public class NominatimService {
     }
 
 
-    public Double requestDistanceToTripRequests(@Valid Location driverLocation, @Valid Location tripStartLocation) {
-        try {
-            String body = String.format(java.util.Locale.US, """
-                            {
-                              "coordinates": [
-                                [%f, %f],
-                                [%f, %f]
-                              ]
-                            }
-                            """,driverLocation.getLongitude(), driverLocation.getLatitude(), tripStartLocation.getLongitude(), tripStartLocation.getLatitude());
 
-            String response = orsClient.post()
-                    .header("Authorization", this.apiKey)
-                    .body(body)
-                    .retrieve()
-                    .body(String.class);
-
-            ORSFeatureCollection result = this.mapper.readValue(response, ORSFeatureCollection.class);
-
-            return result
-                    .getFeatures()
-                    .getFirst()
-                    .getProperties()
-                    .getSegments()
-                    .getFirst()
-                    .getDistance() / 1000.0;
-
-
-        } catch (Exception e) {
-            throw new ORSRequestException(ErrorMessages.ORS_PROCESSING_FAILED + e.getMessage());
-        }
-    }
 
     public ORSFeatureCollection requestORSRoute(List<LocationEntity> stops) {
 

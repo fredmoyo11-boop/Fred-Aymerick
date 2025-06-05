@@ -8,8 +8,6 @@ import com.sep.backend.account.DriverRepository;
 import com.sep.backend.entity.*;
 import com.sep.backend.location.Location;
 import com.sep.backend.nominatim.LocationRepository;
-import com.sep.backend.nominatim.NominatimService;
-import com.sep.backend.route.RouteRepository;
 import com.sep.backend.trip.request.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,9 +37,6 @@ public class TripRequestServiceIntegrationTest {
     private TripRequestService tripRequestService;
 
     @Autowired
-    private RouteRepository routeRepository;
-
-    @Autowired
     private TripRequestRepository tripRequestRepository;
 
     @Autowired
@@ -49,11 +44,9 @@ public class TripRequestServiceIntegrationTest {
 
     @Autowired
     private TripHistoryService tripHistoryService;
-    @Autowired
-    private  DriverRepository driverRepository;
 
     @Autowired
-    private NominatimService nominatimService;
+    private  DriverRepository driverRepository;
 
     @Autowired
     private TripHistoryRepository  tripHistoryRepository;
@@ -72,11 +65,12 @@ public class TripRequestServiceIntegrationTest {
 
     @BeforeEach
     void setUp() throws InterruptedException {
-        tripHistoryRepository.deleteAll();     // 1. History zuerst
-        tripOfferRepository.deleteAll();       // 2. dann Offers
-        tripRequestRepository.deleteAll();     // 3. dann TripRequests
-        locationRepository.deleteAll();        // 4. optional, falls du LocationEntities speicherst
-        driverRepository.deleteAll();          // 5. dann Driver
+
+        tripHistoryRepository.deleteAll();
+        tripOfferRepository.deleteAll();
+        tripRequestRepository.deleteAll();
+        locationRepository.deleteAll();
+        driverRepository.deleteAll();
         customerRepository.deleteAll();
         CustomerEntity customer = new CustomerEntity();
         customer.setEmail(testEmail);
@@ -125,7 +119,6 @@ public class TripRequestServiceIntegrationTest {
         Principal principal = () ->   testEmail ;
 
 
-
        var trip = tripRequestService.createCurrentActiveTripRequest(body, principal);
 
 
@@ -147,24 +140,21 @@ public class TripRequestServiceIntegrationTest {
     @AfterEach
     void DeleteAllTripRequests() {
 
-            tripHistoryRepository.deleteAll();     // 1. History zuerst
-            tripOfferRepository.deleteAll();       // 2. dann Offers
-            tripRequestRepository.deleteAll();     // 3. dann TripRequests
-            locationRepository.deleteAll();        // 4. optional, falls du LocationEntities speicherst
-            driverRepository.deleteAll();          // 5. dann Driver
-            customerRepository.deleteAll();        // 6. zuletzt Customer
-
+        tripHistoryRepository.deleteAll();
+        tripOfferRepository.deleteAll();
+        tripRequestRepository.deleteAll();
+        locationRepository.deleteAll();
+        driverRepository.deleteAll();
+        customerRepository.deleteAll();
 
     }
 
     @Test
     void testCreateTripRequest_Success()  {
-        // TripRequestBody vorbereiten
         TripRequestBody body = new TripRequestBody();
         body.setDesiredCarType("SMALL");
         body.setNote("Bitte nicht rauchen.");
 
-        // Start und Ziel setzen
         Location start = new Location();
         start.setLatitude(51.4501);
         start.setLongitude(7.0131);
@@ -178,12 +168,12 @@ public class TripRequestServiceIntegrationTest {
         body.setStartLocation(start);
         body.setEndLocation(end);
 
-        // Principal simulieren
         Principal principal = () -> testEmail;
 
-        // Methode ausführen
         if(tripRequestService.existsActiveTripRequest(testEmail)) {
+
             tripRequestService.deleteCurrentActiveTripRequest(principal);
+
         }
         TripRequestEntity result = tripRequestService.createCurrentActiveTripRequest(body, principal);
 

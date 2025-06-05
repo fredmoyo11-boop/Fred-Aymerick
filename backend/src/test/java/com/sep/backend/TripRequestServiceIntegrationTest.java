@@ -54,12 +54,11 @@ public class TripRequestServiceIntegrationTest {
     @Autowired
     private TripOfferRepository tripOfferRepository;
 
-    private final String  email = "testoooo@gmail.com";
-
     @Autowired
     private CustomerRepository customerRepository;
 
     private final String testEmail = "hellokitit@example.com";
+
     @Autowired
     private MockMvc mockMvc;
 

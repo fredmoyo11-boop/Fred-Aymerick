@@ -116,10 +116,7 @@ public class TripRequestService {
         }
 
 
-        List<LocationEntity> stops = List.of(tripRequestBody.getStartLocation(), tripRequestBody.getEndLocation()).stream()
-                .map(stop -> Location.from(nominatimService.reverse(stop.getLatitude().toString(), stop.getLongitude().toString()).getFeatures().getFirst()))
-                .map(locationService::saveLocation)
-                .toList();
+        List<LocationEntity> stops = List.of(tripRequestBody.getStartLocation(), tripRequestBody.getEndLocation()).stream().map(stop -> Location.from(nominatimService.reverse(stop.getLatitude().toString(), stop.getLongitude().toString()).getFeatures().getFirst())).map(locationService::saveLocation).toList();
         ORSFeatureCollection geoJson = nominatimService.requestORSRoute(stops);
 
         RouteEntity route = saveRoute(stops, geoJson);

@@ -54,4 +54,8 @@ public class AccountDTO {
     @NotNull
     @Schema(description = "The total number of rides the account holder has taken.",requiredMode = Schema.RequiredMode.REQUIRED)
     private int totalNumberOfRides;
+
+    @NotBlank
+    @Schema(description = "the total bank balance in the account", requiredMode = Schema.RequiredMode.REQUIRED)
+    private double balance;
 }

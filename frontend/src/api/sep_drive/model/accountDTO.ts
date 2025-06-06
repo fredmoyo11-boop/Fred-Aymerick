@@ -56,6 +56,10 @@ export interface AccountDTO {
      * The total number of rides the account holder has taken.
      */
     totalNumberOfRides: number;
+    /**
+     * the total bank balance in the account
+     */
+    balance: number;
 }
 export namespace AccountDTO {
     export type CarTypeEnum = 'SMALL' | 'MEDIUM' | 'DELUXE';

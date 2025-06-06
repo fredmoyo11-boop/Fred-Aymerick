@@ -10,6 +10,9 @@
       @if (this.role) {
         <button [routerLink]="'/map'">Karte</button>
         <button [routerLink]="'/social'">Social</button>
+        <button [routerLink]="['/balance', accountInformation?.username]">Konto</button>
+
+
       }
 
     </div>

@@ -10,6 +10,7 @@ import {MapComponent} from './components/map/map.component';
 import {authGuard} from './guards/auth.guard';
 import {ProfileComponent} from './components/profile/profile.component';
 import {ProfileSearchComponent} from './components/profile-search/profile-search.component';
+import {BalanceComponent} from './components/balance/balance.component';
 
 export const routes: Routes = [
   {path: "register", component: RegisterComponent},
@@ -44,6 +45,12 @@ export const routes: Routes = [
       {
         path: "profile/:username",
         component: ProfileComponent,
+        canActivate: [authGuard],
+        data: {roles: ["CUSTOMER", "DRIVER"]}
+      },
+      {
+        path: "balance/:username",
+        component: BalanceComponent,
         canActivate: [authGuard],
         data: {roles: ["CUSTOMER", "DRIVER"]}
       }

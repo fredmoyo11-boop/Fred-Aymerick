@@ -3,12 +3,10 @@ package com.sep.backend.trip.offer;
 import com.sep.backend.ErrorMessages;
 import com.sep.backend.NotFoundException;
 import com.sep.backend.Roles;
-import com.sep.backend.entity.DriverEntity;
+import com.sep.backend.entity.*;
 import com.sep.backend.trip.offer.status.*;
 import com.sep.backend.trip.offer.response.*;
 import com.sep.backend.trip.offer.options.*;
-import com.sep.backend.entity.TripOfferEntity;
-import com.sep.backend.entity.TripHistoryEntity;
 import com.sep.backend.entity.DriverEntity;
 import com.sep.backend.account.DriverRepository;
 import com.sep.backend.account.CustomerRepository;
@@ -59,7 +57,15 @@ public class TripOfferService {
      * @throws NotFoundException
      */
     public String acceptOffer(String driverUsername, Principal principal) throws NotFoundException {
-        throw new NotFoundException("");
+        TripOfferEntity tripOfferEntity = tripOfferRepository.findByDriver_UsernameAndTripRequest_Customer_Email(driverUsername, principal.getName())
+                                                             .orElseThrow(() -> new NotFoundException(ErrorMessages.NOT_FOUND_TRIP_OFFER));
+        setStatus(tripOfferEntity, TripOfferStatus.ACCEPTED);
+        List<TripOfferEntity> otherEntities = tripOfferRepository.findAllByTripRequest_Customer_EmailAndStatus(principal.getName(), TripOfferStatus.PENDING);
+        for(TripOfferEntity otherEntity : otherEntities) {
+            otherEntity.setStatus(TripOfferStatus.DECLINED);
+        }
+        tripOfferRepository.saveAll(otherEntities);
+        return "Successfully accepted trip offer";
     }
 
     /**
@@ -73,16 +79,33 @@ public class TripOfferService {
     public String declineOffer(String driverUsername, Principal principal) throws NotFoundException {
         TripOfferEntity tripOfferEntity = tripOfferRepository.findByDriver_UsernameAndTripRequest_Customer_Email(driverUsername, principal.getName())
                                                              .orElseThrow(() -> new NotFoundException(ErrorMessages.NOT_FOUND_TRIP_OFFER));
-        tripOfferEntity.setStatus(TripOfferStatus.DECLINED);
-        tripOfferRepository.save(tripOfferEntity);
+        setStatus(tripOfferEntity, TripOfferStatus.DECLINED);
         return "Successfully declined trip offer";
+    }
+
+    /**
+     *
+     * @param principal Identifier of a driver
+     * @return
+     * @throws NotFoundException
+     */
+    public String withdrawOffer(Principal principal) throws NotFoundException {
+        TripOfferEntity tripOfferEntity = tripOfferRepository.findByDriver_Email(principal.getName())
+                                                             .orElseThrow(() -> new NotFoundException(ErrorMessages.NOT_FOUND_TRIP_OFFER));
+        setStatus(tripOfferEntity, TripOfferStatus.WITHDRAWN);
+        return "Successfully withdrawn trip offer";
+    }
+
+    private void setStatus(TripOfferEntity tripOfferEntity, String status) {
+        tripOfferEntity.setStatus(status);
+        tripOfferRepository.save(tripOfferEntity);
     }
 
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!   needs implementation from History !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     public List<TripOfferResponse> getTripOfferList(Principal principal) {
         List<TripOfferResponse> tripOffers = new ArrayList<TripOfferResponse>();
-        List<TripOfferEntity> tripOfferEntities = tripOfferRepository.findAllByTripRequest_Customer_Email(principal.getName());
+        List<TripOfferEntity> tripOfferEntities = tripOfferRepository.findAllByTripRequest_Customer_EmailAndStatus(principal.getName(), TripOfferStatus.PENDING);
         for(TripOfferEntity tripOfferEntity : tripOfferEntities) {
             DriverEntity driver = driverRepository.getById(tripOfferEntity.getDriver().getId());
             tripOffers.add(new TripOfferResponse(driver.getUsername(),
@@ -175,9 +198,8 @@ public class TripOfferService {
                 .orElseThrow(() -> new NotFoundException(ErrorMessages.NOT_FOUND_TRIP_OFFER));
     }
 
-
     /**
-     * Completes a trip by changing the status of offer and request to COMPLETED.
+     * Completes a trip by changing the status of an offer and request to COMPLETED.
      *
      * @param tripOfferId The id of the trip offer.
      * @throws NotFoundException If the trip offer with the specified id does not

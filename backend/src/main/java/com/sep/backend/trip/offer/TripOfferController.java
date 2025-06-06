@@ -37,6 +37,16 @@ public class TripOfferController {
         return new StringResponse(tripOfferService.hasActiveTripOffer(principal));
     }
 
+    @PostMapping("/driver/withdraw")
+    @Operation(description = "Withdraw an offer.",
+            tags = {Tags.TRIP_OFFER},
+            responses = {@ApiResponse(responseCode = HttpStatus.OK, description = "Trip offer withdrawn.",
+                    content = @Content(schema = @Schema(implementation = StringResponse.class))),
+                    @ApiResponse(responseCode = HttpStatus.NOT_FOUND, description = "Driver does not have an offer.")})
+    public StringResponse withdrawOffer(Principal principal) {
+        return new StringResponse(tripOfferService.withdrawOffer(principal));
+    }
+
     @PostMapping("/customer/accept")
     @Operation(description = "Accept an offer.",
             tags = {Tags.TRIP_OFFER},

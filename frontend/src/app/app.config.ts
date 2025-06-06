@@ -8,12 +8,15 @@ import {registerLocaleData} from '@angular/common';
 import localeDe from "@angular/common/locales/de"
 import {AccountService, AuthService, TripRequestService} from '../api/sep_drive';
 import {authInterceptor} from './interceptors/auth.interceptor';
+import {AngularAuthService} from './services/angular-auth.service';
+import {StompService} from './services/stomp.service';
+import {AngularNotificationService} from './services/angular-notification.service';
 
 
 registerLocaleData(localeDe);
 
 export const appConfig: ApplicationConfig = {
-  providers: [provideZoneChangeDetection({eventCoalescing: true}), provideRouter(routes), AuthService, AccountService, TripRequestService, provideHttpClient(withInterceptors([authInterceptor])), {
+  providers: [provideZoneChangeDetection({eventCoalescing: true}), provideRouter(routes), AuthService, AccountService, TripRequestService, AngularAuthService, StompService, AngularNotificationService, provideHttpClient(withInterceptors([authInterceptor])), {
     provide: MAT_DATE_LOCALE,
     useValue: "de"
   }, {provide: LOCALE_ID, useValue: "de"}]

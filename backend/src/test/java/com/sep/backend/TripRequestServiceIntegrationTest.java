@@ -9,7 +9,8 @@ import com.sep.backend.entity.*;
 import com.sep.backend.location.Location;
 import com.sep.backend.nominatim.LocationRepository;
 import com.sep.backend.nominatim.NominatimService;
-import com.sep.backend.route.RouteRepository;
+import com.sep.backend.ors.ORSService;
+import com.sep.backend.route.Coordinate;
 import com.sep.backend.trip.request.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,9 +40,6 @@ public class TripRequestServiceIntegrationTest {
     private TripRequestService tripRequestService;
 
     @Autowired
-    private RouteRepository routeRepository;
-
-    @Autowired
     private TripRequestRepository tripRequestRepository;
 
     @Autowired
@@ -49,11 +47,12 @@ public class TripRequestServiceIntegrationTest {
 
     @Autowired
     private TripHistoryService tripHistoryService;
+
     @Autowired
     private  DriverRepository driverRepository;
 
     @Autowired
-    private NominatimService nominatimService;
+    private ORSService orsService;
 
     @Autowired
     private TripHistoryRepository  tripHistoryRepository;
@@ -61,23 +60,20 @@ public class TripRequestServiceIntegrationTest {
     @Autowired
     private TripOfferRepository tripOfferRepository;
 
-    private final String  email = "testoooo@gmail.com";
-
     @Autowired
     private CustomerRepository customerRepository;
 
     private final String testEmail = "hellokitit@example.com";
+
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    private NominatimService nominatimService;
+
     @BeforeEach
     void setUp() throws InterruptedException {
-        tripHistoryRepository.deleteAll();     // 1. History zuerst
-        tripOfferRepository.deleteAll();       // 2. dann Offers
-        tripRequestRepository.deleteAll();     // 3. dann TripRequests
-        locationRepository.deleteAll();        // 4. optional, falls du LocationEntities speicherst
-        driverRepository.deleteAll();          // 5. dann Driver
-        customerRepository.deleteAll();
+
         CustomerEntity customer = new CustomerEntity();
         customer.setEmail(testEmail);
         customer.setUsername("userrrr");
@@ -104,7 +100,7 @@ public class TripRequestServiceIntegrationTest {
 
 
         TripRequestBody body = new TripRequestBody();
-        body.setDesiredCarType(CarTypes.DELUXE);
+        body.setCarType(CarTypes.DELUXE);
         body.setNote("Bitte nicht rauchen.");
 
         // Start und Ziel setzen
@@ -112,21 +108,22 @@ public class TripRequestServiceIntegrationTest {
         start.setLatitude(51.4501);
         start.setLongitude(7.0131);
         start.setDisplayName("Universität Duisburg-Essen");
-
+        start.setGeoJSON(nominatimService.reverse(start.getLatitude().toString(),start.getLongitude().toString()).getFeatures().getFirst());
         Location end = new Location();
         end.setLatitude(51.4982);
         end.setLongitude(6.8676);
         end.setDisplayName("Hbf Oberhausen");
+        end.setGeoJSON(nominatimService.reverse(end.getLatitude().toString(),end.getLongitude().toString()).getFeatures().getFirst());
 
-        body.setStartLocation(start);
-        body.setEndLocation(end);
 
+        body.setLocations(List.of(start, end));
+        System.out.println(orsService);
+        body.setGeojson(orsService.getRouteDirections(List.of(Coordinate.from(start), Coordinate.from(end))));
         // Principal simulieren
         Principal principal = () ->   testEmail ;
 
 
-
-       var trip = tripRequestService.createCurrentActiveTripRequest(body, principal);
+    var trip = tripRequestService.createCurrentActiveTripRequest(body, principal);
 
 
        TripOfferEntity tripOfferEntity = new TripOfferEntity();
@@ -147,57 +144,67 @@ public class TripRequestServiceIntegrationTest {
     @AfterEach
     void DeleteAllTripRequests() {
 
-            tripHistoryRepository.deleteAll();     // 1. History zuerst
-            tripOfferRepository.deleteAll();       // 2. dann Offers
-            tripRequestRepository.deleteAll();     // 3. dann TripRequests
-            locationRepository.deleteAll();        // 4. optional, falls du LocationEntities speicherst
-            driverRepository.deleteAll();          // 5. dann Driver
-            customerRepository.deleteAll();        // 6. zuletzt Customer
+        tripHistoryRepository.deleteAll();
+        tripOfferRepository.deleteAll();
+        tripRequestRepository.deleteAll();
+        locationRepository.deleteAll();
+        driverRepository.deleteAll();
+        customerRepository.deleteAll();
 
 
     }
 
     @Test
-    void testCreateTripRequest_Success()  {
-        // TripRequestBody vorbereiten
+    @WithMockUser(username = testEmail, roles = "CUSTOMER")
+    void testCreateTripRequest_Success() throws Exception {
         TripRequestBody body = new TripRequestBody();
-        body.setDesiredCarType("SMALL");
+        body.setCarType("SMALL");
         body.setNote("Bitte nicht rauchen.");
 
-        // Start und Ziel setzen
         Location start = new Location();
         start.setLatitude(51.4501);
         start.setLongitude(7.0131);
         start.setDisplayName("Universität Duisburg-Essen");
+        start.setGeoJSON(nominatimService.reverse("51.4501","7.0131").getFeatures().getFirst());
 
         Location end = new Location();
         end.setLatitude(51.4982);
         end.setLongitude(6.8676);
         end.setDisplayName("Hbf Oberhausen");
+        end.setGeoJSON(nominatimService.reverse("51.4982","6.8676").getFeatures().getFirst());
 
-        body.setStartLocation(start);
-        body.setEndLocation(end);
 
-        // Principal simulieren
+        body.setLocations(List.of(start, end));
+        body.setGeojson(orsService.getRouteDirections(List.of(Coordinate.from(start), Coordinate.from(end))));
         Principal principal = () -> testEmail;
 
-        // Methode ausführen
         if(tripRequestService.existsActiveTripRequest(testEmail)) {
-            tripRequestService.deleteCurrentActiveTripRequest(principal);
-        }
-        TripRequestEntity result = tripRequestService.createCurrentActiveTripRequest(body, principal);
 
-        // Validierungen
-        assertNotNull(result);
-        assertNotNull(result.getId());
-        assertEquals(TripRequestStatus.ACTIVE, result.getStatus());
-        assertEquals("SMALL", result.getDesiredCarType());
-        assertEquals("Bitte nicht rauchen.", result.getNote());
-        assertEquals(testEmail, result.getCustomer().getEmail());
-        assertNotNull(result.getRoute());
-        // assertEquals(List.of(start.getLongitude(),start.getLatitude()),result.getRoute().getGeoJSON().getFeatures().getFirst().getGeometry().getCoordinates().getFirst());
-        // assertEquals(List.of(end.getLongitude(),end.getLatitude()),result.getRoute().getGeoJSON().getFeatures().getFirst().getGeometry().getCoordinates().getLast());
-        assertTrue(result.getPrice() > 0);
+            tripRequestService.deleteCurrentActiveTripRequest(principal);
+
+        }
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
+
+        String result = mockMvc.perform(post("/api/trip/request/current")
+                                .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(body)))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        String user = "userrrr";
+
+       TripRequestDTO trips = mapper.readValue(result, TripRequestDTO.class);
+        assertNotNull(trips);
+        assertEquals(TripRequestStatus.ACTIVE, trips.getStatus());
+        assertEquals("SMALL", trips.getCarType());
+        assertEquals("Bitte nicht rauchen.", trips.getNote());
+        assertEquals(user, trips.getUsername());
+        assertNotNull(trips.getRoute());
+       // assertEquals(List.of(start.getLongitude(),start.getLatitude()),result.getRoute().getGeoJSON().getFeatures().getFirst().getGeometry().getCoordinates().getFirst());
+       // assertEquals(List.of(end.getLongitude(),end.getLatitude()),result.getRoute().getGeoJSON().getFeatures().getFirst().getGeometry().getCoordinates().getLast());
+        assertTrue(trips.getPrice() > 0);
     }
 
 
@@ -210,6 +217,7 @@ public class TripRequestServiceIntegrationTest {
         start.setLatitude(50.9413);
         start.setLongitude(6.9583);
         start.setDisplayName("Kölner Dom");
+        start.setGeoJSON(nominatimService.reverse("50.9413","6.9583").getFeatures().getFirst());
         String json= new ObjectMapper().writeValueAsString(start);
 
         String response = mockMvc.perform(post("/api/trip/request/available")

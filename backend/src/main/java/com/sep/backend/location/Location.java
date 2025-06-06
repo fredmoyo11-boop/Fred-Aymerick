@@ -19,16 +19,15 @@ public class Location {
     @Schema(description = "The id of the location. Might be null if location does not have related entity.", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private Long locationId;
 
-    @NotNull
     @Schema(description = "The longitude of the location.", requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNull
     private Double longitude;
 
-    @NotNull
     @Schema(description = "The latitude of the location.", requiredMode = Schema.RequiredMode.REQUIRED)
     private Double latitude;
 
-    @NotBlank
     @Schema(description = "The display name of the location.", requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotBlank
     private String displayName;
 
     @Schema(description = "The Nominatim GeoJSON for the location.", requiredMode = Schema.RequiredMode.NOT_REQUIRED)

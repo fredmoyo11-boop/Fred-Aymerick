@@ -12,6 +12,7 @@
 
 
 /**
+<<<<<<<< HEAD:frontend/src/api/sep_drive/model/oRSEngine.ts
  * Represents the ORS engine information.
  */
 export interface ORSEngine { 
@@ -27,5 +28,22 @@ export interface ORSEngine {
      * The graph date of the engine.
      */
     graph_date: string;
+========
+ * Represents a notification.
+ */
+export interface Notification { 
+    /**
+     * The unique id of the notification.
+     */
+    id: number;
+    /**
+     * The type of the notification.
+     */
+    notificationType: string;
+    /**
+     * The message of the notification.
+     */
+    message: string;
+>>>>>>>> origin/profile:frontend/src/api/sep_drive/model/notification.ts
 }
 

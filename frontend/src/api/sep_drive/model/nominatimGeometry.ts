@@ -12,6 +12,19 @@
 
 
 /**
+<<<<<<<< HEAD:frontend/src/api/sep_drive/model/oRSSummary.ts
+ * Represents the summary of a request made by ORS.
+ */
+export interface ORSSummary { 
+    /**
+     * The total distance.
+     */
+    distance: number;
+    /**
+     * The total duration.
+     */
+    duration: number;
+========
  * Represents a GeoJSON Geometry as standardized by RFC 7946.
  */
 export interface NominatimGeometry { 
@@ -23,5 +36,6 @@ export interface NominatimGeometry {
      * The coordinates of the geometry.
      */
     coordinates: Array<number>;
+>>>>>>>> origin/profile:frontend/src/api/sep_drive/model/nominatimGeometry.ts
 }
 

@@ -8,7 +8,6 @@ import com.sep.backend.location.Location;
 import com.sep.backend.nominatim.data.NominatimFeatureCollection;
 import com.sep.backend.ors.data.ORSFeatureCollection;
 import com.sep.backend.trip.request.ORSRequestException;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,22 +21,15 @@ import java.util.List;
 @Service
 public class NominatimService {
 
-    private final String apiKey;
+    private static final Logger log = LoggerFactory.getLogger(NominatimService.class);
     private final ObjectMapper mapper;
     private final RestClient restClient;
-    private final RestClient orsClient;
-    private static final Logger log = LoggerFactory.getLogger(NominatimService.class);
 
-    public NominatimService(@Value("${ors.api.key}") String apiKey, ObjectMapper mapper) {
+    public NominatimService( ObjectMapper mapper) {
 
-        this.apiKey = apiKey;
 
         this.mapper = mapper;
 
-        this.orsClient = RestClient.builder()
-                .baseUrl("https://api.openrouteservice.org/v2/directions/driving-car/geojson")
-                .defaultHeader("Content-Type", "application/json")
-                .build();
 
         this.restClient = RestClient.builder()
                 .baseUrl("https://nominatim.openstreetmap.org")
@@ -94,73 +86,6 @@ public class NominatimService {
     }
 
 
-    public Double requestDistanceToTripRequests(@Valid Location driverLocation, @Valid Location tripStartLocation) {
-        try {
-            String body = String.format(java.util.Locale.US, """
-                            {
-                              "coordinates": [
-                                [%f, %f],
-                                [%f, %f]
-                              ]
-                            }
-                            """,driverLocation.getLongitude(), driverLocation.getLatitude(), tripStartLocation.getLongitude(), tripStartLocation.getLatitude());
 
-            String response = orsClient.post()
-                    .header("Authorization", this.apiKey)
-                    .body(body)
-                    .retrieve()
-                    .body(String.class);
-
-            ORSFeatureCollection result = this.mapper.readValue(response, ORSFeatureCollection.class);
-
-            return result
-                    .getFeatures()
-                    .getFirst()
-                    .getProperties()
-                    .getSegments()
-                    .getFirst()
-                    .getDistance() / 1000.0;
-
-
-        } catch (Exception e) {
-            throw new ORSRequestException(ErrorMessages.ORS_PROCESSING_FAILED + e.getMessage());
-        }
-    }
-
-    public ORSFeatureCollection requestORSRoute(List<LocationEntity> stops) {
-
-        try {
-            List<List<Double>> coordinates = new ArrayList<>();
-
-            if(stops==null||stops.size()<2) {
-                throw new ORSRequestException(ErrorMessages.ORS_PROCESSING_FAILED);
-            }
-            stops =  stops.stream()
-                    .peek(stop-> coordinates.add(List.of(stop.getLongitude(), stop.getLatitude())))
-                    .toList();
-
-            log.info("Gesendete Koordinaten an ORS: {}", coordinates);
-
-
-            String body = """
-                    {
-                      "coordinates": %s
-                    }
-                    """.formatted(mapper.writeValueAsString(coordinates));
-
-            log.info("Starte ORS-Routenberechnung von '{}' nach '{}'", stops.getFirst().getDisplayName(), stops.getLast().getDisplayName());
-            String response = orsClient.post()
-                    .header("Authorization", this.apiKey)
-                    .body(body)
-                    .retrieve()
-                    .body(String.class);
-
-            log.info("ORS-Route erfolgreich empfangen für {} Wegpunkte", coordinates.size());
-            return mapper.readValue(response, ORSFeatureCollection.class);
-
-        } catch (JsonProcessingException e) {
-            throw new ORSRequestException(ErrorMessages.ORS_PROCESSING_FAILED + e.getMessage());
-        }
-    }
 
 }

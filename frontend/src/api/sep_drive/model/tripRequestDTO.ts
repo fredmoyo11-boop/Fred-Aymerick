@@ -9,7 +9,6 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { ORSFeatureCollection } from './oRSFeatureCollection';
 import { Location } from './location';
 
 
@@ -17,14 +16,6 @@ import { Location } from './location';
  * Represents a request for a drive.
  */
 export interface TripRequestDTO { 
-    /**
-     * Eindeutige ID der Fahranfrage
-     */
-    tripRequestId: number;
-    /**
-     * Zeitpunkt der Anfrage
-     */
-    createdAt: string;
     /**
      * The customer requesting drive.
      */
@@ -34,11 +25,7 @@ export interface TripRequestDTO {
     /**
      * The type of car requested.
      */
-    desiredCarType: string;
-    /**
-     * Die Optionale Zwischenstops während der Fahrt 
-     */
-    stops?: Array<Location>;
+    carType: string;
     /**
      * The optional notes for the driver.
      */
@@ -46,7 +33,6 @@ export interface TripRequestDTO {
     /**
      * The current status of the trip. Either ACTIVE or DELETED.
      */
-    status: string;
-    geoJson: ORSFeatureCollection;
+    status?: string;
 }
 

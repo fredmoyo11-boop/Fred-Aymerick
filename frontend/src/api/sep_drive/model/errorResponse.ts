@@ -12,16 +12,16 @@
 
 
 /**
- * Represents the summary of a request made by ORS.
+ * Represents an error response with status code and message.
  */
-export interface ORSSummary { 
+export interface ErrorResponse { 
     /**
-     * The total distance.
+     * The status code of the error response.
      */
-    distance: number;
+    statusCode?: number;
     /**
-     * The total duration.
+     * The message of the error response.
      */
-    duration: number;
+    message?: string;
 }
 

@@ -1,10 +1,12 @@
 package com.sep.backend.ors.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "Represents the ORS engine information.")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ORSEngine {
 
     @JsonProperty("version")

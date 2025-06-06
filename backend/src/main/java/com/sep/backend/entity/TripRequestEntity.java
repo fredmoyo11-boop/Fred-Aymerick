@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -19,9 +21,10 @@ public class TripRequestEntity extends AbstractEntity {
 
     @ManyToOne
     @JoinColumn(name = "customer_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)  // Achtung: Funktioniert nur mit bestimmten JPA-Implementierungen
     private CustomerEntity customer;
 
-    @OneToOne( cascade=CascadeType.ALL, orphanRemoval=true)
+    @OneToOne
     @JoinColumn(name = "route_id", nullable = false)
     private RouteEntity route;
 
@@ -32,7 +35,7 @@ public class TripRequestEntity extends AbstractEntity {
     private List<TripOfferEntity> offers = new ArrayList<>();
 
     @Column(name = "car_type", nullable = false)
-    private String desiredCarType;
+    private String carType;
 
     @Column(name = "status", nullable = false)
     private String status;
@@ -40,6 +43,6 @@ public class TripRequestEntity extends AbstractEntity {
     @Column(name = "price", nullable = false)
     private Double price; // in euro
 
-    @Column( name = "note", nullable = true)
+    @Column(name = "note", nullable = false)
     private String note;
 }

@@ -20,13 +20,7 @@ public class TripHistoryService {
         this.accountService = accountService;
     }
 
-    public TripHistoryEntity saveTripHistory(
-            TripOfferEntity offer,
-            double distance,
-            int duration,
-            int driverRating,
-            int customerRating
-    ) {
+    public TripHistoryEntity saveTripHistory(TripOfferEntity offer, double distance, int duration, int driverRating, int customerRating) {
         TripRequestEntity request = offer.getTripRequest();
         CustomerEntity customer = request.getCustomer();
         DriverEntity driver = offer.getDriver();
@@ -39,7 +33,6 @@ public class TripHistoryService {
         history.setDuration(duration);
         history.setEndTime(LocalDateTime.now());
         history.setPrice(request.getPrice());
-
         history.setCustomerRating(customerRating);
         history.setDriverRating(driverRating);
 

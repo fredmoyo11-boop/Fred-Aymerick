@@ -17,7 +17,6 @@ export * from './oRSSegment';
 export * from './oRSStep';
 export * from './oRSSummary';
 export * from './otpRequest';
-export * from './rating';
 export * from './stringResponse';
 export * from './tripHistoryDTO';
 export * from './tripRequestBody';

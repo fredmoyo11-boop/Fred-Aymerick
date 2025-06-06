@@ -1,9 +1,9 @@
-import {Component, ViewChild, AfterViewInit, OnInit} from '@angular/core';
+import {Component, ViewChild, AfterViewInit, OnInit, ChangeDetectorRef} from '@angular/core';
 import {
   MatCell, MatCellDef,
   MatColumnDef,
   MatHeaderCell,
-  MatHeaderCellDef, MatHeaderRow, MatRow,
+  MatHeaderCellDef, MatHeaderRow, MatHeaderRowDef, MatRow, MatRowDef,
   MatTable,
   MatTableDataSource
 } from '@angular/material/table';
@@ -17,18 +17,20 @@ import {MatSelect, MatSelectChange} from '@angular/material/select';
 import {MatTooltip} from '@angular/material/tooltip';
 import {AvailableTripRequestDTO, TripRequestService,Location} from '../../../api/sep_drive';
 import {debounceTime, distinctUntilChanged, tap} from 'rxjs';
+import {CommonModule} from '@angular/common';
 
 @Component({
   selector: 'app-available-triprequest',
-  imports: [MatSort, MatTable, FormsModule, MatFormField, MatIcon, MatIconButton, MatInput, MatLabel, MatOption, MatSelect, MatSuffix, MatTooltip, ReactiveFormsModule, MatButton, MatColumnDef, MatSortHeader, MatHeaderCell, MatCell, MatHeaderCellDef, MatCellDef, MatHeaderRow, MatRow],
+  standalone: true,
+  imports: [CommonModule, MatTable, FormsModule, MatFormField, MatIcon, MatIconButton, MatInput, MatLabel, MatOption, MatSelect, MatSuffix, MatTooltip, ReactiveFormsModule, MatButton, MatColumnDef, MatSortHeader, MatHeaderCell, MatCell, MatHeaderCellDef, MatCellDef, MatHeaderRow, MatRow, MatHeaderRowDef, MatRowDef, MatSort],
   templateUrl: './available-triprequest.component.html',
   styleUrl: './available-triprequest.component.css'
 })
 
 
-export class AvailableTriprequestComponent implements AfterViewInit, OnInit{
+export class AvailableTriprequestComponent implements OnInit,AfterViewInit{
   locationForm: FormGroup = new FormGroup({
-    startQuery: new FormControl("", [Validators.required])
+    startQuery: new FormControl('', [Validators.required])
   });
   lat: number | null = null;
   lon: number | null = null;
@@ -37,37 +39,46 @@ export class AvailableTriprequestComponent implements AfterViewInit, OnInit{
   start!:Location;
   startLocations: Location[] = [];
 
+  dataSource = new MatTableDataSource<AvailableTripRequestDTO>([]);
+  @ViewChild(MatSort) sort!: MatSort;
+
+  displayedColumns: string[] = ['requestId', 'requestTime', 'distanceInKm','customerUsername','customerRating','desiredCarType','totalDistanceInKm','price','duration','acceptTrip'];
+  showTable = false;
+
+
   constructor(
-    private tripService: TripRequestService) { }
+    private tripService: TripRequestService
+  , private cdr: ChangeDetectorRef) {}
 
 
   onStartChange(event: MatSelectChange) {
     this.start = event.value
   }
   ngOnInit(): void {
-    this.locationForm.get("startQuery")!.valueChanges.pipe(
-      tap(value => console.log('Eingabewert:', value)),
-      debounceTime(300),
-      distinctUntilChanged(),
-    ).subscribe({
-      next: query => {
-        return this.tripService.searchLocations(query).subscribe({
-          next: locations => {
-            console.log(locations)
-            this.startLocations = locations
-          },
-          error: (err: any) => {
-            console.error(err)
-          }
-        });
-      },
-      error: err => {
-        console.error(err)}
-    });
+    //datasource initialisieren
+    this.dataSource = new MatTableDataSource<AvailableTripRequestDTO>([]);
+
+    this.locationForm.get("startQuery")?.valueChanges.pipe(
+        tap(value => console.log('Eingabewert:', value)),
+        debounceTime(300),
+        distinctUntilChanged(),
+      ).subscribe({
+        next: query => {
+          return this.tripService.searchLocations(query).subscribe({
+            next: locations => {
+              console.log(locations)
+              this.startLocations = locations;
+            },
+            error: (err: any) => {
+              console.error(err)
+            }
+          });
+        },
+        error: err => {
+          console.error(err)
+        }
+      });
   }
-
-
-  @ViewChild(MatSort) sort!: MatSort;
 
   currentLocation() {
     if (navigator.geolocation) {
@@ -87,28 +98,45 @@ export class AvailableTriprequestComponent implements AfterViewInit, OnInit{
     }
   }
   // initialise datasource
-  dataSource = new MatTableDataSource();
-  displayedColumns: string[] = ['requestId', 'requestTime', 'distanceInKm','customerUsername','customerRating','desiredCarType','totalDistanceInKm','price','duration'];
-  showTable = false;
+
+
+  ngAfterViewInit() {
+      if (this.dataSource && this.sort) {
+        this.dataSource.sort = this.sort;
+        this.cdr.detectChanges();
+      }
+  }
 
   onSave() {
     //send adress to backend and receive table data from the backend
-    const startAddress: Location= this.locationForm.value;
-    this.tripService.getAvailableRequests(startAddress).subscribe({
-      next: (response) => {
-        console.log('Backend response',response);
-        this.dataSource.data = response;
-        this.showTable = true;
-      },
-      error: (err) => {
-        console.error('Fehler bei der Suche von verfügbare Fahranfragen', err);
-        this.showTable = false;
-      }
-    })
+    if (this.start) {
+      this.tripService.getAvailableRequests(this.start).subscribe({
+        next: (response) => {
+          console.log('Backend response', response);
+          this.dataSource.data = response;
+          this.showTable = true;
+
+          setTimeout(() => {
+            if(this.sort){
+              this.dataSource.sort = this.sort;
+            }
+          })
+          },
+        error: (err) => {
+          console.error('Fehler bei der Suche von verfügbare Fahranfragen', err);
+          this.showTable = false;
+        }
+      });
+    }
   }
 
-  ngAfterViewInit() {
-    this.dataSource.sort = this.sort;
+  acceptTrip() {
+
+
+  }
+
+  getStars(rating: number): number[] {
+    return Array(5).fill(0).map((x, i) => i); // [0,1,2,3,4]
   }
 }
 

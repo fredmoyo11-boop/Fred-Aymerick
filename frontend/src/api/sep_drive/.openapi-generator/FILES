@@ -31,7 +31,6 @@ model/oRSSegment.ts
 model/oRSStep.ts
 model/oRSSummary.ts
 model/otpRequest.ts
-model/rating.ts
 model/stringResponse.ts
 model/tripHistoryDTO.ts
 model/tripRequestBody.ts

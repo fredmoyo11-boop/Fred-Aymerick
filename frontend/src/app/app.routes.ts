@@ -11,6 +11,7 @@ import {authGuard} from './guards/auth.guard';
 import {ProfileComponent} from './components/profile/profile.component';
 import {ProfileSearchComponent} from './components/profile-search/profile-search.component';
 import {AvailableTriprequestComponent} from './components/available-triprequest/available-triprequest.component';
+import {TripHistoryComponent} from './components/trip-history/trip-history.component';
 
 export const routes: Routes = [
   {path: "register", component: RegisterComponent},
@@ -40,6 +41,11 @@ export const routes: Routes = [
         component: AvailableTriprequestComponent,
         canActivate: [authGuard],
         data: {roles: ["DRIVER"]}
+      },
+      {path: "trip-history",
+        component: TripHistoryComponent,
+        canActivate: [authGuard],
+        data: {roles: ["DRIVER","CUSTOMER"]}
       },
       {path: "map", component: MapComponent, canActivate: [authGuard], data: {roles: ["CUSTOMER", "DRIVER"]}},
       {

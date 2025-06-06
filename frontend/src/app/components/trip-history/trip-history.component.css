@@ -1,0 +1,13 @@
+.rating-stars mat-icon {
+  font-size: 20px;
+  color: lightgray;
+  vertical-align: middle;
+}
+
+.rating-stars mat-icon.filled {
+  color: gold;
+}
+.start-address-form-field {
+  width: 500px;
+  height: auto;
+}

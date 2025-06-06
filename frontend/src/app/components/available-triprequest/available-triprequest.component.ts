@@ -1,13 +1,13 @@
 import {Component, ViewChild, AfterViewInit, OnInit, ChangeDetectorRef} from '@angular/core';
 import {
-  MatCell, MatCellDef,
+  MatCell,
+  MatCellDef,
   MatColumnDef,
   MatHeaderCell,
   MatHeaderCellDef, MatHeaderRow, MatHeaderRowDef, MatRow, MatRowDef,
-  MatTable,
   MatTableDataSource
 } from '@angular/material/table';
-import {MatSort, MatSortHeader, Sort} from '@angular/material/sort';
+import {MatSort, MatSortHeader} from '@angular/material/sort';
 import {FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {MatButton, MatIconButton} from '@angular/material/button';
 import {MatFormField, MatInput, MatLabel, MatSuffix} from '@angular/material/input';
@@ -18,11 +18,12 @@ import {MatTooltip} from '@angular/material/tooltip';
 import {AvailableTripRequestDTO, TripRequestService,Location} from '../../../api/sep_drive';
 import {debounceTime, distinctUntilChanged, tap} from 'rxjs';
 import {CommonModule} from '@angular/common';
+import{MatTable} from '@angular/material/table';
 
 @Component({
   selector: 'app-available-triprequest',
   standalone: true,
-  imports: [CommonModule, MatTable, FormsModule, MatFormField, MatIcon, MatIconButton, MatInput, MatLabel, MatOption, MatSelect, MatSuffix, MatTooltip, ReactiveFormsModule, MatButton, MatColumnDef, MatSortHeader, MatHeaderCell, MatCell, MatHeaderCellDef, MatCellDef, MatHeaderRow, MatRow, MatHeaderRowDef, MatRowDef, MatSort],
+  imports: [CommonModule, MatTable, FormsModule, MatFormField, MatIcon, MatIconButton, MatInput, MatLabel, MatOption, MatSelect, MatSuffix, MatTooltip, ReactiveFormsModule, MatButton, MatSortHeader, MatSort, MatColumnDef, MatHeaderCell, MatCell, MatHeaderCellDef, MatCellDef, MatHeaderRow, MatRow, MatHeaderRowDef, MatRowDef],
   templateUrl: './available-triprequest.component.html',
   styleUrl: './available-triprequest.component.css'
 })
@@ -39,6 +40,7 @@ export class AvailableTriprequestComponent implements OnInit,AfterViewInit{
   start!:Location;
   startLocations: Location[] = [];
 
+  //datasource initialisieren
   dataSource = new MatTableDataSource<AvailableTripRequestDTO>([]);
   @ViewChild(MatSort) sort!: MatSort;
 
@@ -48,16 +50,15 @@ export class AvailableTriprequestComponent implements OnInit,AfterViewInit{
 
   constructor(
     private tripService: TripRequestService
-  , private cdr: ChangeDetectorRef) {}
+   //, private cdr: ChangeDetectorRef
+  )
+    {}
 
 
   onStartChange(event: MatSelectChange) {
     this.start = event.value
   }
   ngOnInit(): void {
-    //datasource initialisieren
-    this.dataSource = new MatTableDataSource<AvailableTripRequestDTO>([]);
-
     this.locationForm.get("startQuery")?.valueChanges.pipe(
         tap(value => console.log('Eingabewert:', value)),
         debounceTime(300),
@@ -87,7 +88,7 @@ export class AvailableTriprequestComponent implements OnInit,AfterViewInit{
           this.lon = position.coords.longitude;
           console.log(this.lat);
           console.log(this.lon);
-          // // stores lon and lat in var startQuery
+           // stores lon and lat in var startQuery
           this.locationForm.get("startQuery")!.setValue(`${this.lat}, ${this.lon}`)
         },
         (err) => {
@@ -97,13 +98,11 @@ export class AvailableTriprequestComponent implements OnInit,AfterViewInit{
       this.error = 'Geolocation is not supported by this browser.';
     }
   }
-  // initialise datasource
-
 
   ngAfterViewInit() {
       if (this.dataSource && this.sort) {
         this.dataSource.sort = this.sort;
-        this.cdr.detectChanges();
+        //this.cdr.detectChanges();
       }
   }
 
@@ -116,11 +115,11 @@ export class AvailableTriprequestComponent implements OnInit,AfterViewInit{
           this.dataSource.data = response;
           this.showTable = true;
 
-          setTimeout(() => {
-            if(this.sort){
-              this.dataSource.sort = this.sort;
-            }
-          })
+          // setTimeout(() => {
+          //   if(this.sort){
+          //     this.dataSource.sort = this.sort;
+          //   }
+          // })
           },
         error: (err) => {
           console.error('Fehler bei der Suche von verfügbare Fahranfragen', err);
@@ -130,14 +129,14 @@ export class AvailableTriprequestComponent implements OnInit,AfterViewInit{
     }
   }
 
-  acceptTrip() {
-
-
-  }
-
   getStars(rating: number): number[] {
-    return Array(5).fill(0).map((x, i) => i); // [0,1,2,3,4]
+    return Array(5).fill(0).map((x, i) => i);
   }
+
+  //To be implemented by  Mohammed Daoudi
+  acceptTrip() {
+  }
+
 }
 
 

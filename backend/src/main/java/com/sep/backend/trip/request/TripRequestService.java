@@ -7,7 +7,6 @@ import com.sep.backend.Roles;
 import com.sep.backend.account.AccountService;
 import com.sep.backend.entity.*;
 import com.sep.backend.location.Location;
-import com.sep.backend.nominatim.LocationRepository;
 import com.sep.backend.ors.ORSService;
 import com.sep.backend.ors.data.ORSFeatureCollection;
 import com.sep.backend.route.Coordinate;
@@ -25,16 +24,14 @@ import java.util.Optional;
 public class TripRequestService {
 
     private final TripRequestRepository tripRequestRepository;
-    private final LocationRepository locationRepository;
 
     private final AccountService accountService;
     private final RouteService routeService;
     private final ORSService orsService;
     private final TripHistoryRepository tripHistoryRepository;
 
-    public TripRequestService(TripRequestRepository tripRequestRepository, LocationRepository locationRepository, AccountService accountService, RouteService routeService, ORSService orsService1, TripHistoryRepository tripHistoryRepository) {
+    public TripRequestService(TripRequestRepository tripRequestRepository, AccountService accountService, RouteService routeService, ORSService orsService1, TripHistoryRepository tripHistoryRepository) {
         this.tripRequestRepository = tripRequestRepository;
-        this.locationRepository = locationRepository;
         this.accountService = accountService;
         this.routeService = routeService;
         this.orsService = orsService1;
@@ -208,32 +205,5 @@ public class TripRequestService {
             );
         }).toList();
 
-
-//        Comparator<AvailableTripRequestDTO> comparator = getComparator(sort);
-//
-//        if ("desc".equalsIgnoreCase(direction)) {
-//            comparator = comparator.reversed();
-//        }
-//        return unsorted.stream()
-//                .sorted(comparator)
-//                .collect(Collectors.toList());
     }
-
-
-//    private Comparator<AvailableTripRequestDTO> getComparator(String sort) {
-//
-//        return switch (sort) {
-//            case "requestTime" -> Comparator.comparing(AvailableTripRequestDTO::getRequestTime);
-//            case "customerUsername" -> Comparator.comparing(AvailableTripRequestDTO::getCustomerUsername, String.CASE_INSENSITIVE_ORDER);
-//            case "customerRating" -> Comparator.comparing(AvailableTripRequestDTO::getCustomerRating);
-//            case "desiredCarType" ->  Comparator.comparingInt(dto ->
-//                switch (dto.getDesiredCarType()) {
-//                case "SMALL" -> 1;
-//                case "MEDIUM" -> 2;
-//                case "DELUXE" -> 3;
-//                   default -> throw new IllegalStateException("Unexpected value: " + dto.getDesiredCarType());
-//            });
-//            default -> Comparator.comparing(AvailableTripRequestDTO::getDistanceInKm);
-//        };
-//    }
 }

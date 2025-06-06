@@ -11,7 +11,6 @@ import java.util.Optional;
 public interface TripRequestRepository extends JpaRepository<TripRequestEntity, Long> {
 
 
-    Optional<TripRequestEntity> findByCustomer_Email(String email);
 
     Optional<TripRequestEntity> findByCustomer_EmailAndStatus(String email, String status);
 

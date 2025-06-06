@@ -171,7 +171,7 @@ public class TripRequestService {
                     .getFirst();
 
 
-            double distance = orsService.getRouteDirections(List.of(Coordinate.from(driverLocation), Coordinate.from(tripStart)))
+            double distanceToTripStart = orsService.getRouteDirections(List.of(Coordinate.from(driverLocation), Coordinate.from(tripStart)))
                     .getFeatures()
                     .getFirst()
                     .getProperties()
@@ -201,7 +201,7 @@ public class TripRequestService {
                     customer.getUsername(),
                     avgRating,
                     activeRequest.getCarType(),
-                    distance,
+                    distanceToTripStart,
                     getDistance(activeRequest.getRoute().getGeoJSON()),
                     activeRequest.getPrice(),
                     tripDuration

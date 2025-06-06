@@ -16,6 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Schema(description = "Represents the properties of a feature.")
+
 public class ORSProperties {
 
     @JsonProperty("segments")

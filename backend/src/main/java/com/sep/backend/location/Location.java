@@ -17,7 +17,7 @@ import java.util.List;
 public class Location {
 
     @Schema(description = "The id of the location. Might be null if location does not have related entity.", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-    private long locationId;
+    private Long locationId;
 
     @Schema(description = "The longitude of the location.", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull

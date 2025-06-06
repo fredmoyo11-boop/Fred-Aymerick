@@ -22,21 +22,14 @@ import java.util.List;
 public class NominatimService {
 
     private static final Logger log = LoggerFactory.getLogger(NominatimService.class);
-    private final String apiKey;
     private final ObjectMapper mapper;
     private final RestClient restClient;
-    private final RestClient orsClient;
 
-    public NominatimService(@Value("${ors.api.key}") String apiKey, ObjectMapper mapper) {
+    public NominatimService( ObjectMapper mapper) {
 
-        this.apiKey = apiKey;
 
         this.mapper = mapper;
 
-        this.orsClient = RestClient.builder()
-                .baseUrl("https://api.openrouteservice.org/v2/directions/driving-car/geojson")
-                .defaultHeader("Content-Type", "application/json")
-                .build();
 
         this.restClient = RestClient.builder()
                 .baseUrl("https://nominatim.openstreetmap.org")
@@ -93,37 +86,6 @@ public class NominatimService {
     }
 
 
-    public ORSFeatureCollection requestORSRoute(List<LocationEntity> stops) {
 
-        try {
-            List<List<Double>> coordinates = new ArrayList<>();
-
-            stops = stops.stream()
-                    .peek(stop -> coordinates.add(List.of(stop.getLongitude(), stop.getLatitude())))
-                    .toList();
-
-            log.info("Gesendete Koordinaten an ORS: {}", coordinates);
-
-
-            String body = """
-                    {
-                      "coordinates": %s
-                    }
-                    """.formatted(mapper.writeValueAsString(coordinates));
-
-            log.info("Starte ORS-Routenberechnung von '{}' nach '{}'", stops.getFirst().getDisplayName(), stops.getLast().getDisplayName());
-            String response = orsClient.post()
-                    .header("Authorization", this.apiKey)
-                    .body(body)
-                    .retrieve()
-                    .body(String.class);
-
-            log.info("ORS-Route erfolgreich empfangen für {} Wegpunkte", coordinates.size());
-            return mapper.readValue(response, ORSFeatureCollection.class);
-
-        } catch (JsonProcessingException e) {
-            throw new ORSRequestException(ErrorMessages.ORS_PROCESSING_FAILED + e.getMessage());
-        }
-    }
 
 }

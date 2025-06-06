@@ -155,7 +155,8 @@ public class TripRequestServiceIntegrationTest {
     }
 
     @Test
-    void testCreateTripRequest_Success()  {
+    @WithMockUser(username = testEmail, roles = "CUSTOMER")
+    void testCreateTripRequest_Success() throws Exception {
         TripRequestBody body = new TripRequestBody();
         body.setCarType("SMALL");
         body.setNote("Bitte nicht rauchen.");
@@ -182,18 +183,28 @@ public class TripRequestServiceIntegrationTest {
             tripRequestService.deleteCurrentActiveTripRequest(principal);
 
         }
-        TripRequestEntity result = tripRequestService.createCurrentActiveTripRequest(body, principal);
-        // Validierungen
-        assertNotNull(result);
-        assertNotNull(result.getId());
-        assertEquals(TripRequestStatus.ACTIVE, result.getStatus());
-        assertEquals("SMALL", result.getCarType());
-        assertEquals("Bitte nicht rauchen.", result.getNote());
-        assertEquals(testEmail, result.getCustomer().getEmail());
-        assertNotNull(result.getRoute());
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
+
+        String result = mockMvc.perform(post("/api/trip/request/current")
+                                .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(body)))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        String user = "userrrr";
+
+       TripRequestDTO trips = mapper.readValue(result, TripRequestDTO.class);
+        assertNotNull(trips);
+        assertEquals(TripRequestStatus.ACTIVE, trips.getStatus());
+        assertEquals("SMALL", trips.getCarType());
+        assertEquals("Bitte nicht rauchen.", trips.getNote());
+        assertEquals(user, trips.getUsername());
+        assertNotNull(trips.getRoute());
        // assertEquals(List.of(start.getLongitude(),start.getLatitude()),result.getRoute().getGeoJSON().getFeatures().getFirst().getGeometry().getCoordinates().getFirst());
        // assertEquals(List.of(end.getLongitude(),end.getLatitude()),result.getRoute().getGeoJSON().getFeatures().getFirst().getGeometry().getCoordinates().getLast());
-        assertTrue(result.getPrice() > 0);
+        assertTrue(trips.getPrice() > 0);
     }
 
 

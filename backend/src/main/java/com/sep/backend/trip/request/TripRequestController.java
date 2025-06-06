@@ -55,7 +55,7 @@ public class TripRequestController {
             tags = {Tags.TRIP_REQUEST},
             responses = {@ApiResponse(responseCode = HttpStatus.OK, description = "Trip request created successfully.",
                     content = @Content(schema = @Schema(implementation = TripRequestDTO.class)))})
-    public TripRequestDTO createCurrentActiveTripRequest(@RequestBody @Valid TripRequestBody tripRequestBody, Principal principal) throws JsonProcessingException {
+    public TripRequestDTO createCurrentActiveTripRequest(@RequestBody @Valid TripRequestBody tripRequestBody, Principal principal)  {
         return TripRequestDTO.from(tripRequestService.createCurrentActiveTripRequest(tripRequestBody, principal));
     }
 

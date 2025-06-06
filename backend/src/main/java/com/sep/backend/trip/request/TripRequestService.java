@@ -31,6 +31,7 @@ public class TripRequestService {
     private final RouteService routeService;
     private final ORSService orsService;
     private final TripHistoryRepository tripHistoryRepository;
+
     public TripRequestService(TripRequestRepository tripRequestRepository, LocationRepository locationRepository, AccountService accountService, RouteService routeService, ORSService orsService1, TripHistoryRepository tripHistoryRepository) {
         this.tripRequestRepository = tripRequestRepository;
         this.locationRepository = locationRepository;
@@ -53,7 +54,7 @@ public class TripRequestService {
     /**
      * Returns the trip request entity by email and status.
      *
-     * @param email The email to find the trip request entity.
+     * @param email         The email to find the trip request entity.
      * @param requestStatus The status of the trip request entity.
      * @return The optional containing the trip request entity.
      */
@@ -88,7 +89,7 @@ public class TripRequestService {
      * Creates a trip request.
      *
      * @param tripRequestBody The main body containing trip request information.
-     * @param principal The user.
+     * @param principal       The user.
      * @return The trip request entity
      */
     @Transactional
@@ -126,6 +127,11 @@ public class TripRequestService {
         return tripRequestRepository.save(tripRequestEntity);
     }
 
+
+    private double getDistance(ORSFeatureCollection geoJSON) {
+        return geoJSON.getFeatures().getFirst().getProperties().getSummary().getDistance();
+    }
+
     /**
      * Deletes the current active trip request.
      *
@@ -136,7 +142,7 @@ public class TripRequestService {
         String email = principal.getName();
         TripRequestEntity tripRequestEntity = findActiveTripRequestByEmail(email)
                 .orElseThrow(() -> new NotFoundException("Current customer does not have an active trip request."));
-       tripRequestEntity.setStatus(TripRequestStatus.DELETED);
+        tripRequestEntity.setStatus(TripRequestStatus.DELETED);
 
         tripRequestRepository.save(tripRequestEntity);
     }
@@ -163,13 +169,9 @@ public class TripRequestService {
                     .getRoute()
                     .getStops()
                     .getFirst();
-            CustomerEntity customer = activeRequest.getCustomer();
-            LocationEntity driverStart = new LocationEntity();
-            driverStart.setLatitude(driverLocation.getLatitude());
-            driverStart.setLongitude(driverLocation.getLongitude());
-            driverStart.setDisplayName(driverLocation.getDisplayName());
 
-            double distance = orsService.getRouteDirections(List.of(Coordinate.from(driverLocation),Coordinate.from(tripStart)))
+
+            double distance = orsService.getRouteDirections(List.of(Coordinate.from(driverLocation), Coordinate.from(tripStart)))
                     .getFeatures()
                     .getFirst()
                     .getProperties()
@@ -185,6 +187,8 @@ public class TripRequestService {
                     .getProperties()
                     .getSummary()
                     .getDuration();
+
+            CustomerEntity customer = activeRequest.getCustomer();
 
             double avgRating = tripHistoryRepository.findByCustomer(customer).stream()
                     .mapToInt(TripHistoryEntity::getCustomerRating)
@@ -215,9 +219,6 @@ public class TripRequestService {
 //                .collect(Collectors.toList());
     }
 
-    private double getDistance(ORSFeatureCollection geoJSON) {
-        return geoJSON.getFeatures().getFirst().getProperties().getSummary().getDistance();
-    }
 
 //    private Comparator<AvailableTripRequestDTO> getComparator(String sort) {
 //

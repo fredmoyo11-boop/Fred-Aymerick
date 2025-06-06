@@ -40,7 +40,7 @@ public class ORSService {
         //Makes post request to ORS and gets a string back in form of geojson
         String orsFeatureCollectionString = restClient.post()
                 .uri("/v2/directions/driving-car/geojson")
-                .header("Authorization", this.ORS_API_KEY)
+                .header("Authorization", ORS_API_KEY)
                 .body(routeRequestBody)
                 .retrieve()
                 .body(String.class);

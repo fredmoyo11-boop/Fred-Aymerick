@@ -67,6 +67,7 @@ public class TripRequestServiceIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
+
     @Autowired
     private NominatimService nominatimService;
 
@@ -182,7 +183,6 @@ public class TripRequestServiceIntegrationTest {
 
         }
         TripRequestEntity result = tripRequestService.createCurrentActiveTripRequest(body, principal);
-
         // Validierungen
         assertNotNull(result);
         assertNotNull(result.getId());
@@ -191,8 +191,8 @@ public class TripRequestServiceIntegrationTest {
         assertEquals("Bitte nicht rauchen.", result.getNote());
         assertEquals(testEmail, result.getCustomer().getEmail());
         assertNotNull(result.getRoute());
-        // assertEquals(List.of(start.getLongitude(),start.getLatitude()),result.getRoute().getGeoJSON().getFeatures().getFirst().getGeometry().getCoordinates().getFirst());
-        // assertEquals(List.of(end.getLongitude(),end.getLatitude()),result.getRoute().getGeoJSON().getFeatures().getFirst().getGeometry().getCoordinates().getLast());
+       // assertEquals(List.of(start.getLongitude(),start.getLatitude()),result.getRoute().getGeoJSON().getFeatures().getFirst().getGeometry().getCoordinates().getFirst());
+       // assertEquals(List.of(end.getLongitude(),end.getLatitude()),result.getRoute().getGeoJSON().getFeatures().getFirst().getGeometry().getCoordinates().getLast());
         assertTrue(result.getPrice() > 0);
     }
 

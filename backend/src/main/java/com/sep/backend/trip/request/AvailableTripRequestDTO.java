@@ -15,33 +15,33 @@ import java.time.LocalDateTime;
 @Schema(description = " Tabelle-Informationen der verfügbaren Fahranfragen ", requiredMode = Schema.RequiredMode.REQUIRED)
 public class AvailableTripRequestDTO {
 
-    @Schema(description = "requestId der Fahrt ",requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "requestId der Fahrt ",implementation = Long.class,requiredMode = Schema.RequiredMode.REQUIRED)
     private Long requestId;
 
-    @Schema(description = " Erstellungsdatum und-uhrzeit der Fahranfrage ",requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = " Erstellungsdatum und-uhrzeit der Fahranfrage ",implementation =LocalDateTime.class,requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime requestTime;
 
-    @Schema(description = " Kundenname",  requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = " Kundenname",implementation = String.class,  requiredMode = Schema.RequiredMode.REQUIRED)
     private String customerUsername;
 
-    @Schema(description = "Kundenbewertung", requiredMode = Schema.RequiredMode.REQUIRED)
-    private double customerRating;
+    @Schema(description = "Kundenbewertung", implementation =Double.class,requiredMode = Schema.RequiredMode.REQUIRED)
+    private Double  customerRating;
 
-    @Schema(description = " Gewünschte Fahrzeugklasse",requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = " Gewünschte Fahrzeugklasse",implementation = String.class,requiredMode = Schema.RequiredMode.REQUIRED)
     private String desiredCarType;
 
     @Schema(description = "Entfernung zwischen der aktuellen Position des Fahrers und dem Startpunkt der Fahrt",requiredMode = Schema.RequiredMode.REQUIRED)
-    private double distanceInKm;
+    private Double distanceInKm;
 
     @Schema(description = "Gesamte Distance der Fahrt ",requiredMode = Schema.RequiredMode.REQUIRED)
-    private double totalDistanceInKm;
+    private Double totalDistanceInKm;
 
     @Schema(description = "Gesamte Preis der Fahrt ",requiredMode = Schema.RequiredMode.REQUIRED)
-    private double price;
+    private Double price;
 
     @Schema(description = "Gesamte Dauer der Fahrt in Sekunde ",requiredMode = Schema.RequiredMode.REQUIRED)
-    private double duration;
+    private Double duration;
 
 
 }

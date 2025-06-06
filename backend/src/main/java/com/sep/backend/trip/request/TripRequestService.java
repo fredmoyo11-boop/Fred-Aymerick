@@ -41,19 +41,7 @@ public class TripRequestService {
      * @return Whether the customer has A active request or not
      */
     public boolean existsActiveTripRequest(String email) {
-        return tripRequestRepository.existsByCustomer_Email(email);
-    }
-
-    /**
-     * Saves A LocationEntity to the Repository.
-     *
-     * @param location Location chosen by customer.
-     * @return The location entity.
-     */
-    private LocationEntity saveLocation(@Valid Location location) {
-//        var locationEntity = LocationEntity.from(locationDTO);
-//        return locationRepository.save(locationEntity);
-        return new LocationEntity();
+        return tripRequestRepository.existsByCustomer_EmailAndStatus(email, TripRequestStatus.ACTIVE);
     }
 
     /**
@@ -64,7 +52,7 @@ public class TripRequestService {
      * @return The optional containing the trip request entity.
      */
     public Optional<TripRequestEntity> findTripRequestByEmailAndStatus(String email, String requestStatus) {
-        return tripRequestRepository.findByCustomer_Email(email);
+        return tripRequestRepository.findByCustomer_EmailAndStatus(email, requestStatus);
     }
 
     /**
@@ -142,7 +130,7 @@ public class TripRequestService {
         String email = principal.getName();
         TripRequestEntity tripRequestEntity = findActiveTripRequestByEmail(email)
                 .orElseThrow(() -> new NotFoundException("Current customer does not have an active trip request."));
-//        tripRequestEntity.setRequestStatus(TripRequestStatus.DELETED);
+       tripRequestEntity.setStatus(TripRequestStatus.DELETED);
 
         tripRequestRepository.save(tripRequestEntity);
     }

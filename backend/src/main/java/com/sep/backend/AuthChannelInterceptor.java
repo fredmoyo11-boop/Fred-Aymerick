@@ -3,7 +3,6 @@ package com.sep.backend;
 import com.sep.backend.account.AccountService;
 import com.sep.backend.auth.JwtUtil;
 import com.sep.backend.auth.login.LoginException;
-import com.sep.backend.trip.offer.TripOfferService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -29,12 +28,12 @@ import java.util.Optional;
 public class AuthChannelInterceptor implements ChannelInterceptor {
     private final JwtUtil jwtUtil;
     private final AccountService accountService;
-    private final TripOfferService tripOfferService;
+    private final WebSocketPermissionService permissionService;
 
-    public AuthChannelInterceptor(JwtUtil jwtUtil, AccountService accountService, TripOfferService tripOfferService) {
+    public AuthChannelInterceptor(JwtUtil jwtUtil, AccountService accountService, WebSocketPermissionService permissionService) {
         this.jwtUtil = jwtUtil;
         this.accountService = accountService;
-        this.tripOfferService = tripOfferService;
+        this.permissionService = permissionService;
     }
 
     private static final String AUTHORIZATION_HEADER_NAME = "Authorization";
@@ -111,12 +110,12 @@ public class AuthChannelInterceptor implements ChannelInterceptor {
                 throw new IllegalArgumentException("Destination is null. Cannot subscribe to destination.");
             }
 
-            if (destination.startsWith(NOTIFICATION_TOPIC_PREFIX) && !isValidNotificationSubscription(destination, email)) {
+            if (destination.startsWith(NOTIFICATION_TOPIC_PREFIX) && !permissionService.isValidNotificationSubscription(destination, email)) {
                 log.debug("NOTIFICATION: Invalid subscription for user {} to destination: {}", email, destination);
                 throw new IllegalArgumentException("Invalid subscription for user to destination: " + destination);
             }
 
-            if (destination.startsWith(SIMULATION_TOPIC_PREFIX) && !isValidSimulationSubscription(destination, auth)) {
+            if (destination.startsWith(SIMULATION_TOPIC_PREFIX) && ! permissionService.isValidSimulationSubscription(destination, auth)) {
                 log.debug("SIMULATION: Invalid subscription for user {} to destination: {}", email, destination);
                 throw new IllegalArgumentException("Invalid subscription for user to destination: " + destination);
             }
@@ -128,43 +127,5 @@ public class AuthChannelInterceptor implements ChannelInterceptor {
         return message;
     }
 
-    /**
-     * Returns whether the current user can subscribe to simulation or not.
-     *
-     * @param destination The destination of the subscription.
-     * @param principal   The principal of the current user.
-     * @return Whether the current user can subscribe to simulation or not.
-     */
-    private boolean isValidSimulationSubscription(String destination, Principal principal) {
-        if (destination == null || !destination.startsWith(SIMULATION_TOPIC_PREFIX)) {
-            return false;
-        }
 
-        return extractTripOfferId(destination)
-                .filter(tripOfferId -> tripOfferService.isPartOfTrip(tripOfferId, principal))
-                .isPresent();
-    }
-
-    /**
-     * Extracts the trip offer id from the destination.
-     *
-     * @param destination The destination of the subscription.
-     * @return The optional containing the id, if id was parsable, else an empty optional.
-     */
-    private Optional<Long> extractTripOfferId(String destination) {
-        String tripOfferId = destination.substring(NOTIFICATION_TOPIC_PREFIX.length());
-        try {
-            return Optional.of(Long.parseLong(tripOfferId));
-        } catch (NumberFormatException e) {
-            return Optional.empty();
-        }
-    }
-
-    private boolean isValidNotificationSubscription(String destination, String email) {
-        if (destination == null || !destination.startsWith(NOTIFICATION_TOPIC_PREFIX)) {
-            return false;
-        }
-        String expectedDestination = NOTIFICATION_TOPIC_PREFIX + email;
-        return expectedDestination.equals(destination);
-    }
 }

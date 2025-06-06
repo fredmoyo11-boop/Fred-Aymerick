@@ -37,6 +37,17 @@ public class TripOfferController {
         return new StringResponse(tripOfferService.hasActiveTripOffer(principal));
     }
 
+    @PostMapping("/driver/new")
+    @Operation(description = "Create a new offer.",
+            tags = {Tags.TRIP_OFFER},
+            responses = {@ApiResponse(responseCode = HttpStatus.OK, description = "Trip offer created.",
+                    content = @Content(schema = @Schema(implementation = StringResponse.class))),
+                    @ApiResponse(responseCode = HttpStatus.NOT_FOUND, description = "Unable to find trip request"),
+                    @ApiResponse(responseCode = HttpStatus.FORBIDDEN, description = "Driver has an active trip offer.")})
+    public StringResponse createNewTripOffer(Long tripRequestId, Principal principal) {
+        return new StringResponse(tripOfferService.createNewTripOffer(tripRequestId, principal));
+    }
+
     @PostMapping("/driver/withdraw")
     @Operation(description = "Withdraw an offer.",
             tags = {Tags.TRIP_OFFER},

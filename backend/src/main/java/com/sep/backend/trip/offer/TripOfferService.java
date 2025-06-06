@@ -4,12 +4,17 @@ import com.sep.backend.ErrorMessages;
 import com.sep.backend.NotFoundException;
 import com.sep.backend.Roles;
 import com.sep.backend.entity.*;
+import com.sep.backend.notification.NotificationService;
 import com.sep.backend.trip.offer.status.*;
 import com.sep.backend.trip.offer.response.*;
 import com.sep.backend.trip.offer.options.*;
 import com.sep.backend.entity.DriverEntity;
 import com.sep.backend.account.DriverRepository;
 import com.sep.backend.account.CustomerRepository;
+import com.sep.backend.entity.TripRequestEntity;
+import com.sep.backend.trip.request.TripRequestRepository;
+import com.sep.backend.entity.NotificationEntity;
+import com.sep.backend.notification.*;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
@@ -26,13 +31,17 @@ import java.util.Optional;
 @Service
 public class TripOfferService {
     private final DriverRepository driverRepository;
-    TripOfferRepository tripOfferRepository;
-    AccountService accountService;
+    private final TripRequestRepository tripRequestRepository;
+    private final TripOfferRepository tripOfferRepository;
+    private final AccountService accountService;
+    private final NotificationService notificationService;
 
-    public TripOfferService(TripOfferRepository tripOfferRepository, AccountService accountService, DriverRepository driverRepository) {
+    public TripOfferService(TripOfferRepository tripOfferRepository, AccountService accountService, DriverRepository driverRepository, TripRequestRepository tripRequestRepository, NotificationService notificationService) {
         this.tripOfferRepository = tripOfferRepository;
         this.accountService = accountService;
         this.driverRepository = driverRepository;
+        this.tripRequestRepository = tripRequestRepository;
+        this.notificationService = notificationService;
     }
 
     /**
@@ -46,6 +55,20 @@ public class TripOfferService {
             return TripOfferPresenceStatus.HAS_ACTIVE_OFFER;
         }
         return TripOfferPresenceStatus.NO_ACTIVE_OFFER;
+    }
+
+    public String createNewTripOffer(Long tripRequestId, Principal principal) throws ForbiddenException, NotFoundException {
+        if(checkIfActiveTripOfferExists(principal.getName())) {
+            throw new ForbiddenException("Driver has an active trip offer.");
+        }
+        TripRequestEntity tripRequestEntity = tripRequestRepository.findById(tripRequestId)
+                                                                   .orElseThrow(() -> new NotFoundException("Trip request not found."));
+        DriverEntity driverEntity = driverRepository.findByEmailIgnoreCase(principal.getName())
+                                                    .orElseThrow(() -> new NotFoundException("Driver not found."));
+        TripOfferEntity tripOfferEntity = new TripOfferEntity(tripRequestEntity, driverEntity, TripOfferStatus.PENDING);
+        tripOfferRepository.save(tripOfferEntity);
+        notificationService.sendNotification(Notification.from(new NotificationEntity(NotificationTypes.TRIP_OFFER_NEW, "New trip offer from " + driverEntity.getFirstName() + " " + driverEntity.getLastName(), tripRequestEntity.getCustomer(), null)), tripRequestEntity.getCustomer().getEmail());
+        return "Successfully created new trip offer.";
     }
 
     /**

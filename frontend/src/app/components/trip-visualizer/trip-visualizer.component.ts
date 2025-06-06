@@ -14,7 +14,7 @@ import {Route} from '../../../api/sep_drive';
   styleUrl: './trip-visualizer.component.css'
 })
 export class TripVisualizerComponent implements OnInit, OnChanges {
-  @Input() routeDTO!: Route;
+  @Input() route!: Route;
   @Input() animationLayerGroup!: LayerGroup;
 
   private map!: L.Map;
@@ -37,8 +37,8 @@ export class TripVisualizerComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['routeDTO'] && this.routeDTO && this.map) {
-      console.log("Route dto:", this.routeDTO)
+    if (changes['routeDTO'] && this.route && this.map) {
+      console.log("Route dto:", this.route)
       this.updateMap();
     }
   }
@@ -72,7 +72,7 @@ export class TripVisualizerComponent implements OnInit, OnChanges {
     }
 
     // interpolate route coordinates
-    this.routeDTO.geoJson.features = this.routeDTO.geoJson.features.map(feature => {
+    this.route.geoJson.features = this.route.geoJson.features.map(feature => {
       if (feature.geometry.type === "LineString") {
         let coordinates = feature.geometry.coordinates as number[][];
         feature.geometry.coordinates = this.interpolateCoordinates(coordinates);
@@ -83,7 +83,7 @@ export class TripVisualizerComponent implements OnInit, OnChanges {
 
     this.routeLayer.clearLayers()
 
-    const geoJSON = this.routeDTO.geoJson;
+    const geoJSON = this.route.geoJson;
 
     this.routeLayer.addLayer(L.geoJSON(geoJSON, {
       onEachFeature: (feature, layer) => {
@@ -93,15 +93,15 @@ export class TripVisualizerComponent implements OnInit, OnChanges {
       }
     }))
 
-    const stops = this.routeDTO.stops;
+    const stops = this.route.stops;
 
     stops.forEach((stop, index) => {
       if (index === 0) {
-        L.circleMarker([stop.coordinate.latitude, stop.coordinate.longitude], startMarkerOptions).addTo(this.routeLayer)
+        L.circleMarker([stop.coordinate.latitude!, stop.coordinate.longitude!], startMarkerOptions).addTo(this.routeLayer)
       } else if (index === stops.length - 1) {
-        L.circleMarker([stop.coordinate.latitude, stop.coordinate.longitude], endMarkerOptions).addTo(this.routeLayer)
+        L.circleMarker([stop.coordinate.latitude!, stop.coordinate.longitude!], endMarkerOptions).addTo(this.routeLayer)
       } else {
-        L.circleMarker([stop.coordinate.latitude, stop.coordinate.longitude], stopMarkerOptions).addTo(this.routeLayer)
+        L.circleMarker([stop.coordinate.latitude!, stop.coordinate.longitude!], stopMarkerOptions).addTo(this.routeLayer)
       }
     })
 

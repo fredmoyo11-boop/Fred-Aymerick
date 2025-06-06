@@ -1,4 +1,4 @@
-import {Component, inject, signal} from '@angular/core';
+import {Component, inject, OnInit, signal} from '@angular/core';
 import {MatButtonToggle, MatButtonToggleGroup} from '@angular/material/button-toggle';
 import {MatIcon} from '@angular/material/icon';
 import {MatInputModule} from '@angular/material/input';
@@ -24,11 +24,12 @@ import {MatButton, MatIconButton} from '@angular/material/button';
 import {formatDate, NgClass, NgOptimizedImage} from '@angular/common';
 import {MatDivider} from '@angular/material/list';
 import {RouterLink} from '@angular/router';
-import {AuthService} from '../../../api/sep_drive';
+import {AuthService, RegistrationDTO} from '../../../api/sep_drive';
 import {MomentDateAdapter} from '@angular/material-moment-adapter';
 import {HttpErrorResponse} from '@angular/common/http';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {MatSelect} from '@angular/material/select';
+import CarTypeEnum = RegistrationDTO.CarTypeEnum;
 
 export const MY_DATE_FORMATS = {
   parse: {
@@ -118,7 +119,7 @@ export class RegisterComponent {
   sendRegisterRequest() {
     const value = this.registerForm.value;
 
-    let registrationDTO = {
+    let registrationDTO: RegistrationDTO = {
       email: value.email!,
       password: value.password!,
       firstName: value.firstName!,
@@ -126,11 +127,11 @@ export class RegisterComponent {
       username: value.username!,
       birthday: this.convertDate(value.birthday!),
       role: value.role!,
-      carType: ""
+      carType: undefined
     };
 
     if (registrationDTO.role === "DRIVER") {
-      registrationDTO.carType = value.carType!;
+      registrationDTO.carType = value.carType as RegistrationDTO.CarTypeEnum
     }
 
     this.authService.register(registrationDTO, this.selectedFile || undefined).subscribe({

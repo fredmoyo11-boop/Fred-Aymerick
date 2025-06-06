@@ -52,7 +52,6 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
   @Input() tripOffer!: TripOffer
 
   private stompService = inject(StompService)
-  private routeService = inject(RouteService)
   private tripSimulationService = inject(TripSimulationService)
 
   stops: Location[] = []
@@ -61,14 +60,13 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
 
   readonly dialog = inject(MatDialog);
 
-  private _routeDTO$ = new BehaviorSubject<Route | null>(null);
+  private _route$ = new BehaviorSubject<Route | null>(null);
   private _isLocked$ = new BehaviorSubject<boolean>(false)
   private _animationDuration$ = new BehaviorSubject<number>(15000);
 
   isLocked!: boolean
-  routeDTO!: Route;
+  route!: Route;
 
-  // routeDTO!: RouteDTO;
   animationLayer = L.layerGroup()
   private positionMarker = L.marker([0, 0])
 
@@ -85,8 +83,8 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     // update coordinates when route changes
-    this._routeDTO$.subscribe(routeDTO => {
-      if (routeDTO) {
+    this._route$.subscribe(route => {
+      if (route) {
         const features = this.tripOffer.tripRequest.route.geoJson.features;
         if (features.length != 1) {
           throw new Error("Invalid ORS GeoJSON: Expected exactly one feature, got " + features.length + " features.")
@@ -99,8 +97,8 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
         let coordinates = feature.geometry.coordinates as number[][];
         this.coordinates = this.interpolateCoordinates(coordinates).map(coordinate => [coordinate[1], coordinate[0]]) as number[][];
 
-        this.routeDTO = routeDTO;
-        this.stops = this.routeDTO.stops;
+        this.route = route;
+        this.stops = this.route.stops;
       }
     })
 
@@ -114,7 +112,7 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
       this.isLocked = isLocked;
     })
 
-    this._routeDTO$.next(this.tripOffer.tripRequest.route);
+    this._route$.next(this.tripOffer.tripRequest.route);
 
     this.subscription = this.stompService
       .watchTopic<SimulationAction>(`/topic/simulation/${this.tripOfferId}`)
@@ -154,12 +152,14 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
     } else {
       console.error("Unknown action type:", simulationAction.actionType)
     }
-
-
   }
 
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
+  }
+
+  sendSimulationAction(simulationAction: SimulationAction) {
+    this.stompService.send(`/app/simulation/${this.tripOfferId}`, simulationAction)
   }
 
   start(): void {
@@ -168,7 +168,7 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
       timestamp: new Date().toISOString(),
       parameters: {startIndex: this.animationIndex}
     }
-    this.stompService.send(`/app/simulation/${this.tripOfferId}`, action)
+    this.sendSimulationAction(action)
   }
 
   stop(): void {
@@ -176,7 +176,7 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
       actionType: "STOP", timestamp: new Date().toISOString(),
       parameters: {startIndex: this.animationIndex}
     }
-    this.stompService.send(`/app/simulation/${this.tripOfferId}`, action)
+    this.sendSimulationAction(action)
   }
 
   info(): void {
@@ -184,7 +184,7 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
       actionType: "INFO", timestamp: new Date().toISOString(),
       parameters: {startIndex: this.animationIndex}
     }
-    this.stompService.send(`/app/simulation/${this.tripOfferId}`, action)
+    this.sendSimulationAction(action)
   }
 
 
@@ -194,7 +194,7 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
       timestamp: new Date().toISOString(),
       parameters: {velocity: velocity, startIndex: this.animationIndex}
     }
-    this.stompService.send(`/app/simulation/${this.tripOfferId}`, action)
+    this.sendSimulationAction(action)
   }
 
   complete(): void {
@@ -218,7 +218,7 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
       timestamp: new Date().toISOString(),
       parameters: {startIndex: this.animationIndex}
     }
-    this.stompService.send(`/app/simulation/${this.tripOfferId}`, action)
+    this.sendSimulationAction(action)
   }
 
   unlock(): void {
@@ -227,7 +227,7 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
       timestamp: new Date().toISOString(),
       parameters: {startIndex: this.animationIndex}
     }
-    this.stompService.send(`/app/simulation/${this.tripOfferId}`, action)
+    this.sendSimulationAction(action)
   }
 
   getVelocity(n: number, duration: number): number {

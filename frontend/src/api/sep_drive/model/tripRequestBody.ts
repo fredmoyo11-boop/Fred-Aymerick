@@ -9,15 +9,15 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { LocationDTO } from './locationDTO';
+import { Location } from './location';
 
 
 /**
  * Represents the body of a creation request for a trip.
  */
 export interface TripRequestBody { 
-    startLocation: LocationDTO;
-    endLocation: LocationDTO;
+    startLocation: Location;
+    endLocation: Location;
     /**
      * The type of car requested.
      */

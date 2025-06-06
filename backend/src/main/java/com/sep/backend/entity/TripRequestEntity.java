@@ -21,7 +21,7 @@ public class TripRequestEntity extends AbstractEntity {
     @JoinColumn(name = "customer_id", nullable = false)
     private CustomerEntity customer;
 
-    @OneToOne( cascade=CascadeType.ALL, orphanRemoval=true)
+    @OneToOne
     @JoinColumn(name = "route_id", nullable = false)
     private RouteEntity route;
 
@@ -32,7 +32,7 @@ public class TripRequestEntity extends AbstractEntity {
     private List<TripOfferEntity> offers = new ArrayList<>();
 
     @Column(name = "car_type", nullable = false)
-    private String desiredCarType;
+    private String carType;
 
     @Column(name = "status", nullable = false)
     private String status;
@@ -40,6 +40,6 @@ public class TripRequestEntity extends AbstractEntity {
     @Column(name = "price", nullable = false)
     private Double price; // in euro
 
-    @Column( name = "note", nullable = true)
+    @Column(name = "note", nullable = false)
     private String note;
 }

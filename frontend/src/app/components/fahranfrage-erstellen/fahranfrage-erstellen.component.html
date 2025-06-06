@@ -28,7 +28,7 @@
         <br>
         <mat-select [(value)]="start" (selectionChange)="onStartChange($event)">
           @for (location of startLocations; track idx; let idx = $index) {
-            <mat-option [value]="location">{{ location.display_name }}</mat-option>
+            <mat-option [value]="location">{{ location.displayName }}</mat-option>
           }
         </mat-select>
       </mat-form-field>
@@ -47,7 +47,7 @@
                formControlName="endQuery">
         <mat-select [(value)]="end" (selectionChange)="onEndChange($event)">
           @for (location of endLocations; track idx; let idx = $index) {
-            <mat-option [value]="location">{{ location.display_name }}</mat-option>
+            <mat-option [value]="location">{{ location.displayName }}</mat-option>
           }
         </mat-select>
       </mat-form-field>

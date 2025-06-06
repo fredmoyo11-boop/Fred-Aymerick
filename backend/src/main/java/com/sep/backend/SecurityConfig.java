@@ -1,6 +1,5 @@
-package com.sep.backend.config;
+package com.sep.backend;
 
-import com.sep.backend.FilterChainExceptionHandler;
 import com.sep.backend.auth.JwtFilter;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +9,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,6 +27,7 @@ import java.util.List;
 
 @Slf4j
 @Configuration
+@EnableWebSecurity
 public class SecurityConfig {
 
     @Bean
@@ -37,7 +39,7 @@ public class SecurityConfig {
     public CorsFilter corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:4200, http://localhost:80", "http://frontend:80"));
+        config.setAllowedOrigins(List.of("http://localhost:4200", "http://localhost:80", "http://frontend:80", "http://localhost"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
@@ -56,11 +58,14 @@ public class SecurityConfig {
                 .addFilterBefore(filterChainExceptionHandler, LogoutFilter.class)
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .cors(Customizer.withDefaults())
-                .csrf(csrf -> csrf.disable())
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**", "/v3/api-docs", "/uploads/profile/picture/**").permitAll()
-                        // add matchers for endpoints as needed
+                        .requestMatchers("/api/auth/**", "/v3/api-docs", "/v3/api-docs/**", "/uploads/profile/picture/**").permitAll()
+                        .requestMatchers("/ws").permitAll()
+                        .requestMatchers("/ws/**").permitAll()
+//                        // add matchers for endpoints as needed
                         .anyRequest().authenticated())
+//                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
                 .exceptionHandling(x -> {
                     x.accessDeniedHandler(accessDeniedHandler());
                     x.authenticationEntryPoint(authenticationEntryPoint());

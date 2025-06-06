@@ -9,7 +9,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { LocationDTO } from './locationDTO';
+import { Location } from './location';
 
 
 /**
@@ -20,8 +20,8 @@ export interface TripRequestDTO {
      * The customer requesting drive.
      */
     email: string;
-    startLocation: LocationDTO;
-    endLocation: LocationDTO;
+    startLocation: Location;
+    endLocation: Location;
     /**
      * The type of car requested.
      */

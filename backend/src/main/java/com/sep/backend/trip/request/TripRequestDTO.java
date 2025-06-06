@@ -1,82 +1,47 @@
 package com.sep.backend.trip.request;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.sep.backend.entity.LocationEntity;
 import com.sep.backend.entity.TripRequestEntity;
 import com.sep.backend.location.Location;
-import com.sep.backend.ors.data.ORSFeatureCollection;
+import com.sep.backend.route.RouteDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 import lombok.*;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Schema(description = "Represents a request for a drive.",requiredMode = RequiredMode.REQUIRED)
+@Schema(description = "Represents a request for a drive.")
 public class TripRequestDTO {
-
-    @Schema(description = "Eindeutige ID der Fahranfrage",requiredMode = RequiredMode.REQUIRED)
-    private Long tripRequestId;
-
-    @Schema(description = "Zeitpunkt der Anfrage", requiredMode = RequiredMode.REQUIRED)
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    private LocalDateTime createdAt;
 
     @Schema(description = "The customer requesting drive.", requiredMode = RequiredMode.REQUIRED)
     private String email;
 
-    @Schema(description = "The start location of the drive.", requiredMode = RequiredMode.REQUIRED)
-    private Location startLocation;
-
-    @Schema(description = "The end location of the drive.", requiredMode = RequiredMode.REQUIRED)
-    private Location endLocation;
+    @Schema(description = "The route of the trip request.", requiredMode = RequiredMode.REQUIRED)
+    private RouteDTO route;
 
     @Schema(description = "The type of car requested.", requiredMode = RequiredMode.REQUIRED)
-    private String desiredCarType;
-
-    @Schema(description = "Die Optionale Zwischenstops während der Fahrt ", requiredMode = RequiredMode.NOT_REQUIRED)
-    private List<Location> stops ;
+    private String carType;
 
     @Schema(description = "The optional notes for the driver.", requiredMode = RequiredMode.NOT_REQUIRED)
     private String note;
 
-    @Schema(description = "The current status of the trip. Either ACTIVE or DELETED.",requiredMode =RequiredMode.REQUIRED )
+    @Schema(description = "The current status of the trip. Either ACTIVE or DELETED.", requiredMode = RequiredMode.REQUIRED)
     private String status;
 
-    @Schema(description = "Die Gesamte Route von der Fahrt", requiredMode = RequiredMode.REQUIRED)
-    private ORSFeatureCollection geoJson;
-
+    @Schema(description = "The price for the trip request.", requiredMode = RequiredMode.REQUIRED)
+    private Double price;
 
     public static TripRequestDTO from(TripRequestEntity tripRequestEntity) {
-        Location startLocation = getLocation(tripRequestEntity.getRoute().getStops().getFirst());
+        var dto = new TripRequestDTO();
+        var routeDTO = RouteDTO.from(tripRequestEntity.getRoute());
 
-        Location endLocation = getLocation(tripRequestEntity.getRoute().getStops().getLast());
-
-        TripRequestDTO dto = new TripRequestDTO();
-        dto.setEmail(tripRequestEntity.getCustomer().getEmail());
-        dto.setTripRequestId(tripRequestEntity.getId());
-        dto.setCreatedAt(tripRequestEntity.getRequestTime());
-        dto.setStartLocation(startLocation);
-        dto.setEndLocation(endLocation);
-        dto.setNote(tripRequestEntity.getNote());
-        dto.setDesiredCarType(tripRequestEntity.getDesiredCarType());
+        dto.setEmail(tripRequestEntity.getCustomer().getUsername());
+        dto.setRoute(routeDTO);
+        dto.setCarType(tripRequestEntity.getCarType());
         dto.setStatus(tripRequestEntity.getStatus());
-        dto.setGeoJson(tripRequestEntity.getRoute().getGeoJSON());
-        dto.setEmail(tripRequestEntity.getCustomer().getEmail());
+        dto.setNote(tripRequestEntity.getNote());
+        dto.setPrice(tripRequestEntity.getPrice());
         return dto;
-    }
-
-    public  static Location getLocation(LocationEntity locationEntity) {
-        Location location = new Location();
-        location.setLocationId(locationEntity.getId());
-        location.setDisplayName(locationEntity.getDisplayName());
-        location.setLongitude(locationEntity.getLongitude());
-        location.setLatitude(locationEntity.getLatitude());
-        location.setGeoJSON(locationEntity.getGeoJSON());
-        return location;
     }
 }

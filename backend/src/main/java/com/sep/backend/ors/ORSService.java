@@ -36,7 +36,7 @@ public class ORSService {
         var routeRequestBody = new RouteRequestBody(stopCoordinates);
         //Makes post request to ORS and gets a string back in form of geojson
         String orsFeatureCollectionString = restClient.post()
-                .uri("v2/directions/driving-car/geojson")
+                .uri("/v2/directions/driving-car/geojson")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(routeRequestBody)
                 .retrieve()

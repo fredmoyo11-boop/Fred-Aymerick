@@ -14,6 +14,9 @@ import lombok.*;
 @Schema(description = "Represents a request for a drive.")
 public class TripRequestDTO {
 
+    @Schema(description = "Unique id of trip request.", requiredMode = RequiredMode.REQUIRED)
+    private Long tripRequestId;
+
     @Schema(description = "The customer requesting drive.", requiredMode = RequiredMode.REQUIRED)
     private String email;
 
@@ -36,6 +39,7 @@ public class TripRequestDTO {
         var dto = new TripRequestDTO();
         var routeDTO = RouteDTO.from(tripRequestEntity.getRoute());
 
+        dto.setTripRequestId(tripRequestEntity.getId());
         dto.setEmail(tripRequestEntity.getCustomer().getUsername());
         dto.setRoute(routeDTO);
         dto.setCarType(tripRequestEntity.getCarType());

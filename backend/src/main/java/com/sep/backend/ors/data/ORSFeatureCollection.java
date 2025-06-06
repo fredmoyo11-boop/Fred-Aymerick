@@ -20,7 +20,7 @@ import java.util.List;
 public class ORSFeatureCollection {
 
     @JsonProperty("type")
-    @Schema(description = "The feature collection type.", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "The feature collection type.", requiredMode = Schema.RequiredMode.REQUIRED, allowableValues = {"Point", "MultiPoint", "LineString", "MultiLineString", "Polygon", "MultiPolygon", "GeometryCollection", "Feature", "FeatureCollection"})
     private String type;
 
     @JsonProperty("bbox")

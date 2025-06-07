@@ -157,9 +157,6 @@ public class TripRequestServiceIntegrationTest {
     @Test
     @WithMockUser(username = testEmail, roles = "CUSTOMER")
     void testCreateTripRequest_Success() throws Exception {
-        TripRequestBody body = new TripRequestBody();
-        body.setCarType("SMALL");
-        body.setNote("Bitte nicht rauchen.");
 
         Location start = new Location();
         start.setLatitude(51.4501);
@@ -173,9 +170,12 @@ public class TripRequestServiceIntegrationTest {
         end.setDisplayName("Hbf Oberhausen");
         end.setGeoJSON(nominatimService.reverse("51.4982","6.8676").getFeatures().getFirst());
 
-
+        TripRequestBody body = new TripRequestBody();
+        body.setCarType("SMALL");
+        body.setNote("Bitte nicht rauchen.");
         body.setLocations(List.of(start, end));
         body.setGeojson(orsService.getRouteDirections(List.of(Coordinate.from(start), Coordinate.from(end))));
+
         Principal principal = () -> testEmail;
 
         if(tripRequestService.existsActiveTripRequest(testEmail)) {
@@ -187,15 +187,15 @@ public class TripRequestServiceIntegrationTest {
         mapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
 
         String result = mockMvc.perform(post("/api/trip/request/current")
-                                .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(body)))
-                .andExpect(status().isOk())
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
+                                        .contentType(MediaType.APPLICATION_JSON)
+                                        .content(mapper.writeValueAsString(body)))
+                               .andExpect(status().isOk())
+                               .andReturn()
+                               .getResponse()
+                               .getContentAsString();
         String user = "userrrr";
 
-       TripRequestDTO trips = mapper.readValue(result, TripRequestDTO.class);
+        TripRequestDTO trips = mapper.readValue(result, TripRequestDTO.class);
         assertNotNull(trips);
         assertEquals(TripRequestStatus.ACTIVE, trips.getStatus());
         assertEquals("SMALL", trips.getCarType());
@@ -218,6 +218,7 @@ public class TripRequestServiceIntegrationTest {
         start.setLongitude(6.9583);
         start.setDisplayName("Kölner Dom");
         start.setGeoJSON(nominatimService.reverse("50.9413","6.9583").getFeatures().getFirst());
+
         String json= new ObjectMapper().writeValueAsString(start);
 
         String response = mockMvc.perform(post("/api/trip/request/available")
@@ -230,10 +231,8 @@ public class TripRequestServiceIntegrationTest {
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
 
-        List<AvailableTripRequestDTO> trips = mapper.readValue(
-                response,
-                mapper.getTypeFactory().constructCollectionType(List.class, AvailableTripRequestDTO.class)
-        );
+        List<AvailableTripRequestDTO> trips = mapper.readValue(response, mapper.getTypeFactory().constructCollectionType(List.class, AvailableTripRequestDTO.class) );
+
          String user = "userrrr";
 
         assertNotNull(trips);
@@ -257,10 +256,10 @@ public class TripRequestServiceIntegrationTest {
         mapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
         List<TripHistoryDTO> history = mapper.readValue(response ,mapper.getTypeFactory().constructCollectionType(List.class, TripHistoryDTO.class));
 
-                assertNotNull(history);
-                assertFalse(history.isEmpty());
-                TripHistoryDTO historyDTO = history.getFirst();
-                assertNotNull(historyDTO);
+        assertNotNull(history);
+        assertFalse(history.isEmpty());
+        TripHistoryDTO historyDTO = history.getFirst();
+        assertNotNull(historyDTO);
         assertEquals("userrrr", history.getFirst().getCustomerUsername());
         assertEquals("freddioii", history.getFirst().getDriverUsername());
         assertEquals(2,history.getFirst().getCustomerRating());

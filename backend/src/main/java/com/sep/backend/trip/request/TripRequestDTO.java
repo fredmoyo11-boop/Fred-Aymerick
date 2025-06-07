@@ -1,7 +1,6 @@
 package com.sep.backend.trip.request;
 
 import com.sep.backend.entity.TripRequestEntity;
-import com.sep.backend.location.Location;
 import com.sep.backend.route.RouteDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;

@@ -5,7 +5,7 @@ import {MatFormField, MatInput, MatLabel} from "@angular/material/input";
 import {MatSort, MatSortHeader} from "@angular/material/sort";
 import {NgClass, NgForOf, NgIf} from "@angular/common";
 import {MatIcon} from '@angular/material/icon';
-import {TripHistoryDTO, TripRequestService} from '../../../api/sep_drive';
+import {TripHistoryDTO, TripRequestService,TRIPHistoryService} from '../../../api/sep_drive';
 import { MatTableModule } from '@angular/material/table';
 
 
@@ -14,16 +14,6 @@ import { MatTableModule } from '@angular/material/table';
   selector: 'app-trip-history',
   imports: [
     FormsModule,
-    // MatCell,
-    // MatCellDef,
-    // MatColumnDef,
-    // MatHeaderCell,
-    // MatHeaderRow,
-    // MatHeaderRowDef,
-    // MatRow,
-    // MatRowDef,
-    // MatTable,
-    // MatHeaderCellDef,
     MatInput,
     MatLabel,
     MatSort,
@@ -46,7 +36,8 @@ export class TripHistoryComponent implements OnInit, AfterViewInit {
   @ViewChild(MatSort) sort!: MatSort;
   showTable: boolean = false;
 
-  constructor(private tripService: TripRequestService) {
+  constructor(private tripService: TripRequestService,
+              private tripHistoryService: TRIPHistoryService) {
   }
 
   ngOnInit(): void {
@@ -57,7 +48,7 @@ export class TripHistoryComponent implements OnInit, AfterViewInit {
         data.driverName?.toLowerCase().includes(searchStr);
     };
 
-    this.tripService.getTripHistory().subscribe({
+    this.tripHistoryService.getTripHistory().subscribe({
       next: (response) => {
         console.log('Backend response', response);
         this.dataSource.data = response;

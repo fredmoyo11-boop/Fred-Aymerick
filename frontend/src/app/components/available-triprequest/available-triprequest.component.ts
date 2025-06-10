@@ -15,7 +15,8 @@ import {MatIcon} from '@angular/material/icon';
 import {MatOption} from '@angular/material/core';
 import {MatSelect, MatSelectChange} from '@angular/material/select';
 import {MatTooltip} from '@angular/material/tooltip';
-import {AvailableTripRequestDTO, TripRequestService,Location} from '../../../api/sep_drive';
+import {AvailableTripRequestDTO, TripRequestService} from '../../../api/sep_drive';
+import{ Location} from '../../../api/sep_drive';
 import {debounceTime, distinctUntilChanged, tap} from 'rxjs';
 import {CommonModule} from '@angular/common';
 import{MatTable} from '@angular/material/table';
@@ -103,6 +104,28 @@ export class AvailableTriprequestComponent implements OnInit,AfterViewInit{
       if (this.dataSource && this.sort) {
         this.dataSource.sort = this.sort;
         //this.cdr.detectChanges();
+
+        // // Benutzerdefinierte Sortierfunktion für Fahrzeugklassen
+        // this.dataSource.sortingDataAccessor = (item, property) => {
+        //   switch(property) {
+        //     case 'desiredCarType':
+        //       // Definieren Sie die gewünschte Reihenfolge
+        //       const order = {
+        //         'SMALL': 1,
+        //         'MITTEL': 2,
+        //         'DELUXE': 3
+        //       };
+        //       return order[item[property] as keyof typeof order] || 0;
+        //
+        //     case 'requestTime':
+        //       // Konvertieren Sie den Zeitstempel in ein Date-Objekt für korrekte Sortierung
+        //       return new Date(item.requestTime).getTime();
+        //
+        //     default:
+        //       return item[property];
+        //   }
+        // };
+
       }
   }
 

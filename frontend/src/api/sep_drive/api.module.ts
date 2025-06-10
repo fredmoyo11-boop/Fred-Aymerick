@@ -6,7 +6,9 @@ import { AccountService } from './api/account.service';
 import { AuthService } from './api/auth.service';
 import { NominatimService } from './api/nominatim.service';
 import { NotificationService } from './api/notification.service';
+import { ORSService } from './api/oRS.service';
 import { RouteService } from './api/route.service';
+import { TRIPHistoryService } from './api/tRIPHistory.service';
 import { TripRequestService } from './api/tripRequest.service';
 
 @NgModule({

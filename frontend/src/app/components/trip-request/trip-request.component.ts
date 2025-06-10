@@ -1,21 +1,59 @@
 import {Component, inject, OnInit} from '@angular/core';
 
 import {
+  Coordinate,
   Location, NominatimService,
-  ORSFeatureCollection,
-  RouteDTO,
+  ORSFeatureCollection, ORSService,
+  RouteDTO, RouteService,
   TripRequestBody,
   TripRequestDTO,
   TripRequestService
 } from '../../../api/sep_drive';
-import {FormControl, FormGroup} from '@angular/forms';
+import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
 import {GeolocationService} from '../../services/geolocation.service';
-import {MAT_DIALOG_DATA} from '@angular/material/dialog';
+
 import {debounceTime, distinctUntilChanged} from 'rxjs';
+import {MatCard, MatCardContent, MatCardTitle} from '@angular/material/card';
+import {MeterToKmPipe} from '../../pipes/meter-to-km.pipe';
+import {SecondsToTimePipe} from '../../pipes/seconds-to-time.pipe';
+import {EuroPipe} from '../../pipes/euro.pipe';
+import {MatButton, MatIconButton} from '@angular/material/button';
+import {MatDivider} from '@angular/material/divider';
+import {MatList, MatListItem} from '@angular/material/list';
+import {NgForOf, NgIf} from '@angular/common';
+import {MatFormField, MatInput, MatLabel, MatSuffix} from '@angular/material/input';
+import {CdkDrag, CdkDragDrop, CdkDragHandle, CdkDropList, moveItemInArray} from '@angular/cdk/drag-drop';
+import {MatRadioButton, MatRadioGroup} from '@angular/material/radio';
+import {MatIcon} from '@angular/material/icon';
 
 @Component({
   selector: 'app-trip-request',
-  imports: [],
+  imports: [
+    MatCard,
+    MatCardContent,
+    MeterToKmPipe,
+    SecondsToTimePipe,
+    EuroPipe,
+    MatButton,
+    MatDivider,
+    MatList,
+    NgForOf,
+    MatListItem,
+    ReactiveFormsModule,
+    MatCardTitle,
+    MatFormField,
+    MatLabel,
+    MatInput,
+    CdkDropList,
+    CdkDragHandle,
+    CdkDrag,
+    MatIconButton,
+    MatIcon,
+    MatRadioGroup,
+    MatRadioButton,
+    MatSuffix,
+    NgIf
+  ],
   templateUrl: './trip-request.component.html',
   styleUrl: './trip-request.component.css'
 })
@@ -23,8 +61,8 @@ export class TripRequestComponent implements OnInit{
   tripRequestService = inject(TripRequestService)
   nominatimService = inject(NominatimService)
   geolocationService = inject(GeolocationService)
-
-  data = inject<{index: number, stops: string[]}>(MAT_DIALOG_DATA)
+  routeService = inject(RouteService)
+  orsService =inject(ORSService)
 
   tripRequestDTO: TripRequestDTO | null = null
 
@@ -32,20 +70,22 @@ export class TripRequestComponent implements OnInit{
   orsFeatureCollection: ORSFeatureCollection | null = null
 
   suggestedLocations: Location[] = []
-  selecetedIndex = 0
+  selectedIndex = 0
+  showCard: boolean = false
 
   stops: Location[] = []
 
   distance: number = 0
   duration: number = 0
-  note: string = ""
+  note: string = ''
 
-  searchForm = new FormGroup({
+  // searchForm = new FormGroup({
+  //  query: new FormControl("")
+  // })
+
+  form = new FormGroup({ //Separate FormGroups?
+    carType: new FormControl('SMALL'),
     query: new FormControl("")
-  })
-
-  form = new FormGroup({
-    carType: new FormControl('SMALL')
   })
 
 
@@ -64,7 +104,7 @@ export class TripRequestComponent implements OnInit{
     })
 
     //On changes in search bar, get new suggestions list
-    this.searchForm.get('query')!.valueChanges.pipe(
+    this.form.get('query')!.valueChanges.pipe(
       debounceTime(300),
       distinctUntilChanged()
     ).subscribe({
@@ -87,31 +127,61 @@ export class TripRequestComponent implements OnInit{
 
 //---------------------------------Start of location suggestion
   search(): void {
-    this.nominatimService.search(this.searchForm.value.query!).subscribe({
+    this.nominatimService.search(this.form.value.query!).subscribe({
       next: response => {
+        const query = this.form.value.query
         this.suggestedLocations = response
+        this.showCard = response.length > 0 &&  !!query && query.trim().length > 0
       },
       error: err => {
         console.error(err)
+        this.showCard = false
       }
     })
   }
 
   clickCard(index: number): void {
     console.log("Chosen card: ", index)
-    this.selecetedIndex = index
+    this.selectedIndex = index
   }
 
   clickCurrentLocation(): void {
     this.geolocationService.getCurrentLocation()
       .then((position) => {
         console.log(position)
-        this.searchForm.setValue({
-          query: `${position.coords.latitude}, ${position.coords.longitude}`
+        this.form.setValue({
+          query: `${position.coords.latitude}, ${position.coords.longitude}`,
+          carType: 'SMALL' //<---- Keep watch
         })
         this.search()
       }).catch((err) => {
+        console.log(err)
     })
+  }
+//---------------------------------Route creation
+
+  updateRoute() {
+    if (this.stops.length >= 2) {
+      this.orsService.getRoute(this.stops.map(stop => {
+        let coordinate: Coordinate = {
+          latitude: stop.coordinate.latitude,
+          longitude: stop.coordinate.longitude
+        }
+        return coordinate
+      })).subscribe({
+        next: value => {
+          this.orsFeatureCollection = value
+          this.routeDTO = {
+            id: -1,
+            stops: this.stops,
+            geojson: value
+          }
+        },
+        error: err => {
+          console.log(err)
+        }
+      })
+    }
   }
 //---------------------------------Start of trip request creation
   createTripRequest(): void {
@@ -121,9 +191,9 @@ export class TripRequestComponent implements OnInit{
       locations: this.stops,
       note: this.note
     }
-    this.tripRequestService.createCurrentActiveTripRequest(tripRequestBody).subscribe({
+    this.tripRequestService.createCurrentTripRequest(tripRequestBody).subscribe({
       next: tripRequest => {
-        this.consumeTripRequestDTO(tripRequest) //TODO finish
+        this.consumeTripRequestDTO(tripRequest)
       },
       error: err => {
         console.log(err)
@@ -148,5 +218,34 @@ export class TripRequestComponent implements OnInit{
     const summary = this.routeDTO.geojson.features[0].properties.summary
     this.distance = summary?.distance
     this.duration = summary?.duration
+  }
+//-------------------------------Address list
+
+  onInputChange() {
+    const query = this.form.get('query')?.value
+    this.showCard = query !== null && query!.trim().length > 0
+  }
+
+  remove(index: number) {
+    this.stops.splice(index, 1)
+    if (this.stops.length < 2) {
+      this.routeDTO = null
+    } else {
+      this.updateRoute()
+    }
+  }
+
+  drop(event: CdkDragDrop<string[]>) {
+    moveItemInArray(this.stops, event.previousIndex, event.currentIndex)
+    this.updateRoute()
+  }
+
+  onConfirm() {
+    const selected = this.suggestedLocations[this.selectedIndex]
+    this.stops.push(selected)
+    this.form.get('query')?.setValue('')
+    this.suggestedLocations = []
+    this.showCard = false
+    this.updateRoute()
   }
 }

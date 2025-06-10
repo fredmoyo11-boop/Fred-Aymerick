@@ -1,0 +1,118 @@
+.card-overlay { /*Positions the container on the top left of the map*/
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  display: flex;
+  flex-direction: row;
+  gap: 14px;
+  z-index: 10;
+  align-items: flex-start;
+}
+
+.active-container ,
+.request-container { /*Both active trip card and trip request card*/
+  width: 320px;
+  height: 60%;
+  background-color: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.search-form-field { /*Search form field*/
+  width: 90%;
+}
+
+.address-droplist { /*Droplist for the stops chosen by customer*/
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 200px;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.example-box { /*draggable stop item*/
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f1f1f1;
+  border-radius: 4px;
+  padding: 8px;
+}
+
+.handle { /*Drag handle icon*/
+  margin-right: 8px;
+  cursor: grab;
+}
+
+.search-container { /*Search container when query valid*/
+  width: 320px;
+  max-height: 400px;
+  overflow-y: auto;
+  background-color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.scroll-container { /*When the list with suggested addresses goes over a limit, it is scrollable*/
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 8px;
+}
+.card-overlay { /*Positions the container on the top left of the map*/
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  display: flex;
+  flex-direction: row;
+  gap: 14px;
+  z-index: 10;
+  align-items: flex-start;
+}
+
+.active-container ,
+.request-container { /*Both active trip card and trip request card*/
+  width: 320px;
+  height: 60%;
+  background-color: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.search-form-field { /*Search form field*/
+  width: 90%;
+}
+
+.address-droplist { /*Droplist for the stops chosen by customer*/
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 200px;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.example-box { /*draggable stop item*/
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f1f1f1;
+  border-radius: 4px;
+  padding: 8px;
+}
+
+.handle { /*Drag handle icon*/
+  margin-right: 8px;
+  cursor: grab;
+}
+
+.search-container { /*Search container when query valid*/
+  width: 320px;
+  max-height: 400px;
+  overflow-y: auto;
+  background-color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.scroll-container { /*When the list with suggested addresses goes over a limit, it is scrollable*/
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 8px;
+}

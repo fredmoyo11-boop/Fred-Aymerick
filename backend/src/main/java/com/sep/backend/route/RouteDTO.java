@@ -14,13 +14,13 @@ import java.util.stream.Collectors;
 @Schema(description = "Represents a Route request.")
 public class RouteDTO {
 
-    @Schema(description = "The route id.", implementation = RouteDTO.class, requiredMode = RequiredMode.REQUIRED)
+    @Schema(description = "The route id.", requiredMode = RequiredMode.REQUIRED)
     private Long id;
 
-    @Schema(description = "A list of stops.")
+    @Schema(description = "A list of stops.", requiredMode = RequiredMode.REQUIRED)
     private List<Location> stops;
 
-    @Schema(description = "GeoJSON provided by ORS for the route.")
+    @Schema(description = "GeoJSON provided by ORS for the route.", requiredMode = RequiredMode.REQUIRED)
     private ORSFeatureCollection geojson;
 
     public static RouteDTO from(RouteEntity routeEntity) {

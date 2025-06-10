@@ -54,8 +54,8 @@ public class TripRequestController {
             tags = {Tags.TRIP_REQUEST},
             responses = {@ApiResponse(responseCode = HttpStatus.OK, description = "Trip request created successfully.",
                     content = @Content(schema = @Schema(implementation = TripRequestDTO.class)))})
-    public TripRequestDTO createCurrentActiveTripRequest(@RequestBody @Valid TripRequestBody tripRequestBody, Principal principal) throws TripRequestException {
-        return TripRequestDTO.from(tripRequestService.createCurrentActiveTripRequest(tripRequestBody, principal));
+    public TripRequestDTO createCurrentTripRequest(@RequestBody TripRequestBody tripRequestBody, Principal principal) throws TripRequestException {
+        return TripRequestDTO.from(tripRequestService.createCurrentTripRequest(tripRequestBody, principal));
     }
 
     @DeleteMapping("/current")

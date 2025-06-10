@@ -17,10 +17,10 @@ import lombok.Setter;
 @Schema(description = "Represents a coordinate.")
 public class Coordinate {
 
-    @Schema(description = "The latitude.")
+    @Schema(description = "The latitude.", requiredMode = Schema.RequiredMode.REQUIRED)
     private Double latitude;
 
-    @Schema(description = "The longitude.")
+    @Schema(description = "The longitude.", requiredMode = Schema.RequiredMode.REQUIRED)
     private Double longitude;
 
     public static Coordinate from(Location location) {

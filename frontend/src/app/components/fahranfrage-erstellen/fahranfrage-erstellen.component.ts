@@ -154,8 +154,7 @@ export class FahranfrageErstellenComponent implements OnInit {
   checkActiveRide(): void {
     // Start und Ziel dürfen nicht gleich sein
     const sameLocation =
-      this.start.latitude === this.end.latitude &&
-      this.start.longitude === this.end.longitude &&
+      this.start == this.end &&
       this.start.displayName === this.end.displayName;
 
     if (sameLocation) {
@@ -199,26 +198,26 @@ export class FahranfrageErstellenComponent implements OnInit {
 
   submitRideRequest() {
     const form = this.tripRequestForm.value;
-    const tripRequestBody: TripRequestBody = {
-      startLocation: this.start,
-      endLocation: this.end,
-      carType: form.carType,
-      note: form.note || ''
-    };
+    // const tripRequestBody: TripRequestBody = {
+    //   startLocation: this.start,
+    //   endLocation: this.end,
+    //   carType: form.carType,
+    //   note: form.note || ''
+    // };
 
 
-    this.tripService.createCurrentActiveTripRequest(tripRequestBody).subscribe({
-      next: (response) => {
-        console.log('Fahrt erfolgreich erstellt!', response);
-        alert('Fahrt wurde erfolgreich erstellt!');
-        this.resetForm();
-        this.router.navigate(['/aktiveFahranfrage']);
-      },
-      error: err => {
-        console.error('Fehler beim Erstellen:', err);
-        alert('Fehler beim Erstellen der Fahrt.');
-      }
-    });
+    // this.tripService.createCurrentActiveTripRequest(tripRequestBody).subscribe({
+    //   next: (response) => {
+    //     console.log('Fahrt erfolgreich erstellt!', response);
+    //     alert('Fahrt wurde erfolgreich erstellt!');
+    //     this.resetForm();
+    //     this.router.navigate(['/aktiveFahranfrage']);
+    //   },
+    //   error: err => {
+    //     console.error('Fehler beim Erstellen:', err);
+    //     alert('Fehler beim Erstellen der Fahrt.');
+    //   }
+    // });
   }
 
   // rests form after creation of a trip request

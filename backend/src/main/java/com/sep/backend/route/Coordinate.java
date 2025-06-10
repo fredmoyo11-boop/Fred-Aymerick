@@ -24,10 +24,7 @@ public class Coordinate {
     private Double longitude;
 
     public static Coordinate from(Location location) {
-        var coordinate = new Coordinate();
-        coordinate.setLatitude(location.getLatitude());
-        coordinate.setLongitude(location.getLongitude());
-        return coordinate;
+        return location.getCoordinate();
     }
 
     public static Coordinate from(LocationEntity entity) {

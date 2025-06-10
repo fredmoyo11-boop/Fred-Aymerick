@@ -34,7 +34,7 @@ public class LocationEntity extends AbstractEntity {
     @JoinColumn(name = "trip_request_id")
     private TripRequestEntity tripRequest;
 
-    @Column(name = "geo_json", nullable = false) //reminder: ColumnDefinition = "Jsonb" -> maybe add back?
+    @Column(name = "geo_json", nullable = false)
     @JdbcTypeCode(SqlTypes.JSON)
     private NominatimFeature geoJSON;
 }

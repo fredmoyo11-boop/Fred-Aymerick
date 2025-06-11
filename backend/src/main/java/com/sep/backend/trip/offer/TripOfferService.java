@@ -13,6 +13,7 @@ import com.sep.backend.account.DriverRepository;
 import com.sep.backend.account.CustomerRepository;
 import com.sep.backend.entity.TripRequestEntity;
 import com.sep.backend.trip.request.TripRequestRepository;
+import com.sep.backend.trip.request.TripRequestStatus;
 import com.sep.backend.entity.NotificationEntity;
 import com.sep.backend.notification.*;
 import org.springframework.stereotype.Service;
@@ -229,7 +230,12 @@ public class TripOfferService {
      *                           exist.
      */
     public void completeTripOffer(Long tripOfferId) throws NotFoundException {
-        // TODO: Implement
+        TripOfferEntity tripOfferEntity = tripOfferRepository.findById(tripOfferId).orElseThrow(() -> new NotFoundException(ErrorMessages.NOT_FOUND_TRIP_OFFER));
+        setStatus(tripOfferEntity, TripOfferStatus.COMPLETED);
+
+        TripRequestEntity tripRequestEntity = tripOfferEntity.getTripRequest();
+        tripRequestEntity.setStatus(TripRequestStatus.COMPLETED);
+        tripRequestRepository.save(tripRequestEntity);
     }
 	
 }

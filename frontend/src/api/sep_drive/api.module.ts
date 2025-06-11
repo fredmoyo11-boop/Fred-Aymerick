@@ -3,17 +3,6 @@ import { Configuration } from './configuration';
 import { HttpClient } from '@angular/common/http';
 
 
-import { AccountService } from './api/account.service';
-import { AuthService } from './api/auth.service';
-import { NominatimService } from './api/nominatim.service';
-import { NotificationService } from './api/notification.service';
-import { RouteService } from './api/route.service';
-import { TripOfferService } from './api/tripOffer.service';
-import { TripOfferControllerService } from './api/tripOfferController.service';
-import { TripRequestService } from './api/tripRequest.service';
-import { TripSimulationService } from './api/tripSimulation.service';
-
-
 @NgModule({
   imports:      [],
   declarations: [],

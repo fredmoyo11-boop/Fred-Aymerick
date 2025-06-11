@@ -3,6 +3,7 @@ package com.sep.backend.trip.offer;
 import com.sep.backend.StringResponse;
 
 import com.sep.backend.HttpStatus;
+
 import com.sep.backend.NotFoundException;
 import com.sep.backend.Tags;
 import com.sep.backend.trip.offer.response.*;
@@ -14,10 +15,17 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
+
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.List;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 
 @RestController
 @RequestMapping(value = "/api/trip/offer", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -87,13 +95,15 @@ public class TripOfferController {
         return tripOfferService.getTripOfferList(principal);
 	}
 
-    @GetMapping()
-    @Operation(description = "scan",
+    @GetMapping("/{tripOfferId}")
+    @Operation(description = "Returns the trip offer with the specified id.",
+            tags = {Tags.TRIP_OFFER},
             responses = {
-                    @ApiResponse(description = "scan", responseCode = HttpStatus.OK,
-                            content = {@Content(schema = @Schema(implementation = TripOffer.class))})})
-    public TripOffer getTripOffer() {
-        return new TripOffer();
+                    @ApiResponse(responseCode = HttpStatus.OK, description = "Trip offer retrieved successfully.",
+                            content = {@Content(schema = @Schema(implementation = TripOffer.class))}),
+                    @ApiResponse(responseCode = HttpStatus.NOT_FOUND, description = "Trip offer does not exists.")})
+    public TripOffer getTripOffer(@PathVariable Long tripOfferId) {
+        return TripOffer.from(tripOfferService.getTripOfferEntity(tripOfferId));
     }
 
 }

@@ -36,7 +36,7 @@ public class Location {
             throw new IllegalArgumentException("Geometry type must be Point");
         }
 
-        var coordinate = Coordinate.from(nominatimGeometry.getCoordinates());
+        var coordinate = Coordinate.from(feature);
         location.setCoordinate(coordinate);
 
         var nominatimProperties = feature.getProperties();

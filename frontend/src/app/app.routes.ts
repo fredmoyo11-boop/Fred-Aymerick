@@ -6,10 +6,11 @@ import {StandardLayoutComponent} from './layouts/standard-layout/standard-layout
 import {HomeComponent} from './components/home/home.component';
 import {FahranfrageErstellenComponent} from './components/fahranfrage-erstellen/fahranfrage-erstellen.component';
 import {AktiveFahranfrageComponent} from './components/aktive-fahranfrage/aktive-fahranfrage.component';
-import {MapComponent} from './components/map/map.component';
 import {authGuard} from './guards/auth.guard';
 import {ProfileComponent} from './components/profile/profile.component';
 import {ProfileSearchComponent} from './components/profile-search/profile-search.component';
+import {TripOfferComponent} from './components/trip-offer/trip-offer.component';
+import {tripOfferResolver} from './resolvers/trip-offer.resolver';
 
 export const routes: Routes = [
   {path: "register", component: RegisterComponent},
@@ -34,7 +35,6 @@ export const routes: Routes = [
         canActivate: [authGuard],
         data: {roles: ["CUSTOMER"]}
       },
-      {path: "map", component: MapComponent, canActivate: [authGuard], data: {roles: ["CUSTOMER", "DRIVER"]}},
       {
         path: "social",
         component: ProfileSearchComponent,
@@ -46,6 +46,13 @@ export const routes: Routes = [
         component: ProfileComponent,
         canActivate: [authGuard],
         data: {roles: ["CUSTOMER", "DRIVER"]}
+      },
+      {
+        path: "offer/:id",
+        component: TripOfferComponent,
+        resolve: {
+          tripOffer: tripOfferResolver
+        }
       }
     ]
   },

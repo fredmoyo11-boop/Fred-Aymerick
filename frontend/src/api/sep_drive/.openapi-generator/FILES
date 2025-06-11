@@ -1,14 +1,15 @@
 .gitignore
 README.md
+api.base.service.ts
 api.module.ts
 api/account.service.ts
 api/api.ts
 api/auth.service.ts
 api/nominatim.service.ts
 api/notification.service.ts
+api/oRS.service.ts
 api/route.service.ts
 api/tripOffer.service.ts
-api/tripOfferController.service.ts
 api/tripRequest.service.ts
 api/tripSimulation.service.ts
 configuration.ts
@@ -41,7 +42,9 @@ model/oRSStep.ts
 model/oRSSummary.ts
 model/otpRequest.ts
 model/rating.ts
+model/registrationDTO.ts
 model/route.ts
+model/routeDTO.ts
 model/simulationAction.ts
 model/simulationActionParameters.ts
 model/stringResponse.ts
@@ -50,5 +53,7 @@ model/tripOfferResponse.ts
 model/tripRequest.ts
 model/tripRequestBody.ts
 model/tripRequestDTO.ts
-model/waypointResponse.ts
+model/updateAccountDTO.ts
+param.ts
+provide-api.ts
 variables.ts

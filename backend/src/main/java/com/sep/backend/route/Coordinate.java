@@ -18,10 +18,10 @@ import lombok.Setter;
 public class Coordinate {
 
     @Schema(description = "The latitude.")
-    private double latitude;
+    private Double latitude;
 
     @Schema(description = "The longitude.")
-    private double longitude;
+    private Double longitude;
 
     public static Coordinate from(Location location) {
         var coordinate = new Coordinate();

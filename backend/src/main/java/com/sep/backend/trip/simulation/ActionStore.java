@@ -11,13 +11,13 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @Service
 public class ActionStore {
 
-    private final Map<String, List<SimulationAction>> actionsByTrip = new ConcurrentHashMap<>();
+    private final Map<Long, List<SimulationAction>> actionsByTrip = new ConcurrentHashMap<>();
 
-    public void addAction(String tripId, SimulationAction action) {
+    public void addAction(Long tripId, SimulationAction action) {
         actionsByTrip.computeIfAbsent(tripId, k -> new CopyOnWriteArrayList<>()).add(action);
     }
 
-    public List<SimulationAction> getActionsByTrip(String tripId) {
+    public List<SimulationAction> getActionsByTrip(Long tripId) {
         return actionsByTrip.getOrDefault(tripId, List.of());
     }
 

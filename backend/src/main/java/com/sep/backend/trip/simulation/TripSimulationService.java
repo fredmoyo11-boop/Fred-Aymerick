@@ -13,17 +13,20 @@ import org.springframework.stereotype.Service;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Slf4j
 @Service
 public class TripSimulationService {
 
+    private final ActionStore actionStore;
     private final BalanceService balanceService;
     private final TripHistoryService tripHistoryService;
     private final TripOfferService tripOfferService;
 
 
-    public TripSimulationService(BalanceService balanceService, TripHistoryService tripHistoryService, TripOfferService tripOfferService) {
+    public TripSimulationService(ActionStore actionStore, BalanceService balanceService, TripHistoryService tripHistoryService, TripOfferService tripOfferService) {
+        this.actionStore = actionStore;
         this.balanceService = balanceService;
         this.tripHistoryService = tripHistoryService;
         this.tripOfferService = tripOfferService;
@@ -104,6 +107,11 @@ public class TripSimulationService {
         log.debug("Received simulation action {} for trip offer {} from {}.", action.getActionType(), tripOfferId, principal.getName());
         log.debug("Checking if user is part of trip offer {}. Principal: {}.", tripOfferId, principal.getName());
         log.debug("User is part of trip offer? {}.", tripOfferService.isPartOfTrip(tripOfferId, principal));
+        actionStore.addAction(tripOfferId, action);
         return action;
+    }
+
+    public List<SimulationAction> getSimulationActions(Long tripOfferId) {
+        return actionStore.getActionsByTrip(tripOfferId);
     }
 }

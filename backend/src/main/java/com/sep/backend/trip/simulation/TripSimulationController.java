@@ -13,7 +13,6 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -51,8 +50,8 @@ public class TripSimulationController {
             responses = {
                     @ApiResponse(responseCode = HttpStatus.OK, description = "Simulation actions retrieved successfully.",
                             content = @Content(array = @ArraySchema(schema = @Schema(implementation = SimulationAction.class))))})
-    private List<SimulationAction> getActions(@PathVariable("tripOfferId") Long tripOfferId) {
-        return new ArrayList<>();
+    private List<SimulationAction> getSimulationActions(@PathVariable("tripOfferId") Long tripOfferId) {
+        return tripSimulationService.getSimulationActions(tripOfferId);
     }
 
 }

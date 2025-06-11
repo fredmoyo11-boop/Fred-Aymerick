@@ -1,0 +1,30 @@
+<p class="label">Dein Kontostand:</p>
+
+<div class="balance">
+  {{account.balance}}
+</div>
+
+<div class="input-group">
+  <input
+    [formControl]="searchControl"
+    type="number"
+    placeholder="123456789"
+    class="input"
+  />
+</div>
+
+<div *ngIf="validWithdrawal()" class="error-message">
+  Betrag zu hoch für ein Withdrawal
+</div>
+
+<p class="note">Kommazahlen werden gerundet</p>
+
+<div class="buttons">
+  <button (click)="deposit()" class="deposit">
+    Deposit
+  </button>
+
+  <button (click)="withdrawal()" class="withdrawal">
+    Withdrawal
+  </button>
+</div>

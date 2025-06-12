@@ -7,18 +7,14 @@ import com.sep.backend.entity.*;
 import com.sep.backend.notification.NotificationService;
 import com.sep.backend.trip.offer.status.*;
 import com.sep.backend.trip.offer.response.*;
-import com.sep.backend.trip.offer.options.*;
 import com.sep.backend.entity.DriverEntity;
 import com.sep.backend.account.DriverRepository;
-import com.sep.backend.account.CustomerRepository;
 import com.sep.backend.entity.TripRequestEntity;
 import com.sep.backend.trip.request.TripRequestRepository;
 import com.sep.backend.trip.request.TripRequestStatus;
 import com.sep.backend.entity.NotificationEntity;
 import com.sep.backend.notification.*;
 import org.springframework.stereotype.Service;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import lombok.extern.slf4j.Slf4j;
 
 import com.sep.backend.account.AccountService;
@@ -77,8 +73,8 @@ public class TripOfferService {
      *
      * @param driverUsername Username of a driver
      * @param principal Identifier of a customer
-     * @return
-     * @throws NotFoundException
+     * @return StringResponse confirming success
+     * @throws NotFoundException when trip offer does not exist
      */
     public String acceptOffer(String driverUsername, Principal principal) throws NotFoundException {
         TripOfferEntity tripOfferEntity = tripOfferRepository.findByDriver_UsernameAndTripRequest_Customer_Email(driverUsername, principal.getName())
@@ -97,8 +93,8 @@ public class TripOfferService {
      *
      * @param driverUsername Username of a driver
      * @param principal Identifier of a customer
-     * @return
-     * @throws NotFoundException
+     * @return StringResponse confirming success
+     * @throws NotFoundException when trip offer does not exist
      */
     public String declineOffer(String driverUsername, Principal principal) throws NotFoundException {
         TripOfferEntity tripOfferEntity = tripOfferRepository.findByDriver_UsernameAndTripRequest_Customer_Email(driverUsername, principal.getName())
@@ -108,10 +104,11 @@ public class TripOfferService {
     }
 
     /**
+     * Withdraws an offer
      *
      * @param principal Identifier of a driver
-     * @return
-     * @throws NotFoundException
+     * @return StringResponse confirming success
+     * @throws NotFoundException when trip offer does not exist
      */
     public String withdrawOffer(Principal principal) throws NotFoundException {
         TripOfferEntity tripOfferEntity = tripOfferRepository.findByDriver_Email(principal.getName())
@@ -120,11 +117,23 @@ public class TripOfferService {
         return "Successfully withdrawn trip offer";
     }
 
+    /**
+     * Sets offer status from given offer and status String
+     *
+     * @param tripOfferEntity trip offer to set the status
+     * @param status status to set
+     */
     private void setStatus(TripOfferEntity tripOfferEntity, String status) {
         tripOfferEntity.setStatus(status);
         tripOfferRepository.save(tripOfferEntity);
     }
 
+    /**
+     * Returns the full trip offer list for a given customer
+     *
+     * @param principal identifier of the customer
+     * @return StringResponse confirming success
+     */
     public List<TripOfferResponse> getTripOfferList(Principal principal) {
         List<TripOfferResponse> tripOffers = new ArrayList<TripOfferResponse>();
         List<TripOfferEntity> tripOfferEntities = tripOfferRepository.findAllByTripRequest_Customer_EmailAndStatus(principal.getName(), TripOfferStatus.PENDING);
@@ -140,6 +149,12 @@ public class TripOfferService {
         return tripOffers;
     }
 
+    /**
+     * Checks if an active trip offer exists for a given driver
+     *
+     * @param email email of driver
+     * @return whether the driver has a trip offer or not
+     */
     private boolean checkIfActiveTripOfferExists(String email) {
         return tripOfferRepository.existsByDriver_EmailAndStatus(email, TripOfferStatus.PENDING);
     }

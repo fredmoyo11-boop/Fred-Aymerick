@@ -137,6 +137,4 @@ public class TripRequestService {
 
         tripRequestRepository.save(tripRequestEntity);
     }
-
-
 }

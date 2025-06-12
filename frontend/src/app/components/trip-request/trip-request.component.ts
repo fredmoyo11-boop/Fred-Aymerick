@@ -4,7 +4,7 @@ import {
   Coordinate,
   Location, NominatimService,
   ORSFeatureCollection, ORSService,
-  RouteDTO, RouteService,
+  Route,
   TripRequestBody,
   TripRequestDTO,
   TripRequestService
@@ -25,6 +25,9 @@ import {MatFormField, MatInput, MatLabel, MatSuffix} from '@angular/material/inp
 import {CdkDrag, CdkDragDrop, CdkDragHandle, CdkDropList, moveItemInArray} from '@angular/cdk/drag-drop';
 import {MatRadioButton, MatRadioGroup} from '@angular/material/radio';
 import {MatIcon} from '@angular/material/icon';
+import {TripVisualizerComponent} from '../trip-visualizer/trip-visualizer.component';
+import {CarTypePipe} from '../../pipes/car-type.pipe';
+import {MatSnackBar} from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-trip-request',
@@ -52,7 +55,9 @@ import {MatIcon} from '@angular/material/icon';
     MatRadioGroup,
     MatRadioButton,
     MatSuffix,
-    NgIf
+    NgIf,
+    TripVisualizerComponent,
+    CarTypePipe
   ],
   templateUrl: './trip-request.component.html',
   styleUrl: './trip-request.component.css'
@@ -61,12 +66,12 @@ export class TripRequestComponent implements OnInit{
   tripRequestService = inject(TripRequestService)
   nominatimService = inject(NominatimService)
   geolocationService = inject(GeolocationService)
-  routeService = inject(RouteService)
   orsService =inject(ORSService)
+  snackBar = inject(MatSnackBar)
 
   tripRequestDTO: TripRequestDTO | null = null
 
-  routeDTO: RouteDTO | null = null
+  route: Route | null = null
   orsFeatureCollection: ORSFeatureCollection | null = null
 
   suggestedLocations: Location[] = []
@@ -79,11 +84,7 @@ export class TripRequestComponent implements OnInit{
   duration: number = 0
   note: string = ''
 
-  // searchForm = new FormGroup({
-  //  query: new FormControl("")
-  // })
-
-  form = new FormGroup({ //Separate FormGroups?
+  form = new FormGroup({
     carType: new FormControl('SMALL'),
     query: new FormControl("")
   })
@@ -151,7 +152,7 @@ export class TripRequestComponent implements OnInit{
         console.log(position)
         this.form.setValue({
           query: `${position.coords.latitude}, ${position.coords.longitude}`,
-          carType: 'SMALL' //<---- Keep watch
+          carType: 'SMALL'
         })
         this.search()
       }).catch((err) => {
@@ -171,10 +172,10 @@ export class TripRequestComponent implements OnInit{
       })).subscribe({
         next: value => {
           this.orsFeatureCollection = value
-          this.routeDTO = {
-            id: -1,
+          this.route = {
+            routeId: -1,
             stops: this.stops,
-            geojson: value
+            geoJson: value
           }
         },
         error: err => {
@@ -183,7 +184,7 @@ export class TripRequestComponent implements OnInit{
       })
     }
   }
-//---------------------------------Start of trip request creation
+//---------------------------------Trip request creation
   createTripRequest(): void {
     const tripRequestBody : TripRequestBody = {
       carType: this.form.value.carType!,
@@ -214,12 +215,24 @@ export class TripRequestComponent implements OnInit{
 
   consumeTripRequestDTO(tripRequestDTO: TripRequestDTO): void {
     this.tripRequestDTO = tripRequestDTO
-    this.routeDTO = tripRequestDTO.route
-    const summary = this.routeDTO.geojson.features[0].properties.summary
+    this.route = tripRequestDTO.route
+    const summary = this.route.geoJson.features[0].properties.summary
     this.distance = summary?.distance
     this.duration = summary?.duration
   }
 //-------------------------------Address list
+
+  newLocationIsSame(newLocation: Location) {
+    if (this.stops.length === 0) return false
+    const lastLocation = this.stops[this.stops.length - 1]
+    return lastLocation.coordinate.latitude === newLocation.coordinate.latitude &&
+      lastLocation.coordinate.longitude === newLocation.coordinate.longitude && lastLocation.displayName === newLocation.displayName;
+  }
+
+  dragDropisSameLocation(location1: Location, location2: Location) {
+    return location1.coordinate.latitude === location2.coordinate.latitude && location1.coordinate.longitude === location2.coordinate.longitude &&
+      location1.displayName === location2.displayName
+  }
 
   onInputChange() {
     const query = this.form.get('query')?.value
@@ -229,7 +242,7 @@ export class TripRequestComponent implements OnInit{
   remove(index: number) {
     this.stops.splice(index, 1)
     if (this.stops.length < 2) {
-      this.routeDTO = null
+      this.route = null
     } else {
       this.updateRoute()
     }
@@ -237,11 +250,25 @@ export class TripRequestComponent implements OnInit{
 
   drop(event: CdkDragDrop<string[]>) {
     moveItemInArray(this.stops, event.previousIndex, event.currentIndex)
-    this.updateRoute()
+
+    for (let i = 0; i < this.stops.length - 1; i++) {
+      if (this.dragDropisSameLocation(this.stops[i], this.stops[i + 1])) {
+        console.warn("Zwei gleiche Adressen können nicht hintereinander angefahren werden")
+        this.snackBar.open("Zwei gleiche Adressen können nicht hintereinander angefahren werden", "OK")
+        moveItemInArray(this.stops, event.currentIndex, event.previousIndex);
+        return;
+      }
+    }
+    this.updateRoute();
   }
 
   onConfirm() {
     const selected = this.suggestedLocations[this.selectedIndex]
+    if (this.newLocationIsSame(selected)) {
+      console.warn("Diese Adressen wurde bereits als Zieladresse hinzugefügt.")
+      this.snackBar.open("Diese Adressen wurde bereits als Zieladresse hinzugefügt.", "OK")
+      return
+    }
     this.stops.push(selected)
     this.form.get('query')?.setValue('')
     this.suggestedLocations = []

@@ -1,119 +1,122 @@
-<div class="card-overlay">
-  @if (tripRequestDTO) {
-    <!--  Aktive Fahranfrage anzeigen-->
-    <div class="active-container">
-      <mat-card appearance="outlined">
-        <mat-card-title>
-          Aktive Fahranfrage
-        </mat-card-title>
-
-        <mat-divider></mat-divider>
-
-        <section>
-          <mat-card-content>
-            <mat-list>
-              <mat-list-item *ngFor="let stop of tripRequestDTO.route.stops">
-                {{ stop.displayName }}
-              </mat-list-item>
-            </mat-list>
-          </mat-card-content>
-        </section>
-
-        <mat-divider></mat-divider>
-
-        <section>
-          <mat-card-content>
-            <p>{{ this.distance | meterToKm }}</p>
-            <p>{{ this.duration | secondsToTime }}</p>
-            <p>{{ this.tripRequestDTO!.carType }}</p>
-            <p>{{ this.tripRequestDTO!.price | euro }}</p>
-            <button mat-flat-button color="warn" (click)="deleteTripRequest()">Löschen</button>
-          </mat-card-content>
-        </section>
-      </mat-card>
-    </div>
-  } @else {
-    <!--  Fahranfrage erstellen-->
-    <div class="request-container">
-      <form [formGroup]="form">
-        <mat-card appearance="outlined">
-          <mat-card-title>
-            Fahranfrage erstellen
+<div class="map-container">
+  <div id="map">
+    <app-trip-visualizer [route]="route!"></app-trip-visualizer>
+  </div>
+  <div class="card-overlay">
+    @if (tripRequestDTO) {
+      <!--  Aktive Fahranfrage anzeigen-->
+      <div>
+        <mat-card appearance="outlined" class="active-container">
+          <mat-card-title class="center-title">
+            Aktive Fahranfrage
           </mat-card-title>
-
-          <mat-divider></mat-divider>
-
-          <mat-form-field class="search-form-field">
-            <mat-label>Adresse eingeben</mat-label>
-            <input matInput placeholder="Suche einen Ort..." formControlName="query" (input)="onInputChange()">
-            @if (this.suggestedLocations.length === 0) {
-              <mat-error>Kein Ort gefunden</mat-error>
-            }
-            <button type="button" mat-icon-button matSuffix (click)="clickCurrentLocation()">
-              <mat-icon>my_location</mat-icon>
-            </button>
-          </mat-form-field>
 
           <mat-divider></mat-divider>
 
           <section>
             <mat-card-content>
-              @if (this.stops.length === 0) {
-                <p>Füge der Route Adressen hinzu.</p>
-              } @else {
-                <div cdkDropList class="address-droplist" (cdkDropListDropped)="drop($event)">
-                  @for (stop of this.stops; track idx; let idx = $index) {
-                    <div class="example-box" cdkDrag>
-                      <span cdkDragHandle class="handle">☰</span>
-                      <div>
-                        {{ idx + 1 }}.{{ stop.displayName }}
-                      </div>
-                      <button mat-icon-button (click)="remove(idx)">
-                        <mat-icon>delete</mat-icon>
-                      </button>
-                    </div>
-                  }
-                </div>
-                @if (this.stops.length === 1) {
-                  <span>Füge ein Ziel hinzu.</span>
-                }
-              }
+              <mat-list>
+                <mat-list-item *ngFor="let stop of tripRequestDTO.route.stops; index as i" >
+                  {{i + 1}}. {{ stop.displayName }}
+                </mat-list-item>
+              </mat-list>
+            </mat-card-content>
+          </section>
+
+          <mat-divider></mat-divider>
+
+          <section>
+            <mat-card-content>
+              <p>Distanz der Fahrt: {{ this.distance | meterToKm }}</p>
+              <p>Dauer der Fahrt: {{ this.duration | secondsToTime }}</p>
+              <p>Gebuchte Auto: {{ this.tripRequestDTO!.carType | carType }}</p>
+              <p>Preis der Fahrt: {{ this.tripRequestDTO!.price | euro }}</p>
+              <button mat-flat-button color="warn" (click)="deleteTripRequest()">Löschen</button>
             </mat-card-content>
           </section>
         </mat-card>
-
-        <mat-divider></mat-divider>
-
-        <section>
-          <mat-card-content>
-            <mat-radio-group aria-label="Wähle ein Auto." formControlName="carType">
-              <mat-radio-button value="SMALL">Klein</mat-radio-button>
-              <mat-radio-button value="MEDIUM">Mittel</mat-radio-button>
-              <mat-radio-button value="DELUXE">Deluxe</mat-radio-button>
-            </mat-radio-group>
-          </mat-card-content>
-        </section>
-
-        <mat-divider></mat-divider>
-
-        <mat-card-content>
-          @if (this.stops.length >= 2) {
-            <button mat-button (click)="createTripRequest()">
+      </div>
+    } @else {
+      <!--  Fahranfrage erstellen-->
+      <div>
+        <form [formGroup]="form">
+          <mat-card appearance="outlined" class="request-container">
+            <mat-card-title class="center-title">
               Fahranfrage erstellen
-            </button>
-          }
-        </mat-card-content>
-      </form>
-    </div>
-    <!--  When query is valid, shows this container with address list-->
-    <mat-card class="search-container" appearance="outlined" *ngIf="showCard">
-      <mat-card-title>
-        Wähle eine Adresse
-      </mat-card-title>
+            </mat-card-title>
 
-      <mat-divider></mat-divider>
+            <mat-divider></mat-divider>
 
-      <div class="scroll-container">
+            <mat-form-field class="search-form-field">
+              <mat-label>Adresse eingeben</mat-label>
+              <input matInput placeholder="Suche einen Ort..." formControlName="query" (input)="onInputChange()">
+
+              <button type="button" mat-icon-button matSuffix (click)="clickCurrentLocation()">
+                <mat-icon>my_location</mat-icon>
+              </button>
+            </mat-form-field>
+
+            <mat-divider></mat-divider>
+
+            <section>
+              <mat-card-content>
+                @if (this.stops.length === 0) {
+                  <p>Füge der Route Adressen hinzu.</p>
+                } @else {
+                  <div cdkDropList class="address-droplist" (cdkDropListDropped)="drop($event)">
+                    @for (stop of this.stops; track idx; let idx = $index) {
+                      <div class="example-box" cdkDrag>
+                        <span cdkDragHandle class="handle">☰</span>
+                        <div>
+                          {{ idx + 1 }}. {{ stop.displayName }}
+                        </div>
+                        <button mat-icon-button (click)="remove(idx)">
+                          <mat-icon>delete</mat-icon>
+                        </button>
+                      </div>
+                    }
+                  </div>
+                  @if (this.stops.length === 1) {
+                    <span>Füge ein Ziel hinzu.</span>
+                  }
+                }
+              </mat-card-content>
+            </section>
+
+            <mat-divider></mat-divider>
+
+            <section>
+              <mat-card-content class="radio-container">
+                <mat-radio-group aria-label="Wähle ein Auto." formControlName="carType">
+                  <mat-radio-button value="SMALL">Klein</mat-radio-button>
+                  <mat-radio-button value="MEDIUM">Mittel</mat-radio-button>
+                  <mat-radio-button value="DELUXE">Deluxe</mat-radio-button>
+                </mat-radio-group>
+              </mat-card-content>
+            </section>
+
+            <mat-divider></mat-divider>
+
+            <mat-card-content class="button-container">
+                <button mat-flat-button
+                        color="primary"
+                        (click)="createTripRequest()"
+                        [disabled]="!orsFeatureCollection || this.stops.length < 2">
+                  Fahranfrage erstellen
+                </button>
+            </mat-card-content>
+          </mat-card>
+        </form>
+      </div>
+      <!--  When query is valid, shows this container with address list-->
+      <mat-card class="search-container" appearance="outlined" *ngIf="showCard">
+        <mat-card-title>
+          Wähle eine Adresse
+        </mat-card-title>
+
+        <mat-divider></mat-divider>
+
+        <div class="scroll-container">
           @for (location of suggestedLocations; track idx; let idx = $index) {
             <mat-card-content (click)="clickCard(idx)">
               @if (idx === selectedIndex) {
@@ -122,8 +125,11 @@
               <span>{{ location.displayName }}</span>
             </mat-card-content>
           }
-      </div>
-      <button (click)="onConfirm()">OK</button>
-    </mat-card>
-  }
+        </div>
+        <button (click)="onConfirm()">OK</button>
+      </mat-card>
+    }
+  </div>
 </div>
+
+

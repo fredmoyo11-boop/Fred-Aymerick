@@ -1,7 +1,6 @@
 package com.sep.backend.route;
 
 import com.sep.backend.entity.LocationEntity;
-import com.sep.backend.entity.TripRequestEntity;
 import com.sep.backend.location.Location;
 import com.sep.backend.nominatim.data.NominatimFeature;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -18,10 +17,10 @@ import lombok.Setter;
 public class Coordinate {
 
     @Schema(description = "The latitude.", requiredMode = Schema.RequiredMode.REQUIRED)
-    private Double latitude;
+    private double latitude;
 
     @Schema(description = "The longitude.", requiredMode = Schema.RequiredMode.REQUIRED)
-    private Double longitude;
+    private double longitude;
 
     public static Coordinate from(Location location) {
         return location.getCoordinate();
@@ -35,9 +34,9 @@ public class Coordinate {
     }
 
     public static Coordinate from(NominatimFeature feature) {
-        var coordinate = new Coordinate();
-        double  lat = feature.getGeometry().getCoordinates().getFirst();
-        double  lon = feature.getGeometry().getCoordinates().getLast();
+        var coordinate = new Coordinate(); //Nominatim gibt lat, lon. ORS benutzt lon, lat
+        double  lat = feature.getGeometry().getCoordinates().getLast();
+        double  lon = feature.getGeometry().getCoordinates().getFirst();
         coordinate.setLatitude(lat);
         coordinate.setLongitude(lon);
         return coordinate;

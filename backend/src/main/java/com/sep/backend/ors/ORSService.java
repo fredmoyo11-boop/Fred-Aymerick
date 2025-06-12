@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sep.backend.ors.data.ORSFeatureCollection;
 import com.sep.backend.route.Coordinate;
-import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -18,20 +17,15 @@ public class ORSService {
     @Value("${ors.api_key}")
     private String orsApiKey; //TODO Move orsApiKey from application.properties to .env
 
-    private RestClient restClient;
-
-    @PostConstruct
-    public void init() {
-        this.restClient = RestClient.builder()
+    private final  RestClient restClient = RestClient.builder()
                 .baseUrl("https://api.openrouteservice.org")
                 .defaultHeaders(headers -> {
-                    headers.add("Authorization", orsApiKey);
+                    headers.add("Authorization", "5b3ce3597851110001cf62489d421454db1e437c8ec6382dd2c7c645");
                 })
                 .build();
-    }
+
 
     public ORSFeatureCollection getRouteDirections(List<Coordinate> coordinates) throws ORSException {
-        System.out.println(orsApiKey);
         //ORS expects coordinates in the form of [longitude, latitude]
         ObjectMapper mapper = new ObjectMapper();
 
@@ -48,7 +42,6 @@ public class ORSService {
                 .body(routeRequestBody)
                 .retrieve()
                 .body(String.class);
-        System.out.println(orsFeatureCollectionString);
         try {
             //Tries to convert the string into the object ORSFeatureCollection
             return mapper.readValue(orsFeatureCollectionString, ORSFeatureCollection.class);

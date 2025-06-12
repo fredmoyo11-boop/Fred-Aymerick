@@ -23,13 +23,13 @@ public class RouteController {
 
     @GetMapping("/{routeId}")
     @Operation(description = "Returns the route with the specified id.",
-            tags = {Tags.ROUTE},
+            tags = {Tags.ROUTE, Tags.ORS},
             responses = {
                 @ApiResponse(responseCode = HttpStatus.OK, description = "Route received successfully.",
-                        content = @Content(schema = @Schema(implementation = RouteDTO.class))),
+                        content = @Content(schema = @Schema(implementation = Route.class))),
                 @ApiResponse(responseCode = HttpStatus.NOT_FOUND, description = "Route does not exist.")
             })
-    public RouteDTO getRoute(@PathVariable Long routeId) {
-        return RouteDTO.from(routeService.getRoute(routeId));
+    public Route getRoute(@PathVariable Long routeId) {
+        return Route.from(routeService.getRoute(routeId));
     }
 }

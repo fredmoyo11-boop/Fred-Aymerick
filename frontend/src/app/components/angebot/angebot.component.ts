@@ -1,18 +1,32 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, ViewChild, inject } from '@angular/core';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatSort } from '@angular/material/sort';
 import { CommonModule } from '@angular/common';
 import { TripOfferService, TripOfferResponse } from '../../../api/sep_drive';
+import { MatTableModule } from '@angular/material/table';
+import { MatSortModule } from '@angular/material/sort';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-angebote-tabelle-component',
   standalone: true,
-  imports: [CommonModule],
+  imports: [
+    CommonModule,
+    MatTableModule,
+    MatSortModule,
+    MatButtonModule,
+    MatIconModule
+  ],
   templateUrl: './angebot.component.html',
-  styleUrl: './angebot.component.css',
+  styleUrls: ['./angebot.component.css'],
 })
 export class AngebotComponentComponent implements OnInit {
-  offers: TripOfferResponse[] = [];
+  displayedColumns: string[] = ['name', 'rating', 'totalDriveCount', 'driveDistance', 'actions'];
+  dataSource = new MatTableDataSource<TripOfferResponse>();
 
   private offerService = inject(TripOfferService);
+  @ViewChild(MatSort) sort!: MatSort;
 
   ngOnInit(): void {
     this.refresh();
@@ -28,20 +42,59 @@ export class AngebotComponentComponent implements OnInit {
 
   refresh() {
     this.offerService.getTripOfferList().subscribe(data => {
-      this.offers = data;
-    });
-  }
-
-  sortBy(field: 'rating' | 'totalDriveCount' | 'driveDistance', direction: 'asc' | 'desc') {
-    this.offers.sort((a, b) => {
-      const aValue = a[field] ?? 0;
-      const bValue = b[field] ?? 0;
-
-      if (direction === 'asc') {
-        return aValue - bValue;
-      } else {
-        return bValue - aValue;
-      }
+      this.dataSource.data = data;
+      this.dataSource.sort = this.sort;
     });
   }
 }
+/*
+variabeleln :
+hasActiveOffer = false;
+
+
+
+ Im ngOnInit():
+this.checkActiveOffer();
+
+
+ Methoden:
+checkActiveOffer() {
+  this.tripOfferService.hasActiveOffer().subscribe(res => {
+    this.hasActiveOffer = res.value === 'true';
+  });
+}
+createOffer(tripRequestId: number) {
+  this.tripOfferService.createNewTripOffer(tripRequestId).subscribe(() => {
+    this.checkActiveOffer(); // Aktualisieren
+  });
+}
+
+withdrawOffer() {
+  this.tripOfferService.withdrawOffer().subscribe(() => {
+    this.checkActiveOffer();
+    this.loadAvailableRequests();
+  });
+}
+
+
+
+Im HTML:
+<div *ngIf="hasActiveOffer">
+  <p>Du hast bereits ein aktives Angebot.</p>
+  <button (click)="withdrawOffer()">Angebot zurückziehen</button>
+</div>
+
+<div *ngIf="!hasActiveOffer">
+  <table>
+    <tr *ngFor="let request of availableRequests">
+      <td>{{ request.startOrt }} → {{ request.zielOrt }}</td>
+      <td><button (click)="createOffer(request.id)">Angebot abgeben</button></td>
+    </tr>
+  </table>
+</div>
+
+
+
+
+
+*/

@@ -3,11 +3,19 @@
 <mat-table [dataSource]="dataSource" matSort>
 
 
-  <ng-container matColumnDef="name">
-    <mat-header-cell *matHeaderCellDef> Fahrer </mat-header-cell>
-    <mat-cell *matCellDef="let offer">
-      {{ offer.firstName }} {{ offer.lastName }}
-    </mat-cell>
+  <ng-container matColumnDef="firstName">
+    <mat-header-cell *matHeaderCellDef> Vorname </mat-header-cell>
+    <mat-cell *matCellDef="let offer"> {{ offer.firstName }} </mat-cell>
+  </ng-container>
+
+  <ng-container matColumnDef="lastName">
+    <mat-header-cell *matHeaderCellDef> Nachname </mat-header-cell>
+    <mat-cell *matCellDef="let offer"> {{ offer.lastName }} </mat-cell>
+  </ng-container>
+
+  <ng-container matColumnDef="username">
+    <mat-header-cell *matHeaderCellDef> Benutzername </mat-header-cell>
+    <mat-cell *matCellDef="let offer"> {{ offer.username }} </mat-cell>
   </ng-container>
 
 

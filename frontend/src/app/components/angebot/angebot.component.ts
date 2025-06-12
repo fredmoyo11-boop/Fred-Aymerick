@@ -22,7 +22,7 @@ import { MatIconModule } from '@angular/material/icon';
   styleUrls: ['./angebot.component.css'],
 })
 export class AngebotComponentComponent implements OnInit {
-  displayedColumns: string[] = ['name', 'rating', 'totalDriveCount', 'driveDistance', 'actions'];
+  displayedColumns: string[] = ['firstName', 'lastName', 'username', 'rating', 'totalDriveCount', 'driveDistance', 'actions'];
   dataSource = new MatTableDataSource<TripOfferResponse>();
 
   private offerService = inject(TripOfferService);
@@ -60,7 +60,7 @@ this.checkActiveOffer();
  Methoden:
 checkActiveOffer() {
   this.tripOfferService.hasActiveOffer().subscribe(res => {
-    this.hasActiveOffer = res.value === 'true';
+    this.hasActiveOffer = res.value === 'HAS_ACTIVE_OFFER';
   });
 }
 createOffer(tripRequestId: number) {

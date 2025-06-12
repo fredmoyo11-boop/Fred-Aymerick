@@ -1,37 +1,42 @@
 <h2>Angebote für deine Fahranfrage</h2>
 
-<table>
-  <thead>
-  <tr>
-    <th>Fahrer</th>
-    <th>
-      Bewertung
-      <button (click)="sortBy('rating', 'asc')">↑</button>
-      <button (click)="sortBy('rating', 'desc')">↓</button>
-    </th>
-    <th>
-      Fahrten
-      <button (click)="sortBy('totalDriveCount', 'asc')">↑</button>
-      <button (click)="sortBy('totalDriveCount', 'desc')">↓</button>
-    </th>
-    <th>
-      Distanz
-      <button (click)="sortBy('driveDistance', 'asc')">↑</button>
-      <button (click)="sortBy('driveDistance', 'desc')">↓</button>
-    </th>
-    <th>Aktionen</th>
-  </tr>
-  </thead>
-  <tbody>
-  <tr *ngFor="let offer of offers">
-    <td>{{ offer.firstName }} {{ offer.lastName }}</td>
-    <td>{{ offer.rating ?? 'Keine Bewertung' }}</td>
-    <td>{{ offer.totalDriveCount }}</td>
-    <td>{{ offer.driveDistance }} km</td>
-    <td>
-      <button (click)="acceptOffer(offer.username)">Annehmen</button>
-      <button (click)="declineOffer(offer.username)">Ablehnen</button>
-    </td>
-  </tr>
-  </tbody>
-</table>
+<mat-table [dataSource]="dataSource" matSort>
+
+
+  <ng-container matColumnDef="name">
+    <mat-header-cell *matHeaderCellDef> Fahrer </mat-header-cell>
+    <mat-cell *matCellDef="let offer">
+      {{ offer.firstName }} {{ offer.lastName }}
+    </mat-cell>
+  </ng-container>
+
+
+  <ng-container matColumnDef="rating">
+    <mat-header-cell *matHeaderCellDef mat-sort-header> Bewertung </mat-header-cell>
+    <mat-cell *matCellDef="let offer"> {{ offer.rating ?? 'Keine Bewertung' }} </mat-cell>
+  </ng-container>
+
+
+  <ng-container matColumnDef="totalDriveCount">
+    <mat-header-cell *matHeaderCellDef mat-sort-header> Fahrten </mat-header-cell>
+    <mat-cell *matCellDef="let offer"> {{ offer.totalDriveCount }} </mat-cell>
+  </ng-container>
+
+
+  <ng-container matColumnDef="driveDistance">
+    <mat-header-cell *matHeaderCellDef mat-sort-header> Distanz </mat-header-cell>
+    <mat-cell *matCellDef="let offer"> {{ offer.driveDistance }} km </mat-cell>
+  </ng-container>
+
+
+  <ng-container matColumnDef="actions">
+    <mat-header-cell *matHeaderCellDef> Aktionen </mat-header-cell>
+    <mat-cell *matCellDef="let offer">
+      <button mat-raised-button color="primary" (click)="acceptOffer(offer.username)">Annehmen</button>
+      <button mat-raised-button color="warn" (click)="declineOffer(offer.username)">Ablehnen</button>
+    </mat-cell>
+  </ng-container>
+
+  <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+  <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+</mat-table>

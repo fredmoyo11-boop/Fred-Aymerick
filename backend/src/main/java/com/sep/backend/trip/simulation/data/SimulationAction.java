@@ -16,7 +16,11 @@ public class SimulationAction {
             SimulationActionTypes.COMPLETE,
             SimulationActionTypes.INFO,
             SimulationActionTypes.LOCK,
-            SimulationActionTypes.UNLOCK,})
+            SimulationActionTypes.UNLOCK,
+            SimulationActionTypes.DRIVER_PRESENT,
+            SimulationActionTypes.ACK_DRIVER_PRESENT,
+            SimulationActionTypes.CUSTOMER_PRESENT,
+            SimulationActionTypes.ACK_CUSTOMER_PRESENT})
     private String actionType;
 
     @Schema(description = "The timestamp of the action.", requiredMode = Schema.RequiredMode.REQUIRED)

@@ -1,10 +1,9 @@
 import {Component, inject, Input, OnDestroy, OnInit} from '@angular/core';
 import {StompService} from '../../services/stomp.service';
-import {BehaviorSubject, Subscription} from 'rxjs';
+import {BehaviorSubject, interval, Subscription, takeWhile, tap} from 'rxjs';
 import {
   Location,
   TripOffer,
-  RouteService,
   SimulationAction, Route, TripSimulationService,
 } from '../../../api/sep_drive';
 import * as L from "leaflet";
@@ -15,14 +14,9 @@ import {MatIconButton} from '@angular/material/button';
 import {MatIcon} from '@angular/material/icon';
 import {MatSlider, MatSliderThumb} from '@angular/material/slider';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {CdkDrag, CdkDragDrop, CdkDragHandle, CdkDropList, moveItemInArray} from '@angular/cdk/drag-drop';
-import {
-  MatAccordion,
-  MatExpansionPanel,
-  MatExpansionPanelHeader, MatExpansionPanelTitle
-} from '@angular/material/expansion';
 import {MatDialog} from '@angular/material/dialog';
 import {DialogRatingComponent} from '../dialog-rating/dialog-rating.component';
+import {AngularAuthService} from '../../services/angular-auth.service';
 
 
 @Component({
@@ -34,13 +28,6 @@ import {DialogRatingComponent} from '../dialog-rating/dialog-rating.component';
     MatSlider,
     MatSliderThumb,
     FormsModule,
-    CdkDrag,
-    CdkDragHandle,
-    CdkDropList,
-    MatAccordion,
-    MatExpansionPanel,
-    MatExpansionPanelHeader,
-    MatExpansionPanelTitle,
     ReactiveFormsModule,
   ],
   templateUrl: './trip-simulation.component.html',
@@ -53,6 +40,7 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
 
   private stompService = inject(StompService)
   private tripSimulationService = inject(TripSimulationService)
+  private angularAuthService = inject(AngularAuthService)
 
   stops: Location[] = []
 
@@ -61,10 +49,10 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
   readonly dialog = inject(MatDialog);
 
   private _route$ = new BehaviorSubject<Route | null>(null);
-  private _isLocked$ = new BehaviorSubject<boolean>(false)
+  private _animationLocked$ = new BehaviorSubject<boolean>(true)
   private _animationDuration$ = new BehaviorSubject<number>(15000);
 
-  isLocked!: boolean
+  animationLocked!: boolean
   route!: Route;
 
   animationLayer = L.layerGroup()
@@ -81,7 +69,14 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
 
   coordinates: number[][] = []
 
+
+  private role: string | null = null
+  private driverPresent = false
+
+
   ngOnInit(): void {
+    this._route$.next(this.tripOffer.tripRequest.route);
+
     // update coordinates when route changes
     this._route$.subscribe(route => {
       if (route) {
@@ -102,17 +97,6 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
       }
     })
 
-    this._animationDuration$.subscribe({
-      next: value => {
-        this.animationDuration = value
-      }
-    })
-
-    this._isLocked$.subscribe(isLocked => {
-      this.isLocked = isLocked;
-    })
-
-    this._route$.next(this.tripOffer.tripRequest.route);
 
     this.subscription = this.stompService
       .watchTopic<SimulationAction>(`/topic/simulation/${this.tripOfferId}`)
@@ -122,11 +106,38 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
           this.handleSimulationAction(message as SimulationAction)
         }
       })
+
+    this.angularAuthService.role$.subscribe({
+      next: role => {
+        this.role = role
+        if (this.role === "DRIVER") {
+          interval(1000)
+            .pipe(
+              takeWhile(() => !this.driverPresent),
+              tap(() => {
+                this.sendDriverPresent()
+              })
+            )
+            .subscribe()
+        }
+      }
+    })
+
+    this._animationDuration$.subscribe({
+      next: value => {
+        this.animationDuration = value
+      }
+    })
+
+    this._animationLocked$.subscribe(animationLocked => {
+      this.animationLocked = animationLocked;
+    })
   }
 
   handleSimulationAction(simulationAction: SimulationAction): void {
+    this.animationIndex = simulationAction.parameters.startIndex;
+
     if (simulationAction.actionType === "START") {
-      this.animationIndex = simulationAction.parameters!.startIndex!;
       if (this.animationInitialized) {
         this.resumeAnimation()
       } else {
@@ -139,16 +150,23 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
     } else if (simulationAction.actionType === "CHANGE_VELOCITY") {
       this.sliderDuration = simulationAction.parameters!.velocity!
       this._animationDuration$.next(this.sliderDuration * 1000)
-      this.animationIndex = simulationAction.parameters!.startIndex!;
-
       if (!this.animationPaused && this.animationInitialized) {
         this.pauseAnimation()
         this.resumeAnimation()
       }
     } else if (simulationAction.actionType === "LOCK") {
-      this._isLocked$.next(true)
+      this._animationLocked$.next(true)
     } else if (simulationAction.actionType === "UNLOCK") {
-      this._isLocked$.next(false)
+      this._animationLocked$.next(false)
+    } else if (simulationAction.actionType === "DRIVER_PRESENT") {
+      if (this.role === "CUSTOMER") {
+        this.sendAckDriverPresent()
+      }
+    } else if (simulationAction.actionType === "ACK_DRIVER_PRESENT") {
+      if (this.role === "DRIVER") {
+        this.unlock()
+      }
+      this.driverPresent = true
     } else {
       console.error("Unknown action type:", simulationAction.actionType)
     }
@@ -161,6 +179,25 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
   sendSimulationAction(simulationAction: SimulationAction) {
     this.stompService.send(`/app/simulation/${this.tripOfferId}`, simulationAction)
   }
+
+  sendDriverPresent() {
+    const action: SimulationAction = {
+      actionType: "DRIVER_PRESENT",
+      timestamp: new Date().toISOString(),
+      parameters: {startIndex: this.animationIndex}
+    }
+    this.sendSimulationAction(action)
+  }
+
+  sendAckDriverPresent() {
+    const action: SimulationAction = {
+      actionType: "ACK_DRIVER_PRESENT",
+      timestamp: new Date().toISOString(),
+      parameters: {startIndex: this.animationIndex}
+    }
+    this.sendSimulationAction(action)
+  }
+
 
   start(): void {
     const action: SimulationAction = {

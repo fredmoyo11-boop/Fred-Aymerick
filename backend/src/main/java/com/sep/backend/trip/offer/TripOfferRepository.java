@@ -26,5 +26,14 @@ public interface TripOfferRepository  extends JpaRepository<TripOfferEntity, Lon
     List<TripOfferEntity> findAllByTripRequest_Customer_Email(@Email @NotBlank String tripRequestCustomerEmail);
 
     List<TripOfferEntity> findAllByTripRequest_Customer_EmailAndStatus(@Email @NotBlank String tripRequestCustomerEmail, @NotBlank String status);
+
+    @Query("SELECT avg(customerRating) FROM TripHistoryEntity WHERE driver = ?1")
+    Double getAvgRatingByDriver_TripHistory(@NotBlank Long driverId);
+
+    @Query("SELECT count(tripOfferId) FROM TripHistoryEntity WHERE driver = ?1")
+    Long getTotalDriveCountByDriver_TripHistory(@NotBlank Long driverId);
+
+    @Query("SELECT sum(distance) FROM TripHistoryEntity WHERE driver = ?1")
+    Double getTotalDriveDistanceByDriver_TripHistory(@NotBlank Long driverId);
 	
 }

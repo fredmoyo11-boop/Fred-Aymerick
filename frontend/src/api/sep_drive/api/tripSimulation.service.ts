@@ -100,12 +100,12 @@ export class TripSimulationService extends BaseService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getActions(tripOfferId: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<SimulationAction[]>;
-    public getActions(tripOfferId: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<SimulationAction[]>>;
-    public getActions(tripOfferId: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<SimulationAction[]>>;
-    public getActions(tripOfferId: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public getSimulationActions(tripOfferId: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<SimulationAction[]>;
+    public getSimulationActions(tripOfferId: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<SimulationAction[]>>;
+    public getSimulationActions(tripOfferId: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<SimulationAction[]>>;
+    public getSimulationActions(tripOfferId: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
         if (tripOfferId === null || tripOfferId === undefined) {
-            throw new Error('Required parameter tripOfferId was null or undefined when calling getActions.');
+            throw new Error('Required parameter tripOfferId was null or undefined when calling getSimulationActions.');
         }
 
         let localVarHeaders = this.defaultHeaders;

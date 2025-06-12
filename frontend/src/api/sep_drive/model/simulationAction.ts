@@ -32,7 +32,11 @@ export namespace SimulationAction {
         Complete: 'COMPLETE',
         Info: 'INFO',
         Lock: 'LOCK',
-        Unlock: 'UNLOCK'
+        Unlock: 'UNLOCK',
+        DriverPresent: 'DRIVER_PRESENT',
+        AckDriverPresent: 'ACK_DRIVER_PRESENT',
+        CustomerPresent: 'CUSTOMER_PRESENT',
+        AckCustomerPresent: 'ACK_CUSTOMER_PRESENT'
     } as const;
     export type ActionTypeEnum = typeof ActionTypeEnum[keyof typeof ActionTypeEnum];
 }

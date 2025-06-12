@@ -125,8 +125,6 @@ public class TripOfferService {
         tripOfferRepository.save(tripOfferEntity);
     }
 
-//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!   needs implementation from History !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
     public List<TripOfferResponse> getTripOfferList(Principal principal) {
         List<TripOfferResponse> tripOffers = new ArrayList<TripOfferResponse>();
         List<TripOfferEntity> tripOfferEntities = tripOfferRepository.findAllByTripRequest_Customer_EmailAndStatus(principal.getName(), TripOfferStatus.PENDING);
@@ -135,9 +133,9 @@ public class TripOfferService {
             tripOffers.add(new TripOfferResponse(driver.getUsername(),
                                                  driver.getFirstName(),
                                                  driver.getLastName(),
-                                                 5.0D,
-                                                 0L,
-                                                 0.0D));
+                                                 tripOfferRepository.getAvgRatingByDriver_TripHistory(driver.getId()),
+                                                 tripOfferRepository.getTotalDriveCountByDriver_TripHistory(driver.getId()),
+                                                 tripOfferRepository.getTotalDriveDistanceByDriver_TripHistory(driver.getId())));
         }
         return tripOffers;
     }

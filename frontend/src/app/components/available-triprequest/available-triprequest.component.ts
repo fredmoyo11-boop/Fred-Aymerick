@@ -59,6 +59,9 @@ export class AvailableTriprequestComponent implements OnInit,AfterViewInit{
     this.start = event.value
   }
   ngOnInit(): void {
+
+    this.dataSource = new MatTableDataSource<AvailableTripRequestDTO>([]);
+
     this.locationForm.get("startQuery")?.valueChanges.pipe(
         tap(value => console.log('Eingabewert:', value)),
         debounceTime(300),
@@ -100,10 +103,32 @@ export class AvailableTriprequestComponent implements OnInit,AfterViewInit{
   }
 
   ngAfterViewInit() {
-      if (this.dataSource && this.sort) {
+
         this.dataSource.sort = this.sort;
         //this.cdr.detectChanges();
-      }
+
+        // Benutzerdefinierte Sortierfunktion für Fahrzeugklassen
+        this.dataSource.sortingDataAccessor = (item, property : string) => {
+          switch(property) {
+            case 'desiredCarType':
+              // Definieren Sie die gewünschte Reihenfolge
+              const order = {
+                'SMALL': 1,
+                'MITTEL': 2,
+                'DELUXE': 3
+              };
+              return order[item.desiredCarType as keyof typeof order] || 0;
+
+            case 'requestTime':
+              // Konvertieren des Zeitstempel in ein Date-Objekt für korrekte Sortierung
+              return new Date(item.requestTime).getTime();
+
+            default:
+              return (item as any)[property];
+          }
+        };
+
+
   }
 
   onSave() {
@@ -113,13 +138,11 @@ export class AvailableTriprequestComponent implements OnInit,AfterViewInit{
         next: (response) => {
           console.log('Backend response', response);
           this.dataSource.data = response;
+
+          //sort-objekt zuweisen
+          this.dataSource.sort = this.sort;
           this.showTable = true;
 
-          // setTimeout(() => {
-          //   if(this.sort){
-          //     this.dataSource.sort = this.sort;
-          //   }
-          // })
           },
         error: (err) => {
           console.error('Fehler bei der Suche von verfügbare Fahranfragen', err);

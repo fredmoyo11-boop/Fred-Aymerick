@@ -17,8 +17,7 @@
   </mat-form-field>
 
   <div class="save_button">
-    <button mat-align-tabs="end" type="submit" mat-raised-button [disabled]="!locationForm.valid  || !start
-">
+    <button mat-align-tabs="end" type="submit" mat-raised-button [disabled]="!locationForm.valid  || !start">
       Speichern
     </button>
   </div>
@@ -42,7 +41,7 @@
       <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by requestTime">
         Datum/Uhrzeit
       </th>
-      <td mat-cell *matCellDef="let row"> {{ row.requestTime }}</td>
+      <td mat-cell *matCellDef="let row"> {{ row.requestTime | date:'dd.MM.yyyy HH:mm'  }}</td>
     </ng-container>
 
     <!-- distance Column -->

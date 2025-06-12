@@ -14,16 +14,6 @@ import { MatTableModule } from '@angular/material/table';
   selector: 'app-trip-history',
   imports: [
     FormsModule,
-    // MatCell,
-    // MatCellDef,
-    // MatColumnDef,
-    // MatHeaderCell,
-    // MatHeaderRow,
-    // MatHeaderRowDef,
-    // MatRow,
-    // MatRowDef,
-    // MatTable,
-    // MatHeaderCellDef,
     MatInput,
     MatLabel,
     MatSort,
@@ -61,12 +51,10 @@ export class TripHistoryComponent implements OnInit, AfterViewInit {
       next: (response) => {
         console.log('Backend response', response);
         this.dataSource.data = response;
+        this.dataSource.sort = this.sort;
+
         this.showTable = true;
-        setTimeout(() => {
-          if(this.sort){
-            this.dataSource.sort = this.sort;
-          }
-        })
+
       },
       error: (err) => {
         console.error('Error', err);

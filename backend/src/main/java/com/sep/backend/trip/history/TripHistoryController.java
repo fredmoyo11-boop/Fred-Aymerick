@@ -29,7 +29,7 @@ public class TripHistoryController {
 
 
     @Operation(description = "Fahranfrage-History des aktuellen Fahrers oder  Kunden ",
-            tags = {Tags.TRIP_History},
+            tags = {Tags.TRIP_HISTORY},
             responses = {@ApiResponse(responseCode = HttpStatus.OK,
                     content = @Content(mediaType = "application/json",
                             array = @ArraySchema(schema = @Schema(implementation = TripHistoryDTO.class))))})

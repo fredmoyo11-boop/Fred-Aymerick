@@ -1,0 +1,121 @@
+<div class="filter-container">
+<mat-form-field class="search-form-field">
+  <mat-label>Nach Kundenname/Fahrername suchen</mat-label>
+  <input matInput (keyup)="applyFilter($event)" #input>
+</mat-form-field>
+</div>
+
+<div class='table-container' *ngIf="showTable">
+  <table mat-table [dataSource]="dataSource" matSort>
+
+    <!-- tripId Column -->
+    <ng-container matColumnDef="tripId">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by tripId">
+        Fahrt-ID
+      </th>
+      <td mat-cell *matCellDef="let row"> {{ row.tripId }}</td>
+    </ng-container>
+
+    <!-- endTime Column -->
+    <ng-container matColumnDef="endTime">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by endTime">
+        Abschlussdatum/Uhrzeit
+      </th>
+      <td mat-cell *matCellDef="let row"> {{ row.endTime }}</td>
+    </ng-container>
+
+    <!-- distance Column -->
+    <ng-container matColumnDef="distance">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by distance">
+        Gefahrene Distanz (Km)
+      </th>
+      <td mat-cell *matCellDef="let row"> {{ row.distance }}</td>
+    </ng-container>
+
+    <!-- duration Column -->
+    <ng-container matColumnDef="duration">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by duration">
+        Fahrtdauer (min)
+      </th>
+      <td mat-cell *matCellDef="let row"> {{ row.duration }}</td>
+    </ng-container>
+
+    <!-- preis Column -->
+    <ng-container matColumnDef="price">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by price">
+        Betrag (€)
+      </th>
+      <td mat-cell *matCellDef="let row"> {{ row.price }}</td>
+    </ng-container>
+
+    <!-- driverRating Column -->
+    <ng-container matColumnDef="driverRating">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by driverRating">
+        Fahrerbewertung
+      </th>
+      <td mat-cell *matCellDef="let row">
+        <div class="rating-stars">
+          <ng-container *ngFor="let star of getStars(row.driverRating); let i = index">
+            <mat-icon [ngClass]="{'filled': i < row.driverRating}">star</mat-icon>
+          </ng-container>
+        </div>
+      </td>
+    </ng-container>
+
+    <!-- customerEvaluation Column -->
+    <ng-container matColumnDef="customerRating">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by customerRating">
+        Kundenbewertung
+      </th>
+      <td mat-cell *matCellDef="let row">
+        <div class="rating-stars">
+          <ng-container *ngFor="let star of getStars(row.customerRating); let i = index">
+            <mat-icon [ngClass]="{'filled': i < row.customerRating}">star</mat-icon>
+          </ng-container>
+        </div>
+      </td>
+
+    </ng-container>
+
+    <!-- customerName Column -->
+    <ng-container matColumnDef="customerName">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by customerName">
+        Kundenname
+      </th>
+      <td mat-cell *matCellDef="let row"> {{ row.customerName }}</td>
+    </ng-container>
+
+    <!-- customerUsername Column -->
+    <ng-container matColumnDef="customerUsername">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by customerUsername">
+        Kundenbenutzername
+      </th>
+      <td mat-cell *matCellDef="let row"> {{ row.customerUsername }}</td>
+    </ng-container>
+
+    <!-- driverName Column -->
+    <ng-container matColumnDef="driverName">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by driverName">
+        Fahrername
+      </th>
+      <td mat-cell *matCellDef="let row"> {{ row.driverName }}</td>
+    </ng-container>
+
+    <!-- driverUsername Column -->
+    <ng-container matColumnDef="driverUsername">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by driverUsername">
+       Fahrerbenutzername
+      </th>
+      <td mat-cell *matCellDef="let row"> {{ row.driverUsername }}</td>
+    </ng-container>
+
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+</div>
+
+<div *ngIf="!showTable">
+  <p>Keine Daten verfügbar</p>
+</div>
+

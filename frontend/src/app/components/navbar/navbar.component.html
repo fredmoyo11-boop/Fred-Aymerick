@@ -4,11 +4,14 @@
     <div class="navbar-btn-container">
       <button [routerLink]="'/home'">Home</button>
       @if (this.role === "CUSTOMER") {
-        <button [routerLink]="'/map'">Karte</button>
+        <button [routerLink]="'/request'">Fahranfrage</button>
+      }
+      @if (this.role === "DRIVER") {
+        <button [routerLink]="'/requests'">Fahranfragen</button>
       }
       @if (this.role) {
         <button [routerLink]="'/social'">Social</button>
-        <button [routerLink]="['/balance', accountInformation?.username]">Konto</button>
+        <button [routerLink]="'/history'">Fahrthistorie</button>
       }
 
     </div>

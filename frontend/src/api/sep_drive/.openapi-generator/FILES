@@ -9,8 +9,8 @@ api/nominatim.service.ts
 api/notification.service.ts
 api/oRS.service.ts
 api/route.service.ts
-api/tRIPHistory.service.ts
 api/transaction.service.ts
+api/tripHistory.service.ts
 api/tripOffer.service.ts
 api/tripRequest.service.ts
 api/tripSimulation.service.ts

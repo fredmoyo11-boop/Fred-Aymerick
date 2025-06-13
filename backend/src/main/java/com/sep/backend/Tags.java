@@ -22,6 +22,8 @@ public class Tags {
 
     public static final String TRIP_History = "TRIP_History";
 
+    public static final String TRANSACTION = "Transaction";
+
 
     public Tags() {
         throw new UnsupportedOperationException("Tags cannot be instantiated");

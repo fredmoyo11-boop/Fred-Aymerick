@@ -1,4 +1,4 @@
-package com.sep.backend.TripHistory;
+package com.sep.backend.trip.history;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;

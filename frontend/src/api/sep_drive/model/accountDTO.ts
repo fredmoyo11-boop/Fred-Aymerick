@@ -7,7 +7,6 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { Rating } from './rating';
 
 
 /**
@@ -49,7 +48,7 @@ export interface AccountDTO {
     /**
      * List of ratings associated with this account .
      */
-    ratings: Rating[];
+    ratings: number;
     /**
      * The total number of rides the account holder has taken.
      */

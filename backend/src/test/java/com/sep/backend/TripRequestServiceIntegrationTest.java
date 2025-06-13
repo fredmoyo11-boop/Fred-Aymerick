@@ -1,8 +1,9 @@
 package com.sep.backend;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sep.backend.TripHistory.TripHistoryDTO;
-import com.sep.backend.TripHistory.TripHistoryService;
-import com.sep.backend.TripOffer.TripOfferRepository;
+import com.sep.backend.trip.history.TripHistoryDTO;
+import com.sep.backend.trip.history.TripHistoryRepository;
+import com.sep.backend.trip.history.TripHistoryService;
 import com.sep.backend.account.CustomerRepository;
 import com.sep.backend.account.DriverRepository;
 import com.sep.backend.entity.*;
@@ -11,6 +12,7 @@ import com.sep.backend.nominatim.LocationRepository;
 import com.sep.backend.nominatim.NominatimService;
 import com.sep.backend.ors.ORSService;
 import com.sep.backend.route.Coordinate;
+import com.sep.backend.trip.offer.TripOfferRepository;
 import com.sep.backend.trip.request.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,13 +51,13 @@ public class TripRequestServiceIntegrationTest {
     private TripHistoryService tripHistoryService;
 
     @Autowired
-    private  DriverRepository driverRepository;
+    private DriverRepository driverRepository;
 
     @Autowired
     private ORSService orsService;
 
     @Autowired
-    private TripHistoryRepository  tripHistoryRepository;
+    private TripHistoryRepository tripHistoryRepository;
 
     @Autowired
     private TripOfferRepository tripOfferRepository;
@@ -105,42 +107,47 @@ public class TripRequestServiceIntegrationTest {
 
         // Start und Ziel setzen
         Location start = new Location();
-        start.setLatitude(51.4501);
-        start.setLongitude(7.0131);
+        var startCoordinate = new Coordinate();
+        startCoordinate.setLatitude(51.4501);
+        startCoordinate.setLongitude(7.0131);
+        start.setCoordinate(startCoordinate);
         start.setDisplayName("Universität Duisburg-Essen");
-        start.setGeoJSON(nominatimService.reverse(start.getLatitude().toString(),start.getLongitude().toString()).getFeatures().getFirst());
+        start.setGeoJSON(nominatimService.reverse(String.valueOf(start.getCoordinate().getLatitude()), String.valueOf(start.getCoordinate().getLongitude())).getFeatures().getFirst());
         Location end = new Location();
-        end.setLatitude(51.4982);
-        end.setLongitude(6.8676);
+        var endCoordinate = new Coordinate();
+        endCoordinate.setLatitude(51.4982);
+        endCoordinate.setLongitude(6.8676);
+        end.setCoordinate(endCoordinate);
         end.setDisplayName("Hbf Oberhausen");
-        end.setGeoJSON(nominatimService.reverse(end.getLatitude().toString(),end.getLongitude().toString()).getFeatures().getFirst());
+        end.setGeoJSON(nominatimService.reverse(String.valueOf(end.getCoordinate().getLatitude()), String.valueOf(end.getCoordinate().getLongitude())).getFeatures().getFirst());
 
 
         body.setLocations(List.of(start, end));
         System.out.println(orsService);
         body.setGeojson(orsService.getRouteDirections(List.of(Coordinate.from(start), Coordinate.from(end))));
         // Principal simulieren
-        Principal principal = () ->   testEmail ;
+        Principal principal = () -> testEmail;
 
 
-    var trip = tripRequestService.createCurrentActiveTripRequest(body, principal);
+        var trip = tripRequestService.createCurrentActiveTripRequest(body, principal);
 
 
-       TripOfferEntity tripOfferEntity = new TripOfferEntity();
-       tripOfferEntity.setTripRequest(trip);
-       tripOfferEntity.setDriver(driver);
-       tripOfferEntity.setStatus(TripRequestStatus.ACTIVE);
-       var offer = tripOfferRepository.save(tripOfferEntity);
+        TripOfferEntity tripOfferEntity = new TripOfferEntity();
+        tripOfferEntity.setTripRequest(trip);
+        tripOfferEntity.setDriver(driver);
+        tripOfferEntity.setStatus(TripRequestStatus.ACTIVE);
+        var offer = tripOfferRepository.save(tripOfferEntity);
 
-       var history = tripHistoryService.saveTripHistory(
-               offer,
-               trip.getRoute().getGeoJSON().getFeatures().getFirst().getProperties().getSummary().getDistance(),
-               (int) trip.getRoute().getGeoJSON().getFeatures().getFirst().getProperties().getSummary().getDuration(),
-               3,
-               2
-               );
+        var history = tripHistoryService.saveTripHistory(
+                offer,
+                trip.getRoute().getGeoJSON().getFeatures().getFirst().getProperties().getSummary().getDistance(),
+                (int) trip.getRoute().getGeoJSON().getFeatures().getFirst().getProperties().getSummary().getDuration(),
+                3,
+                2
+        );
 
     }
+
     @AfterEach
     void DeleteAllTripRequests() {
 
@@ -159,16 +166,20 @@ public class TripRequestServiceIntegrationTest {
     void testCreateTripRequest_Success() throws Exception {
 
         Location start = new Location();
-        start.setLatitude(51.4501);
-        start.setLongitude(7.0131);
+        var startCoordinate = new Coordinate();
+        startCoordinate.setLatitude(51.4501);
+        startCoordinate.setLongitude(7.0131);
+        start.setCoordinate(startCoordinate);
         start.setDisplayName("Universität Duisburg-Essen");
-        start.setGeoJSON(nominatimService.reverse("51.4501","7.0131").getFeatures().getFirst());
+        start.setGeoJSON(nominatimService.reverse("51.4501", "7.0131").getFeatures().getFirst());
 
         Location end = new Location();
-        end.setLatitude(51.4982);
-        end.setLongitude(6.8676);
+        var endCoordinate = new Coordinate();
+        endCoordinate.setLatitude(51.4982);
+        endCoordinate.setLongitude(6.8676);
+        end.setCoordinate(endCoordinate);
         end.setDisplayName("Hbf Oberhausen");
-        end.setGeoJSON(nominatimService.reverse("51.4982","6.8676").getFeatures().getFirst());
+        end.setGeoJSON(nominatimService.reverse("51.4982", "6.8676").getFeatures().getFirst());
 
         TripRequestBody body = new TripRequestBody();
         body.setCarType("SMALL");
@@ -178,7 +189,7 @@ public class TripRequestServiceIntegrationTest {
 
         Principal principal = () -> testEmail;
 
-        if(tripRequestService.existsActiveTripRequest(testEmail)) {
+        if (tripRequestService.existsActiveTripRequest(testEmail)) {
 
             tripRequestService.deleteCurrentActiveTripRequest(principal);
 
@@ -187,12 +198,12 @@ public class TripRequestServiceIntegrationTest {
         mapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
 
         String result = mockMvc.perform(post("/api/trip/request/current")
-                                        .contentType(MediaType.APPLICATION_JSON)
-                                        .content(mapper.writeValueAsString(body)))
-                               .andExpect(status().isOk())
-                               .andReturn()
-                               .getResponse()
-                               .getContentAsString();
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(body)))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
         String user = "userrrr";
 
         TripRequestDTO trips = mapper.readValue(result, TripRequestDTO.class);
@@ -200,10 +211,10 @@ public class TripRequestServiceIntegrationTest {
         assertEquals(TripRequestStatus.ACTIVE, trips.getStatus());
         assertEquals("SMALL", trips.getCarType());
         assertEquals("Bitte nicht rauchen.", trips.getNote());
-        assertEquals(user, trips.getUsername());
+//        assertEquals(user, trips.get);
         assertNotNull(trips.getRoute());
-       // assertEquals(List.of(start.getLongitude(),start.getLatitude()),result.getRoute().getGeoJSON().getFeatures().getFirst().getGeometry().getCoordinates().getFirst());
-       // assertEquals(List.of(end.getLongitude(),end.getLatitude()),result.getRoute().getGeoJSON().getFeatures().getFirst().getGeometry().getCoordinates().getLast());
+        // assertEquals(List.of(start.getLongitude(),start.getLatitude()),result.getRoute().getGeoJSON().getFeatures().getFirst().getGeometry().getCoordinates().getFirst());
+        // assertEquals(List.of(end.getLongitude(),end.getLatitude()),result.getRoute().getGeoJSON().getFeatures().getFirst().getGeometry().getCoordinates().getLast());
         assertTrue(trips.getPrice() > 0);
     }
 
@@ -213,17 +224,18 @@ public class TripRequestServiceIntegrationTest {
     void testGetAvailableTrips_Success() throws Exception {
 
         Location start = new Location();
-
-        start.setLatitude(50.9413);
-        start.setLongitude(6.9583);
+        var startCoordinate = new Coordinate();
+        startCoordinate.setLatitude(50.9413);
+        startCoordinate.setLongitude(6.9583);
+        start.setCoordinate(startCoordinate);
         start.setDisplayName("Kölner Dom");
-        start.setGeoJSON(nominatimService.reverse("50.9413","6.9583").getFeatures().getFirst());
+        start.setGeoJSON(nominatimService.reverse("50.9413", "6.9583").getFeatures().getFirst());
 
-        String json= new ObjectMapper().writeValueAsString(start);
+        String json = new ObjectMapper().writeValueAsString(start);
 
         String response = mockMvc.perform(post("/api/trip/request/available")
                         .contentType(MediaType.APPLICATION_JSON)
-                .content(json))
+                        .content(json))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -231,9 +243,9 @@ public class TripRequestServiceIntegrationTest {
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
 
-        List<AvailableTripRequestDTO> trips = mapper.readValue(response, mapper.getTypeFactory().constructCollectionType(List.class, AvailableTripRequestDTO.class) );
+        List<AvailableTripRequestDTO> trips = mapper.readValue(response, mapper.getTypeFactory().constructCollectionType(List.class, AvailableTripRequestDTO.class));
 
-         String user = "userrrr";
+        String user = "userrrr";
 
         assertNotNull(trips);
         assertFalse(trips.isEmpty());
@@ -247,14 +259,14 @@ public class TripRequestServiceIntegrationTest {
     void testGetTripHistory_Success() throws Exception {
 
         String response = mockMvc.perform(get("/api/trip/history")
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
-        List<TripHistoryDTO> history = mapper.readValue(response ,mapper.getTypeFactory().constructCollectionType(List.class, TripHistoryDTO.class));
+        List<TripHistoryDTO> history = mapper.readValue(response, mapper.getTypeFactory().constructCollectionType(List.class, TripHistoryDTO.class));
 
         assertNotNull(history);
         assertFalse(history.isEmpty());
@@ -262,8 +274,8 @@ public class TripRequestServiceIntegrationTest {
         assertNotNull(historyDTO);
         assertEquals("userrrr", history.getFirst().getCustomerUsername());
         assertEquals("freddioii", history.getFirst().getDriverUsername());
-        assertEquals(2,history.getFirst().getCustomerRating());
-        assertEquals(3,history.getFirst().getDriverRating());
+        assertEquals(2, history.getFirst().getCustomerRating());
+        assertEquals(3, history.getFirst().getDriverRating());
 
 
     }

@@ -192,7 +192,7 @@ export class TripRequestComponent implements OnInit{
       locations: this.stops,
       note: this.note
     }
-    this.tripRequestService.createCurrentTripRequest(tripRequestBody).subscribe({
+    this.tripRequestService.createCurrentActiveTripRequest(tripRequestBody).subscribe({
       next: tripRequest => {
         this.consumeTripRequestDTO(tripRequest)
       },

@@ -1,4 +1,4 @@
-package com.sep.backend.TripHistory;
+package com.sep.backend.trip.history;
 
 import com.sep.backend.HttpStatus;
 import com.sep.backend.Tags;

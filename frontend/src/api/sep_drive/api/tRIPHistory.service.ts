@@ -19,7 +19,7 @@ import { Observable }                                        from 'rxjs';
 // @ts-ignore
 import { ErrorResponse } from '../model/errorResponse';
 // @ts-ignore
-import { Route } from '../model/route';
+import { TripHistoryDTO } from '../model/tripHistoryDTO';
 
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
@@ -31,25 +31,21 @@ import { BaseService } from '../api.base.service';
 @Injectable({
   providedIn: 'root'
 })
-export class RouteService extends BaseService {
+export class TRIPHistoryService extends BaseService {
 
     constructor(protected httpClient: HttpClient, @Optional() @Inject(BASE_PATH) basePath: string|string[], @Optional() configuration?: Configuration) {
         super(basePath, configuration);
     }
 
     /**
-     * Returns the route with the specified id.
-     * @param routeId 
+     * Fahranfrage-History des aktuellen Fahrers oder  Kunden 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getRoute1(routeId: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<Route>;
-    public getRoute1(routeId: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Route>>;
-    public getRoute1(routeId: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Route>>;
-    public getRoute1(routeId: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
-        if (routeId === null || routeId === undefined) {
-            throw new Error('Required parameter routeId was null or undefined when calling getRoute1.');
-        }
+    public getTripHistory(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<TripHistoryDTO[]>;
+    public getTripHistory(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<TripHistoryDTO[]>>;
+    public getTripHistory(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<TripHistoryDTO[]>>;
+    public getTripHistory(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -80,9 +76,9 @@ export class RouteService extends BaseService {
             }
         }
 
-        let localVarPath = `/api/route/${this.configuration.encodeParam({name: "routeId", value: routeId, in: "path", style: "simple", explode: false, dataType: "number", dataFormat: "int64"})}`;
+        let localVarPath = `/api/trip/history`;
         const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request<Route>('get', `${basePath}${localVarPath}`,
+        return this.httpClient.request<TripHistoryDTO[]>('get', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,

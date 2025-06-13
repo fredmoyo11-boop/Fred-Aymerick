@@ -11,6 +11,7 @@ import com.sep.backend.ors.ORSService;
 import com.sep.backend.ors.data.ORSFeatureCollection;
 import com.sep.backend.route.Coordinate;
 import com.sep.backend.route.RouteService;
+import com.sep.backend.trip.history.TripHistoryRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;

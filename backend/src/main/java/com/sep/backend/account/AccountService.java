@@ -7,6 +7,7 @@ import com.sep.backend.Roles;
 import com.sep.backend.auth.registration.RegistrationDTO;
 import com.sep.backend.auth.registration.RegistrationException;
 import com.sep.backend.entity.*;
+import com.sep.backend.trip.history.TripHistoryRepository;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;

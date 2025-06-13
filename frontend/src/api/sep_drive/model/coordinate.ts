@@ -16,10 +16,10 @@ export interface Coordinate {
     /**
      * The latitude.
      */
-    latitude?: number;
+    latitude: number;
     /**
      * The longitude.
      */
-    longitude?: number;
+    longitude: number;
 }
 

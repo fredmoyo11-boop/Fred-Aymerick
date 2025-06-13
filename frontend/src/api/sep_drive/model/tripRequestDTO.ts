@@ -7,7 +7,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { RouteDTO } from './routeDTO';
+import { Route } from './route';
 
 
 /**
@@ -22,7 +22,7 @@ export interface TripRequestDTO {
      * The customer requesting drive.
      */
     email: string;
-    route: RouteDTO;
+    route: Route;
     /**
      * The type of car requested.
      */

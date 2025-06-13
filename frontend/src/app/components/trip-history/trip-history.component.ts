@@ -3,7 +3,7 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import { MatTableDataSource} from "@angular/material/table";
 import {MatFormField, MatInput, MatLabel} from "@angular/material/input";
 import {MatSort, MatSortHeader} from "@angular/material/sort";
-import {NgClass, NgForOf, NgIf} from "@angular/common";
+import {CurrencyPipe, DatePipe, DecimalPipe, NgClass, NgForOf, NgIf} from "@angular/common";
 import {MatIcon} from '@angular/material/icon';
 import {TripHistoryDTO, TripRequestService} from '../../../api/sep_drive';
 import { MatTableModule } from '@angular/material/table';
@@ -25,6 +25,9 @@ import { MatTableModule } from '@angular/material/table';
     NgClass,
     MatIcon,
     MatTableModule,
+    DatePipe,
+    DecimalPipe,
+    CurrencyPipe,
   ],
   templateUrl: './trip-history.component.html',
   styleUrl: './trip-history.component.css'
@@ -51,7 +54,10 @@ export class TripHistoryComponent implements OnInit, AfterViewInit {
       next: (response) => {
         console.log('Backend response', response);
         this.dataSource.data = response;
-        this.dataSource.sort = this.sort;
+
+        setTimeout(() => {
+          this.dataSource.sort = this.sort;
+        });
 
         this.showTable = true;
 

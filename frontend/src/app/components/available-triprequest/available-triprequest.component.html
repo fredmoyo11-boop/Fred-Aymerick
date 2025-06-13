@@ -47,9 +47,9 @@
     <!-- distance Column -->
     <ng-container matColumnDef="distanceInKm">
       <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by distanceInKm">
-        Entfernung <br>(Km)
+        Entfernung
       </th>
-      <td mat-cell *matCellDef="let row"> {{ row.distanceInKm }}</td>
+      <td mat-cell *matCellDef="let row"> {{ row.distanceInKm |number:'1.1-1' }} km</td>
     </ng-container>
 
     <!-- customerName Column -->
@@ -87,25 +87,25 @@
     <!-- totalDistanceInKm Column -->
     <ng-container matColumnDef="totalDistanceInKm">
       <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by totalDistanceInKm">
-        Gesamtdistanz <br>(Km)
+        Gesamtdistanz
       </th>
-      <td mat-cell *matCellDef="let row"> {{ row.totalDistanceInKm }}</td>
+      <td mat-cell *matCellDef="let row"> {{ row.totalDistanceInKm | number:'1.1-1'}} km</td>
     </ng-container>
 
     <!-- duration Column -->
     <ng-container matColumnDef="duration">
       <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by duration">
-        Gesamtdauer <br>(min)
+        Gesamtdauer
       </th>
-      <td mat-cell *matCellDef="let row"> {{ row.duration }}</td>
+      <td mat-cell *matCellDef="let row"> {{ row.duration/60 |number:'1.0-0' }} min</td>
     </ng-container>
 
     <!-- preis Column -->
     <ng-container matColumnDef="price">
       <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by price">
-        Preis <br>(€)
+        Preis
       </th>
-      <td mat-cell *matCellDef="let row"> {{ row.price }}</td>
+      <td mat-cell *matCellDef="let row"> {{ row.price | currency:'EUR':'symbol'}}</td>
     </ng-container>
 
     <!-- acceptTrip Column -->
@@ -124,6 +124,6 @@
 </div>
 
 <div *ngIf="!showTable">
-  <p>Keine Daten verfügbar</p>
+  <p style="color: red">*Gib zuerst deine aktuelle Position ein*</p>
 </div>
 

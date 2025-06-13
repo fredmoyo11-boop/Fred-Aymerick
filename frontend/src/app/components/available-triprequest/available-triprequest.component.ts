@@ -15,10 +15,10 @@ import {MatIcon} from '@angular/material/icon';
 import {MatOption} from '@angular/material/core';
 import {MatSelect, MatSelectChange} from '@angular/material/select';
 import {MatTooltip} from '@angular/material/tooltip';
-import {AvailableTripRequestDTO, TripRequestService,Location} from '../../../api/sep_drive';
+import {AvailableTripRequestDTO, TripRequestService, Location} from '../../../api/sep_drive';
 import {debounceTime, distinctUntilChanged, tap} from 'rxjs';
 import {CommonModule} from '@angular/common';
-import{MatTable} from '@angular/material/table';
+import {MatTable} from '@angular/material/table';
 
 @Component({
   selector: 'app-available-triprequest',
@@ -29,7 +29,7 @@ import{MatTable} from '@angular/material/table';
 })
 
 
-export class AvailableTriprequestComponent implements OnInit,AfterViewInit{
+export class AvailableTriprequestComponent implements OnInit, AfterViewInit {
   locationForm: FormGroup = new FormGroup({
     startQuery: new FormControl('', [Validators.required])
   });
@@ -37,49 +37,50 @@ export class AvailableTriprequestComponent implements OnInit,AfterViewInit{
   lon: number | null = null;
   error: string | null = null;
 
-  start!:Location;
+  start!: Location;
   startLocations: Location[] = [];
 
   //datasource initialisieren
   dataSource = new MatTableDataSource<AvailableTripRequestDTO>([]);
   @ViewChild(MatSort) sort!: MatSort;
 
-  displayedColumns: string[] = ['requestId', 'requestTime', 'distanceInKm','customerUsername','customerRating','desiredCarType','totalDistanceInKm','price','duration','acceptTrip'];
+  displayedColumns: string[] = ['requestId', 'requestTime', 'distanceInKm', 'customerUsername', 'customerRating', 'desiredCarType', 'totalDistanceInKm', 'price', 'duration', 'acceptTrip'];
   showTable = false;
 
 
   constructor(
-    private tripService: TripRequestService )
-    {}
+    private tripService: TripRequestService) {
+  }
 
 
   onStartChange(event: MatSelectChange) {
     this.start = event.value
   }
+
   ngOnInit(): void {
 
-    this.dataSource = new MatTableDataSource<AvailableTripRequestDTO>([]);
+    //this.dataSource = new MatTableDataSource<AvailableTripRequestDTO>([]);
 
     this.locationForm.get("startQuery")?.valueChanges.pipe(
-        tap(value => console.log('Eingabewert:', value)),
-        debounceTime(300),
-        distinctUntilChanged(),
-      ).subscribe({
-        next: query => {
-          return this.tripService.searchLocations(query).subscribe({
-            next: locations => {
-              console.log(locations)
-              this.startLocations = locations;
-            },
-            error: (err: any) => {
-              console.error(err)
-            }
-          });
-        },
-        error: err => {
-          console.error(err)
-        }
-      });
+      tap(value => console.log('Eingabewert:', value)),
+      debounceTime(300),
+      distinctUntilChanged(),
+    ).subscribe({
+      next: query => {
+        return this.tripService.searchLocations(query).subscribe({
+          next: locations => {
+            console.log(locations)
+            this.startLocations = locations;
+          },
+          error: (err: any) => {
+            console.error(err)
+          }
+        });
+      },
+      error: err => {
+        console.error(err)
+      }
+    });
   }
 
   currentLocation() {
@@ -89,7 +90,7 @@ export class AvailableTriprequestComponent implements OnInit,AfterViewInit{
           this.lon = position.coords.longitude;
           console.log(this.lat);
           console.log(this.lon);
-           // stores lon and lat in var startQuery
+          // stores lon and lat in var startQuery
           this.locationForm.get("startQuery")!.setValue(`${this.lat}, ${this.lon}`)
         },
         (err) => {
@@ -102,30 +103,32 @@ export class AvailableTriprequestComponent implements OnInit,AfterViewInit{
 
   ngAfterViewInit() {
 
-        this.dataSource.sort = this.sort;
+    if (this.dataSource && this.sort) {
+      this.dataSource.sort = this.sort;
+    }
 
+    // Benutzerdefinierte Sortierfunktion für Fahrzeugklassen
+    this.dataSource.sortingDataAccessor = (item, property: string) => {
+      switch (property) {
+        case 'desiredCarType':
+          //  die gewünschte Reihenfolge
+          const order = {
+            'SMALL': 1,
+            'MITTEL': 2,
+            'DELUXE': 3
+          };
+          return order[item.desiredCarType as keyof typeof order] || 0;
 
-        // Benutzerdefinierte Sortierfunktion für Fahrzeugklassen
-        this.dataSource.sortingDataAccessor = (item, property : string) => {
-          switch(property) {
-            case 'desiredCarType':
-              // Definieren Sie die gewünschte Reihenfolge
-              const order = {
-                'SMALL': 1,
-                'MITTEL': 2,
-                'DELUXE': 3
-              };
-              return order[item.desiredCarType as keyof typeof order] || 0;
+        case 'requestTime':
+          // Konvertieren des Zeitstempel in ein Date-Objekt für korrekte Sortierung
+          return new Date(item.requestTime).getTime();
 
-            case 'requestTime':
-              // Konvertieren des Zeitstempel in ein Date-Objekt für korrekte Sortierung
-              return new Date(item.requestTime).getTime();
+        default:
+          return (item as any)[property];
+      }
+    };
 
-            default:
-              return (item as any)[property];
-          }
-        };
-
+    console.log('MatSort:', this.sort);
 
   }
 
@@ -136,12 +139,13 @@ export class AvailableTriprequestComponent implements OnInit,AfterViewInit{
         next: (response) => {
           console.log('Backend response', response);
           this.dataSource.data = response;
-
           //sort-objekt zuweisen
-          this.dataSource.sort = this.sort;
+          setTimeout(() => {
+            this.dataSource.sort = this.sort;
+          });
           this.showTable = true;
 
-          },
+        },
         error: (err) => {
           console.error('Fehler bei der Suche von verfügbare Fahranfragen', err);
           this.showTable = false;

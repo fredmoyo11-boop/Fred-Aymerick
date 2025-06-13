@@ -1,4 +1,4 @@
-import {Component, ViewChild, AfterViewInit, OnInit, ChangeDetectorRef} from '@angular/core';
+import {Component, ViewChild, AfterViewInit, OnInit} from '@angular/core';
 import {
   MatCell,
   MatCellDef,
@@ -49,9 +49,7 @@ export class AvailableTriprequestComponent implements OnInit,AfterViewInit{
 
 
   constructor(
-    private tripService: TripRequestService
-   //, private cdr: ChangeDetectorRef
-  )
+    private tripService: TripRequestService )
     {}
 
 
@@ -105,7 +103,7 @@ export class AvailableTriprequestComponent implements OnInit,AfterViewInit{
   ngAfterViewInit() {
 
         this.dataSource.sort = this.sort;
-        //this.cdr.detectChanges();
+
 
         // Benutzerdefinierte Sortierfunktion für Fahrzeugklassen
         this.dataSource.sortingDataAccessor = (item, property : string) => {

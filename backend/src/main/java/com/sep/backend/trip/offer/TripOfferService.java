@@ -47,11 +47,12 @@ public class TripOfferService {
      * @param principal The principal of the current user.
      * @return If an offer exists or not.
      */
-    public String hasActiveTripOffer(Principal principal) {
-        if(checkIfActiveTripOfferExists(principal.getName())) {
-            return TripOfferPresenceStatus.HAS_ACTIVE_OFFER;
-        }
-        return TripOfferPresenceStatus.NO_ACTIVE_OFFER;
+    public Boolean hasActiveTripOffer(Principal principal) {
+//        if(checkIfActiveTripOfferExists(principal.getName())) {
+//            return TripOfferPresenceStatus.HAS_ACTIVE_OFFER;
+//        }
+//        return TripOfferPresenceStatus.NO_ACTIVE_OFFER;
+        return checkIfActiveTripOfferExists(principal.getName());
     }
 
     public String createNewTripOffer(Long tripRequestId, Principal principal) throws ForbiddenException, NotFoundException {
@@ -156,7 +157,7 @@ public class TripOfferService {
      * @return whether the driver has a trip offer or not
      */
     private boolean checkIfActiveTripOfferExists(String email) {
-        return tripOfferRepository.existsByDriver_EmailAndStatus(email, TripOfferStatus.PENDING);
+        return (tripOfferRepository.existsByDriver_EmailAndStatus(email, TripOfferStatus.PENDING) || tripOfferRepository.existsByDriver_EmailAndStatus(email, TripOfferStatus.ACCEPTED));
     }
 
     /**

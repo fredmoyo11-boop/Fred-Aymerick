@@ -41,8 +41,8 @@ public class TripOfferController {
             tags = {Tags.TRIP_OFFER},
             responses = {@ApiResponse(responseCode = HttpStatus.OK, description = "Trip offer status returned.",
                             content = @Content(schema = @Schema(implementation = StringResponse.class)))})
-    public StringResponse hasActiveOffer(Principal principal) {
-        return new StringResponse(tripOfferService.hasActiveTripOffer(principal));
+    public Boolean hasActiveOffer(Principal principal) {
+        return tripOfferService.hasActiveTripOffer(principal);
     }
 
     @PostMapping("/driver/new")

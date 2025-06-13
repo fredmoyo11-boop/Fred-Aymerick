@@ -7,13 +7,13 @@ export class CarTypePipe implements PipeTransform {
 
   transform(value: string): string {
     if (value === "SMALL") {
-      return "Small car"
+      return "Kleines Auto"
     } else if (value === "MEDIUM") {
-      return "Medium car"
+      return "Mittel großes Auto"
     } else if (value === "DELUXE") {
-      return "Deluxe car"
+      return "Deluxe Auto"
     } else {
-      return "Unknown car"
+      return "Unbekanntes Auto"
     }
   }
 

@@ -1,8 +1,7 @@
 package com.sep.backend.trip.request;
 
 import com.sep.backend.entity.TripRequestEntity;
-import com.sep.backend.location.Location;
-import com.sep.backend.route.RouteDTO;
+import com.sep.backend.route.Route;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 import lombok.*;
@@ -21,7 +20,7 @@ public class TripRequestDTO {
     private String email;
 
     @Schema(description = "The route of the trip request.", requiredMode = RequiredMode.REQUIRED)
-    private RouteDTO route;
+    private Route route;
 
     @Schema(description = "The type of car requested.", requiredMode = RequiredMode.REQUIRED)
     private String carType;
@@ -37,11 +36,11 @@ public class TripRequestDTO {
 
     public static TripRequestDTO from(TripRequestEntity tripRequestEntity) {
         var dto = new TripRequestDTO();
-        var routeDTO = RouteDTO.from(tripRequestEntity.getRoute());
+        var route = Route.from(tripRequestEntity.getRoute());
 
         dto.setTripRequestId(tripRequestEntity.getId());
         dto.setEmail(tripRequestEntity.getCustomer().getUsername());
-        dto.setRoute(routeDTO);
+        dto.setRoute(route);
         dto.setCarType(tripRequestEntity.getCarType());
         dto.setStatus(tripRequestEntity.getStatus());
         dto.setNote(tripRequestEntity.getNote());

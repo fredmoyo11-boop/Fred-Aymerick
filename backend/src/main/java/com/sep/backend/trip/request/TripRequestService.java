@@ -6,18 +6,18 @@ import com.sep.backend.NotFoundException;
 import com.sep.backend.Roles;
 import com.sep.backend.account.AccountService;
 import com.sep.backend.entity.TripRequestEntity;
-import com.sep.backend.location.Location;
 import com.sep.backend.nominatim.LocationRepository;
-import com.sep.backend.entity.LocationEntity;
 import com.sep.backend.route.RouteService;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+@Slf4j
 @Service
 public class TripRequestService {
 
@@ -86,7 +86,7 @@ public class TripRequestService {
      * @return The trip request entity
      */
     @Transactional
-    public TripRequestEntity createCurrentActiveTripRequest(@Valid TripRequestBody tripRequestBody, Principal principal) throws TripRequestException {
+    public TripRequestEntity createCurrentTripRequest(@Valid TripRequestBody tripRequestBody, Principal principal) throws TripRequestException {
         String email = principal.getName();
 
         String role = accountService.getRoleByEmail(email);
@@ -102,8 +102,11 @@ public class TripRequestService {
         if (existsActiveTripRequest(email)) {
             throw new TripRequestException(ErrorMessages.ALREADY_EXISTS_TRIP_REQUEST);
         }
+
         var customer = accountService.getCustomerByEmail(email);
+        log.debug("Creating route for trip request {}", tripRequestBody.getLocations());
         var routeEntity = routeService.createRoute(tripRequestBody.getGeojson(), tripRequestBody.getLocations());
+        log.debug("Created route for trip request. Locations: {}.", tripRequestBody.getLocations() );
 
         double price = (routeEntity.getGeoJSON().getFeatures().getFirst().getProperties().getSummary().getDistance() / 1000.0)
                 * CarTypes.getPricePerKilometer(tripRequestBody.getCarType());
@@ -134,6 +137,4 @@ public class TripRequestService {
 
         tripRequestRepository.save(tripRequestEntity);
     }
-
-
 }

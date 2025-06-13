@@ -22,7 +22,15 @@ export class TripVisualizerComponent implements OnInit, OnChanges {
 
 
   ngOnInit(): void {
-    this.map = L.map("map").setView([0, 0], 2);
+    this.map = L.map('map',  {
+      zoomControl: false,
+      center: [0, 0],
+      zoom: 2
+    });
+
+    L.control.zoom({
+      position: 'bottomright'
+    }).addTo(this.map)
 
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
@@ -32,12 +40,11 @@ export class TripVisualizerComponent implements OnInit, OnChanges {
     this.routeLayer.addTo(this.map);
     this.animationLayerGroup.addTo(this.map)
 
-
     this.updateMap();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['routeDTO'] && this.route && this.map) {
+    if (changes['route'] && this.route && this.map) {
       console.log("Route dto:", this.route)
       this.updateMap();
     }

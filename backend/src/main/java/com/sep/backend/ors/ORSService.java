@@ -15,14 +15,15 @@ import java.util.List;
 public class ORSService {
 
     @Value("${ors.api_key}")
-    private String ORS_API_KEY;
+    private String orsApiKey; //TODO Move orsApiKey from application.properties to .env
 
-    private final RestClient restClient = RestClient.builder()
-            .baseUrl("https://api.openrouteservice.org")
-            .defaultHeaders(headers -> {
-                headers.add("Authorization", ORS_API_KEY);
-            })
-            .build();
+    private final  RestClient restClient = RestClient.builder()
+                .baseUrl("https://api.openrouteservice.org")
+                .defaultHeaders(headers -> {
+                    headers.add("Authorization", "5b3ce3597851110001cf62489d421454db1e437c8ec6382dd2c7c645");
+                })
+                .build();
+
 
     public ORSFeatureCollection getRouteDirections(List<Coordinate> coordinates) throws ORSException {
         //ORS expects coordinates in the form of [longitude, latitude]
@@ -36,12 +37,11 @@ public class ORSService {
         var routeRequestBody = new RouteRequestBody(stopCoordinates);
         //Makes post request to ORS and gets a string back in form of geojson
         String orsFeatureCollectionString = restClient.post()
-                .uri("v2/directions/driving-car/geojson")
+                .uri("/v2/directions/driving-car/geojson")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(routeRequestBody)
                 .retrieve()
                 .body(String.class);
-
         try {
             //Tries to convert the string into the object ORSFeatureCollection
             return mapper.readValue(orsFeatureCollectionString, ORSFeatureCollection.class);
@@ -50,4 +50,3 @@ public class ORSService {
         }
     }
 }
-

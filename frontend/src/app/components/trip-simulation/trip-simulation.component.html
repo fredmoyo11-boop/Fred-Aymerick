@@ -1,0 +1,26 @@
+<div class="map-container">
+  <app-trip-visualizer [route]="route"
+                       [animationLayerGroup]="animationLayer"></app-trip-visualizer>
+</div>
+
+@if (isLocked) {
+  <p style="font-weight: bold">Animation is currently locked!</p>
+} @else {
+  <div class="control-container">
+    @if (!animationInitialized || animationPaused) {
+      <button mat-icon-button (click)="start()" [disabled]="animationCompleted">
+        <mat-icon>play_arrow</mat-icon>
+      </button>
+    } @else if (!animationPaused) {
+      <button mat-icon-button (click)="stop()" [disabled]="animationCompleted">
+        <mat-icon>pause</mat-icon>
+      </button>
+    }
+
+    <mat-slider min="3" max="30" step="1">
+      <input matSliderThumb [(ngModel)]="sliderDuration" (valueChange)="onSliderChange($event)"
+             [disabled]="animationCompleted">
+    </mat-slider>
+  </div>
+}
+

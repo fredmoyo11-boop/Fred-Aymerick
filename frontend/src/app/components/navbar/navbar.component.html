@@ -4,11 +4,9 @@
     <div class="navbar-btn-container">
       <button [routerLink]="'/home'">Home</button>
       @if (this.role === "CUSTOMER") {
-        <button [routerLink]="'/fahranfrage'">Fahranfrage</button>
-        <button [routerLink]="'/aktiveFahranfrage'">Aktive Fahranfrage</button>
+        <button [routerLink]="'/map'">Karte</button>
       }
       @if (this.role) {
-        <button [routerLink]="'/map'">Karte</button>
         <button [routerLink]="'/social'">Social</button>
       }
 

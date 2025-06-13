@@ -14,16 +14,16 @@ import java.util.List;
 @Service
 public class ORSService {
 
-    @Value("${ors.api_key}")
-    private String orsApiKey; //TODO Move orsApiKey from application.properties to .env
+    private final RestClient restClient;
 
-    private final  RestClient restClient = RestClient.builder()
+    public ORSService(@Value("${ors.api_key}") String orsApiKey) {
+        this.restClient = RestClient.builder()
                 .baseUrl("https://api.openrouteservice.org")
                 .defaultHeaders(headers -> {
-                    headers.add("Authorization", "5b3ce3597851110001cf62489d421454db1e437c8ec6382dd2c7c645");
+                    headers.add("Authorization", orsApiKey);
                 })
                 .build();
-
+    }
 
     public ORSFeatureCollection getRouteDirections(List<Coordinate> coordinates) throws ORSException {
         //ORS expects coordinates in the form of [longitude, latitude]

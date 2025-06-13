@@ -83,6 +83,7 @@ export class TripRequestComponent implements OnInit{
   distance: number = 0
   duration: number = 0
   note: string = ''
+  estimatedPrice: number = 0.0;
 
   form = new FormGroup({
     carType: new FormControl('SMALL'),
@@ -219,6 +220,15 @@ export class TripRequestComponent implements OnInit{
     const summary = this.route.geoJson.features[0].properties.summary
     this.distance = summary?.distance
     this.duration = summary?.duration
+  }
+
+  carPrice(carType: String): number {
+    switch (carType) {
+      case 'SMALL': return 1
+      case 'MEDIUM': return 2
+      case 'DELUXE': return 10
+      default: return 0
+    }
   }
 //-------------------------------Address list
 

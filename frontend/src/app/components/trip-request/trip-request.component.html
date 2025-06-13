@@ -16,7 +16,7 @@
           <section>
             <mat-card-content>
               <mat-list>
-                <mat-list-item *ngFor="let stop of tripRequestDTO.route.stops; index as i" >
+                <mat-list-item *ngFor="let stop of tripRequestDTO.route.stops; index as i">
                   {{i + 1}}. {{ stop.displayName }}
                 </mat-list-item>
               </mat-list>
@@ -87,13 +87,23 @@
 
             <section>
               <mat-card-content class="radio-container">
-                <mat-radio-group aria-label="Wähle ein Auto." formControlName="carType">
+                <mat-radio-group aria-label="Wähle ein Auto." formControlName="carType" (click)="estimatedPrice">
                   <mat-radio-button value="SMALL">Klein</mat-radio-button>
                   <mat-radio-button value="MEDIUM">Mittel</mat-radio-button>
                   <mat-radio-button value="DELUXE">Deluxe</mat-radio-button>
                 </mat-radio-group>
               </mat-card-content>
             </section>
+
+            <mat-divider *ngIf="orsFeatureCollection"></mat-divider>
+
+            <mat-card-content>
+              @if (orsFeatureCollection) {
+                <p>Distanz der Fahrt: {{ orsFeatureCollection.features[0].properties.summary.distance | meterToKm }}</p>
+                <p>Dauer der Fahrt: {{ orsFeatureCollection.features[0].properties.summary.duration | secondsToTime }}</p>
+                <p>Geschätzter Preis: {{ (orsFeatureCollection.features[0].properties.summary.distance /1000) * (carPrice(form.value.carType!))| euro }}</p>
+              }
+            </mat-card-content>
 
             <mat-divider></mat-divider>
 

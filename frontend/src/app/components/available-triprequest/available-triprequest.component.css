@@ -1,0 +1,26 @@
+table {
+  width: 100%;
+}
+
+th.mat-sort-header-sorted {
+  color: black;
+}
+
+.start-address-form-field {
+  width: 500px;
+  height: auto;
+}
+.table-container {
+   margin-top: 20px;
+   overflow: auto;
+   max-height: 500px;
+ }
+.rating-stars mat-icon {
+  font-size: 20px;
+  color: lightgray;
+  vertical-align: middle;
+}
+
+.rating-stars mat-icon.filled {
+  color: gold;
+}

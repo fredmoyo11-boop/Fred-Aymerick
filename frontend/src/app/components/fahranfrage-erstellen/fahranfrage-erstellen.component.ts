@@ -4,16 +4,14 @@ import {
   FormGroup,
   FormControl,
   FormsModule,
-  Validators,
-  AbstractControl,
-  ValidationErrors
+  Validators
 } from '@angular/forms';
 import {MatRadioButton, MatRadioGroup} from '@angular/material/radio';
 import {MatButton, MatIconButton} from '@angular/material/button';
 import {MatFormField, MatInput, MatLabel, MatSuffix} from '@angular/material/input';
 import {MatOption} from '@angular/material/autocomplete';
 import {NgIf} from '@angular/common';
-import {debounceTime, distinctUntilChanged, Observable, tap} from 'rxjs';
+import {debounceTime, distinctUntilChanged, tap} from 'rxjs';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatIcon} from '@angular/material/icon';
 import {RouterLink} from '@angular/router';
@@ -21,10 +19,8 @@ import {Router} from '@angular/router';
 import {MatDialog} from '@angular/material/dialog';
 import {ActiveRideDialogComponent} from '../active-ride-dialog/active-ride-dialog.component';
 import {TripRequestBody, TripRequestService} from '../../../api/sep_drive';
-import {TripRequestDTO, Location} from '../../../api/sep_drive';
+import {Location,TripRequestDTO} from '../../../api/sep_drive';
 import {MatSelect, MatSelectChange} from '@angular/material/select';
-
-
 @Component({
   selector: 'app-fahranfrage-erstellen',
   imports: [
@@ -50,18 +46,18 @@ import {MatSelect, MatSelectChange} from '@angular/material/select';
 })
 export class FahranfrageErstellenComponent implements OnInit {
   tripRequestForm: FormGroup = new FormGroup({
-      startQuery: new FormControl("", [Validators.required]),
-      endQuery: new FormControl("", [Validators.required]),
-      carType: new FormControl('', [Validators.required]),
-      note: new FormControl()
-    }
-    //,{validators: this.noSameStartEndValidator.bind(this)}
+    startQuery: new FormControl("",[Validators.required]),
+    endQuery: new FormControl("", [Validators.required]),
+    carType: new FormControl('',[Validators.required]),
+    note: new FormControl()
+  }
+  //,{validators: this.noSameStartEndValidator.bind(this)}
   );
 
   lat: number | null = null;
   lon: number | null = null;
   error: string | null = null;
-  private activeRequest: TripRequestDTO | null = null;
+  private activeRequest: TripRequestDTO |null = null;
 
   constructor(private router: Router,
               private dialog: MatDialog,
@@ -69,17 +65,16 @@ export class FahranfrageErstellenComponent implements OnInit {
 
   }
 
-  start!: Location;
+  start!:Location;
   startLocations: Location[] = []
 
-  end!: Location;
+  end!:Location;
   endLocations: Location[] = []
 
   // get selected start location
   onStartChange(event: MatSelectChange) {
     this.start = event.value
   }
-
   // get selected end location
   onEndChange(event: MatSelectChange) {
     this.end = event.value
@@ -103,8 +98,7 @@ export class FahranfrageErstellenComponent implements OnInit {
         });
       },
       error: err => {
-        console.error(err)
-      }
+        console.error(err)}
     });
 
     this.tripRequestForm.get("endQuery")!.valueChanges.pipe(
@@ -124,12 +118,10 @@ export class FahranfrageErstellenComponent implements OnInit {
         });
       },
       error: err => {
-        console.error(err)
-      }
+        console.error(err)}
     });
 
   }
-
   // from internet
   currentLocation() {
     if (navigator.geolocation) {
@@ -138,7 +130,7 @@ export class FahranfrageErstellenComponent implements OnInit {
           this.lon = position.coords.longitude;
           console.log(this.lat);
           console.log(this.lon);
-          // stores lng and lat in var startQuery
+          // stores lon and lat in var startQuery
           this.tripRequestForm.get("startQuery")!.setValue(`${this.lat}, ${this.lon}`)
         },
         (err) => {
@@ -149,16 +141,16 @@ export class FahranfrageErstellenComponent implements OnInit {
     }
 
   }
-
   // check if user has an active triprequest and if Locations are different
   checkActiveRide(): void {
     // Start und Ziel dürfen nicht gleich sein
     const sameLocation =
-      this.start == this.end &&
+      this.start.latitude === this.end.latitude &&
+      this.start.longitude === this.end.longitude &&
       this.start.displayName === this.end.displayName;
 
     if (sameLocation) {
-      this.tripRequestForm.setErrors({sameStartEndLocation: true});
+      this.tripRequestForm.setErrors({ sameStartEndLocation: true });
       alert('Start- und Zieladresse dürfen nicht gleich sein.');
       return;
     } else {
@@ -180,7 +172,7 @@ export class FahranfrageErstellenComponent implements OnInit {
         this.activeRequest = response;
         this.dialog.open(ActiveRideDialogComponent, {
           width: '350px',
-          data: {message: 'Du hast bereits eine aktive Fahranfrage. Bitte beende sie zuerst.'}
+          data: { message: 'Du hast bereits eine aktive Fahranfrage. Bitte beende sie zuerst.' }
         });
       },
       error: error => {
@@ -196,30 +188,29 @@ export class FahranfrageErstellenComponent implements OnInit {
   }
 
 
-  submitRideRequest() {
+  submitRideRequest () {
     const form = this.tripRequestForm.value;
-    // const tripRequestBody: TripRequestBody = {
-    //   startLocation: this.start,
-    //   endLocation: this.end,
-    //   carType: form.carType,
-    //   note: form.note || ''
-    // };
+    const tripRequestBody: TripRequestBody = {
+      startLocation: this.start,
+      endLocation: this.end,
+      desiredCarType: form.carType,
+      note: form.note || ''
+    };
 
 
-    // this.tripService.createCurrentActiveTripRequest(tripRequestBody).subscribe({
-    //   next: (response) => {
-    //     console.log('Fahrt erfolgreich erstellt!', response);
-    //     alert('Fahrt wurde erfolgreich erstellt!');
-    //     this.resetForm();
-    //     this.router.navigate(['/aktiveFahranfrage']);
-    //   },
-    //   error: err => {
-    //     console.error('Fehler beim Erstellen:', err);
-    //     alert('Fehler beim Erstellen der Fahrt.');
-    //   }
-    // });
+    this.tripService.createCurrentActiveTripRequest(tripRequestBody).subscribe({
+      next: (response) => {
+        console.log('Fahrt erfolgreich erstellt!',response);
+        alert('Fahrt wurde erfolgreich erstellt!');
+        this.resetForm();
+        this.router.navigate(['/aktiveFahranfrage']);
+      },
+      error: err => {
+        console.error('Fehler beim Erstellen:', err);
+        alert('Fehler beim Erstellen der Fahrt.');
+      }
+    });
   }
-
   // rests form after creation of a trip request
   resetForm(): void {
     this.tripRequestForm.reset();

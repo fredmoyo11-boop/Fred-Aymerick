@@ -6,11 +6,12 @@ import {StandardLayoutComponent} from './layouts/standard-layout/standard-layout
 import {HomeComponent} from './components/home/home.component';
 import {FahranfrageErstellenComponent} from './components/fahranfrage-erstellen/fahranfrage-erstellen.component';
 import {AktiveFahranfrageComponent} from './components/aktive-fahranfrage/aktive-fahranfrage.component';
+import {MapComponent} from './components/map/map.component';
 import {authGuard} from './guards/auth.guard';
 import {ProfileComponent} from './components/profile/profile.component';
 import {ProfileSearchComponent} from './components/profile-search/profile-search.component';
-import {BalanceComponent} from './components/balance/balance.component';
-import {TripRequestComponent} from './components/trip-request/trip-request.component';
+import {AvailableTriprequestComponent} from './components/available-triprequest/available-triprequest.component';
+import {TripHistoryComponent} from './components/trip-history/trip-history.component';
 
 export const routes: Routes = [
   {path: "register", component: RegisterComponent},
@@ -24,11 +25,29 @@ export const routes: Routes = [
     path: "", component: StandardLayoutComponent, children: [
       {path: "", component: HomeComponent},
       {
-        path: "map",
-        component: TripRequestComponent,
+        path: "fahranfrage",
+        component: FahranfrageErstellenComponent,
         canActivate: [authGuard],
         data: {roles: ["CUSTOMER"]}
       },
+      {
+        path: "aktiveFahranfrage",
+        component: AktiveFahranfrageComponent,
+        canActivate: [authGuard],
+        data: {roles: ["CUSTOMER"]}
+      },
+      {
+        path: "available-triprequest",
+        component: AvailableTriprequestComponent,
+        canActivate: [authGuard],
+        data: {roles: ["DRIVER"]}
+      },
+      {path: "trip-history",
+        component: TripHistoryComponent,
+        canActivate: [authGuard],
+        data: {roles: ["DRIVER","CUSTOMER"]}
+      },
+      {path: "map", component: MapComponent, canActivate: [authGuard], data: {roles: ["CUSTOMER", "DRIVER"]}},
       {
         path: "social",
         component: ProfileSearchComponent,
@@ -38,12 +57,6 @@ export const routes: Routes = [
       {
         path: "profile/:username",
         component: ProfileComponent,
-        canActivate: [authGuard],
-        data: {roles: ["CUSTOMER", "DRIVER"]}
-      },
-      {
-        path: "balance/:username",
-        component: BalanceComponent,
         canActivate: [authGuard],
         data: {roles: ["CUSTOMER", "DRIVER"]}
       }

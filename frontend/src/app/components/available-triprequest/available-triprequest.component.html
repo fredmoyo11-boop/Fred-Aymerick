@@ -1,0 +1,129 @@
+<form [formGroup]="locationForm" (ngSubmit)="onSave()">
+  <mat-form-field class="start-address-form-field">
+    <mat-label>Startadresse/Startkoordinaten(lat,lng) eingeben</mat-label>
+    <input type="text"
+           matInput
+           formControlName="startQuery">
+    <button matTooltip="Aktuelle Position suchen" type="button" mat-icon-button matSuffix
+            (click)="currentLocation()">
+      <mat-icon>my_location</mat-icon>
+    </button>
+    <br>
+    <mat-select [(value)]="start" (selectionChange)="onStartChange($event)">
+      @for (location of startLocations; track idx; let idx = $index) {
+        <mat-option [value]="location">{{ location.displayName }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  <div class="save_button">
+    <button mat-align-tabs="end" type="submit" mat-raised-button [disabled]="!locationForm.valid  || !start">
+      Speichern
+    </button>
+  </div>
+
+</form>
+
+
+<div class ='table-container' *ngIf="showTable">
+  <table mat-table [dataSource]="dataSource" matSort>
+
+    <!-- trip_id Column -->
+    <ng-container matColumnDef="requestId">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by requestId">
+        Fahrt-ID
+      </th>
+      <td mat-cell *matCellDef="let row"> {{ row.requestId }}</td>
+    </ng-container>
+
+    <!-- date Column -->
+    <ng-container matColumnDef="requestTime">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by requestTime">
+        Datum/Uhrzeit
+      </th>
+      <td mat-cell *matCellDef="let row"> {{ row.requestTime | date:'dd.MM.yyyy HH:mm'  }}</td>
+    </ng-container>
+
+    <!-- distance Column -->
+    <ng-container matColumnDef="distanceInKm">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by distanceInKm">
+        Entfernung <br>(Km)
+      </th>
+      <td mat-cell *matCellDef="let row"> {{ row.distanceInKm }}</td>
+    </ng-container>
+
+    <!-- customerName Column -->
+    <ng-container matColumnDef="customerUsername">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by customerUsername">
+        Kundenname
+      </th>
+      <td mat-cell *matCellDef="let row"> {{ row.customerUsername }}</td>
+    </ng-container>
+
+    <!-- customerEvaluation Column -->
+    <ng-container matColumnDef="customerRating">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by customerRating">
+        Kundenbewertung
+      </th>
+<!--      <td mat-cell *matCellDef="let row"> {{ row.customerRating }}</td>-->
+      <td mat-cell *matCellDef="let row">
+        <div class="rating-stars">
+        <ng-container *ngFor="let star of getStars(row.customerRating); let i = index">
+          <mat-icon [ngClass]="{'filled': i < row.customerRating}">star</mat-icon>
+        </ng-container>
+        </div>
+      </td>
+
+    </ng-container>
+
+    <!-- desiredCartype Column -->
+    <ng-container matColumnDef="desiredCarType">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by desiredCarType">
+        Gewünschte <br>Fahrzeugklasse
+      </th>
+      <td mat-cell *matCellDef="let row"> {{ row.desiredCarType }}</td>
+    </ng-container>
+
+    <!-- totalDistanceInKm Column -->
+    <ng-container matColumnDef="totalDistanceInKm">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by totalDistanceInKm">
+        Gesamtdistanz <br>(Km)
+      </th>
+      <td mat-cell *matCellDef="let row"> {{ row.totalDistanceInKm }}</td>
+    </ng-container>
+
+    <!-- duration Column -->
+    <ng-container matColumnDef="duration">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by duration">
+        Gesamtdauer <br>(min)
+      </th>
+      <td mat-cell *matCellDef="let row"> {{ row.duration }}</td>
+    </ng-container>
+
+    <!-- preis Column -->
+    <ng-container matColumnDef="price">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by price">
+        Preis <br>(€)
+      </th>
+      <td mat-cell *matCellDef="let row"> {{ row.price }}</td>
+    </ng-container>
+
+    <!-- acceptTrip Column -->
+    <ng-container matColumnDef="acceptTrip">
+      <th mat-header-cell *matHeaderCellDef> Aktion </th>
+      <td mat-cell *matCellDef="let row">
+        <button mat-button color="accent" (click)="acceptTrip()">Annehmen</button>
+      </td>
+    </ng-container>
+
+
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+</div>
+
+<div *ngIf="!showTable">
+  <p>Keine Daten verfügbar</p>
+</div>
+

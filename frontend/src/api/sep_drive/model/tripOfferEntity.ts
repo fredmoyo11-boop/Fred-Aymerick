@@ -9,19 +9,25 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { DriverEntity } from './driverEntity';
+import { TripRequestEntity } from './tripRequestEntity';
 
 
-/**
- * Represents a GeoJSON Geometry as standardized by RFC 7946.
- */
-export interface NominatimGeometry { 
+export interface TripOfferEntity { 
     /**
-     * The geometry type.
+     * The id of the entity.
      */
-    type: string;
+    id: number;
     /**
-     * The coordinates of the geometry.
+     * The creation time of the entity.
      */
-    coordinates: Array<number>;
+    creationTime: number;
+    /**
+     * The modification time of the entity.
+     */
+    modificationTime: number;
+    tripRequest?: TripRequestEntity;
+    driver?: DriverEntity;
+    status?: string;
 }
 

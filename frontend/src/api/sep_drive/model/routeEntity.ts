@@ -9,26 +9,25 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { NominatimFeature } from './nominatimFeature';
+import { LocationEntity } from './locationEntity';
+import { TripRequestEntity } from './tripRequestEntity';
 
 
-export interface Location { 
+export interface RouteEntity { 
     /**
-     * The id of the location. Might be null if location does not have related entity.
+     * The id of the entity.
      */
-    locationId?: number;
+    id: number;
     /**
-     * The longitude of the location.
+     * The creation time of the entity.
      */
-    longitude: number;
+    creationTime: number;
     /**
-     * The latitude of the location.
+     * The modification time of the entity.
      */
-    latitude: number;
-    /**
-     * The display name of the location.
-     */
-    displayName: string;
-    geoJSON: NominatimFeature;
+    modificationTime: number;
+    stops?: Array<LocationEntity>;
+    tripRequest?: TripRequestEntity;
+    geoJSON?: object;
 }
 

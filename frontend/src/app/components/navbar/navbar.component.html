@@ -8,6 +8,9 @@
       }
       @if (this.role) {
         <button [routerLink]="'/social'">Social</button>
+        <button [routerLink]="['/balance', accountInformation?.username]">Konto</button>
+
+
       }
 
     </div>

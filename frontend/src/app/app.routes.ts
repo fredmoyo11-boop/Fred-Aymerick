@@ -4,13 +4,13 @@ import {VerifyEmailComponent} from './components/verify-email/verify-email.compo
 import {LoginComponent} from './components/login/login.component';
 import {StandardLayoutComponent} from './layouts/standard-layout/standard-layout.component';
 import {HomeComponent} from './components/home/home.component';
+import {FahranfrageErstellenComponent} from './components/fahranfrage-erstellen/fahranfrage-erstellen.component';
+import {AktiveFahranfrageComponent} from './components/aktive-fahranfrage/aktive-fahranfrage.component';
+import {MapComponent} from './components/map/map.component';
 import {authGuard} from './guards/auth.guard';
 import {ProfileComponent} from './components/profile/profile.component';
 import {ProfileSearchComponent} from './components/profile-search/profile-search.component';
-import {TripOfferComponent} from './components/trip-offer/trip-offer.component';
-import {tripOfferResolver} from './resolvers/trip-offer.resolver';
-import {TripRequestComponent} from './components/trip-request/trip-request.component';
-
+import {BalanceComponent} from './components/balance/balance.component';
 
 export const routes: Routes = [
   {path: "register", component: RegisterComponent},
@@ -24,11 +24,18 @@ export const routes: Routes = [
     path: "", component: StandardLayoutComponent, children: [
       {path: "", component: HomeComponent},
       {
-        path: "map",
-        component: TripRequestComponent,
+        path: "fahranfrage",
+        component: FahranfrageErstellenComponent,
         canActivate: [authGuard],
         data: {roles: ["CUSTOMER"]}
       },
+      {
+        path: "aktiveFahranfrage",
+        component: AktiveFahranfrageComponent,
+        canActivate: [authGuard],
+        data: {roles: ["CUSTOMER"]}
+      },
+      {path: "map", component: MapComponent, canActivate: [authGuard], data: {roles: ["CUSTOMER", "DRIVER"]}},
       {
         path: "social",
         component: ProfileSearchComponent,
@@ -42,11 +49,10 @@ export const routes: Routes = [
         data: {roles: ["CUSTOMER", "DRIVER"]}
       },
       {
-        path: "offer/:id",
-        component: TripOfferComponent,
-        resolve: {
-          tripOffer: tripOfferResolver
-        }
+        path: "balance/:username",
+        component: BalanceComponent,
+        canActivate: [authGuard],
+        data: {roles: ["CUSTOMER", "DRIVER"]}
       }
     ]
   },

@@ -135,6 +135,19 @@ public class AccountService {
         };
     }
 
+    public void saveCustomer(CustomerEntity entity) {
+
+        customerRepository.save(entity);
+        log.debug("Customer saved successfully");
+
+    }
+
+    public void saveDriver(DriverEntity entity) {
+
+        driverRepository.save(entity);
+        log.debug("Driver saved successfully");
+    }
+
     /**
      * Returns an optional containing email belonging to the provided unique identifier.
      *
@@ -314,6 +327,7 @@ public class AccountService {
         customerDTO.setLastName(customerEntity.getLastName());
         customerDTO.setTotalNumberOfRides(5);
         customerDTO.setProfilePictureUrl(customerEntity.getProfilePictureUrl());
+        customerDTO.setBalance(customerEntity.getBalance());
         return customerDTO;
     }
 
@@ -416,6 +430,7 @@ public class AccountService {
             account.setBirthday(data.getBirthday());
             account.setVerified(false);
             account.setProfilePictureUrl(profilePictureUrl);
+            account.setBalance(0.0);
             return account;
         } catch (Exception e) {
             throw new RuntimeException("Failed to create account entity of type " + clazz.getName(), e);

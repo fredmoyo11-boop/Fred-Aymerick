@@ -1,22 +1,40 @@
 package com.sep.backend.nominatim;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sep.backend.ErrorMessages;
+import com.sep.backend.entity.LocationEntity;
 import com.sep.backend.location.Location;
 import com.sep.backend.nominatim.data.NominatimFeatureCollection;
+import com.sep.backend.ors.data.ORSFeatureCollection;
+import com.sep.backend.trip.request.ORSRequestException;
 import jakarta.validation.constraints.NotBlank;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class NominatimService {
 
-    private final ObjectMapper mapper = new ObjectMapper();
+    private static final Logger log = LoggerFactory.getLogger(NominatimService.class);
+    private final ObjectMapper mapper;
+    private final RestClient restClient;
 
-    private final RestClient restClient = RestClient.builder()
-            .baseUrl("https://nominatim.openstreetmap.org")
-            .build();
+    public NominatimService( ObjectMapper mapper) {
+
+
+        this.mapper = mapper;
+
+
+        this.restClient = RestClient.builder()
+                .baseUrl("https://nominatim.openstreetmap.org")
+                .build();
+    }
 
     /**
      * Returns a NominatimFeatureCollection containing locations based on the given query.
@@ -66,5 +84,8 @@ public class NominatimService {
             throw new RuntimeException(e);
         }
     }
+
+
+
 
 }

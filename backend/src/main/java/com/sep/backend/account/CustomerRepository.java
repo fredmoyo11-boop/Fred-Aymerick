@@ -20,4 +20,5 @@ public interface CustomerRepository extends JpaRepository<CustomerEntity, Long> 
     boolean existsByUsernameIgnoreCase(@NotBlank String username);
 
     List<CustomerEntity> findByUsernameContainingIgnoreCase(@NotNull String part);
+
 }

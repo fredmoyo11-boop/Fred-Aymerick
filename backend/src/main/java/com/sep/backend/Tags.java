@@ -20,6 +20,8 @@ public class Tags {
 
     public static final String NOTIFICATION = "Notification";
 
+    public static final String TRIP_History = "TRIP_History";
+
 
     public Tags() {
         throw new UnsupportedOperationException("Tags cannot be instantiated");

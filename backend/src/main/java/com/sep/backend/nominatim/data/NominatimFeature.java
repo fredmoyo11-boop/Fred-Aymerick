@@ -15,6 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Schema(description = "Represents a GeoJSON Feature as standardized by RFC 7946.")
+
 public class NominatimFeature {
 
     @NotNull

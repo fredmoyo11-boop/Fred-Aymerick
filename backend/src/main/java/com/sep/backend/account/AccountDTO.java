@@ -1,6 +1,5 @@
 package com.sep.backend.account;
 
-import com.sep.backend.entity.Rating;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -49,7 +48,7 @@ public class AccountDTO {
 
     @NotNull
     @Schema(description = "List of ratings associated with this account .",requiredMode = Schema.RequiredMode.REQUIRED)
-    private List<Rating> ratings;
+    private Double ratings;
 
     @NotNull
     @Schema(description = "The total number of rides the account holder has taken.",requiredMode = Schema.RequiredMode.REQUIRED)

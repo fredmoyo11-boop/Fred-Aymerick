@@ -9,7 +9,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Range;
-
 import java.time.LocalDateTime;
 
 @Getter
@@ -18,7 +17,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Entity
 public class TripHistoryEntity extends AbstractEntity {
-
     // every trip offer has exactly one trip history
     @Column(name = "trip_id", nullable = false, unique = true)
     // treating the trip offer id as the trip id, because trip offer happened
@@ -51,4 +49,5 @@ public class TripHistoryEntity extends AbstractEntity {
     @ManyToOne
     @JoinColumn(name = "customer_id", nullable = false)
     private CustomerEntity customer;
+
 }

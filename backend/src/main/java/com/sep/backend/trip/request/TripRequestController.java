@@ -1,7 +1,7 @@
 package com.sep.backend.trip.request;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sep.backend.HttpStatus;
-import com.sep.backend.NotFoundException;
 import com.sep.backend.Tags;
 import com.sep.backend.location.Location;
 import com.sep.backend.nominatim.NominatimService;
@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -54,8 +55,8 @@ public class TripRequestController {
             tags = {Tags.TRIP_REQUEST},
             responses = {@ApiResponse(responseCode = HttpStatus.OK, description = "Trip request created successfully.",
                     content = @Content(schema = @Schema(implementation = TripRequestDTO.class)))})
-    public TripRequestDTO createCurrentTripRequest(@RequestBody TripRequestBody tripRequestBody, Principal principal) throws TripRequestException {
-        return TripRequestDTO.from(tripRequestService.createCurrentTripRequest(tripRequestBody, principal));
+    public TripRequestDTO createCurrentActiveTripRequest(@RequestBody @Valid TripRequestBody tripRequestBody, Principal principal)  {
+        return TripRequestDTO.from(tripRequestService.createCurrentActiveTripRequest(tripRequestBody, principal));
     }
 
     @DeleteMapping("/current")
@@ -65,8 +66,27 @@ public class TripRequestController {
                     @ApiResponse(responseCode = HttpStatus.OK, description = "Active trip request deleted successfully."),
                     @ApiResponse(responseCode = HttpStatus.NOT_FOUND, description = "Active trip request does not exist for current customer."),
             })
-    public void deleteCurrentActiveTripRequest(Principal principal) throws NotFoundException {
+    public void deleteCurrentActiveTripRequest(Principal principal) {
         tripRequestService.deleteCurrentActiveTripRequest(principal);
     }
+
+
+    @Operation(
+            summary = "Verfügbare Fahranfragen abrufen",
+            tags = {Tags.TRIP_REQUEST},
+            description = "Gibt eine Liste aller offenen Fahranfragen zurück.",
+            responses = {@ApiResponse(responseCode = HttpStatus.OK, description = "Liste verfügbarer Fahranfragen",
+                    content = @Content(mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = AvailableTripRequestDTO.class))))})
+    @PostMapping("/available")
+    public ResponseEntity<List<AvailableTripRequestDTO>> getAvailableRequests(@RequestBody @Valid Location driverLocation) {
+//            @RequestParam(defaultValue = "distanceInKm") String sort,
+//            @RequestParam(defaultValue = "asc") String direction)
+
+        return ResponseEntity.ok(tripRequestService.getAvailableRequests(driverLocation));
+    }
+
+
+
 
 }

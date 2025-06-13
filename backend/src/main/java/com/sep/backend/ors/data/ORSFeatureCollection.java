@@ -20,7 +20,6 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Schema(description = "Represents the GeoJSON FeatureCollection.")
 public class ORSFeatureCollection {
-
     @JsonProperty("type")
     @Schema(description = "The feature collection type.", requiredMode = Schema.RequiredMode.REQUIRED, allowableValues = {"Point", "MultiPoint", "LineString", "MultiLineString", "Polygon", "MultiPolygon", "GeometryCollection", "Feature", "FeatureCollection"})
     private String type;

@@ -5,33 +5,37 @@ import com.sep.backend.ErrorMessages;
 import com.sep.backend.NotFoundException;
 import com.sep.backend.Roles;
 import com.sep.backend.account.AccountService;
-import com.sep.backend.entity.TripRequestEntity;
-import com.sep.backend.nominatim.LocationRepository;
+import com.sep.backend.entity.*;
+import com.sep.backend.location.Location;
+import com.sep.backend.ors.ORSService;
+import com.sep.backend.ors.data.ORSFeatureCollection;
+import com.sep.backend.route.Coordinate;
 import com.sep.backend.route.RouteService;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
-@Slf4j
 @Service
 public class TripRequestService {
 
     private final TripRequestRepository tripRequestRepository;
-    private final LocationRepository locationRepository;
 
     private final AccountService accountService;
     private final RouteService routeService;
+    private final ORSService orsService;
+    private final TripHistoryRepository tripHistoryRepository;
 
-    public TripRequestService(TripRequestRepository tripRequestRepository, LocationRepository locationRepository, AccountService accountService, RouteService routeService) {
+    public TripRequestService(TripRequestRepository tripRequestRepository, AccountService accountService, RouteService routeService, ORSService orsService1, TripHistoryRepository tripHistoryRepository) {
         this.tripRequestRepository = tripRequestRepository;
-        this.locationRepository = locationRepository;
         this.accountService = accountService;
         this.routeService = routeService;
+        this.orsService = orsService1;
+        this.tripHistoryRepository = tripHistoryRepository;
     }
 
     /**
@@ -47,7 +51,7 @@ public class TripRequestService {
     /**
      * Returns the trip request entity by email and status.
      *
-     * @param email The email to find the trip request entity.
+     * @param email         The email to find the trip request entity.
      * @param requestStatus The status of the trip request entity.
      * @return The optional containing the trip request entity.
      */
@@ -82,11 +86,11 @@ public class TripRequestService {
      * Creates a trip request.
      *
      * @param tripRequestBody The main body containing trip request information.
-     * @param principal The user.
+     * @param principal       The user.
      * @return The trip request entity
      */
     @Transactional
-    public TripRequestEntity createCurrentTripRequest(@Valid TripRequestBody tripRequestBody, Principal principal) throws TripRequestException {
+    public TripRequestEntity createCurrentActiveTripRequest(@Valid TripRequestBody tripRequestBody, Principal principal) throws TripRequestException {
         String email = principal.getName();
 
         String role = accountService.getRoleByEmail(email);
@@ -102,11 +106,8 @@ public class TripRequestService {
         if (existsActiveTripRequest(email)) {
             throw new TripRequestException(ErrorMessages.ALREADY_EXISTS_TRIP_REQUEST);
         }
-
         var customer = accountService.getCustomerByEmail(email);
-        log.debug("Creating route for trip request {}", tripRequestBody.getLocations());
         var routeEntity = routeService.createRoute(tripRequestBody.getGeojson(), tripRequestBody.getLocations());
-        log.debug("Created route for trip request. Locations: {}.", tripRequestBody.getLocations() );
 
         double price = (routeEntity.getGeoJSON().getFeatures().getFirst().getProperties().getSummary().getDistance() / 1000.0)
                 * CarTypes.getPricePerKilometer(tripRequestBody.getCarType());
@@ -123,6 +124,11 @@ public class TripRequestService {
         return tripRequestRepository.save(tripRequestEntity);
     }
 
+
+    private double getDistance(ORSFeatureCollection geoJSON) {
+        return geoJSON.getFeatures().getFirst().getProperties().getSummary().getDistance();
+    }
+
     /**
      * Deletes the current active trip request.
      *
@@ -133,8 +139,71 @@ public class TripRequestService {
         String email = principal.getName();
         TripRequestEntity tripRequestEntity = findActiveTripRequestByEmail(email)
                 .orElseThrow(() -> new NotFoundException("Current customer does not have an active trip request."));
-       tripRequestEntity.setStatus(TripRequestStatus.DELETED);
+        tripRequestEntity.setStatus(TripRequestStatus.DELETED);
 
         tripRequestRepository.save(tripRequestEntity);
+    }
+
+    @Transactional
+    public List<AvailableTripRequestDTO> getAvailableRequests(@Valid Location driverLocation) {
+
+        List<TripRequestEntity> activeRequests = tripRequestRepository.findByStatus(TripRequestStatus.ACTIVE);
+
+        if (activeRequests == null || activeRequests.isEmpty()) {
+            throw new TripRequestException("keine Aktive Fahranfrage Verfügbar ");
+        }
+
+        return activeRequests.stream().map(activeRequest -> {
+
+            List<LocationEntity> stops = activeRequest.getRoute().getStops();
+
+            if (stops.isEmpty()) {
+
+                throw new TripRequestException("Route enthält keine Stopps.");
+            }
+
+            LocationEntity tripStart = activeRequest
+                    .getRoute()
+                    .getStops()
+                    .getFirst();
+
+
+            double distanceToTripStart = orsService.getRouteDirections(List.of(Coordinate.from(driverLocation), Coordinate.from(tripStart)))
+                    .getFeatures()
+                    .getFirst()
+                    .getProperties()
+                    .getSegments()
+                    .getFirst()
+                    .getDistance() / 1000.0;
+
+            double tripDuration = activeRequest
+                    .getRoute()
+                    .getGeoJSON()
+                    .getFeatures()
+                    .getFirst()
+                    .getProperties()
+                    .getSummary()
+                    .getDuration();
+
+            CustomerEntity customer = activeRequest.getCustomer();
+
+            double avgRating = tripHistoryRepository.findByCustomer(customer).stream()
+                    .mapToInt(TripHistoryEntity::getCustomerRating)
+                    .average()
+                    .orElse(0.0);
+
+            return new AvailableTripRequestDTO(
+                    activeRequest.getId(),
+                    activeRequest.getRequestTime(),
+                    customer.getUsername(),
+                    avgRating,
+                    activeRequest.getCarType(),
+                    distanceToTripStart,
+                    getDistance(activeRequest.getRoute().getGeoJSON()),
+                    activeRequest.getPrice(),
+                    tripDuration
+            );
+        }).toList();
+
     }
 }

@@ -49,6 +49,7 @@ model/simulationAction.ts
 model/simulationActionParameters.ts
 model/stringResponse.ts
 model/tripOffer.ts
+model/tripOfferResponse.ts
 model/tripRequest.ts
 model/tripRequestBody.ts
 model/tripRequestDTO.ts

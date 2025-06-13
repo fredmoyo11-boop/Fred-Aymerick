@@ -1,0 +1,50 @@
+<h2>Angebote für deine Fahranfrage</h2>
+
+<mat-table [dataSource]="dataSource" matSort>
+
+
+  <ng-container matColumnDef="firstName">
+    <mat-header-cell *matHeaderCellDef> Vorname </mat-header-cell>
+    <mat-cell *matCellDef="let offer"> {{ offer.firstName }} </mat-cell>
+  </ng-container>
+
+  <ng-container matColumnDef="lastName">
+    <mat-header-cell *matHeaderCellDef> Nachname </mat-header-cell>
+    <mat-cell *matCellDef="let offer"> {{ offer.lastName }} </mat-cell>
+  </ng-container>
+
+  <ng-container matColumnDef="username">
+    <mat-header-cell *matHeaderCellDef> Benutzername </mat-header-cell>
+    <mat-cell *matCellDef="let offer"> {{ offer.username }} </mat-cell>
+  </ng-container>
+
+
+  <ng-container matColumnDef="rating">
+    <mat-header-cell *matHeaderCellDef mat-sort-header> Bewertung </mat-header-cell>
+    <mat-cell *matCellDef="let offer"> {{ offer.rating ?? 'Keine Bewertung' }} </mat-cell>
+  </ng-container>
+
+
+  <ng-container matColumnDef="totalDriveCount">
+    <mat-header-cell *matHeaderCellDef mat-sort-header> Fahrten </mat-header-cell>
+    <mat-cell *matCellDef="let offer"> {{ offer.totalDriveCount }} </mat-cell>
+  </ng-container>
+
+
+  <ng-container matColumnDef="driveDistance">
+    <mat-header-cell *matHeaderCellDef mat-sort-header> Distanz </mat-header-cell>
+    <mat-cell *matCellDef="let offer"> {{ offer.driveDistance }} km </mat-cell>
+  </ng-container>
+
+
+  <ng-container matColumnDef="actions">
+    <mat-header-cell *matHeaderCellDef> Aktionen </mat-header-cell>
+    <mat-cell *matCellDef="let offer">
+      <button mat-raised-button color="primary" (click)="acceptOffer(offer.username)">Annehmen</button>
+      <button mat-raised-button color="warn" (click)="declineOffer(offer.username)">Ablehnen</button>
+    </mat-cell>
+  </ng-container>
+
+  <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+  <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+</mat-table>

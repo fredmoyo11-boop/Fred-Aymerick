@@ -12,7 +12,7 @@ public class Tags {
 
     public static final String TRIP_SIMULATION = "Trip Simulation";
 
-    public static final String TRIP_OFFER = "Trip Offer";
+    public static final String TRIP_OFFER =  "Trip_Offer";
 
     public static final String NOMINATIM = "Nominatim";
 

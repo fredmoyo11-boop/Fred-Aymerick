@@ -5,6 +5,8 @@ public class TripRequestStatus {
 
     public static final String DELETED = "DELETED"; //When trip request deleted
 
+    public static final String COMPLETED = "COMPLETED";
+
     public TripRequestStatus() {
         throw new UnsupportedOperationException("Cannot instantiate RequestStatus.");
     }

@@ -14,14 +14,14 @@ import { DriverStatistics } from './driverStatistics';
 
 export interface TripOffer { 
     /**
-     * The if of the trip offer.
+     * The id of the trip offer.
      */
     id: number;
     tripRequest: TripRequest;
     driver: Account;
     driverStatistics: DriverStatistics;
     /**
-     * The status of the trip offer. Either PENDING, ACCEPTED, REJECTED or COMPLETED.
+     * The status of the trip offer. Either PENDING, ACCEPTED, DECLINED, WITHDRAWN or COMPLETED.
      */
     status: string;
 }

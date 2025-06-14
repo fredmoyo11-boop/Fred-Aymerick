@@ -70,10 +70,20 @@
   gap: 8px;
 }
 
-
 .location-box.selected {
   border-color: #3f51b5;
   background-color: #97c4ec;
+}
+
+.finalLocation-box {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 12px;
+  margin: 8px 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .display-name {
@@ -85,6 +95,21 @@
   display: flex;
   justify-content: center;
   padding-top: 1rem;
+}
+
+.delete-button {
+  background-color: #d32f2f !important;
+  color: white !important;
+}
+.delete-button:hover {
+  background-color: #b71c1c;
+}
+
+.confirm-button {
+  width: 120px;
+  margin: 16px auto 16px auto;
+  display: inline-block;
+
 }
 
 .center-title {

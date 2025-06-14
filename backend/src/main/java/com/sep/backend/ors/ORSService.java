@@ -25,6 +25,13 @@ public class ORSService {
                 .build();
     }
 
+    /**
+     * Returns a ORSFeatureCollection containing the route created by OpenRouteService
+     *
+     * @param coordinates The coordinates of each location in route in order. Uses lon, lat.
+     * @return The ORSFeatureCollection containing route
+     * @throws ORSException When error during creation of GeoJSON
+     */
     public ORSFeatureCollection getRouteDirections(List<Coordinate> coordinates) throws ORSException {
         //ORS expects coordinates in the form of [longitude, latitude]
         ObjectMapper mapper = new ObjectMapper();

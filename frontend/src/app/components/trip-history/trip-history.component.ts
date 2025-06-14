@@ -7,6 +7,10 @@ import {NgClass, NgForOf, NgIf} from "@angular/common";
 import {MatIcon} from '@angular/material/icon';
 import {TripHistoryDTO, TripHistoryService, TripRequestService} from '../../../api/sep_drive';
 import {MatTableModule} from '@angular/material/table';
+import {MeterToKmPipe} from '../../pipes/meter-to-km.pipe';
+import {SecondsToTimePipe} from '../../pipes/seconds-to-time.pipe';
+import {EuroPipe} from '../../pipes/euro.pipe';
+import {Router} from '@angular/router';
 
 
 @Component({
@@ -24,6 +28,9 @@ import {MatTableModule} from '@angular/material/table';
     NgClass,
     MatIcon,
     MatTableModule,
+    MeterToKmPipe,
+    SecondsToTimePipe,
+    EuroPipe,
   ],
   templateUrl: './trip-history.component.html',
   styleUrl: './trip-history.component.css'
@@ -35,7 +42,7 @@ export class TripHistoryComponent implements OnInit, AfterViewInit {
   @ViewChild(MatSort) sort!: MatSort;
   showTable: boolean = false;
 
-  constructor(private tripService: TripRequestService, private tripHistoryService: TripHistoryService) {
+  constructor(private tripService: TripRequestService, private tripHistoryService: TripHistoryService, private router: Router) {
   }
 
   ngOnInit(): void {
@@ -79,4 +86,7 @@ export class TripHistoryComponent implements OnInit, AfterViewInit {
     return Array(5).fill(0).map((x, i) => i);
   }
 
+  navigateToProfile(username: string) {
+    this.router.navigate(["/profile", username])
+  }
 }

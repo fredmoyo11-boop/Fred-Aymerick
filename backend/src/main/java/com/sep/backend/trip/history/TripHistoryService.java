@@ -5,6 +5,7 @@ import com.sep.backend.NotFoundException;
 import com.sep.backend.Roles;
 import com.sep.backend.account.AccountService;
 import com.sep.backend.entity.*;
+import com.sep.backend.trip.offer.TripOfferService;
 import com.sep.backend.trip.request.TripRequestException;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
@@ -18,10 +19,12 @@ import java.util.Optional;
 public class TripHistoryService {
     private final TripHistoryRepository tripHistoryRepository;
     private final AccountService accountService;
+    private final TripOfferService tripOfferService;
 
-    public TripHistoryService(TripHistoryRepository tripHistoryRepository, AccountService accountService) {
+    public TripHistoryService(TripHistoryRepository tripHistoryRepository, AccountService accountService, TripOfferService tripOfferService) {
         this.tripHistoryRepository = tripHistoryRepository;
         this.accountService = accountService;
+        this.tripOfferService = tripOfferService;
     }
 
     /**
@@ -56,9 +59,19 @@ public class TripHistoryService {
      * @throws NotFoundException If no trip offer with specified id exists.
      */
     public TripHistoryEntity createTripHistory(Long tripOfferId, LocalDateTime endTime, Integer driverRating, Integer customerRating) throws NotFoundException {
+        var tripOfferEntity = tripOfferService.getTripOffer(tripOfferId);
+
         var tripHistoryEntity = new TripHistoryEntity();
-        // TODO: Implement
-        return save(tripHistoryEntity);
+        tripHistoryEntity.setTripOfferId(tripOfferId);
+        tripHistoryEntity.setEndTime(endTime);
+        tripHistoryEntity.setDistance(tripOfferEntity.getTripRequest().getRoute().getGeoJSON().getFeatures().getFirst().getProperties().getSummary().getDistance());
+        tripHistoryEntity.setDuration((int) tripOfferEntity.getTripRequest().getRoute().getGeoJSON().getFeatures().getFirst().getProperties().getSummary().getDuration());
+        tripHistoryEntity.setPrice(tripOfferEntity.getTripRequest().getPrice());
+        tripHistoryEntity.setDriverRating(driverRating);
+        tripHistoryEntity.setCustomerRating(customerRating);
+        tripHistoryEntity.setCustomer(tripOfferEntity.getTripRequest().getCustomer());
+        tripHistoryEntity.setDriver(tripOfferEntity.getDriver());
+        return tripHistoryRepository.save(tripHistoryEntity);
     }
 
     public TripHistoryEntity saveTripHistory(TripOfferEntity offer, double distance, int duration, int driverRating, int customerRating) {

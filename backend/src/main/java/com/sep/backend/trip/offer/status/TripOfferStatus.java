@@ -5,11 +5,12 @@ public class TripOfferStatus {
 
     public static final String ACCEPTED = "ACCEPTED";
 
-    public static final String DECLINED = "DECLINED";
+    public static final String REJECTED = "REJECTED";
 
-    public static final String WITHDRAWN = "WITHDRAWN";
+    public static final String REVOKED = "REVOKED";
 
     public static final String COMPLETED = "COMPLETED";
 
-    private TripOfferStatus() {}
+    private TripOfferStatus() {
+    }
 }

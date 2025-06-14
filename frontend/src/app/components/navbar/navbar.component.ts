@@ -77,12 +77,15 @@ export class NavbarComponent implements OnInit {
 
   onProfile(): void {
     if (this.accountInformation) {
-      // works when Amin is done with the profile page
       this.router.navigate(['/profile', this.accountInformation.username])
     }
   }
 
   onLogout(): void {
     this.angularAuthService.logout();
+  }
+
+  onBalance(): void {
+    this.router.navigate(["/balance"])
   }
 }

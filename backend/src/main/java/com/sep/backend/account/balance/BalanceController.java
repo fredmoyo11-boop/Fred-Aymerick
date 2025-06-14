@@ -1,63 +1,57 @@
-package com.sep.backend.account.transaction;
+package com.sep.backend.account.balance;
 
 import com.sep.backend.HttpStatus;
 import com.sep.backend.StringResponse;
 import com.sep.backend.Tags;
-import com.sep.backend.entity.DriverEntity;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import jakarta.transaction.Transaction;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/api/balance", produces = MediaType.APPLICATION_JSON_VALUE)
-public class TransactionController {
+public class BalanceController {
 
-     public final TransactionService transactionService;
+    public final BalanceService balanceService;
 
-
-    public TransactionController(TransactionService transactionService) {
-        this.transactionService = transactionService;
+    public BalanceController(BalanceService balanceService) {
+        this.balanceService = balanceService;
     }
-
 
     @PostMapping("/deposit")
     @Operation(description = "Lets the user deposit money on his account",
-            tags = {Tags.TRANSACTION},
+            tags = {Tags.BALANCE},
             responses = {
                     @ApiResponse(responseCode = HttpStatus.OK, description = "deposit successful",
                             content = @Content(schema = @Schema(implementation = StringResponse.class)))})
     public StringResponse deposit(@RequestParam("amount") double amount, Principal principal) {
-        transactionService.deposit(amount, principal);
+        balanceService.deposit(amount, principal);
         return new StringResponse("deposit successful");
     }
 
     @PostMapping("/withdrawal")
     @Operation(description = "Lets the user withdraw money from his account",
-            tags = {Tags.TRANSACTION},
+            tags = {Tags.BALANCE},
             responses = {
                     @ApiResponse(responseCode = HttpStatus.OK, description = "withdrawal successful",
                             content = @Content(schema = @Schema(implementation = StringResponse.class)))})
     public StringResponse withdraw(@RequestParam("amount") double amount, Principal principal) {
-        transactionService.withdraw(amount, principal);
+        balanceService.withdraw(amount, principal);
         return new StringResponse("withdraw successful");
     }
 
-    @PostMapping("/transaction")
-    @Operation(description = "Lets the user transact money to a driver",
-            tags = {Tags.TRANSACTION},
-            responses = {
-                    @ApiResponse(responseCode = HttpStatus.OK, description = "transaction successful",
-                            content = @Content(schema = @Schema(implementation = StringResponse.class)))})
-    public StringResponse transaction(@RequestParam("amount")double amount, Principal principal,@RequestBody DriverEntity driver) {
-        transactionService.transaction(amount, principal, driver);
-        return new StringResponse("transaction successful");
+    @GetMapping("/history/current")
+    @Operation(description = "Returns the previous transactions of the current account.",
+            tags = {Tags.BALANCE},
+            responses = {@ApiResponse(responseCode = HttpStatus.OK, description = "Previous transactions retrieved successfully.",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = Transaction.class))))})
+    public List<Transaction> getCurrentTransactions(Principal principal) {
+        return balanceService.getCurrentTransactions(principal);
     }
 }

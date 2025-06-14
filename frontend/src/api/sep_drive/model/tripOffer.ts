@@ -21,7 +21,7 @@ export interface TripOffer {
     driver: Account;
     driverStatistics: DriverStatistics;
     /**
-     * The status of the trip offer. Either PENDING, ACCEPTED, DECLINED, WITHDRAWN or COMPLETED.
+     * The status of the trip offer. Either PENDING, ACCEPTED, REJECTED, WITHDRAWN or COMPLETED.
      */
     status: string;
 }

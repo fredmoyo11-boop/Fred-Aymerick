@@ -3,10 +3,11 @@ import {RouterOutlet} from '@angular/router';
 import {AngularAuthService} from './services/angular-auth.service';
 import {StompService} from './services/stomp.service';
 import {AngularNotificationService} from './services/angular-notification.service';
+import {NotificationComponent} from './components/notification/notification.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, NotificationComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })

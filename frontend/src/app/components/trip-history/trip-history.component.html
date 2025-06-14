@@ -1,8 +1,8 @@
 <div class="filter-container">
-<mat-form-field class="search-form-field">
-  <mat-label>Nach Kundenname/Fahrername suchen</mat-label>
-  <input matInput (keyup)="applyFilter($event)" #input>
-</mat-form-field>
+  <mat-form-field class="search-form-field">
+    <mat-label>Nach Kundenname/Fahrername suchen</mat-label>
+    <input matInput (keyup)="applyFilter($event)" #input>
+  </mat-form-field>
 </div>
 
 <div class='table-container' *ngIf="showTable">
@@ -27,25 +27,25 @@
     <!-- distance Column -->
     <ng-container matColumnDef="distance">
       <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by distance">
-        Gefahrene Distanz (Km)
+        Gefahrene Distanz
       </th>
-      <td mat-cell *matCellDef="let row"> {{ row.distance }}</td>
+      <td mat-cell *matCellDef="let row"> {{ row.distance | meterToKm }}</td>
     </ng-container>
 
     <!-- duration Column -->
     <ng-container matColumnDef="duration">
       <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by duration">
-        Fahrtdauer (min)
+        Fahrtdauer
       </th>
-      <td mat-cell *matCellDef="let row"> {{ row.duration }}</td>
+      <td mat-cell *matCellDef="let row"> {{ row.duration | secondsToTime }}</td>
     </ng-container>
 
     <!-- preis Column -->
     <ng-container matColumnDef="price">
       <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by price">
-        Betrag (€)
+        Preis
       </th>
-      <td mat-cell *matCellDef="let row"> {{ row.price }}</td>
+      <td mat-cell *matCellDef="let row"> {{ row.price | euro }}</td>
     </ng-container>
 
     <!-- driverRating Column -->
@@ -90,7 +90,10 @@
       <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by customerUsername">
         Kundenbenutzername
       </th>
-      <td mat-cell *matCellDef="let row"> {{ row.customerUsername }}</td>
+      <td mat-cell *matCellDef="let row">
+        <span class="profile-link"
+              (click)="navigateToProfile(row.customerUsername)">{{ row.customerUsername }}</span>
+      </td>
     </ng-container>
 
     <!-- driverName Column -->
@@ -104,9 +107,12 @@
     <!-- driverUsername Column -->
     <ng-container matColumnDef="driverUsername">
       <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by driverUsername">
-       Fahrerbenutzername
+        Fahrerbenutzername
       </th>
-      <td mat-cell *matCellDef="let row"> {{ row.driverUsername }}</td>
+      <td mat-cell *matCellDef="let row">
+        <span class="profile-link"
+              (click)="navigateToProfile(row.driverUsername)">{{ row.driverUsername }}</span>
+      </td>
     </ng-container>
 
 

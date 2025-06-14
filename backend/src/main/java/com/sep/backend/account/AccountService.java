@@ -37,6 +37,12 @@ public class AccountService {
         this.tripHistoryRepository = tripHistoryRepository;
     }
 
+    public DriverEntity getDriverByUsername(String username) throws NotFoundException {
+        return driverRepository
+                .findByUsernameIgnoreCase(username)
+                .orElseThrow(() -> new NotFoundException(ErrorMessages.NOT_FOUND_DRIVER));
+    }
+
     /**
      * Returns the customer with the specified email.
      *

@@ -20,10 +20,20 @@ export interface Notification {
     /**
      * The type of the notification.
      */
-    notificationType: string;
+    notificationType: Notification.NotificationTypeEnum;
     /**
      * The message of the notification.
      */
     message: string;
 }
+export namespace Notification {
+    export const NotificationTypeEnum = {
+        TripOfferNew: 'TRIP_OFFER_NEW',
+        TripOfferRevoked: 'TRIP_OFFER_REVOKED',
+        TripOfferAccepted: 'TRIP_OFFER_ACCEPTED',
+        TripOfferRejected: 'TRIP_OFFER_REJECTED'
+    } as const;
+    export type NotificationTypeEnum = typeof NotificationTypeEnum[keyof typeof NotificationTypeEnum];
+}
+
 

@@ -10,6 +10,11 @@ import {ProfileSearchComponent} from './components/profile-search/profile-search
 import {AvailableTriprequestComponent} from './components/available-triprequest/available-triprequest.component';
 import {TripHistoryComponent} from './components/trip-history/trip-history.component';
 import {TripRequestComponent} from './components/trip-request/trip-request.component';
+import {TripOffersComponent} from './components/trip-offers/trip-offers.component';
+import {TripSimulationComponent} from './components/trip-simulation/trip-simulation.component';
+import {TripOfferComponent} from './components/trip-offer/trip-offer.component';
+import {tripOfferResolver} from './resolvers/trip-offer.resolver';
+import {BalanceComponent} from './components/balance/balance.component';
 
 export const routes: Routes = [
   {path: "register", component: RegisterComponent},
@@ -49,6 +54,19 @@ export const routes: Routes = [
       {
         path: "profile/:username",
         component: ProfileComponent,
+        canActivate: [authGuard],
+        data: {roles: ["CUSTOMER", "DRIVER"]}
+      },
+      {
+        path: "offer/:id",
+        component: TripOfferComponent,
+        resolve: {
+          tripOffer: tripOfferResolver
+        }
+      },
+      {
+        path: "balance",
+        component: BalanceComponent,
         canActivate: [authGuard],
         data: {roles: ["CUSTOMER", "DRIVER"]}
       }

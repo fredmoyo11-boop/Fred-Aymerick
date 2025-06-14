@@ -22,7 +22,7 @@ public class Tags {
 
     public static final String TRIP_HISTORY = "Trip History";
 
-    public static final String TRANSACTION = "Transaction";
+    public static final String BALANCE = "Balance";
 
 
     public Tags() {

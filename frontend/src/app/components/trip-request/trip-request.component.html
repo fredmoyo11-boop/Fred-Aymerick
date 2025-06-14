@@ -16,8 +16,8 @@
           <section>
             <mat-card-content>
               <mat-list>
-                <mat-list-item *ngFor="let stop of tripRequestDTO.route.stops; index as i" >
-                  {{i + 1}}. {{ stop.displayName }}
+                <mat-list-item *ngFor="let stop of tripRequestDTO.route.stops; index as i">
+                  {{ i + 1 }}. {{ stop.displayName }}
                 </mat-list-item>
               </mat-list>
             </mat-card-content>
@@ -31,7 +31,13 @@
               <p>Dauer der Fahrt: {{ this.duration | secondsToTime }}</p>
               <p>Gebuchte Auto: {{ this.tripRequestDTO!.carType | carType }}</p>
               <p>Preis der Fahrt: {{ this.tripRequestDTO!.price | euro }}</p>
-              <button mat-flat-button color="warn" (click)="deleteTripRequest()">Löschen</button>
+              @if (!acceptedTripOffer) {
+                <button mat-flat-button color="warn" (click)="deleteTripRequest()">Löschen</button>
+              } @else {
+                <button mat-flat-button (click)="navigateToSimulation()">Simulieren
+                  <mat-icon iconPositionEnd>play_arrow</mat-icon>
+                </button>
+              }
             </mat-card-content>
           </section>
         </mat-card>
@@ -98,12 +104,12 @@
             <mat-divider></mat-divider>
 
             <mat-card-content class="button-container">
-                <button mat-flat-button
-                        color="primary"
-                        (click)="createTripRequest()"
-                        [disabled]="!orsFeatureCollection || this.stops.length < 2">
-                  Fahranfrage erstellen
-                </button>
+              <button mat-flat-button
+                      color="primary"
+                      (click)="createTripRequest()"
+                      [disabled]="!orsFeatureCollection || this.stops.length < 2">
+                Fahranfrage erstellen
+              </button>
             </mat-card-content>
           </mat-card>
         </form>
@@ -130,6 +136,9 @@
       </mat-card>
     }
   </div>
+  @if (tripRequestDTO && !acceptedTripOffer) {
+    <app-trip-offers></app-trip-offers>
+  }
 </div>
 
 

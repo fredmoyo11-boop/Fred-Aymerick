@@ -14,6 +14,7 @@ public class NotificationTypes {
 
     public static final String[] ALL = {
             TRIP_OFFER_NEW,
+            TRIP_OFFER_REVOKED,
             TRIP_OFFER_ACCEPTED,
             TRIP_OFFER_REJECTED
     };

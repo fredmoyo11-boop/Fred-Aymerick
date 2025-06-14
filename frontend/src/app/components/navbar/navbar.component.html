@@ -29,8 +29,11 @@
           </div>
         </div>
         <mat-menu #menu="matMenu">
-          <button mat-menu-item (click)="onProfile()">Profile
+          <button mat-menu-item (click)="onProfile()">Profil
             <mat-icon matSuffix>person</mat-icon>
+          </button>
+          <button mat-menu-item (click)="onBalance()">Konto
+            <mat-icon matSuffix>account_balance</mat-icon>
           </button>
           <button mat-menu-item (click)="onLogout()">Logout
             <mat-icon matSuffix>logout</mat-icon>

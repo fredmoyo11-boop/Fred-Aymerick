@@ -1,10 +1,11 @@
+<h1>Simulation mit {{ simulationPartnerFirstName }} {{ simulationPartnerLastName }} ({{ simulationPartnerUsername }})</h1>
 <div class="map-container">
   <app-trip-visualizer [route]="route"
                        [animationLayerGroup]="animationLayer"></app-trip-visualizer>
 </div>
 
 @if (animationLocked) {
-  <p style="font-weight: bold">Animation is currently locked!</p>
+  <p style="font-weight: bold">Die Simulation ist momentan blockiert!</p>
 } @else {
   <div class="control-container">
     @if (!animationInitialized || animationPaused) {

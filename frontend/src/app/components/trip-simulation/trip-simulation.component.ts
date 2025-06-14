@@ -69,6 +69,9 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
 
   coordinates: number[][] = []
 
+  simulationPartnerFirstName: string = ""
+  simulationPartnerLastName: string = ""
+  simulationPartnerUsername: string = ""
 
   private role: string | null = null
   private driverPresent = false
@@ -111,6 +114,10 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
       next: role => {
         this.role = role
         if (this.role === "DRIVER") {
+          this.simulationPartnerFirstName = this.tripOffer.tripRequest.customer.firstName
+          this.simulationPartnerLastName = this.tripOffer.tripRequest.customer.lastName
+          this.simulationPartnerUsername = this.tripOffer.tripRequest.customer.username
+
           interval(1000)
             .pipe(
               takeWhile(() => !this.driverPresent),
@@ -119,6 +126,10 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
               })
             )
             .subscribe()
+        } else if (this.role === "CUSTOMER") {
+          this.simulationPartnerFirstName = this.tripOffer.driver.firstName
+          this.simulationPartnerLastName = this.tripOffer.driver.lastName
+          this.simulationPartnerUsername = this.tripOffer.driver.username
         }
       }
     })
@@ -235,14 +246,18 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
   }
 
   complete(): void {
-    this.tripSimulationService.completeTrip(Number(this.tripOfferId)).subscribe({
-      next: value => {
-        this.openRatingDialog()
-      },
-      error: err => {
-        console.error(err)
-      }
-    });
+    if (this.role && this.role === "CUSTOMER") {
+      this.tripSimulationService.completeTrip(Number(this.tripOfferId)).subscribe({
+        next: value => {
+          this.openRatingDialog()
+        },
+        error: err => {
+          console.error(err)
+        }
+      });
+    } else {
+      this.openRatingDialog()
+    }
   }
 
   onSliderChange(value: number): void {

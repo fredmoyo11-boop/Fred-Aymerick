@@ -90,3 +90,30 @@ body {
 .withdrawal:hover {
   background-color: darkred;
 }
+
+.transaction-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 50%;
+}
+
+.transaction-card-content {
+  display: flex;
+  justify-content: space-between;
+}
+
+.transaction-card-info {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+
+.username {
+  font-weight: bold;
+}
+
+.username:hover {
+  cursor: pointer;
+  text-decoration: underline;
+}

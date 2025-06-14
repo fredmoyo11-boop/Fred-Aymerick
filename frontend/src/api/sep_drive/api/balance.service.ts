@@ -17,11 +17,11 @@ import { CustomHttpParameterCodec }                          from '../encoder';
 import { Observable }                                        from 'rxjs';
 
 // @ts-ignore
-import { DriverEntity } from '../model/driverEntity';
-// @ts-ignore
 import { ErrorResponse } from '../model/errorResponse';
 // @ts-ignore
 import { StringResponse } from '../model/stringResponse';
+// @ts-ignore
+import { Transaction } from '../model/transaction';
 
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
@@ -33,7 +33,7 @@ import { BaseService } from '../api.base.service';
 @Injectable({
   providedIn: 'root'
 })
-export class TransactionService extends BaseService {
+export class BalanceService extends BaseService {
 
     constructor(protected httpClient: HttpClient, @Optional() @Inject(BASE_PATH) basePath: string|string[], @Optional() configuration?: Configuration) {
         super(basePath, configuration);
@@ -103,26 +103,14 @@ export class TransactionService extends BaseService {
     }
 
     /**
-     * Lets the user transact money to a driver
-     * @param amount 
-     * @param driverEntity 
+     * Returns the previous transactions of the current account.
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public transaction(amount: number, driverEntity: DriverEntity, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<StringResponse>;
-    public transaction(amount: number, driverEntity: DriverEntity, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<StringResponse>>;
-    public transaction(amount: number, driverEntity: DriverEntity, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<StringResponse>>;
-    public transaction(amount: number, driverEntity: DriverEntity, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
-        if (amount === null || amount === undefined) {
-            throw new Error('Required parameter amount was null or undefined when calling transaction.');
-        }
-        if (driverEntity === null || driverEntity === undefined) {
-            throw new Error('Required parameter driverEntity was null or undefined when calling transaction.');
-        }
-
-        let localVarQueryParameters = new HttpParams({encoder: this.encoder});
-        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-          <any>amount, 'amount');
+    public getCurrentTransactions(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<Transaction[]>;
+    public getCurrentTransactions(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Transaction[]>>;
+    public getCurrentTransactions(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Transaction[]>>;
+    public getCurrentTransactions(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -142,15 +130,6 @@ export class TransactionService extends BaseService {
         const localVarTransferCache: boolean = options?.transferCache ?? true;
 
 
-        // to determine the Content-Type header
-        const consumes: string[] = [
-            'application/json'
-        ];
-        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
-        if (httpContentTypeSelected !== undefined) {
-            localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
-        }
-
         let responseType_: 'text' | 'json' | 'blob' = 'json';
         if (localVarHttpHeaderAcceptSelected) {
             if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
@@ -162,13 +141,11 @@ export class TransactionService extends BaseService {
             }
         }
 
-        let localVarPath = `/api/balance/transaction`;
+        let localVarPath = `/api/balance/history/current`;
         const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request<StringResponse>('post', `${basePath}${localVarPath}`,
+        return this.httpClient.request<Transaction[]>('get', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-                body: driverEntity,
-                params: localVarQueryParameters,
                 responseType: <any>responseType_,
                 ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,

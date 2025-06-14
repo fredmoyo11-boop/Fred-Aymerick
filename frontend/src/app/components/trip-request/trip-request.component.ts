@@ -4,7 +4,7 @@ import {
   Coordinate,
   Location, NominatimService,
   ORSFeatureCollection, ORSService,
-  Route,
+  Route, TripOffer, TripOfferService,
   TripRequestBody,
   TripRequestDTO,
   TripRequestService
@@ -28,6 +28,9 @@ import {MatIcon} from '@angular/material/icon';
 import {TripVisualizerComponent} from '../trip-visualizer/trip-visualizer.component';
 import {CarTypePipe} from '../../pipes/car-type.pipe';
 import {MatSnackBar} from '@angular/material/snack-bar';
+import {TripOffersComponent} from '../trip-offers/trip-offers.component';
+import {AngularNotificationService} from '../../services/angular-notification.service';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-trip-request',
@@ -57,17 +60,20 @@ import {MatSnackBar} from '@angular/material/snack-bar';
     MatSuffix,
     NgIf,
     TripVisualizerComponent,
-    CarTypePipe
+    CarTypePipe,
+    TripOffersComponent
   ],
   templateUrl: './trip-request.component.html',
   styleUrl: './trip-request.component.css'
 })
-export class TripRequestComponent implements OnInit{
+export class TripRequestComponent implements OnInit {
   tripRequestService = inject(TripRequestService)
+  tripOfferService = inject(TripOfferService)
   nominatimService = inject(NominatimService)
   geolocationService = inject(GeolocationService)
-  orsService =inject(ORSService)
+  orsService = inject(ORSService)
   snackBar = inject(MatSnackBar)
+  router = inject(Router)
 
   tripRequestDTO: TripRequestDTO | null = null
 
@@ -88,6 +94,8 @@ export class TripRequestComponent implements OnInit{
     carType: new FormControl('SMALL'),
     query: new FormControl("")
   })
+
+  acceptedTripOffer: TripOffer | null = null
 
 
   ngOnInit(): void {
@@ -132,7 +140,7 @@ export class TripRequestComponent implements OnInit{
       next: response => {
         const query = this.form.value.query
         this.suggestedLocations = response
-        this.showCard = response.length > 0 &&  !!query && query.trim().length > 0
+        this.showCard = response.length > 0 && !!query && query.trim().length > 0
       },
       error: err => {
         console.error(err)
@@ -156,9 +164,10 @@ export class TripRequestComponent implements OnInit{
         })
         this.search()
       }).catch((err) => {
-        console.log(err)
+      console.log(err)
     })
   }
+
 //---------------------------------Route creation
 
   updateRoute() {
@@ -184,9 +193,10 @@ export class TripRequestComponent implements OnInit{
       })
     }
   }
+
 //---------------------------------Trip request creation
   createTripRequest(): void {
-    const tripRequestBody : TripRequestBody = {
+    const tripRequestBody: TripRequestBody = {
       carType: this.form.value.carType!,
       geojson: this.orsFeatureCollection!,
       locations: this.stops,
@@ -219,7 +229,19 @@ export class TripRequestComponent implements OnInit{
     const summary = this.route.geoJson.features[0].properties.summary
     this.distance = summary?.distance
     this.duration = summary?.duration
+
+
+    this.tripOfferService.getAcceptedTripOffer(tripRequestDTO.tripRequestId).subscribe({
+      next: value => {
+        this.acceptedTripOffer = value
+      }, error: err => {
+        console.error(err)
+        this.acceptedTripOffer = null
+      }
+    })
+
   }
+
 //-------------------------------Address list
 
   newLocationIsSame(newLocation: Location) {
@@ -274,5 +296,9 @@ export class TripRequestComponent implements OnInit{
     this.suggestedLocations = []
     this.showCard = false
     this.updateRoute()
+  }
+
+  navigateToSimulation(): void {
+    this.router.navigate(["/offer", this.acceptedTripOffer!.id])
   }
 }

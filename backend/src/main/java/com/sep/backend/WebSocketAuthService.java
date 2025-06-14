@@ -121,9 +121,11 @@ public class WebSocketAuthService {
      * @throws IllegalArgumentException If the user is not allowed to subscribe to the specified destination.
      */
     private void validateSubscription(String destination, Principal principal) throws IllegalArgumentException {
+        log.debug("Validating subscription of {} to {}.", principal.getName(), destination);
         final var subscriptionValidator = resolveSubscriptionValidator(destination);
         // if optional is empty no validation is needed
         if (subscriptionValidator.isEmpty()) {
+            log.debug("No validation needed for subscription to {}.", destination);
             return;
         }
 
@@ -172,10 +174,14 @@ public class WebSocketAuthService {
      * @return The optional containing the id, if id was parsable, else an empty optional.
      */
     private Optional<Long> extractTripOfferId(String destination) {
-        String tripOfferId = destination.substring(NOTIFICATION_TOPIC_PREFIX.length());
+        log.debug("Extracting trip offer id from {}.", destination);
+        // nasty typo ~ 1 hour
+        String tripOfferId = destination.substring(SIMULATION_TOPIC_PREFIX.length());
+        log.debug("Extracted trip offer id {} from {}.", tripOfferId, destination);
         try {
             return Optional.of(Long.parseLong(tripOfferId));
         } catch (NumberFormatException e) {
+            log.debug("Could not parse trip offer id from {}.", tripOfferId);
             return Optional.empty();
         }
     }
@@ -215,10 +221,18 @@ public class WebSocketAuthService {
      * @throws NotFoundException If a trip offer with specified id does not exist.
      */
     private boolean isPartOfTrip(Long tripOfferId, String email) throws NotFoundException {
+        log.debug("Getting trip offer with id {}.", tripOfferId);
         var tripOfferEntity = getTripOfferEntity(tripOfferId);
+        log.debug("Got trip offer with id {}.", tripOfferId);
         var driverEntity = tripOfferEntity.getDriver();
         var customerEntity = tripOfferEntity.getTripRequest().getCustomer();
-        return List.of(driverEntity.getEmail(), customerEntity.getEmail()).contains(email);
+        if (List.of(driverEntity.getEmail(), customerEntity.getEmail()).contains(email)) {
+            log.debug("User with email {} is part of trip with customer {} and driver {}.", email, customerEntity.getEmail(), driverEntity.getEmail());
+            return true;
+        } else {
+            log.debug("User with email {} is not part of trip with customer {} and driver {}.", email, customerEntity.getEmail(), driverEntity.getEmail());
+            return false;
+        }
     }
 
     /**

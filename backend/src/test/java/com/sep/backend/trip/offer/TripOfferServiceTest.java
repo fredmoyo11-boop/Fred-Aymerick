@@ -1,9 +1,6 @@
 package com.sep.backend.trip.offer;
 
 import com.sep.backend.ors.data.ORSFeatureCollection;
-import com.sep.backend.trip.offer.*;
-import com.sep.backend.trip.offer.options.*;
-import com.sep.backend.trip.offer.response.*;
 import com.sep.backend.trip.offer.status.*;
 import com.sep.backend.entity.*;
 import com.sep.backend.account.DriverRepository;
@@ -77,6 +74,7 @@ public class TripOfferServiceTest {
         customer1.setUsername("Mario");
         customer1.setBirthday("1981-07-09");
         customer1.setVerified(true);
+        customer1.setBalance(100.0);
         customerRepository.save(customer1);
 
         CustomerEntity customer2 = new CustomerEntity();
@@ -87,6 +85,7 @@ public class TripOfferServiceTest {
         customer2.setUsername("Luigi");
         customer2.setBirthday("1983-03-14");
         customer2.setVerified(true);
+        customer2.setBalance(100.0);
         customerRepository.save(customer2);
 
         RouteEntity route1 = new RouteEntity();
@@ -139,6 +138,7 @@ public class TripOfferServiceTest {
         driver1.setUsername("johndoe");
         driver1.setBirthday("2000-01-01");
         driver1.setVerified(true);
+        driver1.setBalance(100.0);
         driverRepository.save(driver1);
 
         DriverEntity driver2 = new DriverEntity();
@@ -149,6 +149,7 @@ public class TripOfferServiceTest {
         driver2.setUsername("janedoe");
         driver2.setBirthday("2000-01-01");
         driver2.setVerified(true);
+        driver2.setBalance(100.0);
         driverRepository.save(driver2);
 
         TripOfferEntity tripOffer1 = new TripOfferEntity();
@@ -160,13 +161,13 @@ public class TripOfferServiceTest {
         TripOfferEntity tripOffer2 = new TripOfferEntity();
         tripOffer2.setDriver(driver2);
         tripOffer2.setTripRequest(tripRequest2);
-        tripOffer2.setStatus(TripOfferStatus.WITHDRAWN);
+        tripOffer2.setStatus(TripOfferStatus.REVOKED);
         tripOfferRepository.save(tripOffer2);
 
         TripOfferEntity tripOffer3 = new TripOfferEntity();
         tripOffer3.setDriver(driver2);
         tripOffer3.setTripRequest(tripRequest3);
-        tripOffer3.setStatus(TripOfferStatus.DECLINED);
+        tripOffer3.setStatus(TripOfferStatus.REJECTED);
         tripOfferRepository.save(tripOffer3);
     }
 

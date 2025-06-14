@@ -24,7 +24,7 @@ public class Notification {
      */
     @NotNull
     @NotificationType
-    @Schema(description = "The type of the notification.", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "The type of the notification.", requiredMode = Schema.RequiredMode.REQUIRED, allowableValues = {NotificationTypes.TRIP_OFFER_NEW, NotificationTypes.TRIP_OFFER_REVOKED, NotificationTypes.TRIP_OFFER_ACCEPTED, NotificationTypes.TRIP_OFFER_REJECTED})
     private String notificationType;
 
     /**

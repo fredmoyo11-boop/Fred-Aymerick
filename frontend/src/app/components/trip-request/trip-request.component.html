@@ -18,7 +18,7 @@
               <mat-card-content>
                 @for (stop of tripRequestDTO.route.stops; track idx; let idx = $index) {
                   <div class="finalLocation-box">
-                    <span class="display-name">{{idx + 1}}. {{stop.displayName}}</span>
+                    <span class="display-name">{{ idx + 1 }}. {{ stop.displayName }}</span>
                   </div>
                 }
               </mat-card-content>
@@ -34,15 +34,16 @@
               <p>Gebuchtes Auto: {{ this.tripRequestDTO!.carType | carType }}</p>
               <p>Preis der Fahrt: {{ this.tripRequestDTO!.price | euro }}</p>
               <div style="text-align: right">
-                <button mat-flat-button class="delete-button" (click)="deleteTripRequest()">Löschen</button>
+                @if (!acceptedTripOffer) {
+                  <button mat-flat-button class="delete-button" (click)="deleteTripRequest()">Löschen
+                    <mat-icon iconPositionEnd>delete</mat-icon>
+                  </button>
+                } @else {
+                  <button mat-flat-button (click)="navigateToSimulation()">Simulieren
+                    <mat-icon iconPositionEnd>play_arrow</mat-icon>
+                  </button>
+                }
               </div>
-              @if (!acceptedTripOffer) {
-                <button mat-flat-button color="warn" (click)="deleteTripRequest()">Löschen</button>
-              } @else {
-                <button mat-flat-button (click)="navigateToSimulation()">Simulieren
-                  <mat-icon iconPositionEnd>play_arrow</mat-icon>
-                </button>
-              }
             </mat-card-content>
           </section>
         </mat-card>
@@ -111,8 +112,10 @@
             <mat-card-content>
               @if (orsFeatureCollection) {
                 <p>Distanz der Fahrt: {{ orsFeatureCollection.features[0].properties.summary.distance | meterToKm }}</p>
-                <p>Dauer der Fahrt: {{ orsFeatureCollection.features[0].properties.summary.duration | secondsToTime }}</p>
-                <p>Geschätzter Preis: {{ (orsFeatureCollection.features[0].properties.summary.distance /1000) * (carPrice(form.value.carType!))| euro }}</p>
+                <p>Dauer der
+                  Fahrt: {{ orsFeatureCollection.features[0].properties.summary.duration | secondsToTime }}</p>
+                <p>Geschätzter
+                  Preis: {{ (orsFeatureCollection.features[0].properties.summary.distance / 1000) * (carPrice(form.value.carType!))| euro }}</p>
               }
             </mat-card-content>
 

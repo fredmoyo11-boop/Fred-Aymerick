@@ -67,7 +67,6 @@ public class Account {
     public static Account fromCustomer(CustomerEntity entity) {
         var account = Account.from(entity);
         account.setRole(Roles.CUSTOMER);
-
         return account;
     }
 

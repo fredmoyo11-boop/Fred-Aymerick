@@ -19,8 +19,7 @@ import {SecondsToTimePipe} from '../../pipes/seconds-to-time.pipe';
 import {EuroPipe} from '../../pipes/euro.pipe';
 import {MatButton, MatIconButton} from '@angular/material/button';
 import {MatDivider} from '@angular/material/divider';
-import {MatList, MatListItem} from '@angular/material/list';
-import {NgForOf, NgIf} from '@angular/common';
+import {NgIf} from '@angular/common';
 import {MatFormField, MatInput, MatLabel, MatSuffix} from '@angular/material/input';
 import {CdkDrag, CdkDragDrop, CdkDragHandle, CdkDropList, moveItemInArray} from '@angular/cdk/drag-drop';
 import {MatRadioButton, MatRadioGroup} from '@angular/material/radio';
@@ -29,7 +28,6 @@ import {TripVisualizerComponent} from '../trip-visualizer/trip-visualizer.compon
 import {CarTypePipe} from '../../pipes/car-type.pipe';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {TripOffersComponent} from '../trip-offers/trip-offers.component';
-import {AngularNotificationService} from '../../services/angular-notification.service';
 import {Router} from '@angular/router';
 
 @Component({
@@ -42,9 +40,6 @@ import {Router} from '@angular/router';
     EuroPipe,
     MatButton,
     MatDivider,
-    MatList,
-    NgForOf,
-    MatListItem,
     ReactiveFormsModule,
     MatCardTitle,
     MatFormField,
@@ -60,17 +55,21 @@ import {Router} from '@angular/router';
     MatSuffix,
     NgIf,
     TripVisualizerComponent,
-    CarTypePipe
+    CarTypePipe,
+    TripOffersComponent
   ],
   templateUrl: './trip-request.component.html',
   styleUrl: './trip-request.component.css'
 })
-export class TripRequestComponent implements OnInit{
+export class TripRequestComponent implements OnInit {
+  tripOfferService = inject(TripOfferService)
   tripRequestService = inject(TripRequestService)
   nominatimService = inject(NominatimService)
   geolocationService = inject(GeolocationService)
-  orsService =inject(ORSService)
+  orsService = inject(ORSService)
   snackBar = inject(MatSnackBar)
+
+  router = inject(Router)
 
   tripRequestDTO: TripRequestDTO | null = null
 
@@ -242,12 +241,17 @@ export class TripRequestComponent implements OnInit{
 
   carPrice(carType: String): number {
     switch (carType) {
-      case 'SMALL': return 1
-      case 'MEDIUM': return 2
-      case 'DELUXE': return 10
-      default: return 0
+      case 'SMALL':
+        return 1
+      case 'MEDIUM':
+        return 2
+      case 'DELUXE':
+        return 10
+      default:
+        return 0
     }
   }
+
 //-------------------------------Address list
 
   newLocationIsSame(newLocation: Location) {

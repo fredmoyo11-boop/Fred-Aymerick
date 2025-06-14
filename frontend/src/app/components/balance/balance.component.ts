@@ -2,7 +2,6 @@ import {Component, inject, OnInit} from '@angular/core';
 import {AccountDTO, AccountService, BalanceService, Transaction} from '../../../api/sep_drive';
 import {Router} from '@angular/router';
 import {AbstractControl, FormControl, ReactiveFormsModule, ValidatorFn} from '@angular/forms';
-import {NgIf} from '@angular/common';
 import {MatCardModule} from '@angular/material/card';
 import {MatIcon} from '@angular/material/icon';
 import {EuroPipe} from '../../pipes/euro.pipe';

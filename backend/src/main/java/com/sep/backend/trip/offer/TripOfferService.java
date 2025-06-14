@@ -206,7 +206,7 @@ public class TripOfferService {
         var customerEntity = tripOfferEntity.getTripRequest().getCustomer();
         String message = String.format("%s %s (%s) hat sein Fahrtangebot zurückgezogen!", customerEntity.getFirstName(), customerEntity.getLastName(), customerEntity.getUsername());
         notification.setMessage(message);
-        notificationService.sendNotification(notification, tripOfferEntity.getDriver().getEmail());
+        notificationService.sendNotification(notification, tripOfferEntity.getTripRequest().getCustomer().getEmail());
     }
 
     public boolean isPendingTripOffer(Long tripOfferId) throws NotFoundException {

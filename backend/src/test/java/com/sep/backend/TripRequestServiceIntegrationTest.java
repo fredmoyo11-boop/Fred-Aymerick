@@ -1,5 +1,6 @@
 package com.sep.backend;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sep.backend.trip.history.TripHistoryDTO;
 import com.sep.backend.trip.history.TripHistoryRepository;
@@ -74,7 +75,7 @@ public class TripRequestServiceIntegrationTest {
     private NominatimService nominatimService;
 
     @BeforeEach
-    void setUp() throws InterruptedException {
+    void setUp() throws InterruptedException, JsonProcessingException {
 
         CustomerEntity customer = new CustomerEntity();
         customer.setEmail(testEmail);

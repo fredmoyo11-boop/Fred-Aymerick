@@ -65,8 +65,9 @@ public class NominatimService {
      * @param latitude  The latitude.
      * @param longitude The longitude.
      * @return The NominatimFeatureCollection containing the location as a feature.
+     * @throws JsonProcessingException When error during creation of GeoJSON
      */
-    public NominatimFeatureCollection reverse(@NotBlank String latitude, @NotBlank String longitude) {
+    public NominatimFeatureCollection reverse(@NotBlank String latitude, @NotBlank String longitude) throws JsonProcessingException {
         String response = restClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/reverse")
@@ -80,7 +81,7 @@ public class NominatimService {
 
         try {
             return mapper.readValue(response, NominatimFeatureCollection.class);
-        } catch (Exception e) {
+        } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
     }

@@ -23,6 +23,13 @@ public class RouteService {
         this.routeRepository = routeRepository;
     }
 
+    /**
+     * Creates a routeEntity and saves it.
+     *
+     * @param geojson Given GeoJSON created by ORS.
+     * @param locations List of Locations to be put in RouteEntity.
+     * @return The RouteEntity.
+     */
     @Transactional
     public RouteEntity createRoute(ORSFeatureCollection geojson, List<Location> locations) {
         var routeEntity = new RouteEntity();
@@ -38,6 +45,13 @@ public class RouteService {
         return routeRepository.save(routeEntity);
     }
 
+    /**
+     * Gets the RouteEntity.
+     *
+     * @param routeId Given to find route in repository.
+     * @return RouteEntity when found in repository.
+     * @throws NotFoundException When Route not found.
+     */
     public RouteEntity getRoute(Long routeId) throws NotFoundException {
         return routeRepository.findById(routeId).orElseThrow(() -> new NotFoundException("Route not found"));
     }

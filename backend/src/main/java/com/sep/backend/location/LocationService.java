@@ -17,7 +17,13 @@ public class LocationService {
     }
 
 
-    public  LocationEntity saveLocation(Location location) {
+    /**
+     * Saves location in the repository.
+     *
+     * @param location The given location.
+     * @return The LocationEntity
+     */
+    public LocationEntity saveLocation(Location location) {
         var locationEntity = new LocationEntity();
         locationEntity.setDisplayName(location.getDisplayName());
         locationEntity.setLongitude(location.getCoordinate().getLongitude());
@@ -30,6 +36,12 @@ public class LocationService {
         locationRepository.deleteById(locationId);
     }
 
+    /**
+     * Saves an entire list of locations
+     *
+     * @param locations List of Locations
+     * @return The List of LocationEntities
+     */
     @Transactional
     public List<LocationEntity> saveLocations(List<Location> locations) {
         return locations.stream().map(this::saveLocation).toList();

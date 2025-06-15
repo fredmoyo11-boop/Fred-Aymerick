@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 
@@ -85,7 +86,7 @@ public class TripHistoryService {
         history.setDriver(driver);
         history.setDistance(distance);
         history.setDuration(duration);
-        history.setEndTime(LocalDateTime.now());
+        history.setEndTime(LocalDateTime.now(ZoneId.of("Europe/Berlin")));
         history.setPrice(request.getPrice());
         history.setCustomerRating(customerRating);
         history.setDriverRating(driverRating);

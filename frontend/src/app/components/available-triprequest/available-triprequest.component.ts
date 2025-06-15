@@ -31,11 +31,13 @@ import {CarTypePipe} from '../../pipes/car-type.pipe';
 import {EuroPipe} from '../../pipes/euro.pipe';
 import {AngularNotificationService} from '../../services/angular-notification.service';
 import {Router} from '@angular/router';
+import {MatCard, MatCardContent, MatCardTitle} from '@angular/material/card';
+import {MatDivider} from '@angular/material/divider';
 
 @Component({
   selector: 'app-available-triprequest',
   standalone: true,
-  imports: [CommonModule, MatTable, FormsModule, MatFormField, MatIcon, MatIconButton, MatInput, MatLabel, MatOption, MatSelect, MatSuffix, MatTooltip, ReactiveFormsModule, MatButton, MatSortHeader, MatSort, MatColumnDef, MatHeaderCell, MatCell, MatHeaderCellDef, MatCellDef, MatHeaderRow, MatRow, MatHeaderRowDef, MatRowDef, SecondsToTimePipe, MeterToKmPipe, CarTypePipe, EuroPipe],
+  imports: [CommonModule, MatTable, FormsModule, MatFormField, MatIcon, MatIconButton, MatInput, MatLabel, MatOption, MatSelect, MatSuffix, MatTooltip, ReactiveFormsModule, MatButton, MatSortHeader, MatSort, MatColumnDef, MatHeaderCell, MatCell, MatHeaderCellDef, MatCellDef, MatHeaderRow, MatRow, MatHeaderRowDef, MatRowDef, SecondsToTimePipe, MeterToKmPipe, CarTypePipe, EuroPipe, MatCard, MatCardTitle, MatDivider, MatCardContent],
   templateUrl: './available-triprequest.component.html',
   styleUrl: './available-triprequest.component.css'
 })
@@ -48,6 +50,7 @@ export class AvailableTriprequestComponent implements OnInit, AfterViewInit {
   lat: number | null = null;
   lon: number | null = null;
   error: string | null = null;
+  selectedDisplayName: string = '';
 
   start!: Location;
   startLocations: Location[] = [];
@@ -182,6 +185,7 @@ export class AvailableTriprequestComponent implements OnInit, AfterViewInit {
           console.log('Backend response', response);
           this.dataSource.data = response;
 
+          this.selectedDisplayName = this.start.displayName
           //sort-objekt zuweisen
           this.dataSource.sort = this.sort;
           this.showTable = true;

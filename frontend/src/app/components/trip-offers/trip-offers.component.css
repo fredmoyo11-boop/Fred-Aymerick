@@ -1,0 +1,33 @@
+.button-row {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+mat-table {
+  width: 100%;
+  table-layout: auto;
+}
+
+mat-header-row {
+  position: sticky;
+  top: 0;
+  background: white;
+  z-index: 2;
+}
+
+.scroll-wrapper {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.actions-cell {
+  min-width: 260px;
+  white-space: nowrap;
+}
+
+.username-cell{
+  min-width: 180px;
+  white-space: nowrap;
+}

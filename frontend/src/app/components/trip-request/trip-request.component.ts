@@ -13,7 +13,7 @@ import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
 import {GeolocationService} from '../../services/geolocation.service';
 
 import {debounceTime, distinctUntilChanged} from 'rxjs';
-import {MatCard, MatCardContent, MatCardTitle} from '@angular/material/card';
+import {MatCard, MatCardActions, MatCardContent, MatCardTitle} from '@angular/material/card';
 import {MeterToKmPipe} from '../../pipes/meter-to-km.pipe';
 import {SecondsToTimePipe} from '../../pipes/seconds-to-time.pipe';
 import {EuroPipe} from '../../pipes/euro.pipe';
@@ -79,6 +79,7 @@ export class TripRequestComponent implements OnInit {
   suggestedLocations: Location[] = []
   selectedIndex = 0
   showCard: boolean = false
+  showOffers: boolean = false
 
   stops: Location[] = []
 
@@ -227,7 +228,6 @@ export class TripRequestComponent implements OnInit {
     this.distance = summary?.distance
     this.duration = summary?.duration
 
-
     this.tripOfferService.getAcceptedTripOffer(tripRequestDTO.tripRequestId).subscribe({
       next: value => {
         this.acceptedTripOffer = value
@@ -236,7 +236,6 @@ export class TripRequestComponent implements OnInit {
         this.acceptedTripOffer = null
       }
     })
-
   }
 
   carPrice(carType: String): number {
@@ -307,8 +306,17 @@ export class TripRequestComponent implements OnInit {
     this.showCard = false
     this.updateRoute()
   }
+//----------------------------------Navigation
 
   navigateToSimulation(): void {
     this.router.navigate(["/offer", this.acceptedTripOffer!.id])
+  }
+
+  toggleOffersCard() {
+    this.showOffers = !this.showOffers
+  }
+
+  onOfferAccepted() {
+    this.showOffers = false
   }
 }

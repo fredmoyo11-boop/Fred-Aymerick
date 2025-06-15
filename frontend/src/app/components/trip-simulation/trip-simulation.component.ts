@@ -372,7 +372,7 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
     })
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result) {
+      if (result !== null) {
         this.tripSimulationService.rateTrip(Number(this.tripOfferId), result as number + 1).subscribe({
           next: value => {
             console.log("Rated trip", result + 1)

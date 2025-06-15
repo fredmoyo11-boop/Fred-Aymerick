@@ -55,7 +55,7 @@ public class TripRequestController {
             tags = {Tags.TRIP_REQUEST},
             responses = {@ApiResponse(responseCode = HttpStatus.OK, description = "Trip request created successfully.",
                     content = @Content(schema = @Schema(implementation = TripRequestDTO.class)))})
-    public TripRequestDTO createCurrentActiveTripRequest(@RequestBody @Valid TripRequestBody tripRequestBody, Principal principal)  {
+    public TripRequestDTO createCurrentActiveTripRequest(@RequestBody @Valid TripRequestBody tripRequestBody, Principal principal) {
         return TripRequestDTO.from(tripRequestService.createCurrentActiveTripRequest(tripRequestBody, principal));
     }
 
@@ -80,13 +80,8 @@ public class TripRequestController {
                             array = @ArraySchema(schema = @Schema(implementation = AvailableTripRequestDTO.class))))})
     @PostMapping("/available")
     public ResponseEntity<List<AvailableTripRequestDTO>> getAvailableRequests(@RequestBody @Valid Location driverLocation) {
-//            @RequestParam(defaultValue = "distanceInKm") String sort,
-//            @RequestParam(defaultValue = "asc") String direction)
-
         return ResponseEntity.ok(tripRequestService.getAvailableRequests(driverLocation));
     }
-
-
 
 
 }

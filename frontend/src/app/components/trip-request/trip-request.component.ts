@@ -12,7 +12,7 @@ import {
 import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
 import {GeolocationService} from '../../services/geolocation.service';
 
-import {debounceTime, distinctUntilChanged} from 'rxjs';
+import {debounceTime, distinctUntilChanged, firstValueFrom} from 'rxjs';
 import {MatCard, MatCardActions, MatCardContent, MatCardTitle} from '@angular/material/card';
 import {MeterToKmPipe} from '../../pipes/meter-to-km.pipe';
 import {SecondsToTimePipe} from '../../pipes/seconds-to-time.pipe';

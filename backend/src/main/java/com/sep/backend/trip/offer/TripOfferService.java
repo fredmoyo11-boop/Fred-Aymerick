@@ -152,23 +152,23 @@ public class TripOfferService {
         }
 
         tripOfferEntity.setStatus(TripOfferStatus.ACCEPTED);
-        final var updatedTripOfferEntity = tripOfferRepository.saveAndFlush(tripOfferEntity);
+        tripOfferEntity = tripOfferRepository.saveAndFlush(tripOfferEntity);
 
-        Long tripRequestId = updatedTripOfferEntity.getTripRequest().getId();
+        Long tripRequestId = tripOfferEntity.getTripRequest().getId();
         var tripOffers = tripOfferRepository.findByTripRequest_IdAndStatus(tripRequestId, TripOfferStatus.PENDING)
                 .stream().peek(tripOffer -> {
                     tripOffer.setStatus(TripOfferStatus.REJECTED);
 
                     var notification = new Notification();
                     notification.setNotificationType(NotificationTypes.TRIP_OFFER_REJECTED);
-                    String message = "Dein Fahrangebot wurde abgelehnt!";
+                    String message = "Dein Fahrtangebot wurde abgelehnt!";
                     notification.setMessage(message);
-                    notificationService.sendNotification(notification, updatedTripOfferEntity.getDriver().getEmail());
+                    notificationService.sendNotification(notification, tripOffer.getDriver().getEmail());
                 }).toList();
         tripOfferRepository.saveAll(tripOffers);
 
-        var driverEntity = updatedTripOfferEntity.getDriver();
-        var customerEntity = updatedTripOfferEntity.getTripRequest().getCustomer();
+        var driverEntity = tripOfferEntity.getDriver();
+        var customerEntity = tripOfferEntity.getTripRequest().getCustomer();
 
         var driverNotification = new Notification();
         driverNotification.setNotificationType(NotificationTypes.TRIP_OFFER_ACCEPTED);

@@ -175,7 +175,7 @@ public class TripRequestService {
                     .getProperties()
                     .getSegments()
                     .getFirst()
-                    .getDistance() / 1000.0;
+                    .getDistance();
 
             double tripDuration = activeRequest
                     .getRoute()

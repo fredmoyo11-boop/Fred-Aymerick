@@ -35,12 +35,12 @@
 
   <div class="info-zeile">
     <p class="beschreibung">Bewertungen:</p>
-    <p class="wert">Keine Bewertungen!</p>
+    <p class="wert">{{ account.ratings | number: '1.2-2' }}</p>
   </div>
 
   <div class="info-zeile">
     <p class="beschreibung">Konto:</p>
-    <p class="wert">{{ account.balance }}</p>
+    <p class="wert">{{ account.balance | euro }}</p>
   </div>
 
   <div class="info-zeile">
@@ -48,10 +48,12 @@
     <p class="wert">{{ account.totalNumberOfRides }}</p>
   </div>
 
-  <div class="info-zeile" *ngIf="account.carType">
-    <p class="beschreibung">Autotyp:</p>
-    <p class="wert cartype">{{ getLocalizedCarType(account.carType) }}</p>
-  </div>
+  @if (account.carType) {
+    <div class="info-zeile">
+      <p class="beschreibung">Autotyp:</p>
+      <p class="wert cartype">{{ getLocalizedCarType(account.carType) }}</p>
+    </div>
+  }
 
 </div>
 

@@ -12,9 +12,11 @@
         <p>Vorname: {{ activeTripOffer.tripRequest.customer.firstName }}</p>
         <p>Nachname: {{ activeTripOffer.tripRequest.customer.lastName }}</p>
         <p>Preis der Fahrt: {{ activeTripOffer.tripRequest.price | euro }}</p>
-        <p>Distanz der Fahrt: {{ activeTripOffer.tripRequest.route.geoJson.features[0].properties.summary.distance | meterToKm }}</p>
-        <p>Dauer der Fahrt: {{ activeTripOffer.tripRequest.route.geoJson.features[0].properties.summary.duration | secondsToTime }}</p>
-        <p>Status der Anfrage: {{ activeTripOffer.status }}</p>
+        <p>Distanz der
+          Fahrt: {{ activeTripOffer.tripRequest.route.geoJson.features[0].properties.summary.distance | meterToKm }}</p>
+        <p>Dauer der
+          Fahrt: {{ activeTripOffer.tripRequest.route.geoJson.features[0].properties.summary.duration | secondsToTime }}</p>
+        <p>Status der Anfrage: {{ activeTripOffer.status | tripOfferStatus }}</p>
         @if (activeTripOffer.status === "ACCEPTED") {
           <div style="text-align: center">
             <button mat-flat-button (click)="navigateToSimulation()">Simulieren
@@ -55,7 +57,6 @@
           </mat-form-field>
 
 
-
           <div style="text-align: center">
             <button mat-align-tabs="end" type="submit" mat-raised-button [disabled]="!locationForm.valid  || !start">
               Suchen
@@ -63,7 +64,7 @@
           </div>
         </form>
         <p *ngIf="selectedDisplayName" style="text-align: center; margin-top: 10px">
-          Ausgewählte Adresse: <strong>{{selectedDisplayName}}</strong>
+          Ausgewählte Adresse: <strong>{{ selectedDisplayName }}</strong>
         </p>
       </mat-card-content>
     </mat-card>
@@ -90,7 +91,7 @@
         <!-- distance Column -->
         <ng-container matColumnDef="distanceInKm">
           <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by distanceInKm">
-            Entfernung <br>(Km)
+            Entfernung
           </th>
           <td mat-cell *matCellDef="let row"> {{ row.distanceInKm | meterToKm }}</td>
         </ng-container>
@@ -130,7 +131,7 @@
         <!-- totalDistanceInKm Column -->
         <ng-container matColumnDef="totalDistanceInKm">
           <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by totalDistanceInKm">
-            Gesamtdistanz <br>(Km)
+            Gesamtdistanz
           </th>
           <td mat-cell *matCellDef="let row"> {{ row.totalDistanceInKm | meterToKm }}</td>
         </ng-container>
@@ -138,7 +139,7 @@
         <!-- duration Column -->
         <ng-container matColumnDef="duration">
           <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by duration">
-            Gesamtdauer <br>(min)
+            Gesamtdauer
           </th>
           <td mat-cell *matCellDef="let row"> {{ row.duration | secondsToTime }}</td>
         </ng-container>
@@ -146,7 +147,7 @@
         <!-- preis Column -->
         <ng-container matColumnDef="price">
           <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by price">
-            Preis <br>(€)
+            Preis
           </th>
           <td mat-cell *matCellDef="let row"> {{ row.price | euro }}</td>
         </ng-container>
@@ -155,7 +156,7 @@
         <ng-container matColumnDef="acceptTrip">
           <th mat-header-cell *matHeaderCellDef> Aktion</th>
           <td mat-cell *matCellDef="let row">
-            <button mat-button color="accent" (click)="acceptTrip(row.requestId)">Annehmen</button>
+            <button mat-button color="accent" (click)="acceptTrip(row.requestId)">Anfragen</button>
           </td>
         </ng-container>
 

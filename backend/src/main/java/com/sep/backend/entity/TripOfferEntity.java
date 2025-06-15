@@ -12,7 +12,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "trip_offer")
+@Table(name = "trip_offer", uniqueConstraints = {@UniqueConstraint(columnNames = {"trip_request_id", "driver_id"})})
 public class TripOfferEntity extends AbstractEntity {
 
     @ManyToOne

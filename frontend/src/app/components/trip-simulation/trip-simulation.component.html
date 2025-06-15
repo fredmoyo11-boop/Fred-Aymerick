@@ -7,29 +7,31 @@
   <div class="floating-content">
     <mat-card>
       <mat-card-title>
-        Simulations-Steuerung
+        <span style="padding: 25px">Simulations-Steuerung</span>
       </mat-card-title>
       <mat-card-content>
-        @if (animationLocked) {
-          <p style="font-weight: bold">Die Simulation ist momentan blockiert!</p>
-        } @else {
-          <div class="control-container">
-            @if (!animationInitialized || animationPaused) {
-              <button mat-icon-button (click)="start()" [disabled]="animationCompleted">
-                <mat-icon>play_arrow</mat-icon>
-              </button>
-            } @else if (!animationPaused) {
-              <button mat-icon-button (click)="stop()" [disabled]="animationCompleted">
-                <mat-icon>pause</mat-icon>
-              </button>
-            }
+        <div style="padding: 5px">
+          @if (animationLocked) {
+            <p style="font-weight: bold">Die Simulation ist momentan blockiert!</p>
+          } @else {
+            <div class="control-container">
+              @if (!animationInitialized || animationPaused) {
+                <button mat-icon-button (click)="start()" [disabled]="animationCompleted">
+                  <mat-icon>play_arrow</mat-icon>
+                </button>
+              } @else if (!animationPaused) {
+                <button mat-icon-button (click)="stop()" [disabled]="animationCompleted">
+                  <mat-icon>pause</mat-icon>
+                </button>
+              }
 
-            <mat-slider min="3" max="30" step="1">
-              <input matSliderThumb [(ngModel)]="sliderDuration" (valueChange)="onSliderChange($event)"
-                     [disabled]="animationCompleted">
-            </mat-slider>
-          </div>
-        }
+              <mat-slider min="3" max="30" step="1">
+                <input matSliderThumb [(ngModel)]="sliderDuration" (valueChange)="onSliderChange($event)"
+                       [disabled]="animationCompleted">
+              </mat-slider>
+            </div>
+          }
+        </div>
       </mat-card-content>
     </mat-card>
   </div>

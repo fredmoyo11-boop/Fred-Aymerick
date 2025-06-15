@@ -1,19 +1,9 @@
-body {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 40px;
-  background-color: #f4f4f4;
-  font-family: Arial, sans-serif;
-}
-
 .container {
-  background-color: white;
-  padding: 20px;
-  border-radius: 8px;
-  max-width: 400px;
   width: 100%;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  min-width: 600px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
 }
 
 .label {
@@ -42,13 +32,6 @@ body {
   border: 1px solid gray;
   border-radius: 5px;
   box-sizing: border-box;
-}
-
-.error-message {
-  color: red;
-  font-size: 14px;
-  margin: 8px 0;
-  text-align: center;
 }
 
 .note {
@@ -95,7 +78,6 @@ body {
   display: flex;
   flex-direction: column;
   gap: 15px;
-  width: 50%;
 }
 
 .transaction-card-content {

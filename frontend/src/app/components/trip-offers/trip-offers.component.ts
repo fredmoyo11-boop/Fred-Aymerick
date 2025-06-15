@@ -7,7 +7,7 @@ import {
   OnChanges,
   SimpleChanges,
   Output,
-  EventEmitter
+  EventEmitter, AfterViewInit
 } from '@angular/core';
 import {MatTableDataSource} from '@angular/material/table';
 import {MatSort} from '@angular/material/sort';
@@ -34,13 +34,14 @@ import {AngularNotificationService} from '../../services/angular-notification.se
   templateUrl: './trip-offers.component.html',
   styleUrls: ['./trip-offers.component.css'],
 })
-export class TripOffersComponent implements OnInit {
-  displayedColumns: string[] = ['firstName', 'lastName', 'username', 'rating', 'totalDriveCount', 'driveDistance', 'actions'];
-  dataSource = new MatTableDataSource<TripOffer>();
-
+export class TripOffersComponent implements OnInit, AfterViewInit {
   private tripOfferService = inject(TripOfferService);
   private angularNotificationService = inject(AngularNotificationService)
+
   @ViewChild(MatSort) sort!: MatSort;
+  tripOffers: TripOffer[] = []
+  dataSource = new MatTableDataSource<TripOffer>();
+  displayedColumns: string[] = ['firstName', 'lastName', 'username', 'rating', 'totalDriveCount', 'driveDistance', 'actions'];
 
   @Output() offerAccepted = new EventEmitter<void>
 
@@ -57,6 +58,38 @@ export class TripOffersComponent implements OnInit {
     this.refresh();
   }
 
+  ngAfterViewInit(): void {
+    this.dataSource.sort = this.sort
+
+    this.dataSource.sortingDataAccessor = (item, property) => {
+      switch (property) {
+        case 'rating':
+          return item.driverStatistics?.averageRating;
+        case 'totalDriveCount':
+          return item.driverStatistics?.totalTrips;
+        case 'driveDistance':
+          return item.driverStatistics?.totalDistance;
+        case 'firstName':
+          return item.driver?.firstName;
+        case 'lastName':
+          return item.driver?.lastName;
+        case 'username':
+          return item.driver?.username;
+        default:
+          return (item as any)[property];
+      }
+    };
+
+    setTimeout(() => {
+      this.sort.active = "rating"
+      this.sort.direction = "asc"
+      this.sort.sortChange.emit({
+        active: this.sort.active,
+        direction: this.sort.direction
+      })
+    })
+  }
+
   acceptOffer(tripOfferId: number) {
     this.tripOfferService.acceptTripOffer(tripOfferId).subscribe(() => this.refresh())
     this.offerAccepted.emit()
@@ -67,61 +100,15 @@ export class TripOffersComponent implements OnInit {
   }
 
   refresh() {
-    this.tripOfferService.getCurrentTripOffers().subscribe(data => {
-      this.dataSource.data = data;
-      this.dataSource.sort = this.sort;
+    this.tripOfferService.getCurrentTripOffers().subscribe({
+      next: value => {
+        this.tripOffers = value
+        this.dataSource.data = value
+      }, error: err => {
+        console.error(err)
+        this.tripOffers = []
+        this.dataSource.data = []
+      }
     });
   }
 }
-
-/*
-variabeleln :
-hasActiveOffer = false;
-
-
-
- Im ngOnInit():
-this.checkActiveOffer();
-
-
- Methoden:
-checkActiveOffer() {
-  this.tripOfferService.hasActiveOffer().subscribe(res => {
-    this.hasActiveOffer = res.value === 'HAS_ACTIVE_OFFER';
-  });
-}
-createOffer(tripRequestId: number) {
-  this.tripOfferService.createNewTripOffer(tripRequestId).subscribe(() => {
-    this.checkActiveOffer(); // Aktualisieren
-  });
-}
-
-withdrawOffer() {
-  this.tripOfferService.withdrawOffer().subscribe(() => {
-    this.checkActiveOffer();
-    this.loadAvailableRequests();
-  });
-}
-
-
-
-Im HTML:
-<div *ngIf="hasActiveOffer">
-  <p>Du hast bereits ein aktives Angebot.</p>
-  <button (click)="withdrawOffer()">Angebot zurückziehen</button>
-</div>
-
-<div *ngIf="!hasActiveOffer">
-  <table>
-    <tr *ngFor="let request of availableRequests">
-      <td>{{ request.startOrt }} → {{ request.zielOrt }}</td>
-      <td><button (click)="createOffer(request.id)">Angebot abgeben</button></td>
-    </tr>
-  </table>
-</div>
-
-
-
-
-
-*/

@@ -33,11 +33,12 @@ import {AngularNotificationService} from '../../services/angular-notification.se
 import {Router} from '@angular/router';
 import {MatCard, MatCardContent, MatCardTitle} from '@angular/material/card';
 import {MatDivider} from '@angular/material/divider';
+import {TripOfferStatusPipe} from '../../pipes/trip-offer-status.pipe';
 
 @Component({
   selector: 'app-available-triprequest',
   standalone: true,
-  imports: [CommonModule, MatTable, FormsModule, MatFormField, MatIcon, MatIconButton, MatInput, MatLabel, MatOption, MatSelect, MatSuffix, MatTooltip, ReactiveFormsModule, MatButton, MatSortHeader, MatSort, MatColumnDef, MatHeaderCell, MatCell, MatHeaderCellDef, MatCellDef, MatHeaderRow, MatRow, MatHeaderRowDef, MatRowDef, SecondsToTimePipe, MeterToKmPipe, CarTypePipe, EuroPipe, MatCard, MatCardTitle, MatDivider, MatCardContent],
+  imports: [CommonModule, MatTable, FormsModule, MatFormField, MatIcon, MatIconButton, MatInput, MatLabel, MatOption, MatSelect, MatSuffix, MatTooltip, ReactiveFormsModule, MatButton, MatSortHeader, MatSort, MatColumnDef, MatHeaderCell, MatCell, MatHeaderCellDef, MatCellDef, MatHeaderRow, MatRow, MatHeaderRowDef, MatRowDef, SecondsToTimePipe, MeterToKmPipe, CarTypePipe, EuroPipe, MatCard, MatCardTitle, MatDivider, MatCardContent, TripOfferStatusPipe],
   templateUrl: './available-triprequest.component.html',
   styleUrl: './available-triprequest.component.css'
 })

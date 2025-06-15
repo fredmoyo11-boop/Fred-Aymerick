@@ -1,4 +1,14 @@
-import {Component, OnInit, ViewChild, inject, Input, OnChanges, SimpleChanges} from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  inject,
+  Input,
+  OnChanges,
+  SimpleChanges,
+  Output,
+  EventEmitter
+} from '@angular/core';
 import {MatTableDataSource} from '@angular/material/table';
 import {MatSort} from '@angular/material/sort';
 import {CommonModule} from '@angular/common';
@@ -32,6 +42,8 @@ export class TripOffersComponent implements OnInit {
   private angularNotificationService = inject(AngularNotificationService)
   @ViewChild(MatSort) sort!: MatSort;
 
+  @Output() offerAccepted = new EventEmitter<void>
+
   ngOnInit(): void {
     this.angularNotificationService.latestNotification$.subscribe({
       next: notification => {
@@ -42,13 +54,12 @@ export class TripOffersComponent implements OnInit {
         }
       }
     })
-
     this.refresh();
   }
 
-
   acceptOffer(tripOfferId: number) {
     this.tripOfferService.acceptTripOffer(tripOfferId).subscribe(() => this.refresh())
+    this.offerAccepted.emit()
   }
 
   declineOffer(tripOfferId: number) {

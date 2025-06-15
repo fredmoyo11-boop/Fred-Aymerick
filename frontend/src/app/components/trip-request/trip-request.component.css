@@ -17,6 +17,20 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
+.offers-container {
+  width: auto;
+  min-width: 400px;
+  max-width: 100%;
+  background-color: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.table-container {
+  width: 100%;
+  overflow: hidden;
+  display: block;
+}
+
 .search-form-field { /*Search form field*/
   width: 100%;
 }
@@ -100,6 +114,7 @@
 .delete-button {
   background-color: #d32f2f !important;
   color: white !important;
+
 }
 
 .delete-button:hover {
@@ -110,11 +125,24 @@
   width: 120px;
   margin: 16px auto 16px auto;
   display: inline-block;
+}
 
+.back-button {
+  width: 120px;
+  margin: 16px auto 16px auto;
+  display: inline-block;
+}
+
+.button-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1rem 0 1rem;
 }
 
 .center-title {
   padding-top: 3px;
+  padding-bottom: 3px;
   text-align: center;
   font-weight: bold;
 }

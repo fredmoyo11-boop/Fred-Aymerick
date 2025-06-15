@@ -1,11 +1,28 @@
-.map-container {
+.container {
   position: relative;
-  /*height: 100%;*/
-  min-width: 700px;
+  min-width: 1000px;
   width: 100%;
 }
 
 .control-container {
   display: flex;
   justify-items: center;
+}
+
+.background-content {
+  height: 100%;
+  width: 100%;
+}
+
+.floating-content {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  padding: 10px;
+}
+
+.mat-card-title {
+  padding: 5px;
 }

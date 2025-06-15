@@ -9,7 +9,7 @@
   align-items: flex-start;
 }
 
-.active-container ,
+.active-container,
 .request-container { /*Both active trip card and trip request card*/
   width: 360px;
   max-height: 90vh;
@@ -101,6 +101,7 @@
   background-color: #d32f2f !important;
   color: white !important;
 }
+
 .delete-button:hover {
   background-color: #b71c1c;
 }

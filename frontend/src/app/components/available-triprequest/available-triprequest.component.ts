@@ -1,4 +1,4 @@
-import {Component, ViewChild, AfterViewInit, OnInit} from '@angular/core';
+import {Component, ViewChild, AfterViewInit, OnInit, OnDestroy} from '@angular/core';
 import {
   MatCell,
   MatCellDef,
@@ -22,7 +22,7 @@ import {
   TripOfferService,
   TripOffer
 } from '../../../api/sep_drive';
-import {debounceTime, distinctUntilChanged, firstValueFrom, tap} from 'rxjs';
+import {debounceTime, distinctUntilChanged, firstValueFrom, Subscription, tap} from 'rxjs';
 import {CommonModule} from '@angular/common';
 import {MatTable} from '@angular/material/table';
 import {SecondsToTimePipe} from '../../pipes/seconds-to-time.pipe';
@@ -39,9 +39,7 @@ import {Router} from '@angular/router';
   templateUrl: './available-triprequest.component.html',
   styleUrl: './available-triprequest.component.css'
 })
-
-
-export class AvailableTriprequestComponent implements OnInit, AfterViewInit {
+export class AvailableTriprequestComponent implements OnInit, AfterViewInit, OnDestroy {
   locationForm: FormGroup = new FormGroup({
     startQuery: new FormControl('', [Validators.required])
   });
@@ -61,27 +59,26 @@ export class AvailableTriprequestComponent implements OnInit, AfterViewInit {
 
   activeTripOffer: TripOffer | null = null;
 
+  private subscription!: Subscription
+
   constructor(private tripRequestService: TripRequestService, private tripOfferService: TripOfferService, private angularNotificationService: AngularNotificationService, private router: Router) {
   }
-
 
   onStartChange(event: MatSelectChange) {
     this.start = event.value
   }
 
   ngOnInit(): void {
-    this.angularNotificationService.latestNotification$.subscribe({
+    console.log("inited available trip request")
+    this.subscription = this.angularNotificationService.latestNotification$.subscribe({
       next: notification => {
-        if (notification) {
-          if (notification.notificationType.startsWith("TRIP_OFFER")) {
-            void this.getCurrentActiveTripRequest()
-          }
+        // null for init
+        if (notification === null || notification.notificationType.startsWith("TRIP_OFFER")) {
+          console.log("Available trip request received notification", notification)
+          void this.getCurrentActiveTripOffer()
         }
       }
     })
-
-    void this.getCurrentActiveTripRequest()
-
 
     this.dataSource = new MatTableDataSource<AvailableTripRequestDTO>([]);
 
@@ -107,7 +104,11 @@ export class AvailableTriprequestComponent implements OnInit, AfterViewInit {
     });
   }
 
-  async getCurrentActiveTripRequest() {
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe()
+  }
+
+  async getCurrentActiveTripOffer() {
     try {
       this.activeTripOffer = await firstValueFrom(this.tripOfferService.getCurrentActiveTripOffer());
     } catch (error) {
@@ -203,7 +204,6 @@ export class AvailableTriprequestComponent implements OnInit, AfterViewInit {
     this.tripOfferService.createNewTripOffer(tripRequestId).subscribe({
       next: value => {
         console.log("Created new trip offer.")
-        void this.getCurrentActiveTripRequest()
       },
       error: error => {
         console.error(error)

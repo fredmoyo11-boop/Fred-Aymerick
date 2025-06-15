@@ -27,11 +27,7 @@ export class DialogRatingComponent {
   setSelectedIndex(index: number) {
     this.selectedIndex = index
   }
-
-  onCancel(): void {
-    this.dialog.close();
-  }
-
+  
   onConfirm() {
     this.dialog.close(this.selectedIndex);
   }

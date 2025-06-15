@@ -157,7 +157,11 @@
     }
   </div>
   @if (tripRequestDTO && !acceptedTripOffer) {
-    <app-trip-offers></app-trip-offers>
+    <mat-card>
+      <mat-card-content>
+        <app-trip-offers></app-trip-offers>
+      </mat-card-content>
+    </mat-card>
   }
 </div>
 

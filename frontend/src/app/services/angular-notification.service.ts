@@ -1,6 +1,6 @@
 import {inject, Injectable} from '@angular/core';
 import {StompService} from './stomp.service';
-import {BehaviorSubject} from 'rxjs';
+import {BehaviorSubject, Subscription} from 'rxjs';
 import {AngularAuthService} from './angular-auth.service';
 import {Notification} from '../../api/sep_drive';
 

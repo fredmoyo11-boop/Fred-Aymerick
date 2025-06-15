@@ -17,6 +17,8 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {DialogRatingComponent} from '../dialog-rating/dialog-rating.component';
 import {AngularAuthService} from '../../services/angular-auth.service';
+import {MatCard, MatCardContent, MatCardTitle} from '@angular/material/card';
+import {Router} from '@angular/router';
 
 
 @Component({
@@ -29,6 +31,9 @@ import {AngularAuthService} from '../../services/angular-auth.service';
     MatSliderThumb,
     FormsModule,
     ReactiveFormsModule,
+    MatCard,
+    MatCardContent,
+    MatCardTitle,
   ],
   templateUrl: './trip-simulation.component.html',
   standalone: true,
@@ -41,6 +46,7 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
   private stompService = inject(StompService)
   private tripSimulationService = inject(TripSimulationService)
   private angularAuthService = inject(AngularAuthService)
+  private router = inject(Router)
 
   stops: Location[] = []
 
@@ -69,9 +75,7 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
 
   coordinates: number[][] = []
 
-  simulationPartnerFirstName: string = ""
-  simulationPartnerLastName: string = ""
-  simulationPartnerUsername: string = ""
+  partnerDisplayName = ""
 
   private role: string | null = null
   private driverPresent = false
@@ -114,10 +118,7 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
       next: role => {
         this.role = role
         if (this.role === "DRIVER") {
-          this.simulationPartnerFirstName = this.tripOffer.tripRequest.customer.firstName
-          this.simulationPartnerLastName = this.tripOffer.tripRequest.customer.lastName
-          this.simulationPartnerUsername = this.tripOffer.tripRequest.customer.username
-
+          this.partnerDisplayName = `${this.tripOffer.tripRequest.customer.firstName} ${this.tripOffer.tripRequest.customer.lastName} (${this.tripOffer.tripRequest.customer.username})`
           interval(1000)
             .pipe(
               takeWhile(() => !this.driverPresent),
@@ -127,9 +128,7 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
             )
             .subscribe()
         } else if (this.role === "CUSTOMER") {
-          this.simulationPartnerFirstName = this.tripOffer.driver.firstName
-          this.simulationPartnerLastName = this.tripOffer.driver.lastName
-          this.simulationPartnerUsername = this.tripOffer.driver.username
+          this.partnerDisplayName = `${this.tripOffer.driver.firstName} ${this.tripOffer.driver.lastName} (${this.tripOffer.driver.username})`
         }
       }
     })
@@ -144,6 +143,7 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
       this.animationLocked = animationLocked;
     })
   }
+
 
   handleSimulationAction(simulationAction: SimulationAction): void {
     this.animationIndex = simulationAction.parameters.startIndex;
@@ -372,10 +372,11 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
     })
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result) {
+      if (result !== null) {
         this.tripSimulationService.rateTrip(Number(this.tripOfferId), result as number + 1).subscribe({
           next: value => {
             console.log("Rated trip", result + 1)
+            this.router.navigate(["/"])
           },
           error: err => {
             console.error(err)

@@ -12,7 +12,7 @@ import {
 import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
 import {GeolocationService} from '../../services/geolocation.service';
 
-import {debounceTime, distinctUntilChanged} from 'rxjs';
+import {debounceTime, distinctUntilChanged, firstValueFrom} from 'rxjs';
 import {MatCard, MatCardContent, MatCardTitle} from '@angular/material/card';
 import {MeterToKmPipe} from '../../pipes/meter-to-km.pipe';
 import {SecondsToTimePipe} from '../../pipes/seconds-to-time.pipe';
@@ -29,6 +29,7 @@ import {CarTypePipe} from '../../pipes/car-type.pipe';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {TripOffersComponent} from '../trip-offers/trip-offers.component';
 import {Router} from '@angular/router';
+import {AngularNotificationService} from '../../services/angular-notification.service';
 
 @Component({
   selector: 'app-trip-request',
@@ -62,6 +63,8 @@ import {Router} from '@angular/router';
   styleUrl: './trip-request.component.css'
 })
 export class TripRequestComponent implements OnInit {
+  angularNotificationService = inject(AngularNotificationService)
+
   tripOfferService = inject(TripOfferService)
   tripRequestService = inject(TripRequestService)
   nominatimService = inject(NominatimService)
@@ -96,18 +99,28 @@ export class TripRequestComponent implements OnInit {
 
 
   ngOnInit(): void {
-    //If active trip request exist, then get information to display
-    this.tripRequestService.getCurrentActiveTripRequest().subscribe({
-      next: tripRequest => {
-        this.consumeTripRequestDTO(tripRequest)
-      },
-      error: err => {
-        console.error(err)
-        if (err.status === 404) {
-          this.tripRequestDTO = null
+    this.angularNotificationService.latestNotification$.subscribe({
+      next: notification => {
+        if (notification) {
+          void this.getCurrentActiveTripRequest()
         }
       }
     })
+
+
+    //If active trip request exist, then get information to display
+    // this.tripRequestService.getCurrentActiveTripRequest().subscribe({
+    //   next: tripRequest => {
+    //     this.consumeTripRequestDTO(tripRequest)
+    //   },
+    //   error: err => {
+    //     console.error(err)
+    //     if (err.status === 404) {
+    //       this.tripRequestDTO = null
+    //     }
+    //   }
+    // })
+    void this.getCurrentActiveTripRequest()
 
     //On changes in search bar, get new suggestions list
     this.form.get('query')!.valueChanges.pipe(
@@ -129,6 +142,29 @@ export class TripRequestComponent implements OnInit {
         console.error(err)
       }
     })
+  }
+
+  async getCurrentActiveTripRequest() {
+    try {
+      const tripRequest = await firstValueFrom(this.tripRequestService.getCurrentActiveTripRequest())
+      this.consumeTripRequestDTO(tripRequest)
+    } catch (error) {
+      console.error(error)
+      this.tripRequestDTO = null
+    }
+  }
+
+  async getAcceptedTripOffer() {
+    try {
+      if (this.tripRequestDTO) {
+        this.acceptedTripOffer = await firstValueFrom(this.tripOfferService.getAcceptedTripOffer(this.tripRequestDTO.tripRequestId))
+      } else {
+        this.acceptedTripOffer = null
+      }
+    } catch (error) {
+      console.error(error)
+      this.acceptedTripOffer = null
+    }
   }
 
 //---------------------------------Start of location suggestion
@@ -227,16 +263,7 @@ export class TripRequestComponent implements OnInit {
     this.distance = summary?.distance
     this.duration = summary?.duration
 
-
-    this.tripOfferService.getAcceptedTripOffer(tripRequestDTO.tripRequestId).subscribe({
-      next: value => {
-        this.acceptedTripOffer = value
-      }, error: err => {
-        console.error(err)
-        this.acceptedTripOffer = null
-      }
-    })
-
+    void this.getAcceptedTripOffer()
   }
 
   carPrice(carType: String): number {
@@ -261,7 +288,7 @@ export class TripRequestComponent implements OnInit {
       lastLocation.coordinate.longitude === newLocation.coordinate.longitude && lastLocation.displayName === newLocation.displayName;
   }
 
-  dragDropisSameLocation(location1: Location, location2: Location) {
+  dragDropIsSameLocation(location1: Location, location2: Location) {
     return location1.coordinate.latitude === location2.coordinate.latitude && location1.coordinate.longitude === location2.coordinate.longitude &&
       location1.displayName === location2.displayName
   }
@@ -284,7 +311,7 @@ export class TripRequestComponent implements OnInit {
     moveItemInArray(this.stops, event.previousIndex, event.currentIndex)
 
     for (let i = 0; i < this.stops.length - 1; i++) {
-      if (this.dragDropisSameLocation(this.stops[i], this.stops[i + 1])) {
+      if (this.dragDropIsSameLocation(this.stops[i], this.stops[i + 1])) {
         console.warn("Zwei gleiche Adressen können nicht hintereinander angefahren werden")
         this.snackBar.open("Zwei gleiche Adressen können nicht hintereinander angefahren werden", "OK")
         moveItemInArray(this.stops, event.currentIndex, event.previousIndex);

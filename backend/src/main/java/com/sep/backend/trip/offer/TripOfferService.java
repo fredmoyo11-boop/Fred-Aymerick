@@ -53,9 +53,6 @@ public class TripOfferService {
                 .flatMap(Optional::stream)
                 .map(TripOffer::from)
                 .toList();
-        for (TripOffer tripOffer : tripOffers) {
-            log.debug("Current trip offer: {}", tripOffer);
-        }
 
         if (tripOffers.isEmpty()) {
             throw new NotFoundException("Current driver does not have a pending trip offer.");
@@ -127,11 +124,19 @@ public class TripOfferService {
         TripOfferEntity tripOfferEntity = new TripOfferEntity(tripRequestEntity, driverEntity, TripOfferStatus.PENDING);
         tripOfferRepository.save(tripOfferEntity);
 
-        var notification = new Notification();
-        notification.setNotificationType(NotificationTypes.TRIP_OFFER_NEW);
-        String message = String.format("Neues Fahrtangebot von %s %s (%s)", driverEntity.getFirstName(), driverEntity.getLastName(), driverEntity.getUsername());
-        notification.setMessage(message);
-        notificationService.sendNotification(notification, tripRequestEntity.getCustomer().getEmail());
+        var customerEntity = tripRequestEntity.getCustomer();
+
+        var customerNotification = new Notification();
+        customerNotification.setNotificationType(NotificationTypes.TRIP_OFFER_NEW);
+        String customerMessage = String.format("Du hast ein neues Fahrtangebot von %s %s (%s)!", driverEntity.getFirstName(), driverEntity.getLastName(), driverEntity.getUsername());
+        customerNotification.setMessage(customerMessage);
+        notificationService.sendNotification(customerNotification, customerEntity.getEmail());
+
+        var driverNotification = new Notification();
+        driverNotification.setNotificationType(NotificationTypes.TRIP_OFFER_NEW);
+        String driverMessage = String.format("Das Fahrtangebot für %s %s (%s) wurde erstellt!", customerEntity.getFirstName(), customerEntity.getLastName(), customerEntity.getUsername());
+        driverNotification.setMessage(driverMessage);
+        notificationService.sendNotification(driverNotification, driverEntity.getEmail());
         return "Successfully created new trip offer.";
     }
 
@@ -147,12 +152,7 @@ public class TripOfferService {
         }
 
         tripOfferEntity.setStatus(TripOfferStatus.ACCEPTED);
-        final var updatedTripOfferEntity = tripOfferRepository.save(tripOfferEntity);
-        var acceptedNotification = new Notification();
-        acceptedNotification.setNotificationType(NotificationTypes.TRIP_OFFER_ACCEPTED);
-        acceptedNotification.setMessage("Dein Fahrangebot wurde akzeptiert!");
-        notificationService.sendNotification(acceptedNotification, updatedTripOfferEntity.getDriver().getEmail());
-
+        final var updatedTripOfferEntity = tripOfferRepository.saveAndFlush(tripOfferEntity);
 
         Long tripRequestId = updatedTripOfferEntity.getTripRequest().getId();
         var tripOffers = tripOfferRepository.findByTripRequest_IdAndStatus(tripRequestId, TripOfferStatus.PENDING)
@@ -166,6 +166,21 @@ public class TripOfferService {
                     notificationService.sendNotification(notification, updatedTripOfferEntity.getDriver().getEmail());
                 }).toList();
         tripOfferRepository.saveAll(tripOffers);
+
+        var driverEntity = updatedTripOfferEntity.getDriver();
+        var customerEntity = updatedTripOfferEntity.getTripRequest().getCustomer();
+
+        var driverNotification = new Notification();
+        driverNotification.setNotificationType(NotificationTypes.TRIP_OFFER_ACCEPTED);
+        String acceptedNotificationDriverMessage = String.format("Dein Fahrtangebot an %s %s (%s) wurde akzeptiert! Du kannst die Simulation gleich starten!", customerEntity.getFirstName(), customerEntity.getLastName(), customerEntity.getUsername());
+        driverNotification.setMessage(acceptedNotificationDriverMessage);
+        notificationService.sendNotification(driverNotification, driverEntity.getEmail());
+
+        var customerNotification = new Notification();
+        customerNotification.setNotificationType(NotificationTypes.TRIP_OFFER_ACCEPTED);
+        String acceptedNotificationCustomerMessage = String.format("Du hast das Fahrtangebot von %s %s (%s) akzeptiert! Du kannst die Simulation gleich starten!", driverEntity.getFirstName(), driverEntity.getLastName(), driverEntity.getUsername());
+        customerNotification.setMessage(acceptedNotificationCustomerMessage);
+        notificationService.sendNotification(customerNotification, customerEntity.getEmail());
     }
 
     public void rejectTripOffer(Long tripOfferId, Principal principal) throws NotFoundException {
@@ -181,11 +196,20 @@ public class TripOfferService {
         tripOfferEntity.setStatus(TripOfferStatus.REJECTED);
         tripOfferRepository.save(tripOfferEntity);
 
-        var notification = new Notification();
-        notification.setNotificationType(NotificationTypes.TRIP_OFFER_REJECTED);
-        notification.setMessage("Dein Fahrangebot wurde abgelehnt!");
-        notificationService.sendNotification(notification, tripOfferEntity.getDriver().getEmail());
+        var driverEntity = tripOfferEntity.getDriver();
+        var customerEntity = tripOfferEntity.getTripRequest().getCustomer();
 
+        var driverNotification = new Notification();
+        driverNotification.setNotificationType(NotificationTypes.TRIP_OFFER_REJECTED);
+        String driverMessage = String.format("Dein Fahrtangebot an %s %s (%s) wurde abgelehnt!", customerEntity.getFirstName(), customerEntity.getLastName(), customerEntity.getUsername());
+        driverNotification.setMessage(driverMessage);
+        notificationService.sendNotification(driverNotification, driverEntity.getEmail());
+
+        var customerNotification = new Notification();
+        customerNotification.setNotificationType(NotificationTypes.TRIP_OFFER_REJECTED);
+        String customerMessage = String.format("Du hast das Fahrtangebot von %s %s (%s) abgelehnt!", driverEntity.getFirstName(), driverEntity.getLastName(), driverEntity.getUsername());
+        customerNotification.setMessage(customerMessage);
+        notificationService.sendNotification(customerNotification, customerEntity.getEmail());
     }
 
     public void revokeTripOffer(Long tripOfferId, Principal principal) throws NotFoundException {
@@ -201,12 +225,19 @@ public class TripOfferService {
         tripOfferEntity.setStatus(TripOfferStatus.REVOKED);
         tripOfferRepository.save(tripOfferEntity);
 
-        var notification = new Notification();
-        notification.setNotificationType(NotificationTypes.TRIP_OFFER_REVOKED);
+        var customerNotification = new Notification();
+        customerNotification.setNotificationType(NotificationTypes.TRIP_OFFER_REVOKED);
         var customerEntity = tripOfferEntity.getTripRequest().getCustomer();
-        String message = String.format("%s %s (%s) hat sein Fahrtangebot zurückgezogen!", customerEntity.getFirstName(), customerEntity.getLastName(), customerEntity.getUsername());
-        notification.setMessage(message);
-        notificationService.sendNotification(notification, tripOfferEntity.getTripRequest().getCustomer().getEmail());
+        String customerMessage = String.format("%s %s (%s) hat sein Fahrtangebot zurückgezogen!", customerEntity.getFirstName(), customerEntity.getLastName(), customerEntity.getUsername());
+        customerNotification.setMessage(customerMessage);
+        notificationService.sendNotification(customerNotification, customerEntity.getEmail());
+
+        var driverNotification = new Notification();
+        driverNotification.setNotificationType(NotificationTypes.TRIP_OFFER_REVOKED);
+        var driverEntity = tripOfferEntity.getDriver();
+        String driverMessage = String.format("Du hast dein Fahrtangebot für %s %s (%s) zurückgezogen!", driverEntity.getFirstName(), driverEntity.getLastName(), driverEntity.getUsername());
+        driverNotification.setMessage(driverMessage);
+        notificationService.sendNotification(driverNotification, driverEntity.getEmail());
     }
 
     public boolean isPendingTripOffer(Long tripOfferId) throws NotFoundException {

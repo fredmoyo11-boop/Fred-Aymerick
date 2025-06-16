@@ -1,5 +1,5 @@
 import {Component, inject, OnInit} from '@angular/core';
-import {AccountDTO, AccountService, TransactionService} from '../../../api/sep_drive';
+import {AccountDTO, AccountService, BalanceService, } from '../../../api/sep_drive';
 import {ActivatedRoute} from '@angular/router';
 import {FormControl, ReactiveFormsModule} from '@angular/forms';
 import {NgIf} from '@angular/common';
@@ -17,14 +17,15 @@ import {NgIf} from '@angular/common';
 export class BalanceComponent implements OnInit{
 
   accountService = inject(AccountService)
-  transactionService = inject(TransactionService)
+  transactionService = inject(BalanceService)
 
 
   account! : AccountDTO;
-  // paramUsername =  "";
+  // history! : BA;
   searchControl =new FormControl("");
   inputAmount = 0;
   paramUsername = "";
+  draw_pressed = false
 
 
   constructor(private route: ActivatedRoute) {
@@ -44,6 +45,8 @@ export class BalanceComponent implements OnInit{
         });
       }
     });
+
+
   }
 
 
@@ -76,6 +79,7 @@ deposit(){
         this.searchControl.setValue("")
         console.log("Deposit success (balance.ts):", response);
         console.log(this.account.balance)
+        this.draw_pressed = false;
       },
       error: (err) => {
         console.error("Deposit error (balance.ts):", err);
@@ -86,6 +90,7 @@ deposit(){
 
 
   withdrawal() {
+
     this.inputAmount = this.validator(this.searchControl);
 
     if (this.account.balance - this.inputAmount < 0){
@@ -99,6 +104,7 @@ deposit(){
         this.refresh();
         this.searchControl.setValue("")
         console.log("Withdraw success :", response);
+        this.draw_pressed = false;
       },
       error: (err) => {
         console.error("Withdraw error:", err);
@@ -121,6 +127,9 @@ deposit(){
     this.inputAmount = this.validator(this.searchControl);
     return this.account.balance - this.inputAmount < 0
 
+  }
+  pressed(){
+    this.draw_pressed = true;
   }
 
 

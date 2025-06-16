@@ -13,7 +13,7 @@
   />
 </div>
 
-<div *ngIf="validWithdrawal()" class="error-message">
+<div *ngIf="validWithdrawal() && this.draw_pressed" class="error-message">
   Betrag zu hoch für ein Withdrawal
 </div>
 
@@ -24,7 +24,8 @@
     Deposit
   </button>
 
-  <button (click)="withdrawal()" class="withdrawal">
+  <button (click)="withdrawal() , pressed()" class="withdrawal">
     Withdrawal
   </button>
+
 </div>

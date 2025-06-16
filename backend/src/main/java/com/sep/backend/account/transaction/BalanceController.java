@@ -8,23 +8,21 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import jakarta.transaction.Transaction;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/api/balance", produces = MediaType.APPLICATION_JSON_VALUE)
-public class TransactionController {
+public class BalanceController {
 
-     public final TransactionService transactionService;
+     public final BalanceService balanceService;
 
 
-    public TransactionController(TransactionService transactionService) {
-        this.transactionService = transactionService;
+    public BalanceController(BalanceService balanceService) {
+        this.balanceService = balanceService;
     }
 
 
@@ -35,7 +33,7 @@ public class TransactionController {
                     @ApiResponse(responseCode = HttpStatus.OK, description = "deposit successful",
                             content = @Content(schema = @Schema(implementation = StringResponse.class)))})
     public StringResponse deposit(@RequestParam("amount") double amount, Principal principal) {
-        transactionService.deposit(amount, principal);
+        balanceService.deposit(amount, principal);
         return new StringResponse("deposit successful");
     }
 
@@ -46,7 +44,7 @@ public class TransactionController {
                     @ApiResponse(responseCode = HttpStatus.OK, description = "withdrawal successful",
                             content = @Content(schema = @Schema(implementation = StringResponse.class)))})
     public StringResponse withdraw(@RequestParam("amount") double amount, Principal principal) {
-        transactionService.withdraw(amount, principal);
+        balanceService.withdraw(amount, principal);
         return new StringResponse("withdraw successful");
     }
 
@@ -54,10 +52,20 @@ public class TransactionController {
     @Operation(description = "Lets the user transact money to a driver",
             tags = {Tags.TRANSACTION},
             responses = {
-                    @ApiResponse(responseCode = HttpStatus.OK, description = "transaction successful",
+                    @ApiResponse(responseCode = HttpStatus.OK, description = "transfer successful",
                             content = @Content(schema = @Schema(implementation = StringResponse.class)))})
     public StringResponse transaction(@RequestParam("amount")double amount, Principal principal,@RequestBody DriverEntity driver) {
-        transactionService.transaction(amount, principal, driver);
-        return new StringResponse("transaction successful");
+        balanceService.transfer(amount, principal, driver);
+        return new StringResponse("transfer successful");
+    }
+    @PostMapping("/history")
+    @Operation(description = "shows history of transactions",
+            tags = {Tags.TRANSACTION},
+            responses = {
+                    @ApiResponse(responseCode = HttpStatus.OK, description = "history retrieve successful",
+                            content = @Content(schema = @Schema(implementation = StringResponse.class)))})
+    public StringResponse getHistory(Principal principal){
+         balanceService.getHistory(principal);
+         return new StringResponse("history transactions retrieve successful");
     }
 }

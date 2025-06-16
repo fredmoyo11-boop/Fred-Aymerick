@@ -20,7 +20,7 @@ import {
   TripRequestService,
   Location,
   TripOfferService,
-  TripOffer
+  TripOffer, Notification
 } from '../../../api/sep_drive';
 import {debounceTime, distinctUntilChanged, firstValueFrom, Subscription, tap} from 'rxjs';
 import {CommonModule} from '@angular/common';
@@ -74,15 +74,32 @@ export class AvailableTriprequestComponent implements OnInit, AfterViewInit, OnD
     this.start = event.value
   }
 
+  showRevokeButton = true
+  latestNotification: Notification | null = null
+
+
   ngOnInit(): void {
     console.log("inited available trip request")
+    void this.getCurrentActiveTripOffer()
+
     this.subscription = this.angularNotificationService.latestNotification$.subscribe({
       next: notification => {
         // null for init
-        if (notification === null || notification.notificationType.startsWith("TRIP_OFFER")) {
-          console.log("Available trip request received notification", notification)
-          void this.getCurrentActiveTripOffer()
+        if (this.latestNotification !== null) {
+          if (notification && notification.notificationType.startsWith("TRIP_OFFER")) {
+            if (notification.notificationType !== "TRIP_OFFER_ACCEPTED") {
+              void this.getCurrentActiveTripOffer()
+            } else {
+              this.showRevokeButton = false
+              const snackBarRef = this._snackBar.open(notification.message, "Simulieren")
+
+              snackBarRef.onAction().subscribe(value => {
+                this.router.navigate(["/offer", this.activeTripOffer!.id])
+              })
+            }
+          }
         }
+        this.latestNotification = notification
       }
     })
 

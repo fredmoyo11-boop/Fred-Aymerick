@@ -24,9 +24,11 @@
             </button>
           </div>
         } @else {
-          <div style="text-align: center">
-            <button mat-flat-button (click)="revokeTripOffer(activeTripOffer!.id)">Zurückziehen</button>
-          </div>
+          @if (showRevokeButton) {
+            <div style="text-align: center">
+              <button mat-flat-button (click)="revokeTripOffer(activeTripOffer!.id)">Zurückziehen</button>
+            </div>
+          }
         }
       </mat-card-content>
     </mat-card>

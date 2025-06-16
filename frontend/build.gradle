@@ -45,4 +45,9 @@ tasks.register("generateClient", JavaExec) {
     "-o", "$projectDir/src/api/sep_drive",
     "--additional-properties=withCredentials=true"
   ]
+
+
+
+
 }
+

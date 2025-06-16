@@ -1,7 +1,6 @@
 package com.sep.backend.trip.offer;
 
 import com.sep.backend.ors.data.ORSFeatureCollection;
-import com.sep.backend.trip.offer.status.*;
 import com.sep.backend.entity.*;
 import com.sep.backend.account.DriverRepository;
 import com.sep.backend.account.CustomerRepository;
@@ -11,6 +10,7 @@ import com.sep.backend.CarTypes;
 import com.sep.backend.trip.request.TripRequestStatus;
 
 import org.junit.jupiter.api.*;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -169,18 +169,6 @@ public class TripOfferServiceTest {
         tripOffer3.setTripRequest(tripRequest3);
         tripOffer3.setStatus(TripOfferStatus.REJECTED);
         tripOfferRepository.save(tripOffer3);
-    }
-
-    @Test
-    public void hasActiveTripOfferTest() {
-        principal = Mockito.mock(Principal.class);
-        Mockito.when(principal.getName()).thenReturn("johndoe@gmail.com");
-
-        assertEquals(true, tripOfferService.hasActiveTripOffer(principal));
-
-        Mockito.when(principal.getName()).thenReturn("janedoe@gmail.com");
-
-        assertEquals(false, tripOfferService.hasActiveTripOffer(principal));
     }
 
     @Test

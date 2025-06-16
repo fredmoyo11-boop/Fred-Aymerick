@@ -6,7 +6,6 @@ import com.sep.backend.Roles;
 import com.sep.backend.account.DriverStatistics;
 import com.sep.backend.entity.*;
 import com.sep.backend.notification.NotificationService;
-import com.sep.backend.trip.offer.status.*;
 import com.sep.backend.entity.DriverEntity;
 import com.sep.backend.account.DriverRepository;
 import com.sep.backend.entity.TripRequestEntity;
@@ -40,7 +39,7 @@ public class TripOfferService {
     public TripOffer getAcceptedTripOffer(Long tripRequestId) throws NotFoundException {
         var tripOffers = tripOfferRepository.findByTripRequest_IdAndStatus(tripRequestId, TripOfferStatus.ACCEPTED);
         if (tripOffers.isEmpty()) {
-            throw new NotFoundException("No accepted offer found for trip request id: " + tripRequestId);
+            throw new NotFoundException(ErrorMessages.NOT_FOUND_ACCEPTED_TRIP_OFFER);
         } else if (tripOffers.size() >= 2) {
             throw new IllegalStateException("Too many accepted offer found for trip request id: " + tripRequestId);
         } else {
@@ -48,14 +47,16 @@ public class TripOfferService {
         }
     }
 
+
     public TripOffer getCurrentActiveTripOffer(Principal principal) throws NotFoundException {
         var tripOffers = Stream.of(getCurrentPendingTripOffer(principal), getCurrentAcceptedTripOffer(principal))
                 .flatMap(Optional::stream)
+                .distinct()
                 .map(TripOffer::from)
                 .toList();
 
         if (tripOffers.isEmpty()) {
-            throw new NotFoundException("Current driver does not have a pending trip offer.");
+            throw new NotFoundException(ErrorMessages.NOT_FOUND_PENDING_TRIP_OFFER);
         } else if (tripOffers.size() >= 2) {
             throw new RuntimeException("Too many active trip offers. We messed up the integrity.");
         } else {
@@ -88,20 +89,6 @@ public class TripOfferService {
     }
 
     /**
-     * Checks if driver has a pending offer or not.
-     *
-     * @param principal The principal of the current user.
-     * @return If an offer exists or not.
-     */
-    public Boolean hasActiveTripOffer(Principal principal) {
-//        if(checkIfActiveTripOfferExists(principal.getName())) {
-//            return TripOfferPresenceStatus.HAS_ACTIVE_OFFER;
-//        }
-//        return TripOfferPresenceStatus.NO_ACTIVE_OFFER;
-        return checkIfActiveTripOfferExists(principal.getName());
-    }
-
-    /**
      * Returns the trip offer entity for the specified id.
      *
      * @param id The id of the trip offer.
@@ -113,14 +100,30 @@ public class TripOfferService {
                 .orElseThrow(() -> new NotFoundException(ErrorMessages.NOT_FOUND_TRIP_OFFER));
     }
 
-    public String createNewTripOffer(Long tripRequestId, Principal principal) throws ForbiddenException, NotFoundException {
-        if (checkIfActiveTripOfferExists(principal.getName())) {
-            throw new ForbiddenException("Driver has an active trip offer.");
-        }
+    public Optional<TripOfferEntity> findDriverTripOfferForRequest(Long tripRequestId, Principal principal) {
+        String email = principal.getName();
+        return tripOfferRepository.findByDriver_EmailAndTripRequest_Id(email, tripRequestId);
+    }
+
+
+    public String createNewTripOffer(Long tripRequestId, Principal principal) throws TripOfferException, NotFoundException {
+        findDriverTripOfferForRequest(tripRequestId, principal).ifPresent(tripOfferEntity -> {
+            switch (tripOfferEntity.getStatus()) {
+                case TripOfferStatus.PENDING -> throw new TripOfferException(ErrorMessages.TRIP_OFFER_ALREADY_PENDING);
+                case TripOfferStatus.ACCEPTED ->
+                        throw new TripOfferException(ErrorMessages.TRIP_OFFER_ALREADY_ACCEPTED);
+                case TripOfferStatus.REVOKED -> throw new TripOfferException(ErrorMessages.TRIP_OFFER_ALREADY_REVOKED);
+                case TripOfferStatus.REJECTED ->
+                        throw new TripOfferException(ErrorMessages.TRIP_OFFER_ALREADY_REJECTED);
+                case TripOfferStatus.COMPLETED ->
+                        throw new TripOfferException(ErrorMessages.TRIP_OFFER_ALREADY_COMPLETED);
+            }
+        });
+
         TripRequestEntity tripRequestEntity = tripRequestRepository.findById(tripRequestId)
-                .orElseThrow(() -> new NotFoundException("Trip request not found."));
+                .orElseThrow(() -> new NotFoundException(ErrorMessages.NOT_FOUND_TRIP_REQUEST));
         DriverEntity driverEntity = driverRepository.findByEmailIgnoreCase(principal.getName())
-                .orElseThrow(() -> new NotFoundException("Driver not found."));
+                .orElseThrow(() -> new NotFoundException(ErrorMessages.NOT_FOUND_DRIVER));
         TripOfferEntity tripOfferEntity = new TripOfferEntity(tripRequestEntity, driverEntity, TripOfferStatus.PENDING);
         tripOfferRepository.save(tripOfferEntity);
 
@@ -142,17 +145,21 @@ public class TripOfferService {
 
     @Transactional
     public void acceptTripOffer(Long tripOfferId, Principal principal) throws NotFoundException {
-        if (!isPendingTripOffer(tripOfferId)) {
-            throw new RuntimeException("Trip offer is not pending.");
-        }
-
         var tripOfferEntity = getTripOfferEntity(tripOfferId);
         if (!tripOfferEntity.getTripRequest().getCustomer().getEmail().equals(principal.getName())) {
             throw new RuntimeException("Trip offer does not belong to trip request of the current customer.");
         }
 
+        if (!isPendingTripOffer(tripOfferEntity)) {
+            throw new TripOfferException(ErrorMessages.TRIP_OFFER_NOT_PENDING);
+        }
+
         tripOfferEntity.setStatus(TripOfferStatus.ACCEPTED);
         tripOfferEntity = tripOfferRepository.saveAndFlush(tripOfferEntity);
+
+        if (!TripOfferStatus.ACCEPTED.equals(tripOfferEntity.getStatus())) {
+            throw new IllegalStateException("Trip offer is not accepted, but should be. The DB messed it up!");
+        }
 
         Long tripRequestId = tripOfferEntity.getTripRequest().getId();
         var tripOffers = tripOfferRepository.findByTripRequest_IdAndStatus(tripRequestId, TripOfferStatus.PENDING)
@@ -166,6 +173,7 @@ public class TripOfferService {
                     notificationService.sendNotification(notification, tripOffer.getDriver().getEmail());
                 }).toList();
         tripOfferRepository.saveAll(tripOffers);
+
 
         var driverEntity = tripOfferEntity.getDriver();
         var customerEntity = tripOfferEntity.getTripRequest().getCustomer();
@@ -185,7 +193,7 @@ public class TripOfferService {
 
     public void rejectTripOffer(Long tripOfferId, Principal principal) throws NotFoundException {
         if (!isPendingTripOffer(tripOfferId)) {
-            throw new RuntimeException("Trip offer is not pending.");
+            throw new TripOfferException(ErrorMessages.TRIP_OFFER_NOT_PENDING);
         }
 
         var tripOfferEntity = getTripOfferEntity(tripOfferId);
@@ -212,14 +220,21 @@ public class TripOfferService {
         notificationService.sendNotification(customerNotification, customerEntity.getEmail());
     }
 
+    public boolean isPendingTripOffer(TripOfferEntity tripOfferEntity) {
+        if (tripOfferEntity == null) {
+            throw new IllegalArgumentException("Trip offer cannot be null.");
+        }
+        return TripOfferStatus.PENDING.equals(tripOfferEntity.getStatus());
+    }
+
     public void revokeTripOffer(Long tripOfferId, Principal principal) throws NotFoundException {
         var tripOfferEntity = getTripOfferEntity(tripOfferId);
         if (!tripOfferEntity.getDriver().getEmail().equals(principal.getName())) {
             throw new RuntimeException("Trip offer does not belong to the current driver.");
         }
 
-        if (!TripOfferStatus.PENDING.equals(tripOfferEntity.getStatus())) {
-            throw new RuntimeException("Trip offer is not pending.");
+        if (!isPendingTripOffer(tripOfferEntity)) {
+            throw new TripOfferException(ErrorMessages.TRIP_OFFER_NOT_PENDING);
         }
 
         tripOfferEntity.setStatus(TripOfferStatus.REVOKED);
@@ -245,31 +260,6 @@ public class TripOfferService {
         return TripOfferStatus.PENDING.equals(tripOfferEntity.getStatus());
     }
 
-
-    /**
-     * Withdraws an offer
-     *
-     * @param principal Identifier of a driver
-     * @return StringResponse confirming success
-     * @throws NotFoundException when trip offer does not exist
-     */
-    public String withdrawOffer(Principal principal) throws NotFoundException {
-        TripOfferEntity tripOfferEntity = tripOfferRepository.findByDriver_Email(principal.getName())
-                .orElseThrow(() -> new NotFoundException(ErrorMessages.NOT_FOUND_TRIP_OFFER));
-        setStatus(tripOfferEntity, TripOfferStatus.REVOKED);
-        return "Successfully withdrawn trip offer";
-    }
-
-    /**
-     * Sets offer status from given offer and status String
-     *
-     * @param tripOfferEntity trip offer to set the status
-     * @param status          status to set
-     */
-    private void setStatus(TripOfferEntity tripOfferEntity, String status) {
-        tripOfferEntity.setStatus(status);
-        tripOfferRepository.save(tripOfferEntity);
-    }
 
     /**
      * Returns the full trip offer list for a given customer
@@ -394,7 +384,8 @@ public class TripOfferService {
      */
     public void completeTripOffer(Long tripOfferId) throws NotFoundException {
         var tripOfferEntity = getTripOfferEntity(tripOfferId);
-        setStatus(tripOfferEntity, TripOfferStatus.COMPLETED);
+        tripOfferEntity.setStatus(TripOfferStatus.COMPLETED);
+        tripOfferRepository.save(tripOfferEntity);
 
         TripRequestEntity tripRequestEntity = tripOfferEntity.getTripRequest();
         tripRequestEntity.setStatus(TripRequestStatus.COMPLETED);

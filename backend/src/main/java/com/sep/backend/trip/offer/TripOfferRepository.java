@@ -12,6 +12,8 @@ import java.util.Optional;
 
 @Repository
 public interface TripOfferRepository extends JpaRepository<TripOfferEntity, Long> {
+    Optional<TripOfferEntity> findByDriver_EmailAndTripRequest_Id(@NotBlank String driver_email, @NotBlank Long trip_request_id);
+
     public boolean existsByDriver_EmailAndStatus(@Email @NotBlank String email, @NotBlank String status);
 
     Optional<TripOfferEntity> findByDriver_Email(@Email @NotBlank String email);
@@ -25,7 +27,6 @@ public interface TripOfferRepository extends JpaRepository<TripOfferEntity, Long
     List<TripOfferEntity> findByTripRequest_IdAndStatus(Long tripRequestId, String status);
 
     List<TripOfferEntity> findByDriver_EmailAndStatus(@Email @NotBlank String driverUsername, @NotBlank String status);
-
 
 
     @Query("SELECT avg(customerRating) FROM TripHistoryEntity WHERE driver.id = ?1")

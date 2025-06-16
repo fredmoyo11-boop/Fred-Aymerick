@@ -6,7 +6,6 @@ import com.sep.backend.Roles;
 import com.sep.backend.account.AccountService;
 import com.sep.backend.entity.*;
 import com.sep.backend.trip.offer.TripOfferService;
-import com.sep.backend.trip.request.TripRequestException;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
 
@@ -118,7 +117,7 @@ public class TripHistoryService {
                 return MapToTripHistoryDTO(tripHistoryRepository.findByDriver(driverEntity));
             }
         } else {
-            throw new TripRequestException(ErrorMessages.HISTORY_NOT_FOUND);
+            throw new NotFoundException(ErrorMessages.NOT_FOUND_HISTORY);
         }
     }
 

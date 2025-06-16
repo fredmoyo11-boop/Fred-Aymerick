@@ -5,12 +5,10 @@
                          [animationLayerGroup]="animationLayer"></app-trip-visualizer>
   </div>
   <div class="floating-content">
-    <mat-card>
-      <mat-card-title>
-        <span style="padding: 25px">Simulations-Steuerung</span>
-      </mat-card-title>
+    <mat-card style="width: fit-content; min-width: 200px">
       <mat-card-content>
-        <div style="padding: 5px">
+        <span class="title">Simulations-Steuerung</span>
+        @if (tripOffer.status !== "COMPLETED") {
           @if (animationLocked) {
             <p style="font-weight: bold">Die Simulation ist momentan blockiert!</p>
           } @else {
@@ -25,13 +23,22 @@
                 </button>
               }
 
-              <mat-slider min="3" max="30" step="1">
-                <input matSliderThumb [(ngModel)]="sliderDuration" (valueChange)="onSliderChange($event)"
-                       [disabled]="animationCompleted">
-              </mat-slider>
+              <div class="slider-container">
+                <mat-slider style="min-width: 200px" min="3" max="30" step="1">
+                  <input matSliderThumb [(ngModel)]="sliderDuration" (valueChange)="onSliderChange($event)"
+                         [disabled]="animationCompleted">
+                </mat-slider>
+                <div class="slider-detail-container">
+                  <span>3s</span>
+                  <span>Dauer</span>
+                  <span>30s</span>
+                </div>
+              </div>
             </div>
           }
-        </div>
+        } @else {
+          <p>Diese Fahrt wurde bereits simuliert!</p>
+        }
       </mat-card-content>
     </mat-card>
   </div>

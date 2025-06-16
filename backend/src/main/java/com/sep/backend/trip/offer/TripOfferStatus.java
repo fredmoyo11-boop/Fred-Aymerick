@@ -1,4 +1,4 @@
-package com.sep.backend.trip.offer.status;
+package com.sep.backend.trip.offer;
 
 public class TripOfferStatus {
     public static final String PENDING = "PENDING";

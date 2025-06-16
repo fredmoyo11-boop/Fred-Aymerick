@@ -34,6 +34,8 @@ import {Router} from '@angular/router';
 import {MatCard, MatCardContent, MatCardTitle} from '@angular/material/card';
 import {MatDivider} from '@angular/material/divider';
 import {TripOfferStatusPipe} from '../../pipes/trip-offer-status.pipe';
+import {HttpErrorResponse} from '@angular/common/http';
+import {MatSnackBar} from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-available-triprequest',
@@ -65,7 +67,7 @@ export class AvailableTriprequestComponent implements OnInit, AfterViewInit, OnD
 
   private subscription!: Subscription
 
-  constructor(private tripRequestService: TripRequestService, private tripOfferService: TripOfferService, private angularNotificationService: AngularNotificationService, private router: Router) {
+  constructor(private tripRequestService: TripRequestService, private tripOfferService: TripOfferService, private angularNotificationService: AngularNotificationService, private router: Router, private _snackBar: MatSnackBar) {
   }
 
   onStartChange(event: MatSelectChange) {
@@ -205,13 +207,39 @@ export class AvailableTriprequestComponent implements OnInit, AfterViewInit, OnD
     return Array(5).fill(0).map((x, i) => i);
   }
 
-  acceptTrip(tripRequestId: number) {
+  createTripOffer(tripRequestId: number) {
     this.tripOfferService.createNewTripOffer(tripRequestId).subscribe({
       next: value => {
         console.log("Created new trip offer.")
       },
-      error: error => {
-        console.error(error)
+      error: err => {
+        console.error(err)
+        if (err instanceof HttpErrorResponse) {
+          if (err.status === 500) {
+            const message: string = err.error.message;
+            if (message === "Trip offer already pending.") {
+              this._snackBar.open("Für diese Anfrage besteht bereits ein offenes Angebot.", undefined, {
+                duration: 3000
+              })
+            } else if (message === "Trip offer already accepted.") {
+              this._snackBar.open("Deine Anfrage wurde bereits angenommen!", undefined, {
+                duration: 3000
+              })
+            } else if (message === "Trip offer already revoked.") {
+              this._snackBar.open("Du hattest bereits eine Anfrage gestellt und zurückgezogen. Du kannst keine neue für diese Anfrage stellen!", undefined, {
+                duration: 3000
+              })
+            } else if (message === "Trip offer already rejected.") {
+              this._snackBar.open("Du hattest bereits eine Anfrage gestellt und diese wurde abgelehnt. Du kannst keine neue für diese Anfrage stellen!", undefined, {
+                duration: 3000
+              })
+            } else if (message === "Trip offer already completed.") {
+              this._snackBar.open("Deine Anfrage wurde bereits fertiggestellt.", undefined, {
+                duration: 3000
+              })
+            }
+          }
+        }
       }
     })
   }

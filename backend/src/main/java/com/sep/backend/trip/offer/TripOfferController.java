@@ -32,15 +32,6 @@ public class TripOfferController {
         this.tripOfferService = tripOfferService;
     }
 
-    @GetMapping("/driver/exists")
-    @Operation(description = "Checks whether a driver has an active offer or not.",
-            tags = {Tags.TRIP_OFFER},
-            responses = {@ApiResponse(responseCode = HttpStatus.OK, description = "Trip offer status returned.",
-                    content = @Content(schema = @Schema(implementation = StringResponse.class)))})
-    public Boolean hasActiveOffer(Principal principal) {
-        return tripOfferService.hasActiveTripOffer(principal);
-    }
-
     @PostMapping("/driver/new")
     @Operation(description = "Create a new offer.",
             tags = {Tags.TRIP_OFFER},
@@ -51,17 +42,7 @@ public class TripOfferController {
     public StringResponse createNewTripOffer(Long tripRequestId, Principal principal) {
         return new StringResponse(tripOfferService.createNewTripOffer(tripRequestId, principal));
     }
-
-    @PostMapping("/driver/withdraw")
-    @Operation(description = "Withdraw an offer.",
-            tags = {Tags.TRIP_OFFER},
-            responses = {@ApiResponse(responseCode = HttpStatus.OK, description = "Trip offer withdrawn.",
-                    content = @Content(schema = @Schema(implementation = StringResponse.class))),
-                    @ApiResponse(responseCode = HttpStatus.NOT_FOUND, description = "Driver does not have an offer.")})
-    public StringResponse withdrawOffer(Principal principal) {
-        return new StringResponse(tripOfferService.withdrawOffer(principal));
-    }
-
+    
     @PostMapping("/accepted/{tripRequestId}")
     @Operation(description = "Returns the accepted trip offer belonging to the specified trip request id.",
             tags = {Tags.TRIP_OFFER},

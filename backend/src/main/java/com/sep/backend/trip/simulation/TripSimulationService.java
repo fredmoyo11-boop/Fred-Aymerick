@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 
 @Slf4j
@@ -41,7 +42,7 @@ public class TripSimulationService {
     public void completeTrip(Long tripOfferId) {
         // User might abort before actually rating leading to a default of 5 stars, if user rates method below is used to set actual rating
         log.debug("COMPLETE: Completing trip for trip offer with id {}.", tripOfferId);
-        var tripHistoryEntity = tripHistoryService.createTripHistory(tripOfferId, LocalDateTime.now(), 5, 5);
+        var tripHistoryEntity = tripHistoryService.createTripHistory(tripOfferId, LocalDateTime.now(ZoneId.of("Europe/Berlin")), 5, 5);
         log.debug("COMPLETE: Created trip history entity for trip offer with id {}.", tripOfferId);
 
         // marks both request and offer as completed

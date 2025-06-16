@@ -1,17 +1,17 @@
-package com.sep.backend.trip.offer;
+package com.sep.backend;
 
 import com.sep.backend.ors.data.ORSFeatureCollection;
 import com.sep.backend.entity.*;
 import com.sep.backend.account.DriverRepository;
 import com.sep.backend.account.CustomerRepository;
+import com.sep.backend.trip.offer.TripOfferRepository;
+import com.sep.backend.trip.offer.TripOfferService;
+import com.sep.backend.trip.offer.TripOfferStatus;
 import com.sep.backend.trip.request.TripRequestRepository;
 import com.sep.backend.route.RouteRepository;
-import com.sep.backend.CarTypes;
 import com.sep.backend.trip.request.TripRequestStatus;
 
 import org.junit.jupiter.api.*;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

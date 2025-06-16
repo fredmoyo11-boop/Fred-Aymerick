@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 
@@ -116,7 +117,7 @@ public class TripRequestService {
         var tripRequestEntity = new TripRequestEntity();
         tripRequestEntity.setCustomer(customer);
         tripRequestEntity.setRoute(routeEntity);
-        tripRequestEntity.setRequestTime(LocalDateTime.now());
+        tripRequestEntity.setRequestTime(LocalDateTime.now(ZoneId.of("Europe/Berlin")));
         tripRequestEntity.setCarType(tripRequestBody.getCarType());
         tripRequestEntity.setStatus(TripRequestStatus.ACTIVE);
         tripRequestEntity.setNote(tripRequestBody.getNote());

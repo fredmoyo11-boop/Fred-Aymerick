@@ -212,7 +212,6 @@ public class TripRequestServiceIntegrationTest {
         assertEquals(TripRequestStatus.ACTIVE, trips.getStatus());
         assertEquals("SMALL", trips.getCarType());
         assertEquals("Bitte nicht rauchen.", trips.getNote());
-//        assertEquals(user, trips.get);
         assertNotNull(trips.getRoute());
         // assertEquals(List.of(start.getLongitude(),start.getLatitude()),result.getRoute().getGeoJSON().getFeatures().getFirst().getGeometry().getCoordinates().getFirst());
         // assertEquals(List.of(end.getLongitude(),end.getLatitude()),result.getRoute().getGeoJSON().getFeatures().getFirst().getGeometry().getCoordinates().getLast());

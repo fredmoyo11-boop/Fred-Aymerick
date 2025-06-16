@@ -93,20 +93,6 @@ public class TripHistoryService {
         return tripHistoryRepository.save(history);
     }
 
-    public TripHistoryEntity saveTripHistory(@Valid TripHistoryDTO tripHistoryDTO) {
-        TripHistoryEntity tripHistoryEntity = new TripHistoryEntity();
-        tripHistoryEntity.setTripOfferId(tripHistoryEntity.getTripOfferId());
-        tripHistoryEntity.setEndTime(tripHistoryDTO.getEndTime());
-        tripHistoryEntity.setDuration(tripHistoryDTO.getDuration());
-        tripHistoryEntity.setDistance(tripHistoryDTO.getDistance());
-        tripHistoryEntity.setCustomer(accountService.findCustomerByUsername(tripHistoryDTO.getCustomerUsername()));
-        tripHistoryEntity.setDriver(accountService.findDriverByUsername(tripHistoryDTO.getDriverUsername()));
-        tripHistoryEntity.setCustomerRating(tripHistoryDTO.getCustomerRating());
-        tripHistoryEntity.setDriverRating(tripHistoryDTO.getDriverRating());
-        tripHistoryEntity.setPrice(tripHistoryDTO.getPrice());
-        return tripHistoryRepository.save(tripHistoryEntity);
-    }
-
     public List<TripHistoryDTO> getCurrentTripHistory(Principal principal) {
         String email = principal.getName();
         if (accountService.existsEmail(email)) {

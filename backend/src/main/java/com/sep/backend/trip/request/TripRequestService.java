@@ -111,8 +111,10 @@ public class TripRequestService {
         var customer = accountService.getCustomerByEmail(email);
         var routeEntity = routeService.createRoute(tripRequestBody.getGeojson(), tripRequestBody.getLocations());
 
-        double price = (routeEntity.getGeoJSON().getFeatures().getFirst().getProperties().getSummary().getDistance() / 1000.0)
-                * CarTypes.getPricePerKilometer(tripRequestBody.getCarType());
+//        double price = (routeEntity.getGeoJSON().getFeatures().getFirst().getProperties().getSummary().getDistance() / 1000.0)
+//                * CarTypes.getPricePerKilometer(tripRequestBody.getCarType());
+
+        double price = getRoutePrice(routeEntity.getGeoJSON().getFeatures().getFirst().getProperties().getSummary().getDistance(), tripRequestBody.getCarType());
 
         var tripRequestEntity = new TripRequestEntity();
         tripRequestEntity.setCustomer(customer);
@@ -126,6 +128,21 @@ public class TripRequestService {
         return tripRequestRepository.save(tripRequestEntity);
     }
 
+    /**
+     * Calculates the price of a route base on the car type.
+     *
+     * @param distance The distance to be driven.
+     * @param carType  The car type.
+     * @return The price of the route.
+     * @throws IllegalArgumentException If distance is negative.
+     * @throws IllegalArgumentException If carType is not a valid car type.
+     */
+    public static double getRoutePrice(double distance, String carType) throws IllegalArgumentException {
+        if (distance < 0) {
+            throw new IllegalArgumentException("Distance must be a positive value.");
+        }
+        return (distance / 1000.0) * CarTypes.getPricePerKilometer(carType);
+    }
 
     private double getDistance(ORSFeatureCollection geoJSON) {
         return geoJSON.getFeatures().getFirst().getProperties().getSummary().getDistance();

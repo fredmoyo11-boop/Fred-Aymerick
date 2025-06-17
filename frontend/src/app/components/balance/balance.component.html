@@ -43,11 +43,11 @@
               } @else if (transaction.transactionType === "TRANSFER") {
                 @if (role === "CUSTOMER") {
                   <mat-icon>arrow_forward</mat-icon>
-                  <span>to <span class="username"
+                  <span>an <span class="username"
                                  (click)="navigateToProfile(transaction.recipientUsername!)">{{ transaction.recipientUsername }}</span></span>
                 } @else {
                   <mat-icon>arrow_backward</mat-icon>
-                  <span>from <span class="username"
+                  <span>von <span class="username"
                                    (click)="navigateToProfile(transaction.senderUsername!)">{{ transaction.senderUsername }}</span></span>
                 }
               }

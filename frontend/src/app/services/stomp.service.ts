@@ -75,7 +75,7 @@ export class StompService {
 
   public disconnect(): void {
     this.destroy$.next();
-    this.stompClient.deactivate().then(() => of());
+    void this.stompClient.deactivate()
   }
 
   public isConnected(): boolean {

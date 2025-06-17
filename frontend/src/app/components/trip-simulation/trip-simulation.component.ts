@@ -33,7 +33,6 @@ import {Router} from '@angular/router';
     ReactiveFormsModule,
     MatCard,
     MatCardContent,
-    MatCardTitle,
   ],
   templateUrl: './trip-simulation.component.html',
   standalone: true,

@@ -21,9 +21,5 @@ export interface SimulationActionParameters {
      * The velocity of the simulation.
      */
     velocity?: number;
-    /**
-     * The rating of the user.
-     */
-    rating?: number;
 }
 

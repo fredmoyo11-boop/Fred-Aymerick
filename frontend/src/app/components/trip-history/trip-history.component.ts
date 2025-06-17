@@ -21,7 +21,6 @@ import {Router} from '@angular/router';
     MatLabel,
     MatSortModule,
     NgForOf,
-    NgIf,
     ReactiveFormsModule,
     MatFormField,
     NgClass,

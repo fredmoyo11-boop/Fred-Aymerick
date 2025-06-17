@@ -29,6 +29,12 @@ public class NotificationService {
         this.notificationRepository = notificationRepository;
     }
 
+    /**
+     * Sends a notification to the user with the specified email.
+     *
+     * @param notification   The notification.
+     * @param recipientEmail The recipient email.
+     */
     @Transactional
     public void sendNotification(Notification notification, String recipientEmail) {
 
@@ -44,6 +50,13 @@ public class NotificationService {
         log.info("Sent {} notification to {} on topic {}", notificationType, recipientEmail, topic);
     }
 
+    /**
+     * Saves a notification for the user with the specified email.
+     *
+     * @param notification   The notification.
+     * @param recipientEmail The recipient email.
+     * @return The saved notification entity.
+     */
     private NotificationEntity saveNotification(Notification notification, String recipientEmail) {
         var notificationEntity = new NotificationEntity();
         notificationEntity.setNotificationType(notification.getNotificationType());
@@ -58,7 +71,14 @@ public class NotificationService {
         return notificationRepository.save(notificationEntity);
     }
 
-    private List<NotificationEntity> getCurrentNotificationEntities(Principal principal) {
+    /**
+     * Returns all saved notification entities for the current user.
+     *
+     * @param principal The principal.
+     * @return The list of the notification entities.
+     * @throws NotFoundException If user has an invalid role.
+     */
+    private List<NotificationEntity> getCurrentNotificationEntities(Principal principal) throws NotFoundException {
         String email = principal.getName();
         String role = accountService.getRoleByEmail(email);
         return switch (role) {
@@ -68,7 +88,14 @@ public class NotificationService {
         };
     }
 
-    public List<Notification> getCurrentNotifications(Principal principal) {
+    /**
+     * Returns all saved notifications for the current user.
+     *
+     * @param principal The principal.
+     * @return The list of the notifications.
+     * @throws NotFoundException If user has an invalid role.
+     */
+    public List<Notification> getCurrentNotifications(Principal principal) throws NotFoundException {
         return getCurrentNotificationEntities(principal).stream().map(Notification::from).toList();
     }
 

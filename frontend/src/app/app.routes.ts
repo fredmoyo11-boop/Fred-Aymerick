@@ -10,8 +10,6 @@ import {ProfileSearchComponent} from './components/profile-search/profile-search
 import {AvailableTriprequestComponent} from './components/available-triprequest/available-triprequest.component';
 import {TripHistoryComponent} from './components/trip-history/trip-history.component';
 import {TripRequestComponent} from './components/trip-request/trip-request.component';
-import {TripOffersComponent} from './components/trip-offers/trip-offers.component';
-import {TripSimulationComponent} from './components/trip-simulation/trip-simulation.component';
 import {TripOfferComponent} from './components/trip-offer/trip-offer.component';
 import {tripOfferResolver} from './resolvers/trip-offer.resolver';
 import {BalanceComponent} from './components/balance/balance.component';
@@ -28,6 +26,12 @@ export const routes: Routes = [
     path: "", component: StandardLayoutComponent, children: [
       {path: "", component: HomeComponent},
       {
+        path: "request",
+        component: TripRequestComponent,
+        canActivate: [authGuard],
+        data: {roles: ["CUSTOMER"]}
+      },
+      {
         path: "requests",
         component: AvailableTriprequestComponent,
         canActivate: [authGuard],
@@ -38,12 +42,6 @@ export const routes: Routes = [
         component: TripHistoryComponent,
         canActivate: [authGuard],
         data: {roles: ["DRIVER", "CUSTOMER"]}
-      },
-      {
-        path: "request",
-        component: TripRequestComponent,
-        canActivate: [authGuard],
-        data: {roles: ["CUSTOMER"]}
       },
       {
         path: "social",
@@ -62,7 +60,9 @@ export const routes: Routes = [
         component: TripOfferComponent,
         resolve: {
           tripOffer: tripOfferResolver
-        }
+        },
+        canActivate: [authGuard],
+        data: {roles: ["CUSTOMER", "DRIVER"]}
       },
       {
         path: "balance",

@@ -19,7 +19,6 @@ public class AuthChannelInterceptor implements ChannelInterceptor {
     private final WebSocketAuthService permissionService;
 
     public AuthChannelInterceptor(WebSocketAuthService permissionService) {
-
         this.permissionService = permissionService;
     }
 
@@ -32,11 +31,8 @@ public class AuthChannelInterceptor implements ChannelInterceptor {
         }
 
         log.debug("Intercepting STOMP message.");
-
         accessor.toNativeHeaderMap().forEach((key, valueList) -> log.debug("Native Header: {} = {}", key, valueList));
-
         accessor.getMessageHeaders().forEach((key, value) -> log.debug("General Header: {} = {}", key, value));
-
 
         resolveStompCommand(accessor);
 

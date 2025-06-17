@@ -13,12 +13,24 @@ public class ActionStore {
 
     private final Map<Long, List<SimulationAction>> actionsByTrip = new ConcurrentHashMap<>();
 
-    public void addAction(Long tripId, SimulationAction action) {
-        actionsByTrip.computeIfAbsent(tripId, k -> new CopyOnWriteArrayList<>()).add(action);
+    /**
+     * Stores a simulation action for the specified trip offer id.
+     *
+     * @param tripOfferId The trip offer id.
+     * @param action      The action to be stored.
+     */
+    public void addAction(Long tripOfferId, SimulationAction action) {
+        actionsByTrip.computeIfAbsent(tripOfferId, k -> new CopyOnWriteArrayList<>()).add(action);
     }
 
-    public List<SimulationAction> getActionsByTrip(Long tripId) {
-        return actionsByTrip.getOrDefault(tripId, List.of());
+    /**
+     * Returns all stored simulation actions for specified trip offer id.
+     *
+     * @param tripOfferId The trip offer id.
+     * @return The list of the stored simulation actions.
+     */
+    public List<SimulationAction> getActionsByTrip(Long tripOfferId) {
+        return actionsByTrip.getOrDefault(tripOfferId, List.of());
     }
 
 }

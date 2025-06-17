@@ -338,11 +338,11 @@ public class AccountService {
         customerDTO.setLastName(customerEntity.getLastName());
         customerDTO.setBalance(customerEntity.getBalance());
         if (tripHistoryRepository.existsByCustomer(customerEntity)) {
-            var avgRating = tripHistoryRepository.findByCustomer(customerEntity).stream()
-                    .mapToInt(TripHistoryEntity::getCustomerRating)
+            var avgRating = tripHistoryRepository.findByCustomer_Id(customerEntity.getId()).stream()
+                    .mapToInt(TripHistoryEntity::getDriverRating)
                     .average()
                     .orElse(0.0);
-            var trips = tripHistoryRepository.findByCustomer(customerEntity).size();
+            var trips = tripHistoryRepository.findByCustomer_Id(customerEntity.getId()).size();
             customerDTO.setTotalNumberOfRides(trips);
             customerDTO.setRatings(avgRating);
 
@@ -351,7 +351,6 @@ public class AccountService {
             customerDTO.setTotalNumberOfRides(0);
         }
         customerDTO.setProfilePictureUrl(customerEntity.getProfilePictureUrl());
-        customerDTO.setBalance(customerEntity.getBalance());
         return customerDTO;
     }
 
@@ -368,11 +367,11 @@ public class AccountService {
         driverDTO.setCarType(driverEntity.getCarType());
         driverDTO.setBalance(driverEntity.getBalance());
         if (tripHistoryRepository.existsByDriver(driverEntity)) {
-            var avgRating = tripHistoryRepository.findByDriver(driverEntity).stream()
+            var avgRating = tripHistoryRepository.findByDriver_Id(driverEntity.getId()).stream()
                     .mapToInt(TripHistoryEntity::getCustomerRating)
                     .average()
                     .orElse(0.0);
-            var trips = tripHistoryRepository.findByDriver(driverEntity).size();
+            var trips = tripHistoryRepository.findByDriver_Id(driverEntity.getId()).size();
             driverDTO.setTotalNumberOfRides(trips);
             driverDTO.setRatings(avgRating);
 

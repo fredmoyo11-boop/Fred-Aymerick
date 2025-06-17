@@ -74,32 +74,21 @@ export class AvailableTriprequestComponent implements OnInit, AfterViewInit, OnD
     this.start = event.value
   }
 
-  showRevokeButton = true
-  latestNotification: Notification | null = null
-
 
   ngOnInit(): void {
     console.log("inited available trip request")
-    void this.getCurrentActiveTripOffer()
 
     this.subscription = this.angularNotificationService.latestNotification$.subscribe({
       next: notification => {
-        // null for init
-        if (this.latestNotification !== null) {
-          if (notification && notification.notificationType.startsWith("TRIP_OFFER")) {
-            if (notification.notificationType !== "TRIP_OFFER_ACCEPTED") {
-              void this.getCurrentActiveTripOffer()
-            } else {
-              this.showRevokeButton = false
-              const snackBarRef = this._snackBar.open(notification.message, "Simulieren")
+        if (notification === null || notification.notificationType.startsWith("TRIP_OFFER")) {
+          console.log("Notification bar", notification)
+          if (notification) this._snackBar.open(notification.message, "OK")
+          setTimeout(() => {
+            // prevent server-sided race
+            void this.getCurrentActiveTripOffer()
+          }, 2000)
 
-              snackBarRef.onAction().subscribe(value => {
-                this.router.navigate(["/offer", this.activeTripOffer!.id])
-              })
-            }
-          }
         }
-        this.latestNotification = notification
       }
     })
 
@@ -235,11 +224,11 @@ export class AvailableTriprequestComponent implements OnInit, AfterViewInit, OnD
           if (err.status === 500) {
             const message: string = err.error.message;
             if (message === "Trip offer already pending.") {
-              this._snackBar.open("Für diese Anfrage besteht bereits ein offenes Angebot.", undefined, {
+              this._snackBar.open("Für diese Anfrage besteht bereits ein offenes Angebot. Lade die Seite bitte neu!", undefined, {
                 duration: 3000
               })
             } else if (message === "Trip offer already accepted.") {
-              this._snackBar.open("Deine Anfrage wurde bereits angenommen!", undefined, {
+              this._snackBar.open("Deine Anfrage wurde bereits angenommen! Lade die Seite bitte neu.", undefined, {
                 duration: 3000
               })
             } else if (message === "Trip offer already revoked.") {
@@ -251,7 +240,7 @@ export class AvailableTriprequestComponent implements OnInit, AfterViewInit, OnD
                 duration: 3000
               })
             } else if (message === "Trip offer already completed.") {
-              this._snackBar.open("Deine Anfrage wurde bereits fertiggestellt.", undefined, {
+              this._snackBar.open("Deine Anfrage wurde bereits fertiggestellt. Lade die Seite bitte neu!", undefined, {
                 duration: 3000
               })
             }

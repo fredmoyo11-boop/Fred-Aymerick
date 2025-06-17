@@ -104,6 +104,14 @@ public class TripSimulationService {
     }
 
 
+    /**
+     * Send a simulation action to for the specified trip.
+     *
+     * @param tripOfferId The trip offer id of the simulation.
+     * @param action      The action.
+     * @param principal   The principal of the current user.
+     * @return The simulation action sent.
+     */
     public SimulationAction sendSimulationAction(Long tripOfferId, SimulationAction action, Principal principal) {
         log.debug("Received simulation action {} for trip offer {} from {}.", action.getActionType(), tripOfferId, principal.getName());
         log.debug("Checking if user is part of trip offer {}. Principal: {}.", tripOfferId, principal.getName());
@@ -112,6 +120,12 @@ public class TripSimulationService {
         return action;
     }
 
+    /**
+     * Returns a list of all simulation actions for the simulation with the specified id.
+     *
+     * @param tripOfferId The id of the trip offer.
+     * @return The list with the simulation actions.
+     */
     public List<SimulationAction> getSimulationActions(Long tripOfferId) {
         return actionStore.getActionsByTrip(tripOfferId);
     }

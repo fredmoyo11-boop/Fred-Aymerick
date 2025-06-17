@@ -12,7 +12,4 @@ public class SimulationActionParameters {
     @Schema(description = "The velocity of the simulation.", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private Integer velocity;
 
-    @Schema(description = "The rating of the user.", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-    private Integer rating;
-
 }

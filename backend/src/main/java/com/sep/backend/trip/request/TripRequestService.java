@@ -206,8 +206,9 @@ public class TripRequestService {
 
             CustomerEntity customer = activeRequest.getCustomer();
 
-            double avgRating = tripHistoryRepository.findByCustomer(customer).stream()
-                    .mapToInt(TripHistoryEntity::getCustomerRating)
+            double avgRating = tripHistoryRepository.findByCustomer_Id(customer.getId()).stream()
+                    // rating by driver is how customer was rated
+                    .mapToInt(TripHistoryEntity::getDriverRating)
                     .average()
                     .orElse(0.0);
 

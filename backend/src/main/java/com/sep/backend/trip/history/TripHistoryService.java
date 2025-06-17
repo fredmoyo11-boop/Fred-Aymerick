@@ -98,10 +98,10 @@ public class TripHistoryService {
         if (accountService.existsEmail(email)) {
             if (Roles.CUSTOMER.equals(accountService.getRoleByEmail(email))) {
                 var customerEntity = accountService.getCustomerByEmail(email);
-                return MapToTripHistoryDTO(tripHistoryRepository.findByCustomer(customerEntity));
+                return MapToTripHistoryDTO(tripHistoryRepository.findByCustomer_Id(customerEntity.getId()));
             } else {
                 var driverEntity = accountService.getDriverByEmail(email);
-                return MapToTripHistoryDTO(tripHistoryRepository.findByDriver(driverEntity));
+                return MapToTripHistoryDTO(tripHistoryRepository.findByDriver_Id(driverEntity.getId()));
             }
         } else {
             throw new NotFoundException(ErrorMessages.NOT_FOUND_HISTORY);

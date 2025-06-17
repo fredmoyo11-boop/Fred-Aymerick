@@ -1,7 +1,7 @@
 import {Component, inject, OnInit} from '@angular/core';
 import {AccountDTO, AccountService, BalanceService, Transaction} from '../../../api/sep_drive';
 import {Router} from '@angular/router';
-import {AbstractControl, FormControl, ReactiveFormsModule, ValidatorFn} from '@angular/forms';
+import {AbstractControl, FormControl, ReactiveFormsModule, ValidatorFn, Validators} from '@angular/forms';
 import {MatCardModule} from '@angular/material/card';
 import {MatIcon} from '@angular/material/icon';
 import {EuroPipe} from '../../pipes/euro.pipe';
@@ -30,7 +30,7 @@ export class BalanceComponent implements OnInit {
 
 
   account!: AccountDTO;
-  amountControl = new FormControl(0, [amountValidator]);
+  amountControl = new FormControl(0, [amountValidator, Validators.min(0)]);
 
   transactions: Transaction[] = []
 
@@ -52,7 +52,7 @@ export class BalanceComponent implements OnInit {
 
   deposit() {
     if (this.amountControl.valid && this.amountControl.value) {
-      this.balanceService.deposit(Number(this.amountControl.value.toFixed(2))).subscribe({
+      this.balanceService.deposit(Math.abs(Number(this.amountControl.value.toFixed(2)))).subscribe({
         next: response => {
           this.refresh()
           this.amountControl.reset()

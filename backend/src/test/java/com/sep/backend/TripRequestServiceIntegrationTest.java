@@ -124,13 +124,9 @@ public class TripRequestServiceIntegrationTest {
 
 
         body.setLocations(List.of(start, end));
-        System.out.println(orsService);
         body.setGeojson(orsService.getRouteDirections(List.of(Coordinate.from(start), Coordinate.from(end))));
-        // Principal simulieren
-        Principal principal = () -> testEmail;
 
-
-        var trip = tripRequestService.createCurrentActiveTripRequest(body, principal);
+        var trip = tripRequestService.createCurrentActiveTripRequest(body, () -> testEmail);
 
 
         TripOfferEntity tripOfferEntity = new TripOfferEntity();

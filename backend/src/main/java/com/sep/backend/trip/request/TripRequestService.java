@@ -170,7 +170,7 @@ public class TripRequestService {
                     .getFirst();
 
 
-            double distanceToTripStart = orsService.getRouteDirections(List.of(Coordinate.from(driverLocation), Coordinate.from(tripStart)))
+            double distanceToTripStart = orsService.getRouteDirections(List.of(driverLocation.getCoordinate(), Coordinate.from(tripStart)))
                     .getFeatures()
                     .getFirst()
                     .getProperties()

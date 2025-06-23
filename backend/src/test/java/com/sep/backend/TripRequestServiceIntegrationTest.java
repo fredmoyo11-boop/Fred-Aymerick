@@ -2,6 +2,7 @@ package com.sep.backend;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.sep.backend.trip.history.TripHistoryDTO;
 import com.sep.backend.trip.history.TripHistoryRepository;
 import com.sep.backend.trip.history.TripHistoryService;
@@ -227,17 +228,16 @@ public class TripRequestServiceIntegrationTest {
         start.setDisplayName("Kölner Dom");
         start.setGeoJSON(nominatimService.reverse("50.9413", "6.9583").getFeatures().getFirst());
 
-        String json = new ObjectMapper().writeValueAsString(start);
+        String string = new ObjectMapper().writeValueAsString(start);
 
         String response = mockMvc.perform(post("/api/trip/request/available")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(json))
+                        .content(string))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
+        ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
         List<AvailableTripRequestDTO> trips = mapper.readValue(response, mapper.getTypeFactory().constructCollectionType(List.class, AvailableTripRequestDTO.class));
 
@@ -260,8 +260,8 @@ public class TripRequestServiceIntegrationTest {
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
+        ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
+
         List<TripHistoryDTO> history = mapper.readValue(response, mapper.getTypeFactory().constructCollectionType(List.class, TripHistoryDTO.class));
 
         assertNotNull(history);

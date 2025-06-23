@@ -21,7 +21,7 @@ public class TripRequestEntity extends AbstractEntity {
 
     @ManyToOne
     @JoinColumn(name = "customer_id", nullable = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)  // Achtung: Funktioniert nur mit bestimmten JPA-Implementierungen
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private CustomerEntity customer;
 
     @OneToOne

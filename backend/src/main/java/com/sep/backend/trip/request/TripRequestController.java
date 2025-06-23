@@ -1,6 +1,4 @@
 package com.sep.backend.trip.request;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sep.backend.HttpStatus;
 import com.sep.backend.Tags;
 import com.sep.backend.location.Location;
@@ -36,7 +34,7 @@ public class TripRequestController {
             responses = {
                     @ApiResponse(responseCode = HttpStatus.OK, description = "Suggested list successful send",
                             content = @Content(array = @ArraySchema(schema = @Schema(implementation = Location.class))))})
-    public List<Location> searchLocations(@Parameter(description = "Searched Location") @RequestParam String query) throws Exception {
+    public List<Location> searchLocations(@Parameter(description = "Searched Location") @RequestParam String query) {
         return nominatimService.search(query);
     }
 

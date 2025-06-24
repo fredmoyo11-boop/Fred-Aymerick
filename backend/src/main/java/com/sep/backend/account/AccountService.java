@@ -7,6 +7,7 @@ import com.sep.backend.Roles;
 import com.sep.backend.auth.registration.RegistrationDTO;
 import com.sep.backend.auth.registration.RegistrationException;
 import com.sep.backend.entity.*;
+import com.sep.backend.trip.history.TripHistoryRepository;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -24,9 +25,9 @@ import java.util.Set;
 @Slf4j
 @Service
 public class AccountService {
-    private final  CustomerRepository customerRepository;
-    private final  DriverRepository driverRepository;
-    private  final  ProfilePictureStorageService profilePictureStorageService;
+    private final CustomerRepository customerRepository;
+    private final DriverRepository driverRepository;
+    private final ProfilePictureStorageService profilePictureStorageService;
     private final TripHistoryRepository tripHistoryRepository;
 
     public AccountService(CustomerRepository customerRepository, DriverRepository driverRepository, ProfilePictureStorageService profilePictureStorageService, TripHistoryRepository tripHistoryRepository) {
@@ -34,6 +35,12 @@ public class AccountService {
         this.driverRepository = driverRepository;
         this.profilePictureStorageService = profilePictureStorageService;
         this.tripHistoryRepository = tripHistoryRepository;
+    }
+
+    public DriverEntity getDriverByUsername(String username) throws NotFoundException {
+        return driverRepository
+                .findByUsernameIgnoreCase(username)
+                .orElseThrow(() -> new NotFoundException(ErrorMessages.NOT_FOUND_DRIVER));
     }
 
     /**
@@ -86,7 +93,7 @@ public class AccountService {
      * @return The optional containing the customer entity.
      */
     public CustomerEntity findCustomerByUsername(String username) {
-        return customerRepository.findByUsernameIgnoreCase(username).orElseThrow(()-> new NotFoundException(ErrorMessages.NOT_FOUND_CUSTOMER));
+        return customerRepository.findByUsernameIgnoreCase(username).orElseThrow(() -> new NotFoundException(ErrorMessages.NOT_FOUND_CUSTOMER));
     }
 
     /**
@@ -96,7 +103,7 @@ public class AccountService {
      * @return The optional containing the driver entity.
      */
     public DriverEntity findDriverByUsername(String username) {
-        return driverRepository.findByUsernameIgnoreCase(username).orElseThrow(()-> new NotFoundException(ErrorMessages.NOT_FOUND_DRIVER));
+        return driverRepository.findByUsernameIgnoreCase(username).orElseThrow(() -> new NotFoundException(ErrorMessages.NOT_FOUND_DRIVER));
     }
 
     /**
@@ -137,6 +144,19 @@ public class AccountService {
             }
             default -> throw new NotFoundException(ErrorMessages.NOT_FOUND_USER);
         };
+    }
+
+    public void saveCustomer(CustomerEntity entity) {
+
+        customerRepository.save(entity);
+        log.debug("Customer saved successfully");
+
+    }
+
+    public void saveDriver(DriverEntity entity) {
+
+        driverRepository.save(entity);
+        log.debug("Driver saved successfully");
     }
 
     /**
@@ -308,7 +328,7 @@ public class AccountService {
     }
 
 
-    public  AccountDTO getCustomerDTO(CustomerEntity customerEntity) {
+    public AccountDTO getCustomerDTO(CustomerEntity customerEntity) {
         AccountDTO customerDTO = new AccountDTO();
         customerDTO.setEmail(customerEntity.getEmail());
         customerDTO.setRole(Roles.CUSTOMER);
@@ -316,8 +336,8 @@ public class AccountService {
         customerDTO.setUsername(customerEntity.getUsername());
         customerDTO.setFirstName(customerEntity.getFirstName());
         customerDTO.setLastName(customerEntity.getLastName());
-        customerDTO.setTotalNumberOfRides(5);
-        if(tripHistoryRepository.existsByCustomer(customerEntity)) {
+        customerDTO.setBalance(customerEntity.getBalance());
+        if (tripHistoryRepository.existsByCustomer(customerEntity)) {
             var avgRating = tripHistoryRepository.findByCustomer(customerEntity).stream()
                     .mapToInt(TripHistoryEntity::getCustomerRating)
                     .average()
@@ -326,15 +346,17 @@ public class AccountService {
             customerDTO.setTotalNumberOfRides(trips);
             customerDTO.setRatings(avgRating);
 
-        }else{
+        } else {
             customerDTO.setRatings(0.0);
+            customerDTO.setTotalNumberOfRides(0);
         }
         customerDTO.setProfilePictureUrl(customerEntity.getProfilePictureUrl());
+        customerDTO.setBalance(customerEntity.getBalance());
         return customerDTO;
     }
 
 
-    public  AccountDTO getDriverDTO(DriverEntity driverEntity) {
+    public AccountDTO getDriverDTO(DriverEntity driverEntity) {
         AccountDTO driverDTO = new AccountDTO();
         driverDTO.setEmail(driverEntity.getEmail());
 
@@ -344,16 +366,17 @@ public class AccountService {
         driverDTO.setLastName(driverEntity.getLastName());
         driverDTO.setBirthday(driverEntity.getBirthday().toString());
         driverDTO.setCarType(driverEntity.getCarType());
-        if(tripHistoryRepository.existsByDriver(driverEntity)) {
-           var avgRating = tripHistoryRepository.findByDriver(driverEntity).stream()
-                   .mapToInt(TripHistoryEntity::getCustomerRating)
-                   .average()
-                   .orElse(0.0);
-           var trips = tripHistoryRepository.findByDriver(driverEntity).size();
-           driverDTO.setTotalNumberOfRides(trips);
-           driverDTO.setRatings(avgRating);
+        driverDTO.setBalance(driverEntity.getBalance());
+        if (tripHistoryRepository.existsByDriver(driverEntity)) {
+            var avgRating = tripHistoryRepository.findByDriver(driverEntity).stream()
+                    .mapToInt(TripHistoryEntity::getCustomerRating)
+                    .average()
+                    .orElse(0.0);
+            var trips = tripHistoryRepository.findByDriver(driverEntity).size();
+            driverDTO.setTotalNumberOfRides(trips);
+            driverDTO.setRatings(avgRating);
 
-        }else{
+        } else {
             driverDTO.setRatings(0.0);
             driverDTO.setTotalNumberOfRides(0);
         }
@@ -444,6 +467,7 @@ public class AccountService {
             account.setBirthday(data.getBirthday());
             account.setVerified(false);
             account.setProfilePictureUrl(profilePictureUrl);
+            account.setBalance(0.0);
             return account;
         } catch (Exception e) {
             throw new RuntimeException("Failed to create account entity of type " + clazz.getName(), e);

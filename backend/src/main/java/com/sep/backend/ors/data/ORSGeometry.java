@@ -1,5 +1,6 @@
 package com.sep.backend.ors.data;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -14,6 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Schema(description = "Represents the GeoJSON geometry.")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ORSGeometry {
 
     @JsonProperty("type")

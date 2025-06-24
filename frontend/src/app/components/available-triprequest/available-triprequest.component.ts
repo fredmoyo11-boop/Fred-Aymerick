@@ -1,4 +1,4 @@
-import {Component, ViewChild, AfterViewInit, OnInit} from '@angular/core';
+import {Component, ViewChild, AfterViewInit, OnInit, OnDestroy} from '@angular/core';
 import {
   MatCell,
   MatCellDef,
@@ -15,27 +15,43 @@ import {MatIcon} from '@angular/material/icon';
 import {MatOption} from '@angular/material/core';
 import {MatSelect, MatSelectChange} from '@angular/material/select';
 import {MatTooltip} from '@angular/material/tooltip';
-import {AvailableTripRequestDTO, TripRequestService, Location} from '../../../api/sep_drive';
-import {debounceTime, distinctUntilChanged, tap} from 'rxjs';
+import {
+  AvailableTripRequestDTO,
+  TripRequestService,
+  Location,
+  TripOfferService,
+  TripOffer, Notification
+} from '../../../api/sep_drive';
+import {debounceTime, distinctUntilChanged, firstValueFrom, Subscription, tap} from 'rxjs';
 import {CommonModule} from '@angular/common';
 import {MatTable} from '@angular/material/table';
+import {SecondsToTimePipe} from '../../pipes/seconds-to-time.pipe';
+import {MeterToKmPipe} from '../../pipes/meter-to-km.pipe';
+import {CarTypePipe} from '../../pipes/car-type.pipe';
+import {EuroPipe} from '../../pipes/euro.pipe';
+import {AngularNotificationService} from '../../services/angular-notification.service';
+import {Router} from '@angular/router';
+import {MatCard, MatCardContent, MatCardTitle} from '@angular/material/card';
+import {MatDivider} from '@angular/material/divider';
+import {TripOfferStatusPipe} from '../../pipes/trip-offer-status.pipe';
+import {HttpErrorResponse} from '@angular/common/http';
+import {MatSnackBar} from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-available-triprequest',
   standalone: true,
-  imports: [CommonModule, MatTable, FormsModule, MatFormField, MatIcon, MatIconButton, MatInput, MatLabel, MatOption, MatSelect, MatSuffix, MatTooltip, ReactiveFormsModule, MatButton, MatSortHeader, MatSort, MatColumnDef, MatHeaderCell, MatCell, MatHeaderCellDef, MatCellDef, MatHeaderRow, MatRow, MatHeaderRowDef, MatRowDef],
+  imports: [CommonModule, MatTable, FormsModule, MatFormField, MatIcon, MatIconButton, MatInput, MatLabel, MatOption, MatSelect, MatSuffix, MatTooltip, ReactiveFormsModule, MatButton, MatSortHeader, MatSort, MatColumnDef, MatHeaderCell, MatCell, MatHeaderCellDef, MatCellDef, MatHeaderRow, MatRow, MatHeaderRowDef, MatRowDef, SecondsToTimePipe, MeterToKmPipe, CarTypePipe, EuroPipe, MatCard, MatCardTitle, MatDivider, MatCardContent, TripOfferStatusPipe],
   templateUrl: './available-triprequest.component.html',
   styleUrl: './available-triprequest.component.css'
 })
-
-
-export class AvailableTriprequestComponent implements OnInit, AfterViewInit {
+export class AvailableTriprequestComponent implements OnInit, AfterViewInit, OnDestroy {
   locationForm: FormGroup = new FormGroup({
     startQuery: new FormControl('', [Validators.required])
   });
   lat: number | null = null;
   lon: number | null = null;
   error: string | null = null;
+  selectedDisplayName: string = '';
 
   start!: Location;
   startLocations: Location[] = [];
@@ -47,19 +63,47 @@ export class AvailableTriprequestComponent implements OnInit, AfterViewInit {
   displayedColumns: string[] = ['requestId', 'requestTime', 'distanceInKm', 'customerUsername', 'customerRating', 'desiredCarType', 'totalDistanceInKm', 'price', 'duration', 'acceptTrip'];
   showTable = false;
 
+  activeTripOffer: TripOffer | null = null;
 
-  constructor(
-    private tripService: TripRequestService) {
+  private subscription!: Subscription
+
+  constructor(private tripRequestService: TripRequestService, private tripOfferService: TripOfferService, private angularNotificationService: AngularNotificationService, private router: Router, private _snackBar: MatSnackBar) {
   }
-
 
   onStartChange(event: MatSelectChange) {
     this.start = event.value
   }
 
-  ngOnInit(): void {
+  showRevokeButton = true
+  latestNotification: Notification | null = null
 
-    //this.dataSource = new MatTableDataSource<AvailableTripRequestDTO>([]);
+
+  ngOnInit(): void {
+    console.log("inited available trip request")
+    void this.getCurrentActiveTripOffer()
+
+    this.subscription = this.angularNotificationService.latestNotification$.subscribe({
+      next: notification => {
+        // null for init
+        if (this.latestNotification !== null) {
+          if (notification && notification.notificationType.startsWith("TRIP_OFFER")) {
+            if (notification.notificationType !== "TRIP_OFFER_ACCEPTED") {
+              void this.getCurrentActiveTripOffer()
+            } else {
+              this.showRevokeButton = false
+              const snackBarRef = this._snackBar.open(notification.message, "Simulieren")
+
+              snackBarRef.onAction().subscribe(value => {
+                this.router.navigate(["/offer", this.activeTripOffer!.id])
+              })
+            }
+          }
+        }
+        this.latestNotification = notification
+      }
+    })
+
+    this.dataSource = new MatTableDataSource<AvailableTripRequestDTO>([]);
 
     this.locationForm.get("startQuery")?.valueChanges.pipe(
       tap(value => console.log('Eingabewert:', value)),
@@ -67,7 +111,7 @@ export class AvailableTriprequestComponent implements OnInit, AfterViewInit {
       distinctUntilChanged(),
     ).subscribe({
       next: query => {
-        return this.tripService.searchLocations(query).subscribe({
+        return this.tripRequestService.searchLocations(query).subscribe({
           next: locations => {
             console.log(locations)
             this.startLocations = locations;
@@ -82,6 +126,30 @@ export class AvailableTriprequestComponent implements OnInit, AfterViewInit {
       }
     });
   }
+
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe()
+  }
+
+  async getCurrentActiveTripOffer() {
+    try {
+      this.activeTripOffer = await firstValueFrom(this.tripOfferService.getCurrentActiveTripOffer());
+    } catch (error) {
+      console.error(error)
+      this.activeTripOffer = null
+    }
+  }
+
+  revokeTripOffer(id: number) {
+    this.tripOfferService.revokeTripOffer(id).subscribe({
+      next: value => {
+        console.log("Revoked trip offer.")
+      }, error: err => {
+        console.error(err)
+      }
+    })
+  }
+
 
   currentLocation() {
     if (navigator.geolocation) {
@@ -103,15 +171,14 @@ export class AvailableTriprequestComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
 
-    if (this.dataSource && this.sort) {
-      this.dataSource.sort = this.sort;
-    }
+    this.dataSource.sort = this.sort;
+
 
     // Benutzerdefinierte Sortierfunktion für Fahrzeugklassen
     this.dataSource.sortingDataAccessor = (item, property: string) => {
       switch (property) {
         case 'desiredCarType':
-          //  die gewünschte Reihenfolge
+          // Definieren Sie die gewünschte Reihenfolge
           const order = {
             'SMALL': 1,
             'MITTEL': 2,
@@ -128,21 +195,20 @@ export class AvailableTriprequestComponent implements OnInit, AfterViewInit {
       }
     };
 
-    console.log('MatSort:', this.sort);
 
   }
 
   onSave() {
     //send adress to backend and receive table data from the backend
     if (this.start) {
-      this.tripService.getAvailableRequests(this.start).subscribe({
+      this.tripRequestService.getAvailableRequests(this.start).subscribe({
         next: (response) => {
           console.log('Backend response', response);
           this.dataSource.data = response;
+
+          this.selectedDisplayName = this.start.displayName
           //sort-objekt zuweisen
-          setTimeout(() => {
-            this.dataSource.sort = this.sort;
-          });
+          this.dataSource.sort = this.sort;
           this.showTable = true;
 
         },
@@ -158,8 +224,47 @@ export class AvailableTriprequestComponent implements OnInit, AfterViewInit {
     return Array(5).fill(0).map((x, i) => i);
   }
 
-  //To be implemented by  Mohammed Daoudi
-  acceptTrip() {
+  createTripOffer(tripRequestId: number) {
+    this.tripOfferService.createNewTripOffer(tripRequestId).subscribe({
+      next: value => {
+        console.log("Created new trip offer.")
+      },
+      error: err => {
+        console.error(err)
+        if (err instanceof HttpErrorResponse) {
+          if (err.status === 500) {
+            const message: string = err.error.message;
+            if (message === "Trip offer already pending.") {
+              this._snackBar.open("Für diese Anfrage besteht bereits ein offenes Angebot.", undefined, {
+                duration: 3000
+              })
+            } else if (message === "Trip offer already accepted.") {
+              this._snackBar.open("Deine Anfrage wurde bereits angenommen!", undefined, {
+                duration: 3000
+              })
+            } else if (message === "Trip offer already revoked.") {
+              this._snackBar.open("Du hattest bereits eine Anfrage gestellt und zurückgezogen. Du kannst keine neue für diese Anfrage stellen!", undefined, {
+                duration: 3000
+              })
+            } else if (message === "Trip offer already rejected.") {
+              this._snackBar.open("Du hattest bereits eine Anfrage gestellt und diese wurde abgelehnt. Du kannst keine neue für diese Anfrage stellen!", undefined, {
+                duration: 3000
+              })
+            } else if (message === "Trip offer already completed.") {
+              this._snackBar.open("Deine Anfrage wurde bereits fertiggestellt.", undefined, {
+                duration: 3000
+              })
+            }
+          }
+        }
+      }
+    })
+  }
+
+  navigateToSimulation(): void {
+    if (this.activeTripOffer && this.activeTripOffer.status === "ACCEPTED") {
+      this.router.navigate(["/offer", this.activeTripOffer.id])
+    }
   }
 
 }

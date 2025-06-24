@@ -1,0 +1,62 @@
+<div class="container">
+  <p class="label">Dein Kontostand:</p>
+
+  <div class="balance">
+    {{ account.balance | euro }}
+  </div>
+
+  <div class="input-group">
+    <input
+      [formControl]="amountControl"
+      type="number"
+      placeholder="123456789"
+      class="input"
+    />
+  </div>
+
+  <p class="note">Kommazahlen werden gerundet</p>
+
+  <div class="buttons">
+    <button (click)="deposit()" class="deposit">
+      Einzahlen
+    </button>
+
+    <button (click)="withdrawal()" class="withdrawal">
+      Abheben
+    </button>
+  </div>
+
+  <h3>Vorherige Transaktionen</h3>
+  @if (transactions.length === 0) {
+    <p>Keine vorherigen Transaktionen!</p>
+  } @else {
+    <p>{{ transactions.length }} Transaktionen</p>
+    <div class="transaction-container">
+      @for (transaction of transactions; track idx; let idx = $index) {
+        <mat-card appearance="outlined">
+          <mat-card-content class="transaction-card-content">
+            <div class="transaction-card-info">
+              @if (transaction.transactionType === "DEPOSIT") {
+                <mat-icon>arrow_downward</mat-icon>
+              } @else if (transaction.transactionType === "WITHDRAW") {
+                <mat-icon>arrow_upward</mat-icon>
+              } @else if (transaction.transactionType === "TRANSFER") {
+                @if (role === "CUSTOMER") {
+                  <mat-icon>arrow_forward</mat-icon>
+                  <span>to <span class="username"
+                                 (click)="navigateToProfile(transaction.recipientUsername!)">{{ transaction.recipientUsername }}</span></span>
+                } @else {
+                  <mat-icon>arrow_backward</mat-icon>
+                  <span>from <span class="username"
+                                   (click)="navigateToProfile(transaction.senderUsername!)">{{ transaction.senderUsername }}</span></span>
+                }
+              }
+            </div>
+            <span>{{ transaction.amount | euro }}</span>
+          </mat-card-content>
+        </mat-card>
+      }
+    </div>
+  }
+
+</div>

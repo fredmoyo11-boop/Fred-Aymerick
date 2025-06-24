@@ -28,6 +28,18 @@ public class ErrorMessages {
 
     public static final String NOT_FOUND_OTP = "OTP not found.";
 
+    public static final String NOT_FOUND_TRIP_OFFER = "Trip offer not found.";
+
+    public static final String NOT_FOUND_ACCEPTED_TRIP_OFFER = "Accepted trip offer not found.";
+
+    public static final String NOT_FOUND_ACTIVE_TRIP_OFFER = "Active trip offer not found.";
+
+    public static final String NOT_FOUND_PENDING_TRIP_OFFER = "Pending trip offer not found.";
+
+    public static final String NOT_FOUND_TRIP_REQUEST = "Trip request not found.";
+
+    public static final String NOT_FOUND_HISTORY = "Trip history not found.";
+
 
     public static final String ALREADY_EXISTS_USERNAME = "Username already exists.";
 
@@ -40,11 +52,15 @@ public class ErrorMessages {
 
     public static final String PENDING_VERIFICATION = "Pending verification.";
 
-    public static final String HISTORY_NOT_FOUND = "Trip history not found.";
-    public static final String CREATION_FAILED = "Allgemeiner Fehler beim Erstellen der Fahrtanfrage.";
-    public static final String GEOJSON_PROCESSING_FAILED = "Fehler beim Verarbeiten der GeoJSON-Daten.";
-    public static final String NOT_FOUND_ADDRESS = "Keine gültige Adresse gefunden für die Koordinaten.";
-    public static final String ORS_PROCESSING_FAILED = "Fehler beim Berechnen der Route mit ORS";
+
+    public static final String TRIP_OFFER_NOT_PENDING = "Trip offer not pending.";
+
+    public static final String TRIP_OFFER_ALREADY_PENDING = "Trip offer already pending.";
+    public static final String TRIP_OFFER_ALREADY_ACCEPTED = "Trip offer already accepted.";
+    public static final String TRIP_OFFER_ALREADY_REVOKED = "Trip offer already revoked.";
+    public static final String TRIP_OFFER_ALREADY_REJECTED = "Trip offer already rejected.";
+    public static final String TRIP_OFFER_ALREADY_COMPLETED = "Trip offer already completed.";
+
 
     public ErrorMessages() {
         throw new UnsupportedOperationException("Cannot instantiate ErrorMessages.");

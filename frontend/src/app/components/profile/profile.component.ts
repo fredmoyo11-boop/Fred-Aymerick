@@ -3,12 +3,14 @@ import {Component, inject, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {AccountDTO} from '../../../api/sep_drive';
 import {AccountService} from '../../../api/sep_drive';
-import {NgIf} from '@angular/common';
+import {DecimalPipe, NgIf} from '@angular/common';
+import {EuroPipe} from '../../pipes/euro.pipe';
 
 @Component({
   selector: 'app-profile',
   imports: [
-    NgIf
+    EuroPipe,
+    DecimalPipe
   ],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.css'

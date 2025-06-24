@@ -47,8 +47,8 @@ public abstract sealed class AccountEntity extends AbstractEntity permits Custom
     @Column(name = "profile_picture_url")
     private String profilePictureUrl;
 
-    @Column(name = "balance")
-    private Double balance = 0.0;
+    @Column(name = "balance", nullable = false)
+    private Double balance;
 
     public void setBirthday(String birthday) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");

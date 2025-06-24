@@ -1,0 +1,169 @@
+.card-overlay { /*Positions the container on the top left of the map*/
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  display: flex;
+  flex-direction: row;
+  gap: 14px;
+  z-index: 500;
+  align-items: flex-start;
+}
+
+.active-container,
+.request-container { /*Both active trip card and trip request card*/
+  width: 360px;
+  max-height: 90vh;
+  background-color: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.offers-container {
+  width: auto;
+  min-width: 400px;
+  max-width: 100%;
+  background-color: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.table-container {
+  width: 100%;
+  overflow: hidden;
+  display: block;
+}
+
+.search-form-field { /*Search form field*/
+  width: 100%;
+}
+
+.address-droplist { /*Droplist for the stops chosen by customer*/
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 300px;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.example-box { /*draggable stop item*/
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f1f1f1;
+  outline: #555555;
+  border-radius: 4px;
+  padding: 8px;
+}
+
+.handle { /*Drag handle icon*/
+  margin-right: 8px;
+  cursor: grab;
+}
+
+.search-container { /*Search container when query valid*/
+  width: 320px;
+  max-height: 400px;
+  overflow-y: auto;
+  background-color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.scroll-container { /*When the list with suggested addresses goes over a limit, it is scrollable*/
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 8px;
+}
+
+.location-box { /*Box around each given displayname by nominatim*/
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 12px;
+  margin: 8px 0;
+  display: flex;
+  align-items: center;
+  transition: border-color 0.2s, background-color 0.2s;
+  gap: 8px;
+}
+
+.location-box.selected { /*Makes the box blue when selected*/
+  border-color: #3f51b5;
+  background-color: #97c4ec;
+}
+
+.finalLocation-box { /*Box around each location in active trip request screen*/
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 12px;
+  margin: 8px 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.display-name {
+  flex: 1;
+  word-break: break-word;
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+  padding-top: 1rem;
+}
+
+.delete-button {
+  background-color: #d32f2f !important;
+  color: white !important;
+
+}
+
+.delete-button:hover {
+  background-color: #b71c1c;
+}
+
+.confirm-button {
+  width: 120px;
+  margin: 16px auto 16px auto;
+  display: inline-block;
+}
+
+.back-button {
+  width: 120px;
+  margin: 16px auto 16px auto;
+  display: inline-block;
+}
+
+.button-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1rem 0 1rem;
+}
+
+.center-title {
+  padding-top: 3px;
+  padding-bottom: 3px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.radio-container {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+}
+
+.map-container {
+  position: absolute;
+  top: 56px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  z-index: 1;
+}
+
+#map {
+  height: 100%;
+  width: 100%;
+}

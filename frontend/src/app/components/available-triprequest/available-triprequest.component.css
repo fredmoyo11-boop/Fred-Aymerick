@@ -1,3 +1,14 @@
+.main-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.start-location-container {
+  width: 600px;
+}
+
 table {
   width: 100%;
 }
@@ -7,7 +18,8 @@ th.mat-sort-header-sorted {
 }
 
 .start-address-form-field {
-  width: 500px;
+  width: 100%;
+  margin-top: 10px;
   height: auto;
 }
 .table-container {

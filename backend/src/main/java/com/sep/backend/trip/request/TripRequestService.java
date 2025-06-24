@@ -7,38 +7,37 @@ import com.sep.backend.Roles;
 import com.sep.backend.account.AccountService;
 import com.sep.backend.entity.*;
 import com.sep.backend.location.Location;
-import com.sep.backend.location.LocationService;
-import com.sep.backend.nominatim.NominatimService;
+import com.sep.backend.ors.ORSService;
 import com.sep.backend.ors.data.ORSFeatureCollection;
-import com.sep.backend.route.RouteRepository;
+import com.sep.backend.route.Coordinate;
+import com.sep.backend.route.RouteService;
+import com.sep.backend.trip.history.TripHistoryRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class TripRequestService {
-    private final NominatimService nominatimService;
-    private final TripHistoryRepository tripHistoryRepository;
-    private final TripRequestRepository tripRequestRepository;
-    private final LocationService locationService;
-    private final RouteRepository routeRepository;
-    private final AccountService accountService;
-    private static final Logger log = LoggerFactory.getLogger(TripRequestService.class);
 
-    public TripRequestService(NominatimService nominatimService, TripHistoryRepository tripHistoryRepository, TripRequestRepository tripRequestRepository, LocationService locationService, RouteRepository routeRepository, AccountService accountService) {
-        this.nominatimService = nominatimService;
-        this.tripHistoryRepository = tripHistoryRepository;
+    private final TripRequestRepository tripRequestRepository;
+
+    private final AccountService accountService;
+    private final RouteService routeService;
+    private final ORSService orsService;
+    private final TripHistoryRepository tripHistoryRepository;
+
+    public TripRequestService(TripRequestRepository tripRequestRepository, AccountService accountService, RouteService routeService, ORSService orsService1, TripHistoryRepository tripHistoryRepository) {
         this.tripRequestRepository = tripRequestRepository;
-        this.locationService = locationService;
-        this.routeRepository = routeRepository;
         this.accountService = accountService;
+        this.routeService = routeService;
+        this.orsService = orsService1;
+        this.tripHistoryRepository = tripHistoryRepository;
     }
 
     /**
@@ -50,13 +49,6 @@ public class TripRequestService {
     public boolean existsActiveTripRequest(String email) {
         return tripRequestRepository.existsByCustomer_EmailAndStatus(email, TripRequestStatus.ACTIVE);
     }
-
-    /**
-     * Saves A LocationEntity to the Repository.
-     *
-     * @param location Location chosen by customer.
-     * @return The location entity.
-     */
 
     /**
      * Returns the trip request entity by email and status.
@@ -100,62 +92,44 @@ public class TripRequestService {
      * @return The trip request entity
      */
     @Transactional
-    public TripRequestEntity createCurrentActiveTripRequest(@Valid TripRequestBody tripRequestBody, Principal principal) {
-
+    public TripRequestEntity createCurrentActiveTripRequest(@Valid TripRequestBody tripRequestBody, Principal principal) throws TripRequestException {
         String email = principal.getName();
 
         String role = accountService.getRoleByEmail(email);
+        //checks if role of user is customer
         if (!Roles.CUSTOMER.equals(role)) {
             throw new TripRequestException("User must be a customer.");
         }
-        if (!CarTypes.isValidCarType(tripRequestBody.getDesiredCarType())) {
+        //checks if car type in request is valid
+        if (!CarTypes.isValidCarType(tripRequestBody.getCarType())) {
             throw new TripRequestException(ErrorMessages.INVALID_CAR_TYPE);
         }
+        //only one active trip request at a time
         if (existsActiveTripRequest(email)) {
             throw new TripRequestException(ErrorMessages.ALREADY_EXISTS_TRIP_REQUEST);
         }
+        var customer = accountService.getCustomerByEmail(email);
+        var routeEntity = routeService.createRoute(tripRequestBody.getGeojson(), tripRequestBody.getLocations());
 
+        double price = (routeEntity.getGeoJSON().getFeatures().getFirst().getProperties().getSummary().getDistance() / 1000.0)
+                * CarTypes.getPricePerKilometer(tripRequestBody.getCarType());
 
-        List<LocationEntity> stops = List.of(tripRequestBody.getStartLocation(), tripRequestBody.getEndLocation()).stream()
-                .map(stop -> Location.from(nominatimService.reverse(stop.getLatitude().toString(), stop.getLongitude().toString()).getFeatures().getFirst()))
-                .map(locationService::saveLocation)
-                .toList();
-        ORSFeatureCollection geoJson = nominatimService.requestORSRoute(stops);
+        var tripRequestEntity = new TripRequestEntity();
+        tripRequestEntity.setCustomer(customer);
+        tripRequestEntity.setRoute(routeEntity);
+        tripRequestEntity.setRequestTime(LocalDateTime.now(ZoneId.of("Europe/Berlin")));
+        tripRequestEntity.setCarType(tripRequestBody.getCarType());
+        tripRequestEntity.setStatus(TripRequestStatus.ACTIVE);
+        tripRequestEntity.setNote(tripRequestBody.getNote());
+        tripRequestEntity.setPrice(price);
 
-        RouteEntity route = saveRoute(stops, geoJson);
-
-        String carType = tripRequestBody.getDesiredCarType();
-
-        Double tripPrice = calculateTripPrice(geoJson,carType);
-
-        TripRequestEntity trip = new TripRequestEntity();
-        trip.setCustomer(accountService.getCustomerByEmail(email));
-        trip.setRoute(route);
-        trip.setDesiredCarType(tripRequestBody.getDesiredCarType());
-        trip.setNote(tripRequestBody.getNote());
-        trip.setRequestTime(LocalDateTime.now());
-        trip.setStatus(TripRequestStatus.ACTIVE);
-        trip.setPrice(tripPrice);
-        return tripRequestRepository.save(trip);
+        return tripRequestRepository.save(tripRequestEntity);
     }
 
 
-    public RouteEntity saveRoute(List<LocationEntity> stops,ORSFeatureCollection geoJson) {
-        RouteEntity route = new RouteEntity();
-        route.setStops(stops);
-        route.setGeoJSON(geoJson);
-        stops.forEach(stop -> stop.setRoute(route));
-        return routeRepository.save(route);
+    private double getDistance(ORSFeatureCollection geoJSON) {
+        return geoJSON.getFeatures().getFirst().getProperties().getSummary().getDistance();
     }
-
-    public double getDistance(ORSFeatureCollection routeGeoJson) {
-        return routeGeoJson.getFeatures().getFirst().getProperties().getSummary().getDistance() / 10000;
-    }
-
-    public double calculateTripPrice(ORSFeatureCollection routeGeoJson, String carType) {
-        return (routeGeoJson.getFeatures().getFirst().getProperties().getSummary().getDistance() / 10000) * CarTypes.getPricePerKilometer(carType);
-    }
-
 
     /**
      * Deletes the current active trip request.
@@ -163,44 +137,58 @@ public class TripRequestService {
      * @param principal The user.
      * @throws NotFoundException If no active trip request found.
      */
-    public void deleteCurrentActiveTripRequest(Principal principal) {
+    public void deleteCurrentActiveTripRequest(Principal principal) throws NotFoundException {
         String email = principal.getName();
         TripRequestEntity tripRequestEntity = findActiveTripRequestByEmail(email)
                 .orElseThrow(() -> new NotFoundException("Current customer does not have an active trip request."));
         tripRequestEntity.setStatus(TripRequestStatus.DELETED);
+
         tripRequestRepository.save(tripRequestEntity);
     }
 
     @Transactional
     public List<AvailableTripRequestDTO> getAvailableRequests(@Valid Location driverLocation) {
+
         List<TripRequestEntity> activeRequests = tripRequestRepository.findByStatus(TripRequestStatus.ACTIVE);
+
         if (activeRequests == null || activeRequests.isEmpty()) {
-             throw new RuntimeException("keine Aktive Fahranfrage Verfügbar ");
+            throw new TripRequestException("keine Aktive Fahranfrage Verfügbar ");
         }
 
-        return activeRequests.stream().map(activeRequest ->
-        {
+        return activeRequests.stream().map(activeRequest -> {
+
             List<LocationEntity> stops = activeRequest.getRoute().getStops();
-            if(stops == null ) {
-                log.error("stops is null");
-                throw new RuntimeException("keine Aktive Fahranfrage");
-            }
-            if ( stops.isEmpty()) {
-                log.error("Route '{}' hat keine Stops geladen!", activeRequest.getRoute().getId());
+
+            if (stops.isEmpty()) {
 
                 throw new TripRequestException("Route enthält keine Stopps.");
             }
 
-            LocationEntity start = activeRequest.getRoute().getStops().getFirst();
+            LocationEntity tripStart = activeRequest
+                    .getRoute()
+                    .getStops()
+                    .getFirst();
+
+
+            double distanceToTripStart = orsService.getRouteDirections(List.of(driverLocation.getCoordinate(), Coordinate.from(tripStart)))
+                    .getFeatures()
+                    .getFirst()
+                    .getProperties()
+                    .getSegments()
+                    .getFirst()
+                    .getDistance();
+
+            double tripDuration = activeRequest
+                    .getRoute()
+                    .getGeoJSON()
+                    .getFeatures()
+                    .getFirst()
+                    .getProperties()
+                    .getSummary()
+                    .getDuration();
+
             CustomerEntity customer = activeRequest.getCustomer();
-            Location tripStartLocation = new Location();
-            tripStartLocation.setLatitude(start.getLatitude());
-            tripStartLocation.setLongitude(start.getLongitude());
-            tripStartLocation.setDisplayName(start.getDisplayName());
 
-
-            double distance = nominatimService.requestDistanceToTripRequests(driverLocation, tripStartLocation);
-            double tripDuration = activeRequest.getRoute().getGeoJSON().getFeatures().getFirst().getProperties().getSummary().getDuration();
             double avgRating = tripHistoryRepository.findByCustomer(customer).stream()
                     .mapToInt(TripHistoryEntity::getCustomerRating)
                     .average()
@@ -211,39 +199,13 @@ public class TripRequestService {
                     activeRequest.getRequestTime(),
                     customer.getUsername(),
                     avgRating,
-                    activeRequest.getDesiredCarType(),
-                    distance,
+                    activeRequest.getCarType(),
+                    distanceToTripStart,
                     getDistance(activeRequest.getRoute().getGeoJSON()),
                     activeRequest.getPrice(),
                     tripDuration
             );
         }).toList();
 
-
-//        Comparator<AvailableTripRequestDTO> comparator = getComparator(sort);
-//
-//        if ("desc".equalsIgnoreCase(direction)) {
-//            comparator = comparator.reversed();
-//        }
-//        return unsorted.stream()
-//                .sorted(comparator)
-//                .collect(Collectors.toList());
     }
-
-//    private Comparator<AvailableTripRequestDTO> getComparator(String sort) {
-//
-//        return switch (sort) {
-//            case "requestTime" -> Comparator.comparing(AvailableTripRequestDTO::getRequestTime);
-//            case "customerUsername" -> Comparator.comparing(AvailableTripRequestDTO::getCustomerUsername, String.CASE_INSENSITIVE_ORDER);
-//            case "customerRating" -> Comparator.comparing(AvailableTripRequestDTO::getCustomerRating);
-//            case "desiredCarType" ->  Comparator.comparingInt(dto ->
-//                switch (dto.getDesiredCarType()) {
-//                case "SMALL" -> 1;
-//                case "MEDIUM" -> 2;
-//                case "DELUXE" -> 3;
-//                   default -> throw new IllegalStateException("Unexpected value: " + dto.getDesiredCarType());
-//            });
-//            default -> Comparator.comparing(AvailableTripRequestDTO::getDistanceInKm);
-//        };
-//    }
 }

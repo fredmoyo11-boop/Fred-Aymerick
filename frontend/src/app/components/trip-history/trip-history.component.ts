@@ -1,13 +1,16 @@
 import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
-import { MatTableDataSource} from "@angular/material/table";
+import {MatTableDataSource} from "@angular/material/table";
 import {MatFormField, MatInput, MatLabel} from "@angular/material/input";
-import {MatSort, MatSortHeader} from "@angular/material/sort";
-import {CurrencyPipe, DatePipe, DecimalPipe, NgClass, NgForOf, NgIf} from "@angular/common";
+import {MatSort, MatSortModule} from "@angular/material/sort";
+import {DatePipe, NgClass, NgForOf, NgIf} from "@angular/common";
 import {MatIcon} from '@angular/material/icon';
-import {TripHistoryDTO, TripRequestService} from '../../../api/sep_drive';
-import { MatTableModule } from '@angular/material/table';
-
+import {TripHistoryDTO, TripHistoryService} from '../../../api/sep_drive';
+import {MatTableModule} from '@angular/material/table';
+import {MeterToKmPipe} from '../../pipes/meter-to-km.pipe';
+import {SecondsToTimePipe} from '../../pipes/seconds-to-time.pipe';
+import {EuroPipe} from '../../pipes/euro.pipe';
+import {Router} from '@angular/router';
 
 
 @Component({
@@ -16,8 +19,7 @@ import { MatTableModule } from '@angular/material/table';
     FormsModule,
     MatInput,
     MatLabel,
-    MatSort,
-    MatSortHeader,
+    MatSortModule,
     NgForOf,
     NgIf,
     ReactiveFormsModule,
@@ -25,21 +27,24 @@ import { MatTableModule } from '@angular/material/table';
     NgClass,
     MatIcon,
     MatTableModule,
+    MeterToKmPipe,
+    SecondsToTimePipe,
+    EuroPipe,
     DatePipe,
-    DecimalPipe,
-    CurrencyPipe,
   ],
   templateUrl: './trip-history.component.html',
   styleUrl: './trip-history.component.css'
 })
 export class TripHistoryComponent implements OnInit, AfterViewInit {
 
-  displayedColumns: string[] = ['tripId', 'endTime', 'distance', 'duration', 'price', 'driverRating', 'customerRating', 'customerName', 'customerUsername', 'driverName', 'driverUsername'];
-  dataSource = new MatTableDataSource<TripHistoryDTO>([]);
   @ViewChild(MatSort) sort!: MatSort;
+  tripHistories: TripHistoryDTO[] = []
+  dataSource = new MatTableDataSource<TripHistoryDTO>(this.tripHistories);
   showTable: boolean = false;
 
-  constructor(private tripService: TripRequestService) {
+  displayedColumns: string[] = ['tripId', 'endTime', 'distance', 'duration', 'price', 'driverRating', 'customerRating', 'customerName', 'customerUsername', 'driverName', 'driverUsername'];
+
+  constructor(private tripHistoryService: TripHistoryService, private router: Router) {
   }
 
   ngOnInit(): void {
@@ -50,38 +55,49 @@ export class TripHistoryComponent implements OnInit, AfterViewInit {
         data.driverName?.toLowerCase().includes(searchStr);
     };
 
-    this.tripService.getTripHistory().subscribe({
+
+    this.tripHistoryService.getTripHistory().subscribe({
       next: (response) => {
         console.log('Backend response', response);
+        this.tripHistories = response;
         this.dataSource.data = response;
 
-        setTimeout(() => {
-          this.dataSource.sort = this.sort;
-        });
-
         this.showTable = true;
-
       },
       error: (err) => {
         console.error('Error', err);
+        this.tripHistories = []
+        this.dataSource.data = []
+
         this.showTable = false;
       }
     })
   }
+
+  ngAfterViewInit() {
+    this.dataSource.sort = this.sort;
+
+    setTimeout(() => {
+      this.sort.active = "tripId"
+      this.sort.direction = "asc"
+      this.sort.sortChange.emit({
+        active: this.sort.active,
+        direction: this.sort.direction
+      })
+    })
+  }
+
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
-
   }
 
-  ngAfterViewInit() {
-    if (this.dataSource && this.sort) {
-      this.dataSource.sort = this.sort;
-    }
-  }
 
-  getStars(rating: number): number[] {
+  getStars(): number[] {
     return Array(5).fill(0).map((x, i) => i);
   }
 
+  navigateToProfile(username: string) {
+    void this.router.navigate(["/profile", username])
+  }
 }

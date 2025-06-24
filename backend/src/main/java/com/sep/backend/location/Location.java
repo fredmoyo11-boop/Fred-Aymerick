@@ -2,17 +2,14 @@ package com.sep.backend.location;
 
 import com.sep.backend.entity.LocationEntity;
 import com.sep.backend.nominatim.data.NominatimFeature;
+import com.sep.backend.route.Coordinate;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @NoArgsConstructor
-@AllArgsConstructor
 @Data
 public class Location {
 
@@ -20,21 +17,16 @@ public class Location {
     private Long locationId;
 
     @NotNull
-    @Schema(description = "The longitude of the location.", requiredMode = Schema.RequiredMode.REQUIRED)
-    private Double longitude;
-
-    @NotNull
-    @Schema(description = "The latitude of the location.", requiredMode = Schema.RequiredMode.REQUIRED)
-    private Double latitude;
+    @Schema(description = "The coordinate of the location.", requiredMode = Schema.RequiredMode.REQUIRED)
+    private Coordinate coordinate;
 
     @NotBlank
     @Schema(description = "The display name of the location.", requiredMode = Schema.RequiredMode.REQUIRED)
     private String displayName;
 
-    @Schema(description = "The Nominatim GeoJSON for the location.", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+    @NotNull
+    @Schema(description = "The Nominatim GeoJSON for the location.", requiredMode = Schema.RequiredMode.REQUIRED)
     private NominatimFeature geoJSON;
-
-
 
     public static Location from(NominatimFeature feature) {
         var location = new Location();
@@ -43,9 +35,9 @@ public class Location {
         if (!"Point".equals(nominatimGeometry.getType())) {
             throw new IllegalArgumentException("Geometry type must be Point");
         }
-        List<Double> coordinate = nominatimGeometry.getCoordinates();
-        location.setLongitude(coordinate.getFirst());
-        location.setLatitude(coordinate.getLast());
+
+        var coordinate = Coordinate.from(feature);
+        location.setCoordinate(coordinate);
 
         var nominatimProperties = feature.getProperties();
         location.setDisplayName(nominatimProperties.getDisplayName());
@@ -58,8 +50,8 @@ public class Location {
     public static Location from(LocationEntity entity) {
         var location = new Location();
         location.setLocationId(entity.getId());
-        location.setLatitude(entity.getLatitude());
-        location.setLongitude(entity.getLongitude());
+        var coordinate = Coordinate.from(entity);
+        location.setCoordinate(coordinate);
         location.setDisplayName(entity.getDisplayName());
         location.setGeoJSON(entity.getGeoJSON());
         return location;

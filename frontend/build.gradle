@@ -17,18 +17,37 @@ node {
   download = true
 }
 
+configurations {
+  customOpenApiGenerator
+}
+
+dependencies {
+  customOpenApiGenerator files("$projectDir/openapi-generator-cli-tuple.jar")
+}
 
 tasks.register("deleteClient", Delete) {
   delete fileTree(dir: "./src/api/sep_drive", exclude: ".openapi-generator-ignore")
 }
 
-tasks.register("generateClient", GenerateTask) {
+tasks.register("generateClient", JavaExec) {
   dependsOn("deleteClient", ":backend:generateOpenApiDocs")
-  generatorName = "typescript-angular"
-  inputSpec = "$projectDir/../backend/build/openapi.json"
-  outputDir = "$projectDir/src/api/sep_drive"
 
-  additionalProperties = [
-    withCredentials: true
+  group = "openapi"
+  description = "Generates Angular API client using custom OpenAPI generator JAR"
+
+  classpath = configurations.customOpenApiGenerator
+  mainClass.set("org.openapitools.codegen.OpenAPIGenerator")
+
+  args = [
+    "generate",
+    "-g", "typescript-angular",
+    "-i", "$projectDir/../backend/build/openapi.json",
+    "-o", "$projectDir/src/api/sep_drive",
+    "--additional-properties=withCredentials=true"
   ]
+
+
+
+
 }
+

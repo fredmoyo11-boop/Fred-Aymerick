@@ -23,14 +23,10 @@ public class RouteEntity extends AbstractEntity {
     @OrderColumn(name = "stop_order")
     private List<LocationEntity> stops;
 
-
     @OneToOne(mappedBy = "route", cascade = CascadeType.ALL, orphanRemoval = true)
     private TripRequestEntity tripRequest;
 
-    @Column(name = "geo_json", nullable = false, columnDefinition = "TEXT")
+    @Column(name = "geo_json", nullable = false)
     @JdbcTypeCode(SqlTypes.JSON)
     private ORSFeatureCollection geoJSON;
-
-
-
 }

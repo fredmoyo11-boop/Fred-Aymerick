@@ -203,7 +203,6 @@ public class TripRequestServiceIntegrationTest {
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
-        String user = "userrrr";
 
         TripRequestDTO trips = mapper.readValue(result, TripRequestDTO.class);
         assertNotNull(trips);

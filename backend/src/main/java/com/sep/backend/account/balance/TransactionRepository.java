@@ -13,4 +13,6 @@ public interface TransactionRepository extends JpaRepository<TransactionEntity, 
 
     List<TransactionEntity> findByDriver_EmailIgnoreCase(String email);
 
+
+    List<TransactionEntity> findByDriver_EmailIgnoreCaseAndTransactionType(String email, String transactionType);
 }

@@ -3,6 +3,7 @@ package com.sep.backend;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.sep.backend.account.Leaderboard.Leaderboard;
 import com.sep.backend.trip.history.TripHistoryDTO;
 import com.sep.backend.trip.history.TripHistoryRepository;
 import com.sep.backend.trip.history.TripHistoryService;
@@ -274,5 +275,26 @@ public class TripRequestServiceIntegrationTest {
         assertEquals(3, history.getFirst().getDriverRating());
 
 
+    }
+
+    @Test
+    @WithMockUser(username = "aymerickooo@gmail.com", roles = Roles.DRIVER)
+    void testGetDriverLeaderBoard_Success() throws Exception {
+        String response = mockMvc.perform(get("/api/driver-leaderboard")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
+
+        List<Leaderboard> history = mapper.readValue(response, mapper.getTypeFactory().constructCollectionType(List.class, Leaderboard.class));
+
+        assertNotNull(history);
+        assertFalse(history.isEmpty());
+        Leaderboard historyDTO = history.getFirst();
+        assertNotNull(historyDTO);
+        assertEquals("freddioii", history.getFirst().getDriverUsername());
+        assertEquals(2, history.getFirst().getAverageRating());
     }
 }

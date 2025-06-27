@@ -109,6 +109,33 @@ public class TripHistoryService {
     }
 
 
+    public Double totalDrivenDistance(String email) {
+        return findByDriver_Email(email).stream()
+                .mapToDouble(TripHistoryEntity::getDistance)
+                .sum();
+    }
+
+    public Integer totalDrivenDuration(String email) {
+        return findByDriver_Email(email).stream()
+                .mapToInt(TripHistoryEntity::getDuration)
+                .sum();
+    }
+
+    public Double averageRating(String email) {
+        return findByDriver_Email(email).stream()
+                .mapToInt(TripHistoryEntity::getCustomerRating)
+                .average()
+                .orElse(0.0);
+    }
+
+    public Integer totalNumberOfDrivenTrip(String email) {
+        return findByDriver_Email(email).size();
+    }
+
+    public List<TripHistoryEntity> findByDriver_Email(String email) {
+        return tripHistoryRepository.findByDriver_Email(email);
+    }
+
     public List<TripHistoryDTO> MapToTripHistoryDTO(List<TripHistoryEntity> tripHistoryEntities) {
         return tripHistoryEntities.stream().map(tripHistory -> {
             TripHistoryDTO dto = new TripHistoryDTO();

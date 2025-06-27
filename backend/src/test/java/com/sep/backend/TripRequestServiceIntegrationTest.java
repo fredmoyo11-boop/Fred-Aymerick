@@ -288,13 +288,19 @@ public class TripRequestServiceIntegrationTest {
                 .getContentAsString();
         ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
-        List<Leaderboard> history = mapper.readValue(response, mapper.getTypeFactory().constructCollectionType(List.class, Leaderboard.class));
-
-        assertNotNull(history);
-        assertFalse(history.isEmpty());
-        Leaderboard historyDTO = history.getFirst();
-        assertNotNull(historyDTO);
-        assertEquals("freddioii", history.getFirst().getDriverUsername());
-        assertEquals(2, history.getFirst().getAverageRating());
+        List<Leaderboard> leaderboards = mapper.readValue(response, mapper.getTypeFactory().constructCollectionType(List.class, Leaderboard.class));
+        DriverEntity driver = driverRepository.findAll().getFirst();
+        Leaderboard leaderboard = leaderboards.getFirst();
+        TripHistoryEntity tripHistory = tripHistoryRepository.findByDriver(driver).getFirst();
+        Double distance = tripHistory.getDistance();
+        Integer duration = tripHistory.getDuration();
+        Double earnings = driver.getBalance()-50;
+        assertEquals(driver.getUsername(), leaderboard.getDriverUsername());
+        assertEquals(driver.getFirstName() + " " + driver.getLastName(),leaderboard.getDriverName());
+        assertEquals(2, leaderboard.getAverageRating());
+        assertEquals(1,leaderboard.getTotalNumberOfDrivenTrip());
+        assertEquals(earnings,leaderboard.getTotalEarnings());
+        assertEquals(distance ,leaderboard.getTotalDrivenDistance());
+        assertEquals(duration,leaderboard.getTotalDriveTime());
     }
 }

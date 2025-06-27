@@ -217,8 +217,8 @@ public class TripRequestServiceIntegrationTest {
     }
 
 
-    @WithMockUser(username = "testuser@example.com", roles = "CUSTOMER")
     @Test
+    @WithMockUser(username = "testuser@example.com", roles = "CUSTOMER")
     void testGetAvailableTrips_Success() throws Exception {
 
         Location start = new Location();

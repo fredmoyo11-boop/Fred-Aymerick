@@ -1,0 +1,70 @@
+@let partner = getPartnerNames();
+<mat-card>
+  <mat-card-content>
+    <div class="container">
+      <span>{{ partner.firstName }} {{ partner.lastName }} ({{ partner.username }}
+        ) für das Fahrtangebot {{ tripOffer.id }}</span>
+      <mat-divider></mat-divider>
+      @if (this.chatMessages.length === 0) {
+        <p>Schreibe die erste Nachricht in diesem Chat!</p>
+      } @else {
+        <div #scrollContainer class="chat-container">
+          @for (chatMessage of chatMessages; track chatMessage.chatMessageId; let idx = $index) {
+            @if (isOwnMessage(chatMessage)) {
+              <mat-card class="message right" appearance="outlined">
+                @if (!chatMessage.deleted) {
+                  <span>{{ chatMessage.content }}</span>
+                } @else {
+                  <span style="font-weight: bold">Die Nachricht wurde gelöscht.</span>
+                }
+
+                <mat-card-footer>
+                  @if (chatMessage.edited) {
+                    <span>Bearbeitet</span>
+                  }
+                  @if (!chatMessage.seen) {
+                    <mat-icon class="click-icon" (click)="delete(chatMessage.chatMessageId)">delete</mat-icon>
+                    @if (editMessageId === chatMessage.chatMessageId) {
+                      <mat-icon class="click-icon" (click)="resetEditMessageId()">close</mat-icon>
+                    } @else {
+                      <mat-icon class="click-icon" (click)="setEditMessageId(chatMessage.chatMessageId)">edit</mat-icon>
+                    }
+                  }
+                  <span>{{ chatMessage.createdTimestamp }}</span>
+                  <mat-icon [ngClass]="chatMessage.seen ? 'seen' : 'unseen'">done_all</mat-icon>
+                </mat-card-footer>
+              </mat-card>
+            } @else {
+              <mat-card class="message left" appearance="outlined">
+                @if (!chatMessage.deleted) {
+                  <span>{{ chatMessage.content }}</span>
+                } @else {
+                  <span style="font-weight: bold">Die Nachricht wurde gelöscht.</span>
+                }
+                <mat-card-footer>
+                  @if (chatMessage.edited) {
+                    <span>Bearbeitet</span>
+                  }
+                  <span>{{ chatMessage.createdTimestamp }}</span>
+                </mat-card-footer>
+              </mat-card>
+            }
+          }
+        </div>
+      }
+      <form [formGroup]="chatForm" (ngSubmit)="onSubmit()">
+        <mat-form-field>
+          @if (editMessageId != null) {
+            <mat-label>Deine bearbeitete Nachricht</mat-label>
+          } @else {
+            <mat-label>Deine neue Nachricht</mat-label>
+          }
+          <textarea matInput type="text" formControlName="message"></textarea>
+          <button type="submit" matSuffix mat-icon-button [disabled]="!chatForm.valid">
+            <mat-icon>send</mat-icon>
+          </button>
+        </mat-form-field>
+      </form>
+    </div>
+  </mat-card-content>
+</mat-card>

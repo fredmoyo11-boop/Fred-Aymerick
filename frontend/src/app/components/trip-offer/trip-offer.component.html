@@ -1,1 +1,8 @@
-<app-trip-simulation [tripOfferId]="tripOffer.id+''" [tripOffer]="tripOffer"/>
+@if (tripOffer) {
+  @if (tripOffer.status === "ACCEPTED") {
+    <app-trip-simulation [tripOfferId]="tripOffer.id+''" [tripOffer]="tripOffer"/>
+  }
+  <app-chat [tripOffer]="tripOffer" [tripOfferId]="tripOffer.id+''"></app-chat>
+} @else {
+  <p>Trip offer not found!</p>
+}

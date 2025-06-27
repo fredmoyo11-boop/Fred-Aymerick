@@ -164,7 +164,7 @@ public class TripRequestService {
     }
 
     @Transactional
-    public List<AvailableTripRequestDTO> getAvailableRequests(@Valid Location driverLocation) {
+    public List<AvailableTripRequestDTO> getAvailableRequests(@Valid Location driverLocation){
 
         List<TripRequestEntity> activeRequests = tripRequestRepository.findByStatus(TripRequestStatus.ACTIVE);
 

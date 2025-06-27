@@ -24,6 +24,8 @@ public class Tags {
 
     public static final String BALANCE = "Balance";
 
+    public static final String CHAT = "Chat";
+
 
     public Tags() {
         throw new UnsupportedOperationException("Tags cannot be instantiated");

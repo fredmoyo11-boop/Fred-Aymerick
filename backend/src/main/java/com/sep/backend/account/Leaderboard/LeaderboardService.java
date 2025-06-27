@@ -21,7 +21,6 @@ public class LeaderboardService {
     public List<Leaderboard> getDriverLeaderboards() {
         return driverRepository.findAll().stream().map(driver -> {
 
-
                     String email = driver.getEmail();
 
                     String driverUsername = driver.getUsername();
@@ -39,6 +38,7 @@ public class LeaderboardService {
                     Double totalEarnings = transactionRepository.findByDriver_EmailIgnoreCaseAndTransactionType(email, TransactionTypes.TRANSFER).stream()
                             .mapToDouble(TransactionEntity::getAmount)
                             .sum();
+
                     return new Leaderboard(
                             driverUsername,
                             driverName,

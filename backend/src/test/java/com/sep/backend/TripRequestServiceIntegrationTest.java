@@ -296,7 +296,5 @@ public class TripRequestServiceIntegrationTest {
         assertNotNull(historyDTO);
         assertEquals("freddioii", history.getFirst().getDriverUsername());
         assertEquals(2, history.getFirst().getAverageRating());
-
-
     }
 }

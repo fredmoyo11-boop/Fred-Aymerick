@@ -18,8 +18,6 @@ import { Observable }                                        from 'rxjs';
 
 // @ts-ignore
 import { ErrorResponse } from '../model/errorResponse';
-// @ts-ignore
-import { StatisticsResponse } from '../model/statisticsResponse';
 
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
@@ -45,9 +43,9 @@ export class StatisticsService extends BaseService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getStatisticsForMonth(type: string, year: number, month: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<StatisticsResponse[]>;
-    public getStatisticsForMonth(type: string, year: number, month: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<StatisticsResponse[]>>;
-    public getStatisticsForMonth(type: string, year: number, month: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<StatisticsResponse[]>>;
+    public getStatisticsForMonth(type: string, year: number, month: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<number[]>;
+    public getStatisticsForMonth(type: string, year: number, month: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<number[]>>;
+    public getStatisticsForMonth(type: string, year: number, month: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<number[]>>;
     public getStatisticsForMonth(type: string, year: number, month: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
         if (type === null || type === undefined) {
             throw new Error('Required parameter type was null or undefined when calling getStatisticsForMonth.');
@@ -98,7 +96,7 @@ export class StatisticsService extends BaseService {
 
         let localVarPath = `/api/statistics/month`;
         const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request<StatisticsResponse[]>('get', `${basePath}${localVarPath}`,
+        return this.httpClient.request<number[]>('get', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 params: localVarQueryParameters,
@@ -119,9 +117,9 @@ export class StatisticsService extends BaseService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getStatisticsForYear(type: string, year: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<StatisticsResponse[]>;
-    public getStatisticsForYear(type: string, year: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<StatisticsResponse[]>>;
-    public getStatisticsForYear(type: string, year: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<StatisticsResponse[]>>;
+    public getStatisticsForYear(type: string, year: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<number[]>;
+    public getStatisticsForYear(type: string, year: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<number[]>>;
+    public getStatisticsForYear(type: string, year: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<number[]>>;
     public getStatisticsForYear(type: string, year: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
         if (type === null || type === undefined) {
             throw new Error('Required parameter type was null or undefined when calling getStatisticsForYear.');
@@ -167,7 +165,7 @@ export class StatisticsService extends BaseService {
 
         let localVarPath = `/api/statistics/year`;
         const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request<StatisticsResponse[]>('get', `${basePath}${localVarPath}`,
+        return this.httpClient.request<number[]>('get', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 params: localVarQueryParameters,

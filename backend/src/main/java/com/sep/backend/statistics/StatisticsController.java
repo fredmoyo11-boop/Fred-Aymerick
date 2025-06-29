@@ -31,7 +31,7 @@ public class StatisticsController {
     @Operation(description = "Gets statistics for a year.",
             tags = {Tags.STATISTICS},
             responses = {@ApiResponse(responseCode = HttpStatus.OK, description = "Statistics retrieved successfully.",
-                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = StatisticsResponse.class))))})
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = Number.class))))})
     public List<Number> getStatisticsForYear(String type, int year, Principal principal) {
         return statisticsService.getStatisticsForYear(type, year, principal);
     }
@@ -40,7 +40,7 @@ public class StatisticsController {
     @Operation(description = "Gets statistics for a month.",
             tags = {Tags.STATISTICS},
             responses = {@ApiResponse(responseCode = HttpStatus.OK, description = "Statistics retrieved successfully.",
-                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = StatisticsResponse.class))))})
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = Number.class))))})
     public List<Number> getStatisticsForMonth(String type, int year, int month, Principal principal) {
         return statisticsService.getStatisticsForMonth(type, year, month, principal);
     }

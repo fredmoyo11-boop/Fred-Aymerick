@@ -49,7 +49,6 @@ model/registrationDTO.ts
 model/route.ts
 model/simulationAction.ts
 model/simulationActionParameters.ts
-model/statisticsResponse.ts
 model/stringResponse.ts
 model/transaction.ts
 model/tripHistoryDTO.ts

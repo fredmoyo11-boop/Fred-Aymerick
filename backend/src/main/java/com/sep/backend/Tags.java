@@ -14,6 +14,8 @@ public class Tags {
 
     public static final String TRIP_OFFER = "Trip Offer";
 
+    public static final String STATISTICS = "Statistics";
+
     public static final String NOMINATIM = "Nominatim";
 
     public static final String ORS = "ORS";

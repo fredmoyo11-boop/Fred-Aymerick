@@ -31,6 +31,10 @@ public interface TripHistoryRepository extends JpaRepository<TripHistoryEntity, 
 
     Optional<TripHistoryEntity> findByTripOfferId(Long tripOfferId);
 
-    @Query("SELECT sum(?2) FROM TripHistoryEntity WHERE driver.id = ?1 AND ")
-    List<Number> getSumStatisticsByDriver_Email(@NotBlank String driverId, @NotBlank String type, @NotBlank LocalDateTime startTime, @NotBlank LocalDateTime endTime);
+    @Query("SELECT avg(?2) FROM TripHistoryEntity WHERE driver.id = ?1 AND ?3 <= endTime AND endTime <= ?4")
+    Number getAvgStatisticsByDriver(@NotBlank String driverId, @NotBlank String type, @NotBlank LocalDateTime lowerTime, @NotBlank LocalDateTime upperTime);
+
+    @Query("SELECT sum(?2) FROM TripHistoryEntity WHERE driver.id = ?1 AND ?3 <= endTime AND endTime <= ?4")
+    Number getSumStatisticsByDriver(@NotBlank String driverId, @NotBlank String type, @NotBlank LocalDateTime lowerTime, @NotBlank LocalDateTime upperTime);
+
 }

@@ -27,6 +27,7 @@ export * from './registrationDTO';
 export * from './route';
 export * from './simulationAction';
 export * from './simulationActionParameters';
+export * from './statisticsResponse';
 export * from './stringResponse';
 export * from './transaction';
 export * from './tripHistoryDTO';

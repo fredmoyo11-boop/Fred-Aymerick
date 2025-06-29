@@ -10,6 +10,7 @@ api/nominatim.service.ts
 api/notification.service.ts
 api/oRS.service.ts
 api/route.service.ts
+api/statistics.service.ts
 api/tripHistory.service.ts
 api/tripOffer.service.ts
 api/tripRequest.service.ts
@@ -48,6 +49,7 @@ model/registrationDTO.ts
 model/route.ts
 model/simulationAction.ts
 model/simulationActionParameters.ts
+model/statisticsResponse.ts
 model/stringResponse.ts
 model/transaction.ts
 model/tripHistoryDTO.ts

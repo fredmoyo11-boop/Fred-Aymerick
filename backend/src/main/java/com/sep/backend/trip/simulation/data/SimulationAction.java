@@ -12,6 +12,7 @@ public class SimulationAction {
     @Schema(description = "The type of the action.", requiredMode = Schema.RequiredMode.REQUIRED, allowableValues = {
             SimulationActionTypes.START,
             SimulationActionTypes.STOP,
+            SimulationActionTypes.REROUTE,
             SimulationActionTypes.CHANGE_VELOCITY,
             SimulationActionTypes.COMPLETE,
             SimulationActionTypes.INFO,

@@ -3,7 +3,77 @@
   <div class="background-content">
     <app-trip-visualizer [route]="route"
                          [animationLayerGroup]="animationLayer"></app-trip-visualizer>
+
+    <div class="card-overlay">
+      @if (animationPaused && role === "CUSTOMER") {
+        <div class="reroute-container">
+          <form [formGroup]="form">
+            <mat-card>
+              <mat-card-title style="text-align: center">Fahradressen ändern</mat-card-title>
+
+              <mat-divider></mat-divider>
+
+              <mat-form-field>
+                <mat-label>Adresse eingeben</mat-label>
+                <input matInput placeholder="Suche einen Ort..." formControlName="query" (input)="onInputChange()">
+              </mat-form-field>
+
+              <mat-card-content>
+                <div cdkDropList class="address-droplist-container" (cdkDropListDropped)="drop($event)">
+                  @for (stop of this.route.stops; track idx; let idx = $index) {
+                    <div class="example-box" cdkDrag>
+                      <span cdkDragHandle class="handle">☰</span>
+                      <div>
+                        {{ idx + 1 }}. {{ stop.displayName }}
+                      </div>
+                      <button mat-icon-button (click)="remove(idx)">
+                        <mat-icon>delete</mat-icon>
+                      </button>
+                    </div>
+                  }
+                </div>
+              </mat-card-content>
+
+              <mat-card-content>
+                <p> Distanz der Fahrt: {{this.route.geoJson.features[0].properties.summary.distance | meterToKm}}</p>
+                <p> Dauer der Fahrt: {{this.route.geoJson.features[0].properties.summary.duration | secondsToTime}}</p>
+
+              <mat-divider></mat-divider>
+
+                <div class="button-row-container">
+                  <button mat-flat-button (click)="onCancel()">Abbrechen</button>
+                  <button mat-flat-button (click)="updateRoute()">Fahrt ändern</button>
+                </div>
+              </mat-card-content>
+            </mat-card>
+          </form>
+        </div>
+
+        <mat-card class="search-container" appearance="outlined" *ngIf="showCard">
+          <mat-card-title style="text-align: center">
+            Wähle eine Adresse
+          </mat-card-title>
+
+          <mat-divider></mat-divider>
+
+          <div class="scroll-container">
+            @if (suggestedLocations.length === 0) {
+              <mat-card-content>
+                <span>Keine gültigen Adressen gefunden</span>
+              </mat-card-content>
+            }
+            @for (location of suggestedLocations; track idx; let idx = $index) {
+              <div class="location-box" (click)="clickCard(idx)" [class.selected]="idx === selectedIndex">
+                <span class="display-name">{{ location.displayName }}</span>
+              </div>
+            }
+          </div>
+          <button mat-flat-button class="confirm-button" (click)="onConfirm()">OK</button>
+        </mat-card>
+      }
+    </div>
   </div>
+
   <div class="floating-content">
     <mat-card style="width: fit-content; min-width: 200px">
       <mat-card-content>

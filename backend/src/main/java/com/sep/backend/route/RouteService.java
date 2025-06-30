@@ -1,26 +1,37 @@
 package com.sep.backend.route;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sep.backend.NotFoundException;
 import com.sep.backend.entity.LocationEntity;
 import com.sep.backend.entity.RouteEntity;
 import com.sep.backend.location.Location;
 import com.sep.backend.location.LocationService;
+import com.sep.backend.nominatim.NominatimService;
+import com.sep.backend.nominatim.data.NominatimFeatureCollection;
+import com.sep.backend.ors.ORSService;
 import com.sep.backend.ors.data.ORSFeatureCollection;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.IntStream;
 
 @Slf4j
 @Service
 public class RouteService {
     private final LocationService locationService;
     private final RouteRepository routeRepository;
+    private final ORSService orsService;
+    private final NominatimService nominatimService;
 
-    public RouteService(LocationService locationService, RouteRepository routeRepository) {
+    public RouteService(LocationService locationService, RouteRepository routeRepository, ORSService orsService, NominatimService nominatimService) {
         this.locationService = locationService;
         this.routeRepository = routeRepository;
+        this.orsService = orsService;
+        this.nominatimService = nominatimService;
     }
 
     /**
@@ -54,5 +65,73 @@ public class RouteService {
      */
     public RouteEntity getRoute(Long routeId) throws NotFoundException {
         return routeRepository.findById(routeId).orElseThrow(() -> new NotFoundException("Route not found"));
+    }
+
+    public RouteEntity updateRoute(Long routeId, List<Location> updatedRouteStops, Coordinate currentCoordinate) throws NotFoundException, JsonProcessingException {
+        var routeEntity = getRoute(routeId);
+
+        //Gets all coordinates and creates new list with only visited coordinates
+        List<Coordinate> currentRouteCoordinates = routeEntity.getGeoJSON().getFeatures().getFirst().getGeometry().getCoordinates().stream().map(Coordinate::from).toList();
+        List<Coordinate> alreadyVisitedCoordinates = getVisitedCoordinates(currentRouteCoordinates, currentCoordinate);
+
+        //Out of the visited coordinates, gets all visited Locations
+        List<Location> currentRouteStops = routeEntity.getStops().stream().map(Location::from).toList();
+        List<Location> alreadyVisitedStops = getVisitedLocations(currentRouteStops, alreadyVisitedCoordinates);
+
+        //Out of all locations, counts how many of them are visited
+        int maxPrefixLength = Math.min(updatedRouteStops.size(), alreadyVisitedStops.size());
+        int prefixLength = IntStream.range(0, maxPrefixLength)
+                .takeWhile(i -> Objects.equals(alreadyVisitedStops.get(i), updatedRouteStops.get(i)))
+                .map(i -> 1)
+                .sum();
+
+        //Creates a sub-list of all new and unvisited stops added by user
+        List<Location> newStops =  updatedRouteStops.subList(prefixLength, updatedRouteStops.size());
+
+        //Removes unvisited stops to keep order
+        routeEntity.getStops().subList(prefixLength, routeEntity.getStops().size()).clear();
+
+        //Creates a location on currentCoordinates and adds it to the list
+        NominatimFeatureCollection currentLocationGeoJSON = null;
+        try {
+            currentLocationGeoJSON = nominatimService.reverse(String.valueOf(currentCoordinate.getLatitude()), String.valueOf(currentCoordinate.getLongitude()));
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Current coordinate is invalid.");
+        }
+        var currentLocation = Location.from(currentLocationGeoJSON.getFeatures().getFirst());
+        routeEntity.getStops().add(locationService.saveLocation(currentLocation));
+
+        //Saves new locations in repository and adds them to the list
+        routeEntity.getStops().addAll(locationService.saveLocations(newStops));
+        routeEntity.getStops().forEach(stop -> stop.setRoute(routeEntity));
+
+        //Gets coordinates of all stops and requests a new geoJSON by ORS
+        List<Coordinate> newRoute = routeEntity.getStops().stream().map(Coordinate::from).toList();
+        var geoJSON = orsService.getRouteDirections(newRoute);
+        routeEntity.setGeoJSON(geoJSON);
+
+        return routeRepository.save(routeEntity);
+    }
+
+    public List<Coordinate> getVisitedCoordinates (List<Coordinate> coordinates, Coordinate currentCoordinate) {
+        int lastVisitedCoordinateIndex = IntStream.range(0, coordinates.size())
+                .boxed()
+                .min(Comparator.comparingDouble(i -> coordinates.get(i).distanceTo(currentCoordinate)))
+                .orElse(-1);
+        if (lastVisitedCoordinateIndex == -1) {
+            return coordinates;
+        }
+        return coordinates.subList(0, lastVisitedCoordinateIndex + 1);
+    }
+
+    public List<Location> getVisitedLocations (List<Location> routeStops, List<Coordinate> visitedCoordinates) {
+        int lastVisitedLocationIndex = IntStream.range(0, routeStops.size())
+                .filter(i -> !visitedCoordinates.contains(Coordinate.from(routeStops.get(i))))
+                .findFirst()
+                .orElse(-1);
+        if (lastVisitedLocationIndex == -1) {
+            return routeStops;
+        }
+        return routeStops.subList(0, lastVisitedLocationIndex + 1);
     }
 }

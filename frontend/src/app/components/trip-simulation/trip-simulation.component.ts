@@ -1,24 +1,47 @@
 import {Component, inject, Input, OnDestroy, OnInit} from '@angular/core';
 import {StompService} from '../../services/stomp.service';
-import {BehaviorSubject, interval, Subscription, takeWhile, tap} from 'rxjs';
 import {
+  BehaviorSubject,
+  debounceTime,
+  distinctUntilChanged,
+  interval,
+  Observable,
+  Subscription,
+  takeWhile,
+  tap
+} from 'rxjs';
+import {
+  Coordinate,
   Location,
+  NominatimService,
+  ORSFeatureCollection,
+  ORSService,
+  Route,
+  RouteService,
+  RouteUpdateRequestBody,
+  SimulationAction,
   TripOffer,
-  SimulationAction, Route, TripSimulationService,
+  TripSimulationService,
 } from '../../../api/sep_drive';
 import * as L from "leaflet";
+import {LatLngExpression} from "leaflet";
 import * as turf from '@turf/turf';
-import {LatLngExpression} from 'leaflet';
 import {TripVisualizerComponent} from '../trip-visualizer/trip-visualizer.component';
-import {MatIconButton} from '@angular/material/button';
+import {MatButton, MatIconButton} from '@angular/material/button';
 import {MatIcon} from '@angular/material/icon';
 import {MatSlider, MatSliderThumb} from '@angular/material/slider';
-import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {FormControl, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {DialogRatingComponent} from '../dialog-rating/dialog-rating.component';
 import {AngularAuthService} from '../../services/angular-auth.service';
 import {MatCard, MatCardContent, MatCardTitle} from '@angular/material/card';
 import {Router} from '@angular/router';
+import {MatDivider} from '@angular/material/divider';
+import {MeterToKmPipe} from '../../pipes/meter-to-km.pipe';
+import {SecondsToTimePipe} from '../../pipes/seconds-to-time.pipe';
+import {CdkDrag, CdkDragDrop, CdkDragHandle, CdkDropList, moveItemInArray} from '@angular/cdk/drag-drop';
+import {MatFormField, MatInput, MatLabel} from '@angular/material/input';
+import {NgIf} from '@angular/common';
 
 
 @Component({
@@ -33,6 +56,18 @@ import {Router} from '@angular/router';
     ReactiveFormsModule,
     MatCard,
     MatCardContent,
+    MatCardTitle,
+    MatDivider,
+    MeterToKmPipe,
+    SecondsToTimePipe,
+    MatButton,
+    CdkDropList,
+    MatFormField,
+    MatLabel,
+    MatInput,
+    NgIf,
+    CdkDrag,
+    CdkDragHandle,
   ],
   templateUrl: './trip-simulation.component.html',
   standalone: true,
@@ -46,6 +81,9 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
   private tripSimulationService = inject(TripSimulationService)
   private angularAuthService = inject(AngularAuthService)
   private router = inject(Router)
+  routeService = inject(RouteService)
+  orsService = inject(ORSService)
+  nominatimService = inject(NominatimService)
 
   stops: Location[] = []
 
@@ -59,6 +97,7 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
 
   animationLocked!: boolean
   route!: Route;
+  originalRoute: Route | null = null
 
   animationLayer = L.layerGroup()
   private positionMarker = L.marker([0, 0])
@@ -76,11 +115,24 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
 
   partnerDisplayName = ""
 
-  private role: string | null = null
+  role: string | null = null
   private driverPresent = false
 
 
+  //Reroute imports
+  form = new FormGroup({
+    query: new FormControl("")
+  })
+  showCard: boolean = false;
+  selectedIndex = 0
+  suggestedLocations: Location[] = []
+  orsFeatureCollection: ORSFeatureCollection | null = null;
+
+
+
   ngOnInit(): void {
+    this.originalRoute = structuredClone(this.tripOffer.tripRequest.route)
+
     this._route$.next(this.tripOffer.tripRequest.route);
 
     // update coordinates when route changes
@@ -141,7 +193,31 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
     this._animationLocked$.subscribe(animationLocked => {
       this.animationLocked = animationLocked;
     })
+
+    //suggestion list
+    this.form.get('query')!.valueChanges.pipe(
+      debounceTime(300),
+      distinctUntilChanged()
+    ).subscribe({
+      next: query => {
+        this.nominatimService.search(query!).subscribe({
+          next: response => {
+            console.log(response)
+            this.suggestedLocations = response
+            this.showCard = response.length > 0 && !!query && query.trim().length > 0
+          },
+          error: err => {
+            console.error(err)
+            this.showCard = false
+          }
+        })
+      },
+      error: err => {
+        console.error(err)
+      }
+    })
   }
+
 
 
   handleSimulationAction(simulationAction: SimulationAction): void {
@@ -234,6 +310,13 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
     this.sendSimulationAction(action)
   }
 
+  reroute(): void {
+    const action: SimulationAction = {
+      actionType: "REROUTE", timestamp: new Date().toISOString(),
+      parameters: {startIndex: this.animationIndex}
+    }
+    this.stompService.send(`/app/simulation/${this.tripOfferId}`, action)
+  }
 
   changeVelocity(velocity: number): void {
     const action: SimulationAction = {
@@ -332,6 +415,53 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
     updateMarkerPosition()
   }
 
+  updateRoute() {
+    if (this.stops.length >= 2) {
+      const currentCoordinate: Coordinate = {
+        longitude: this.coordinates[this.animationIndex][1],
+        latitude: this.coordinates[this.animationIndex][0],
+      }
+      const routeUpdateRequestBody: RouteUpdateRequestBody = {
+        currentCoordinate: currentCoordinate,
+        locations: this.stops
+      }
+      this.lock()
+      this.routeService.updateRoute(this.route.routeId, routeUpdateRequestBody).subscribe({
+        next: value => {
+          this.reroute()
+        },
+        error: err => {
+          console.error(err)
+        }
+      })
+    }
+  }
+
+  //Updates the map without having to save new routeEntity
+  updateLocalRoute() {
+    if (this.stops.length >= 2) {
+      this.orsService.getRouteDirections(this.stops.map(stop => {
+        let coordinate: Coordinate = {
+          latitude: stop.coordinate.latitude,
+          longitude: stop.coordinate.longitude
+        }
+        return coordinate
+      })).subscribe({
+        next: value => {
+          this.orsFeatureCollection = value
+          this.route = {
+            routeId: -1,
+            stops: this.stops,
+            geoJson: value
+          }
+        },
+        error: err => {
+          console.log(err)
+        }
+      })
+    }
+  }
+
   private interpolateCoordinates(coordinates: number[][]) {
     const line = turf.lineString(coordinates);
     const distance = turf.length(line);
@@ -342,7 +472,6 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
       const pt = turf.along(line, (distance * i) / steps).geometry.coordinates;
       interpolated.push(pt);
     }
-
     return interpolated;
   }
 
@@ -383,5 +512,46 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
         })
       }
     })
+  }
+  //--------------------------------Reroute Card
+  //suggestions card
+  clickCard(index: number): void {
+    console.log("Chosen card: ", index)
+    this.selectedIndex = index
+  }
+
+  onInputChange() {
+    const query = this.form.get('query')?.value
+    this.showCard = query !== null && query!.trim().length > 0
+  }
+
+  onConfirm() {
+    const selected = this.suggestedLocations[this.selectedIndex]
+
+    this.stops.push(selected)
+    this.form.get('query')?.setValue('')
+    this.suggestedLocations = []
+    this.showCard = false
+    this.updateLocalRoute()
+  }
+
+  //droplist
+  drop(event: CdkDragDrop<string[]>) {
+    moveItemInArray(this.stops, event.previousIndex, event.currentIndex)
+    this.updateLocalRoute();
+  }
+
+  remove(index: number) {
+    this.stops.splice(index, 1)
+    this.updateLocalRoute()
+  }
+
+  //Confirm or Cancel
+  onCancel() {
+    this.route = structuredClone(this.originalRoute!)
+    this.stops = []
+    this.stops = this.route.stops
+    console.log(this.stops)
+    this._route$.next(this.route)
   }
 }

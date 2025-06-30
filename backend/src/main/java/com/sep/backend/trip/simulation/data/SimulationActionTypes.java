@@ -13,6 +13,11 @@ public class SimulationActionTypes {
     public static final String STOP = "STOP";
 
     /**
+     * Reroutes the simulation.
+     */
+    public static final String REROUTE = "REROUTE";
+
+    /**
      * Changes the velocity of the simulation.
      */
     public static final String CHANGE_VELOCITY = "CHANGE_VELOCITY";

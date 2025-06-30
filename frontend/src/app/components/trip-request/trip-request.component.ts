@@ -4,7 +4,7 @@ import {
   Coordinate,
   Location, NominatimService,
   ORSFeatureCollection, ORSService,
-  Route, TripOffer, TripOfferService,
+  Route, RouteService, TripOffer, TripOfferService,
   TripRequestBody,
   TripRequestDTO,
   TripRequestService
@@ -108,19 +108,6 @@ export class TripRequestComponent implements OnInit {
       }
     })
 
-
-    //If active trip request exist, then get information to display
-    // this.tripRequestService.getCurrentActiveTripRequest().subscribe({
-    //   next: tripRequest => {
-    //     this.consumeTripRequestDTO(tripRequest)
-    //   },
-    //   error: err => {
-    //     console.error(err)
-    //     if (err.status === 404) {
-    //       this.tripRequestDTO = null
-    //     }
-    //   }
-    // })
     void this.getCurrentActiveTripRequest()
 
     //On changes in search bar, get new suggestions list
@@ -169,19 +156,19 @@ export class TripRequestComponent implements OnInit {
   }
 
 //---------------------------------Start of location suggestion
-  search(): void {
-    this.nominatimService.search(this.form.value.query!).subscribe({
-      next: response => {
-        const query = this.form.value.query
-        this.suggestedLocations = response
-        this.showCard = response.length > 0 && !!query && query.trim().length > 0
-      },
-      error: err => {
-        console.error(err)
-        this.showCard = false
-      }
-    })
-  }
+//   search(): void {
+//     this.nominatimService.search(this.form.value.query!).subscribe({
+//       next: response => {
+//         const query = this.form.value.query
+//         this.suggestedLocations = response
+//         this.showCard = response.length > 0 && !!query && query.trim().length > 0
+//       },
+//       error: err => {
+//         console.error(err)
+//         this.showCard = false
+//       }
+//     })
+//   }
 
   clickCard(index: number): void {
     console.log("Chosen card: ", index)
@@ -194,9 +181,8 @@ export class TripRequestComponent implements OnInit {
         console.log(position)
         this.form.setValue({
           query: `${position.coords.latitude}, ${position.coords.longitude}`,
-          carType: 'SMALL'
+          carType: this.form.value.carType!
         })
-        this.search()
       }).catch((err) => {
       console.log(err)
     })
@@ -206,7 +192,7 @@ export class TripRequestComponent implements OnInit {
 
   updateRoute() {
     if (this.stops.length >= 2) {
-      this.orsService.getRoute(this.stops.map(stop => {
+      this.orsService.getRouteDirections(this.stops.map(stop => {
         let coordinate: Coordinate = {
           latitude: stop.coordinate.latitude,
           longitude: stop.coordinate.longitude

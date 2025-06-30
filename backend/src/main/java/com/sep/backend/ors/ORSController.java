@@ -30,7 +30,7 @@ public class ORSController {
             responses = {
                 @ApiResponse(responseCode = HttpStatus.OK, description = "Route received successfully.",
                     content = @Content(schema = @Schema(implementation = ORSFeatureCollection.class)))})
-    public ORSFeatureCollection getRoute(@RequestBody List<Coordinate> coordinates) throws Exception {
+    public ORSFeatureCollection getRouteDirections(@RequestBody List<Coordinate> coordinates) throws Exception {
         return orsService.getRouteDirections(coordinates);
     }
 }

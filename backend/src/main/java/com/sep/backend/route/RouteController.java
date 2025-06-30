@@ -1,5 +1,6 @@
 package com.sep.backend.route;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sep.backend.HttpStatus;
 import com.sep.backend.Tags;
 import io.swagger.v3.oas.annotations.Operation;
@@ -7,10 +8,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 @RestController
@@ -31,5 +29,16 @@ public class RouteController {
             })
     public Route getRoute(@PathVariable Long routeId) {
         return Route.from(routeService.getRoute(routeId));
+    }
+
+    @PutMapping("/{routeId}")
+    @Operation(description = "Returns the route with the specified id.",
+            tags = {Tags.ROUTE, Tags.ORS},
+            responses = {
+            @ApiResponse(responseCode = HttpStatus.OK, description = "Route updated successfully.",
+                content = @Content(schema = @Schema(implementation = Route.class))),
+    })
+    public Route updateRoute(@PathVariable Long routeId, @RequestBody RouteUpdateRequestBody routeUpdateRequestBody) throws JsonProcessingException {
+        return Route.from(routeService.updateRoute(routeId, routeUpdateRequestBody.getLocations(), routeUpdateRequestBody.getCurrentCoordinate()));
     }
 }

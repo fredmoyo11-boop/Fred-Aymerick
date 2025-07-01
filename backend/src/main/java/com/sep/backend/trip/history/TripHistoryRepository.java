@@ -38,7 +38,7 @@ public interface TripHistoryRepository extends JpaRepository<TripHistoryEntity, 
     Double getSumDistanceStatisticsByDriver(@NotBlank Long driverId, @NotBlank LocalDateTime lowerTime, @NotBlank LocalDateTime upperTime);
 
     @Query("SELECT sum(duration) FROM TripHistoryEntity WHERE driver.id = ?1 AND ?2 <= endTime AND endTime <= ?3")
-    Double getSumTimeStatisticsByDriver(@NotBlank Long driverId, @NotBlank LocalDateTime lowerTime, @NotBlank LocalDateTime upperTime);
+    Integer getSumTimeStatisticsByDriver(@NotBlank Long driverId, @NotBlank LocalDateTime lowerTime, @NotBlank LocalDateTime upperTime);
 
     @Query("SELECT sum(price) FROM TripHistoryEntity WHERE driver.id = ?1 AND ?2 <= endTime AND endTime <= ?3")
     Double getSumRevenueStatisticsByDriver(@NotBlank Long driverId, @NotBlank LocalDateTime lowerTime, @NotBlank LocalDateTime upperTime);

@@ -23,9 +23,9 @@ public class Leaderboard {
     private double averageRating;
 
     @Schema(description="Gesamte Fahrzeit",requiredMode= Schema.RequiredMode.REQUIRED)
-    private double totalDriveTime;
+    private Integer totalDriveTime;
 
-    @Schema(description="Gesamte Anzahl der gefahrene Trips",requiredMode= Schema.RequiredMode.REQUIRED)
+    @Schema(description="Gesamte Anzahl der gefahrenen Trips",requiredMode= Schema.RequiredMode.REQUIRED)
     private Integer totalNumberOfDrivenTrip;
 
     @Schema(description ="Total verdientes Geld",requiredMode= Schema.RequiredMode.REQUIRED)

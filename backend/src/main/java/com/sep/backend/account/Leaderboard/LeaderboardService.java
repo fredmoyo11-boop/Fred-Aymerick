@@ -31,7 +31,7 @@ public class LeaderboardService {
 
                     double averageRating = tripHistoryService.averageRating(email);
 
-                    double totalDriveTime = tripHistoryService.totalDrivenDuration(email);
+                    Integer totalDriveTime = tripHistoryService.totalDrivenDuration(email);
 
                     int totalNumberOfDrivenTrip = tripHistoryService.totalNumberOfDrivenTrip(email);
 

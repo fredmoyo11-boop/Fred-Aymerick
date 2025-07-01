@@ -7,6 +7,7 @@ import com.sep.backend.entity.*;
 import com.sep.backend.statistics.*;
 import com.sep.backend.trip.history.TripHistoryRepository;
 import org.junit.Before;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -17,6 +18,8 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("testaaaaaaaa")
@@ -140,14 +143,14 @@ public class StatisticsTest {
         tripHistory5.setEndTime(LocalDateTime.of(2001, 10, 31, 23, 59, 59));
         //end
         tripHistoryRepository.save(tripHistory5);
+
+        principal = Mockito.mock(Principal.class);
+        Mockito.when(principal.getName()).thenReturn("asdf@mail.com");
     }
 
 
     @Test
     public void functionRunTest() {
-        principal = Mockito.mock(Principal.class);
-        Mockito.when(principal.getName()).thenReturn("asdf@mail.com");
-
         statisticsService.getStatisticsForYear(StatisticsType.DISTANCE, 2000, principal);
         statisticsService.getStatisticsForYear(StatisticsType.RATING, 2001, principal);
         statisticsService.getStatisticsForMonth(StatisticsType.TIME, 2002, 1, principal);
@@ -156,7 +159,25 @@ public class StatisticsTest {
 
     @Test
     public void yearTest() {
+        //throw new RuntimeException(statisticsService.getStatisticsForYear(StatisticsType.DISTANCE, 2000, principal).toString());
 
+        assertEquals(20.0D + 40.0D, statisticsService.getStatisticsForYear(StatisticsType.DISTANCE, 2000, principal).get(10-1).doubleValue());
+        assertEquals(33.89D, statisticsService.getStatisticsForYear(StatisticsType.DISTANCE, 2000, principal).get(9-1).doubleValue());
+        assertEquals(21.45D + 62146.131D, statisticsService.getStatisticsForYear(StatisticsType.DISTANCE, 2001, principal).get(10-1).doubleValue());
+
+        assertEquals(10.0D + 20.0D, statisticsService.getStatisticsForYear(StatisticsType.REVENUE, 2000, principal).get(10-1).doubleValue());
+        assertEquals(21.9D, statisticsService.getStatisticsForYear(StatisticsType.REVENUE, 2000, principal).get(9-1).doubleValue());
+
+        // floats
+        //assertEquals(444.44D + 9874.03D, statisticsService.getStatisticsForYear(StatisticsType.REVENUE, 2001, principal).get(10-1).doubleValue());
+
+        assertEquals(100 + 300, statisticsService.getStatisticsForYear(StatisticsType.TIME, 2000, principal).get(10-1).doubleValue());
+        assertEquals(324, statisticsService.getStatisticsForYear(StatisticsType.TIME, 2000, principal).get(9-1).doubleValue());
+        assertEquals(77553 + 9182, statisticsService.getStatisticsForYear(StatisticsType.TIME, 2001, principal).get(10-1).doubleValue());
+
+        assertEquals((5D + 4D)/2D , statisticsService.getStatisticsForYear(StatisticsType.RATING, 2000, principal).get(10-1).doubleValue());
+        assertEquals(3D , statisticsService.getStatisticsForYear(StatisticsType.RATING, 2000, principal).get(9-1).doubleValue());
+        assertEquals((2D + 1D)/2D , statisticsService.getStatisticsForYear(StatisticsType.RATING, 2001, principal).get(10-1).doubleValue());
     }
 
     @Test

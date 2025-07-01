@@ -15,6 +15,7 @@ import {TripSimulationComponent} from './components/trip-simulation/trip-simulat
 import {TripOfferComponent} from './components/trip-offer/trip-offer.component';
 import {tripOfferResolver} from './resolvers/trip-offer.resolver';
 import {BalanceComponent} from './components/balance/balance.component';
+import {LeaderboardComponent} from './components/leaderboard/leaderboard.component';
 
 export const routes: Routes = [
   {path: "register", component: RegisterComponent},
@@ -67,6 +68,12 @@ export const routes: Routes = [
       {
         path: "balance",
         component: BalanceComponent,
+        canActivate: [authGuard],
+        data: {roles: ["CUSTOMER", "DRIVER"]}
+      },
+      {
+        path:"leaderboard",
+        component:LeaderboardComponent,
         canActivate: [authGuard],
         data: {roles: ["CUSTOMER", "DRIVER"]}
       }

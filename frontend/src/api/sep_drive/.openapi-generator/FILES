@@ -26,6 +26,7 @@ model/coordinate.ts
 model/driver.ts
 model/driverStatistics.ts
 model/errorResponse.ts
+model/leaderboard.ts
 model/location.ts
 model/loginRequest.ts
 model/models.ts

@@ -6,6 +6,7 @@ export * from './coordinate';
 export * from './driver';
 export * from './driverStatistics';
 export * from './errorResponse';
+export * from './leaderboard';
 export * from './location';
 export * from './loginRequest';
 export * from './nominatimFeature';

@@ -44,7 +44,4 @@ public class StatisticsController {
     public List<Number> getStatisticsForMonth(String type, int year, int month, Principal principal) {
         return statisticsService.getStatisticsForMonth(type, year, month, principal);
     }
-
-
-
 }

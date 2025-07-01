@@ -31,10 +31,15 @@ public interface TripHistoryRepository extends JpaRepository<TripHistoryEntity, 
 
     Optional<TripHistoryEntity> findByTripOfferId(Long tripOfferId);
 
-    @Query("SELECT avg(?2) FROM TripHistoryEntity WHERE driver.id = ?1 AND ?3 <= endTime AND endTime <= ?4")
-    Number getAvgStatisticsByDriver(@NotBlank String driverId, @NotBlank String type, @NotBlank LocalDateTime lowerTime, @NotBlank LocalDateTime upperTime);
+    @Query("SELECT avg(customerRating) FROM TripHistoryEntity WHERE driver.id = ?1 AND ?2 <= endTime AND endTime <= ?3")
+    Double getAvgRatingStatisticsByDriver(@NotBlank Long driverId, @NotBlank LocalDateTime lowerTime, @NotBlank LocalDateTime upperTime);
 
-    @Query("SELECT sum(?2) FROM TripHistoryEntity WHERE driver.id = ?1 AND ?3 <= endTime AND endTime <= ?4")
-    Number getSumStatisticsByDriver(@NotBlank String driverId, @NotBlank String type, @NotBlank LocalDateTime lowerTime, @NotBlank LocalDateTime upperTime);
+    @Query("SELECT sum(distance) FROM TripHistoryEntity WHERE driver.id = ?1 AND ?2 <= endTime AND endTime <= ?3")
+    Double getSumDistanceStatisticsByDriver(@NotBlank Long driverId, @NotBlank LocalDateTime lowerTime, @NotBlank LocalDateTime upperTime);
 
+    @Query("SELECT sum(duration) FROM TripHistoryEntity WHERE driver.id = ?1 AND ?2 <= endTime AND endTime <= ?3")
+    Double getSumTimeStatisticsByDriver(@NotBlank Long driverId, @NotBlank LocalDateTime lowerTime, @NotBlank LocalDateTime upperTime);
+
+    @Query("SELECT sum(price) FROM TripHistoryEntity WHERE driver.id = ?1 AND ?2 <= endTime AND endTime <= ?3")
+    Double getSumRevenueStatisticsByDriver(@NotBlank Long driverId, @NotBlank LocalDateTime lowerTime, @NotBlank LocalDateTime upperTime);
 }

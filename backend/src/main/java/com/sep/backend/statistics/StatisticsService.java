@@ -1,6 +1,7 @@
 package com.sep.backend.statistics;
 
 
+import com.sep.backend.account.DriverRepository;
 import com.sep.backend.trip.history.TripHistoryRepository;
 import org.springframework.stereotype.Service;
 
@@ -13,9 +14,11 @@ import java.util.ArrayList;
 @Service
 public class StatisticsService {
     private final TripHistoryRepository tripHistoryRepository;
+    private final DriverRepository driverRepository;
 
-    public StatisticsService(TripHistoryRepository tripHistoryRepository) {
+    public StatisticsService(TripHistoryRepository tripHistoryRepository, DriverRepository driverRepository) {
         this.tripHistoryRepository = tripHistoryRepository;
+        this.driverRepository = driverRepository;
     }
 
     public List<Number> getStatisticsForYear(String type, int year, Principal principal) {
@@ -39,15 +42,19 @@ public class StatisticsService {
         return result;
     }
 
-    private Number getValueForTypeAndTime(String type, LocalDateTime lowerTime, LocalDateTime upperTime, Principal principal) throws IllegalArgumentException{
+    private Number getValueForTypeAndTime(String type, LocalDateTime lowerTime, LocalDateTime upperTime, Principal principal) throws IllegalArgumentException {
+        Long driverId = driverRepository.findByEmailIgnoreCase(principal.getName()).orElseThrow().getId();
+
         return switch (type) {
-            case StatisticsType.DISTANCE, StatisticsType.TIME, StatisticsType.REVENUE -> tripHistoryRepository.getSumStatisticsByDriver(principal.getName(), type, lowerTime, upperTime);
-            case StatisticsType.RATING -> tripHistoryRepository.getAvgStatisticsByDriver(principal.getName(), type, lowerTime, upperTime);
+            case StatisticsType.DISTANCE -> tripHistoryRepository.getSumDistanceStatisticsByDriver(driverId, lowerTime, upperTime);
+            case StatisticsType.TIME -> tripHistoryRepository.getSumTimeStatisticsByDriver(driverId, lowerTime, upperTime);
+            case StatisticsType.REVENUE -> tripHistoryRepository.getSumRevenueStatisticsByDriver(driverId, lowerTime, upperTime);
+            case StatisticsType.RATING -> tripHistoryRepository.getAvgRatingStatisticsByDriver(driverId, lowerTime, upperTime);
             default -> throw new IllegalStateException("Unexpected type: " + type);
         };
     }
 
-    private static int getDayCountForMonth(int year, int month) throws IllegalArgumentException{
+    private static int getDayCountForMonth(int year, int month) throws IllegalArgumentException {
         return switch (month) {
             case 1, 3, 5, 7, 8, 10, 12 -> 31;
             case 4, 6, 9, 11 -> 30;

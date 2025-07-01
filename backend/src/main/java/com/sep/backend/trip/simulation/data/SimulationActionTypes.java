@@ -13,9 +13,15 @@ public class SimulationActionTypes {
     public static final String STOP = "STOP";
 
     /**
-     * Reroutes the simulation.
+     * Locks the route during reroute.
      */
-    public static final String REROUTE = "REROUTE";
+    public static final String REROUTE_LOCK = "REROUTE_LOCK";
+
+    /**
+     *Unlocks the route during reroute.
+     */
+    public static final String REROUTE_UNLOCK = "REROUTE_UNLOCK";
+
 
     /**
      * Changes the velocity of the simulation.

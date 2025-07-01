@@ -93,6 +93,7 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
 
   private _route$ = new BehaviorSubject<Route | null>(null);
   private _animationLocked$ = new BehaviorSubject<boolean>(true)
+  private _rerouteLocked$ = new BehaviorSubject<boolean>(false)
   private _animationDuration$ = new BehaviorSubject<number>(15000);
 
   animationLocked!: boolean
@@ -123,10 +124,12 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
   form = new FormGroup({
     query: new FormControl("")
   })
+  rerouteLocked!: boolean
   showCard: boolean = false;
   selectedIndex = 0
   suggestedLocations: Location[] = []
   orsFeatureCollection: ORSFeatureCollection | null = null;
+  lastVisitedIndex: number = 0
 
 
 
@@ -194,6 +197,10 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
       this.animationLocked = animationLocked;
     })
 
+    this._rerouteLocked$.subscribe(rerouteLocked => {
+      this.rerouteLocked = rerouteLocked
+    })
+
     //suggestion list
     this.form.get('query')!.valueChanges.pipe(
       debounceTime(300),
@@ -244,6 +251,10 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
       this._animationLocked$.next(true)
     } else if (simulationAction.actionType === "UNLOCK") {
       this._animationLocked$.next(false)
+    } else if (simulationAction.actionType === "REROUTE_LOCK") {
+      this._rerouteLocked$.next(true)
+    } else if (simulationAction.actionType === "REROUTE_UNLOCK") {
+      this._rerouteLocked$.next(false)
     } else if (simulationAction.actionType === "DRIVER_PRESENT") {
       if (this.role === "CUSTOMER") {
         this.sendAckDriverPresent()
@@ -299,6 +310,7 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
       actionType: "STOP", timestamp: new Date().toISOString(),
       parameters: {startIndex: this.animationIndex}
     }
+    this.lastVisitedLocationIndex()
     this.sendSimulationAction(action)
   }
 
@@ -310,9 +322,17 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
     this.sendSimulationAction(action)
   }
 
-  reroute(): void {
+  reroute_lock(): void {
     const action: SimulationAction = {
-      actionType: "REROUTE", timestamp: new Date().toISOString(),
+      actionType: "REROUTE_LOCK", timestamp: new Date().toISOString(),
+      parameters: {startIndex: this.animationIndex}
+    }
+    this.stompService.send(`/app/simulation/${this.tripOfferId}`, action)
+  }
+
+  reroute_unlock(): void {
+    const action: SimulationAction = {
+      actionType: "REROUTE_UNLOCK", timestamp: new Date().toISOString(),
       parameters: {startIndex: this.animationIndex}
     }
     this.stompService.send(`/app/simulation/${this.tripOfferId}`, action)
@@ -428,7 +448,7 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
       this.lock()
       this.routeService.updateRoute(this.route.routeId, routeUpdateRequestBody).subscribe({
         next: value => {
-          this.reroute()
+          this.reroute_unlock()
         },
         error: err => {
           console.error(err)
@@ -492,7 +512,6 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
     this.animateRoute()
   }
 
-
   openRatingDialog() {
     const dialogRef = this.dialog.open(DialogRatingComponent, {
       width: '1000px',
@@ -532,26 +551,61 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
     this.form.get('query')?.setValue('')
     this.suggestedLocations = []
     this.showCard = false
+    this.reroute_lock()
     this.updateLocalRoute()
   }
 
   //droplist
   drop(event: CdkDragDrop<string[]>) {
+    this.lastVisitedLocationIndex;
+
+
+    if (event.previousIndex < this.lastVisitedIndex || event.currentIndex < this.lastVisitedIndex) {
+      return;
+    }
+
     moveItemInArray(this.stops, event.previousIndex, event.currentIndex)
     this.updateLocalRoute();
   }
 
   remove(index: number) {
+    if (!this.canDeleteStop(index)) return
     this.stops.splice(index, 1)
     this.updateLocalRoute()
+  }
+
+  canDeleteStop(index: number): boolean {
+    if (index < this.lastVisitedIndex) return false
+
+    const remainingStops = this.stops.length - this.lastVisitedIndex
+
+    return remainingStops !== 1;
   }
 
   //Confirm or Cancel
   onCancel() {
     this.route = structuredClone(this.originalRoute!)
-    this.stops = []
     this.stops = this.route.stops
-    console.log(this.stops)
+    this.reroute_unlock()
     this._route$.next(this.route)
   }
+
+  lastVisitedLocationIndex() {
+    const currentCoordinate: Coordinate = {
+      longitude: this.coordinates[this.animationIndex][1],
+      latitude: this.coordinates[this.animationIndex][0],
+    }
+    const routeUpdateRequestBody: RouteUpdateRequestBody = {
+      currentCoordinate: currentCoordinate,
+      locations: this.stops
+    }
+    this.routeService.lastVisitedIndex(this.route.routeId, routeUpdateRequestBody).subscribe({
+      next: index => {
+        this.lastVisitedIndex = index
+      },
+      error: err => {
+        console.log(err)
+      }
+    })
+}
 }

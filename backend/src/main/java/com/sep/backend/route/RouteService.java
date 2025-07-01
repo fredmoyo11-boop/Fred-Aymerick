@@ -113,6 +113,22 @@ public class RouteService {
         return routeRepository.save(routeEntity);
     }
 
+    public Integer getLastVisitedLocationIndex(Long routeId, Coordinate currentCoordinate) throws NotFoundException {
+        var routeEntity = getRoute(routeId);
+
+        //Gets all coordinates and creates new list with only visited coordinates
+        List<Coordinate> currentRouteCoordinates = routeEntity.getGeoJSON().getFeatures().getFirst().getGeometry().getCoordinates().stream().map(Coordinate::from).toList();
+        List<Coordinate> alreadyVisitedCoordinates = getVisitedCoordinates(currentRouteCoordinates, currentCoordinate);
+
+        //Out of the visited coordinates, gets all visited Locations
+        List<Location> currentRouteStops = routeEntity.getStops().stream().map(Location::from).toList();
+        List<Location> alreadyVisitedStops = getVisitedLocations(currentRouteStops, alreadyVisitedCoordinates);
+
+        return alreadyVisitedStops.size();
+    }
+
+
+
     public List<Coordinate> getVisitedCoordinates (List<Coordinate> coordinates, Coordinate currentCoordinate) {
         int lastVisitedCoordinateIndex = IntStream.range(0, coordinates.size())
                 .boxed()

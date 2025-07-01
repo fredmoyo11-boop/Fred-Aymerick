@@ -37,8 +37,19 @@ public class RouteController {
             responses = {
             @ApiResponse(responseCode = HttpStatus.OK, description = "Route updated successfully.",
                 content = @Content(schema = @Schema(implementation = Route.class))),
-    })
+            })
     public Route updateRoute(@PathVariable Long routeId, @RequestBody RouteUpdateRequestBody routeUpdateRequestBody) throws JsonProcessingException {
         return Route.from(routeService.updateRoute(routeId, routeUpdateRequestBody.getLocations(), routeUpdateRequestBody.getCurrentCoordinate()));
+    }
+
+    @PutMapping("/{routeId}/visited")
+    @Operation(description = "Returns the index of the last visited Location.",
+            tags = {Tags.ROUTE},
+            responses = {
+            @ApiResponse(responseCode = HttpStatus.OK, description = "Last index found.",
+                content = @Content(schema = @Schema(implementation = Integer.class))),
+            })
+    public Integer lastVisitedIndex(@PathVariable Long routeId, @RequestBody RouteUpdateRequestBody routeUpdateRequestBody) {
+        return routeService.getLastVisitedLocationIndex(routeId, routeUpdateRequestBody.getCurrentCoordinate());
     }
 }

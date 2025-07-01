@@ -28,7 +28,7 @@ public class StatisticsController {
     }
 
     @GetMapping("/year")
-    @Operation(description = "Gets statistics for a year.",
+    @Operation(description = "Gets statistics for a year. The list will be zero indexed!!!",
             tags = {Tags.STATISTICS},
             responses = {@ApiResponse(responseCode = HttpStatus.OK, description = "Statistics retrieved successfully.",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = Number.class))))})
@@ -37,7 +37,7 @@ public class StatisticsController {
     }
 
     @GetMapping("/month")
-    @Operation(description = "Gets statistics for a month.",
+    @Operation(description = "Gets statistics for a month. The list will be zero indexed!!!",
             tags = {Tags.STATISTICS},
             responses = {@ApiResponse(responseCode = HttpStatus.OK, description = "Statistics retrieved successfully.",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = Number.class))))})

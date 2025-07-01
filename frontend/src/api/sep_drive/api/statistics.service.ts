@@ -36,7 +36,7 @@ export class StatisticsService extends BaseService {
     }
 
     /**
-     * Gets statistics for a month.
+     * Gets statistics for a month. The list will be zero indexed!!!
      * @param type 
      * @param year 
      * @param month 
@@ -111,7 +111,7 @@ export class StatisticsService extends BaseService {
     }
 
     /**
-     * Gets statistics for a year.
+     * Gets statistics for a year. The list will be zero indexed!!!
      * @param type 
      * @param year 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.

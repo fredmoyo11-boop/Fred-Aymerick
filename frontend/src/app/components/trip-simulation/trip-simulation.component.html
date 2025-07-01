@@ -39,6 +39,7 @@
               <mat-card-content>
                 <p> Distanz der Fahrt: {{this.route.geoJson.features[0].properties.summary.distance | meterToKm}}</p>
                 <p> Dauer der Fahrt: {{this.route.geoJson.features[0].properties.summary.duration | secondsToTime}}</p>
+                <p> Preis der Fahrt: {{ (this.route.geoJson.features[0].properties.summary.distance / 1000) * (carPrice(this.tripOffer.tripRequest.carType!)) | euro }}</p>
 
               <mat-divider></mat-divider>
 

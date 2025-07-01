@@ -42,6 +42,8 @@ import {SecondsToTimePipe} from '../../pipes/seconds-to-time.pipe';
 import {CdkDrag, CdkDragDrop, CdkDragHandle, CdkDropList, moveItemInArray} from '@angular/cdk/drag-drop';
 import {MatFormField, MatInput, MatLabel} from '@angular/material/input';
 import {NgIf} from '@angular/common';
+import {EuroPipe} from '../../pipes/euro.pipe';
+import {MatSnackBar} from '@angular/material/snack-bar';
 
 
 @Component({
@@ -68,6 +70,7 @@ import {NgIf} from '@angular/common';
     NgIf,
     CdkDrag,
     CdkDragHandle,
+    EuroPipe,
   ],
   templateUrl: './trip-simulation.component.html',
   standalone: true,
@@ -84,6 +87,7 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
   routeService = inject(RouteService)
   orsService = inject(ORSService)
   nominatimService = inject(NominatimService)
+  snackBar = inject(MatSnackBar)
 
   stops: Location[] = []
 
@@ -533,6 +537,19 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
     })
   }
   //--------------------------------Reroute Card
+  carPrice(carType: String): number {
+    switch (carType) {
+      case 'SMALL':
+        return 1
+      case 'MEDIUM':
+        return 2
+      case 'DELUXE':
+        return 10
+      default:
+        return 0
+    }
+  }
+
   //suggestions card
   clickCard(index: number): void {
     console.log("Chosen card: ", index)
@@ -547,6 +564,11 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
   onConfirm() {
     const selected = this.suggestedLocations[this.selectedIndex]
 
+    if (this.newLocationIsSame(selected)) {
+      console.warn("Diese Adressen wurde bereits als Zieladresse hinzugefügt.")
+      this.snackBar.open("Diese Adressen wurde bereits als Zieladresse hinzugefügt.", "OK")
+      return
+    }
     this.stops.push(selected)
     this.form.get('query')?.setValue('')
     this.suggestedLocations = []
@@ -556,12 +578,21 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
   }
 
   //droplist
+
+
   drop(event: CdkDragDrop<string[]>) {
     this.lastVisitedLocationIndex;
 
-
     if (event.previousIndex < this.lastVisitedIndex || event.currentIndex < this.lastVisitedIndex) {
       return;
+    }
+    for (let i = 0; i < this.stops.length - 1; i++) {
+      if (this.dragDropIsSameLocation(this.stops[i], this.stops[i + 1])) {
+        console.warn("Zwei gleiche Adressen können nicht hintereinander angefahren werden")
+        this.snackBar.open("Zwei gleiche Adressen können nicht hintereinander angefahren werden", "OK")
+        moveItemInArray(this.stops, event.currentIndex, event.previousIndex);
+        return;
+      }
     }
 
     moveItemInArray(this.stops, event.previousIndex, event.currentIndex)
@@ -580,6 +611,18 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
     const remainingStops = this.stops.length - this.lastVisitedIndex
 
     return remainingStops !== 1;
+  }
+
+  newLocationIsSame(newLocation: Location) {
+    if (this.stops.length === 0) return false
+    const lastLocation = this.stops[this.stops.length - 1]
+    return lastLocation.coordinate.latitude === newLocation.coordinate.latitude &&
+      lastLocation.coordinate.longitude === newLocation.coordinate.longitude && lastLocation.displayName === newLocation.displayName;
+  }
+
+  dragDropIsSameLocation(location1: Location, location2: Location) {
+    return location1.coordinate.latitude === location2.coordinate.latitude && location1.coordinate.longitude === location2.coordinate.longitude &&
+      location1.displayName === location2.displayName
   }
 
   //Confirm or Cancel
@@ -607,5 +650,5 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
         console.log(err)
       }
     })
-}
+  }
 }

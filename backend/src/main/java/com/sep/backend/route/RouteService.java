@@ -122,8 +122,9 @@ public class RouteService {
 
         //Out of the visited coordinates, gets all visited Locations
         List<Location> currentRouteStops = routeEntity.getStops().stream().map(Location::from).toList();
+        log.debug("List of all stops: {}", currentRouteStops);
         List<Location> alreadyVisitedStops = getVisitedLocations(currentRouteStops, alreadyVisitedCoordinates);
-
+        log.debug("List of visited stops: {}", alreadyVisitedStops);
         return alreadyVisitedStops.size();
     }
 
@@ -148,6 +149,6 @@ public class RouteService {
         if (lastVisitedLocationIndex == -1) {
             return routeStops;
         }
-        return routeStops.subList(0, lastVisitedLocationIndex + 1);
+        return routeStops.subList(0, lastVisitedLocationIndex);
     }
 }

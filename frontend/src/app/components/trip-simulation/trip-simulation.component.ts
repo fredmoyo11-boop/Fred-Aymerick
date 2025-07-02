@@ -399,7 +399,6 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
 
     let startTime = Date.now()
 
-
     let startIndex = this.animationIndex
     let currentIndex = 0
 
@@ -464,13 +463,27 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
   //Updates the map without having to save new routeEntity
   updateLocalRoute() {
     if (this.stops.length >= 2) {
-      this.orsService.getRouteDirections(this.stops.map(stop => {
-        let coordinate: Coordinate = {
-          latitude: stop.coordinate.latitude,
-          longitude: stop.coordinate.longitude
-        }
-        return coordinate
-      })).subscribe({
+      const currentCoordinate: Coordinate = {
+        longitude: this.coordinates[this.animationIndex][1],
+        latitude: this.coordinates[this.animationIndex][0],
+      }
+      // let foo = this.stops.map(stop => {
+      //   return stop.coordinate
+      // })
+
+      let bar = this.stops.map(stop => stop.coordinate)
+      bar.splice(this.lastVisitedIndex, 0, currentCoordinate)
+
+      console.log(bar)
+      // let foo = this.stops
+      //   .filter((_, index) => index <= this.lastVisitedIndex)
+      //   .map(stop => stop.coordinate)
+      // foo.splice(this.lastVisitedIndex + 1, 0, currentCoordinate)
+      // foo = this.stops
+      //   .filter((_, index) => index > this.lastVisitedIndex)
+      //   .map((stop => stop.coordinate))
+
+      this.orsService.getRouteDirections(bar).subscribe({
         next: value => {
           this.orsFeatureCollection = value
           this.route = {
@@ -564,6 +577,7 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
   onConfirm() {
     const selected = this.suggestedLocations[this.selectedIndex]
 
+    //Ensures that the newest added location is not the same as the last location
     if (this.newLocationIsSame(selected)) {
       console.warn("Diese Adressen wurde bereits als Zieladresse hinzugefügt.")
       this.snackBar.open("Diese Adressen wurde bereits als Zieladresse hinzugefügt.", "OK")
@@ -582,10 +596,12 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
 
   drop(event: CdkDragDrop<string[]>) {
     this.lastVisitedLocationIndex;
-
+    //Ensures that stops before the lastVisitedIndex are not moveable
     if (event.previousIndex < this.lastVisitedIndex || event.currentIndex < this.lastVisitedIndex) {
       return;
     }
+
+    //Ensures that two stops of the same address are not next to each other
     for (let i = 0; i < this.stops.length - 1; i++) {
       if (this.dragDropIsSameLocation(this.stops[i], this.stops[i + 1])) {
         console.warn("Zwei gleiche Adressen können nicht hintereinander angefahren werden")
@@ -594,7 +610,6 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
         return;
       }
     }
-
     moveItemInArray(this.stops, event.previousIndex, event.currentIndex)
     this.updateLocalRoute();
   }
@@ -602,6 +617,7 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
   remove(index: number) {
     if (!this.canDeleteStop(index)) return
     this.stops.splice(index, 1)
+    this.reroute_lock()
     this.updateLocalRoute()
   }
 
@@ -645,6 +661,8 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
     this.routeService.lastVisitedIndex(this.route.routeId, routeUpdateRequestBody).subscribe({
       next: index => {
         this.lastVisitedIndex = index
+        console.log("Aktuelle Position: " + routeUpdateRequestBody.currentCoordinate.latitude + ", " + routeUpdateRequestBody.currentCoordinate.longitude)
+        console.log("LastvisitedIndex: " + this.lastVisitedIndex)
       },
       error: err => {
         console.log(err)

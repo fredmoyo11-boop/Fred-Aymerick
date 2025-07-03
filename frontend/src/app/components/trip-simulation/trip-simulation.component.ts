@@ -129,11 +129,12 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
     query: new FormControl("")
   })
   rerouteLocked!: boolean
-  showCard: boolean = false;
+  showCard= false;
   selectedIndex = 0
   suggestedLocations: Location[] = []
   orsFeatureCollection: ORSFeatureCollection | null = null;
-  lastVisitedIndex: number = 0
+  lastVisitedIndex = 0
+  currentCoordinateAtReroute!: Coordinate
 
 
 
@@ -156,6 +157,9 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
 
         let coordinates = feature.geometry.coordinates as number[][];
         this.coordinates = this.interpolateCoordinates(coordinates).map(coordinate => [coordinate[1], coordinate[0]]) as number[][];
+        if (this.animationIndex != 0) {
+          this.animationIndex = this.findClosestAnimationIndex(this.currentCoordinateAtReroute, this.coordinates)
+        }
 
         this.route = route;
         this.stops = this.route.stops;
@@ -259,7 +263,13 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
       this._rerouteLocked$.next(true)
     } else if (simulationAction.actionType === "REROUTE_UNLOCK") {
       this._rerouteLocked$.next(false)
-    } else if (simulationAction.actionType === "DRIVER_PRESENT") {
+      this.routeService.getRoute(this.tripOffer.tripRequest.route.routeId).subscribe({
+        next: newRoute => {
+          this._route$.next(newRoute)
+      }
+      })
+    }
+    else if (simulationAction.actionType === "DRIVER_PRESENT") {
       if (this.role === "CUSTOMER") {
         this.sendAckDriverPresent()
       }
@@ -450,7 +460,13 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
       }
       this.lock()
       this.routeService.updateRoute(this.route.routeId, routeUpdateRequestBody).subscribe({
-        next: value => {
+        next: updatedRoute => {
+          this.currentCoordinateAtReroute = currentCoordinate
+          this.route = updatedRoute
+          this._route$.next(this.route)
+          this.animationInitialized = true
+          this.lastVisitedIndex += 1
+
           this.reroute_unlock()
         },
         error: err => {
@@ -467,27 +483,17 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
         longitude: this.coordinates[this.animationIndex][1],
         latitude: this.coordinates[this.animationIndex][0],
       }
-      // let foo = this.stops.map(stop => {
-      //   return stop.coordinate
-      // })
 
       let bar = this.stops.map(stop => stop.coordinate)
       bar.splice(this.lastVisitedIndex, 0, currentCoordinate)
 
       console.log(bar)
-      // let foo = this.stops
-      //   .filter((_, index) => index <= this.lastVisitedIndex)
-      //   .map(stop => stop.coordinate)
-      // foo.splice(this.lastVisitedIndex + 1, 0, currentCoordinate)
-      // foo = this.stops
-      //   .filter((_, index) => index > this.lastVisitedIndex)
-      //   .map((stop => stop.coordinate))
 
       this.orsService.getRouteDirections(bar).subscribe({
         next: value => {
           this.orsFeatureCollection = value
           this.route = {
-            routeId: -1,
+            routeId: this.route.routeId,
             stops: this.stops,
             geoJson: value
           }
@@ -668,5 +674,29 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
         console.log(err)
       }
     })
+  }
+
+  //Compares current position of customer to new interpolated coordinates of new route to find current animationIndex to start the drive from
+  findClosestAnimationIndex(animationIndexCoordinates: Coordinate, newCoordinates: number[][]) {
+    let closestIndex = 0
+    let minDistance = Infinity
+
+    newCoordinates.forEach((coordinate, idx) => {
+      const coord: Coordinate = {
+        longitude: this.coordinates[idx][1],
+        latitude: this.coordinates[idx][0]
+      }
+
+      const distance = this.distanceBetween(coord, animationIndexCoordinates)
+      if (distance < minDistance) {
+        minDistance = distance
+        closestIndex = idx
+      }
+    })
+    return closestIndex
+  }
+
+  distanceBetween(c1: Coordinate, c2: Coordinate) {
+    return Math.sqrt(Math.pow(c1.latitude - c2.latitude, 2) + Math.pow(c1.longitude - c2.longitude, 2))
   }
 }

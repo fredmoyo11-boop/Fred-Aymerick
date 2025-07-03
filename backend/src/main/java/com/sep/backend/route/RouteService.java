@@ -77,32 +77,40 @@ public class RouteService {
         //Out of the visited coordinates, gets all visited Locations
         List<Location> currentRouteStops = routeEntity.getStops().stream().map(Location::from).toList();
         List<Location> alreadyVisitedStops = getVisitedLocations(currentRouteStops, alreadyVisitedCoordinates);
+        log.debug("All visited stops in route: {}", alreadyVisitedStops);
 
         //Out of all locations, counts how many of them are visited
         int maxPrefixLength = Math.min(updatedRouteStops.size(), alreadyVisitedStops.size());
         int prefixLength = IntStream.range(0, maxPrefixLength)
-                .takeWhile(i -> Objects.equals(alreadyVisitedStops.get(i), updatedRouteStops.get(i)))
+                .takeWhile(i -> {
+                    var loc1 = alreadyVisitedStops.get(i);
+                    var loc2 = updatedRouteStops.get(i);
+                    return Objects.equals(loc1.getDisplayName(), loc2.getDisplayName()) && loc1.getCoordinate().getLatitude() == loc2.getCoordinate().getLatitude()
+                            && loc1.getCoordinate().getLongitude() == loc2.getCoordinate().getLongitude();
+                })
                 .map(i -> 1)
                 .sum();
+        log.debug("Prefix length: {}", prefixLength);
 
         //Creates a sub-list of all new and unvisited stops added by user
         List<Location> newStops =  updatedRouteStops.subList(prefixLength, updatedRouteStops.size());
-
+        log.debug("Sublist of unvisited stops: {}", newStops);
         //Removes unvisited stops to keep order
         routeEntity.getStops().subList(prefixLength, routeEntity.getStops().size()).clear();
-
+        log.debug("routeEntity stop list after removing unvisited stops: {}:", routeEntity.getStops());
         //Creates a location on currentCoordinates and adds it to the list
-        NominatimFeatureCollection currentLocationGeoJSON = null;
+        NominatimFeatureCollection currentLocationGeoJSON;
         try {
             currentLocationGeoJSON = nominatimService.reverse(String.valueOf(currentCoordinate.getLatitude()), String.valueOf(currentCoordinate.getLongitude()));
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Current coordinate is invalid.");
         }
         var currentLocation = Location.from(currentLocationGeoJSON.getFeatures().getFirst());
-        routeEntity.getStops().add(locationService.saveLocation(currentLocation));
-
+        routeEntity.getStops().add(prefixLength, locationService.saveLocation(currentLocation));
+        log.debug("Updated list with current location: {}", routeEntity.getStops());
         //Saves new locations in repository and adds them to the list
         routeEntity.getStops().addAll(locationService.saveLocations(newStops));
+        log.debug("Updated list with all stops: {}", routeEntity.getStops());
         routeEntity.getStops().forEach(stop -> stop.setRoute(routeEntity));
 
         //Gets coordinates of all stops and requests a new geoJSON by ORS
@@ -119,12 +127,14 @@ public class RouteService {
         //Gets all coordinates and creates new list with only visited coordinates
         List<Coordinate> currentRouteCoordinates = routeEntity.getGeoJSON().getFeatures().getFirst().getGeometry().getCoordinates().stream().map(Coordinate::from).toList();
         List<Coordinate> alreadyVisitedCoordinates = getVisitedCoordinates(currentRouteCoordinates, currentCoordinate);
+//        log.debug("List of visited coordinates: {}", alreadyVisitedCoordinates);
 
         //Out of the visited coordinates, gets all visited Locations
         List<Location> currentRouteStops = routeEntity.getStops().stream().map(Location::from).toList();
-        log.debug("List of all stops: {}", currentRouteStops);
+//        log.debug("List of all stops: {}", currentRouteStops);
         List<Location> alreadyVisitedStops = getVisitedLocations(currentRouteStops, alreadyVisitedCoordinates);
-        log.debug("List of visited stops: {}", alreadyVisitedStops);
+//        log.debug("List of visited stops: {}", alreadyVisitedStops);
+//        log.debug("Size of alreadyVisitedStops: {}", alreadyVisitedStops.size());
         return alreadyVisitedStops.size();
     }
 
@@ -143,12 +153,19 @@ public class RouteService {
 
     public List<Location> getVisitedLocations (List<Location> routeStops, List<Coordinate> visitedCoordinates) {
         int lastVisitedLocationIndex = IntStream.range(0, routeStops.size())
-                .filter(i -> !visitedCoordinates.contains(Coordinate.from(routeStops.get(i))))
+                .filter(i -> !isCoordinateVisited(Coordinate.from(routeStops.get(i)), visitedCoordinates))
                 .findFirst()
                 .orElse(-1);
         if (lastVisitedLocationIndex == -1) {
             return routeStops;
         }
         return routeStops.subList(0, lastVisitedLocationIndex);
+
+        //!visitedCoordinates.contains(Coordinate.from(routeStops.get(i)))
+    }
+
+    private boolean isCoordinateVisited(Coordinate stopCoordinate, List<Coordinate> visitedCoordinates) {
+        double threshold = 0.005; //50 m threshold
+        return visitedCoordinates.stream().anyMatch(visited -> stopCoordinate.distanceTo(visited) < threshold);
     }
 }

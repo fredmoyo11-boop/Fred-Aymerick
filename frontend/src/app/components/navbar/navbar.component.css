@@ -39,13 +39,31 @@
 
 .navbar-btn-container button {
   border: none;
-  background: none;
+  /*background: none;*/
   outline: none;
-}
 
-.navbar-btn-container button:hover {
-  text-decoration: underline;
+  /*background-color: #f0f0f0;      light gray */
+  color: #333;                   /* dark text */
+  padding: 10px 16px;
+  margin-right: 8px;
+  border-radius: 6px;
+  font-size: 14px;
   cursor: pointer;
+  /* transition: background-color 0.3s, color 0.3s;*/
+
+ }
+
+ .navbar-btn-container button:hover {
+   text-decoration: underline;
+   cursor: pointer;
+   background-color: #e0e0e0;     /* slightly darker on hover */
+
+}
+.active-link {
+  background-color: deepskyblue; /* dunkles Blau als Hintergrund */
+  color: white; /* Textfarbe weiß für guten Kontrast */
+  font-weight: bold;
+  border-radius: 6px;
 }
 
 .login-btn {
@@ -105,4 +123,5 @@
   .initials {
     color: white;
   }
+
 }

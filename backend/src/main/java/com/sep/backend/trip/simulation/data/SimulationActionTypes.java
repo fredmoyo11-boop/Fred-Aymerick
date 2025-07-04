@@ -18,10 +18,19 @@ public class SimulationActionTypes {
     public static final String REROUTE_LOCK = "REROUTE_LOCK";
 
     /**
-     *Unlocks the route during reroute.
+     * Unlocks the route during reroute.
      */
     public static final String REROUTE_UNLOCK = "REROUTE_UNLOCK";
 
+    /**
+     * Send acknowledge to driver to check if reroute is received
+     */
+    public static final String REROUTE_DRIVER = "REROUTE_DRIVER";
+
+    /**
+     * Acknowledge by the driver that reroute is received
+     */
+    public static final String ACK_REROUTE_DRIVER = "ACK_REROUTE_DRIVER";
 
     /**
      * Changes the velocity of the simulation.

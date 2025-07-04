@@ -165,7 +165,7 @@ public class RouteService {
     }
 
     private boolean isCoordinateVisited(Coordinate stopCoordinate, List<Coordinate> visitedCoordinates) {
-        double threshold = 0.005; //50 m threshold
+        double threshold = 0.005; //500 m threshold
         return visitedCoordinates.stream().anyMatch(visited -> stopCoordinate.distanceTo(visited) < threshold);
     }
 }

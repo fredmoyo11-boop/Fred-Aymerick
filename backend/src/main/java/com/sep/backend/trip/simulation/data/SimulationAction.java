@@ -14,6 +14,8 @@ public class SimulationAction {
             SimulationActionTypes.STOP,
             SimulationActionTypes.REROUTE_LOCK,
             SimulationActionTypes.REROUTE_UNLOCK,
+            SimulationActionTypes.REROUTE_DRIVER,
+            SimulationActionTypes.ACK_REROUTE_DRIVER,
             SimulationActionTypes.CHANGE_VELOCITY,
             SimulationActionTypes.COMPLETE,
             SimulationActionTypes.INFO,

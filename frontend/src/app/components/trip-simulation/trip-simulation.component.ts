@@ -123,7 +123,6 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
   role: string | null = null
   private driverPresent = false
 
-
   //Reroute imports
   form = new FormGroup({
     query: new FormControl("")
@@ -162,6 +161,7 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
         }
 
         this.route = route;
+        console.log("Route subscription: " + this.route)
         this.stops = this.route.stops;
       }
     })
@@ -263,11 +263,26 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
       this._rerouteLocked$.next(true)
     } else if (simulationAction.actionType === "REROUTE_UNLOCK") {
       this._rerouteLocked$.next(false)
-      this.routeService.getRoute(this.tripOffer.tripRequest.route.routeId).subscribe({
-        next: newRoute => {
-          this._route$.next(newRoute)
+    } else if (simulationAction.actionType === "REROUTE_DRIVER") {
+      // fetch route
+      if (this.role === "DRIVER") {
+        this.routeService.getRoute(this.tripOffer.tripRequest.route.routeId).subscribe({
+          next: newRoute => {
+            // on success, get new route and send ACK
+            this._route$.next(newRoute)
+
+            this.sendAckDriverReroute()
+          }, error: err => {
+            console.log(err)
+          }
+        })
       }
-      })
+
+    } else if (simulationAction.actionType === "ACK_REROUTE_DRIVER") {
+      if (this.role === "CUSTOMER") {
+        this.unlock()
+        this.reroute_unlock()
+      }
     }
     else if (simulationAction.actionType === "DRIVER_PRESENT") {
       if (this.role === "CUSTOMER") {
@@ -309,6 +324,23 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
     this.sendSimulationAction(action)
   }
 
+  sendDriverReroute() {
+    const action: SimulationAction = {
+      actionType: "REROUTE_DRIVER",
+      timestamp: new Date().toISOString(),
+      parameters: {startIndex: this.animationIndex}
+    }
+    this.sendSimulationAction(action)
+  }
+
+  sendAckDriverReroute() {
+    const action: SimulationAction = {
+      actionType: "ACK_REROUTE_DRIVER",
+      timestamp: new Date().toISOString(),
+      parameters: {startIndex: this.animationIndex}
+    }
+    this.sendSimulationAction(action)
+  }
 
   start(): void {
     const action: SimulationAction = {
@@ -462,12 +494,13 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
       this.routeService.updateRoute(this.route.routeId, routeUpdateRequestBody).subscribe({
         next: updatedRoute => {
           this.currentCoordinateAtReroute = currentCoordinate
-          this.route = updatedRoute
-          this._route$.next(this.route)
+          this.route = structuredClone(updatedRoute)
+          console.log("Route beim CUSTOMER: " +  this.route)
+          this._route$.next(structuredClone(updatedRoute))
           this.animationInitialized = true
           this.lastVisitedIndex += 1
 
-          this.reroute_unlock()
+          this.sendDriverReroute()
         },
         error: err => {
           console.error(err)

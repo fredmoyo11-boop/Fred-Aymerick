@@ -33,7 +33,7 @@ public class StatisticsService {
 
     public List<Number> getStatisticsForMonth(String type, int year, int month, Principal principal) throws IllegalArgumentException {
         if(month < 1 || month > 12) {
-            throw new IllegalArgumentException("Invalid year: " + year);
+            throw new IllegalArgumentException("Invalid month: " + year);
         }
         ArrayList<Number> result = new ArrayList<>();
         int dayCount = getDayCountForMonth(year, month);

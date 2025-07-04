@@ -182,6 +182,15 @@ public class StatisticsTest {
 
     @Test
     public void monthTest() {
-        //assertEquals();
+        assertEquals(20.0D + 40.0D, statisticsService.getStatisticsForMonth(StatisticsType.DISTANCE, 2000, 10, principal).get(20-1).doubleValue());
+        assertEquals(21.45D, statisticsService.getStatisticsForMonth(StatisticsType.DISTANCE, 2001, 10, principal).get(20-1).doubleValue());
+    }
+
+    @Test
+    public void FebruaryTest() {
+        assertEquals(28, statisticsService.getStatisticsForMonth(StatisticsType.REVENUE, 2003, 2, principal).size());
+        assertEquals(29, statisticsService.getStatisticsForMonth(StatisticsType.REVENUE, 2004, 2, principal).size());
+        assertEquals(28, statisticsService.getStatisticsForMonth(StatisticsType.REVENUE, 2100, 2, principal).size());
+        assertEquals(29, statisticsService.getStatisticsForMonth(StatisticsType.REVENUE, 2000, 2, principal).size());
     }
 }

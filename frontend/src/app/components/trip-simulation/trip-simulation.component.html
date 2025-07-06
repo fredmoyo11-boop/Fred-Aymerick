@@ -21,13 +21,13 @@
               <mat-card-content>
                 <div cdkDropList class="address-droplist-container" (cdkDropListDropped)="drop($event)">
                   @for (stop of this.route.stops; track idx; let idx = $index) {
-                    <div class="example-box" cdkDrag [cdkDragDisabled]="idx < lastVisitedIndex">
+                    <div class="example-box" cdkDrag [cdkDragDisabled]="idx < lastVisitedIndex || this.fooDisabled">
                       <span cdkDragHandle class="handle">☰</span>
                       <div>
                         {{ idx + 1 }}. {{ stop.displayName }}
                       </div>
                       @if (canDeleteStop(idx)) {
-                        <button mat-icon-button (click)="remove(idx)">
+                        <button mat-icon-button (click)="remove(idx)" [disabled]="this.fooDisabled">
                           <mat-icon>delete</mat-icon>
                         </button>
                       }
@@ -37,16 +37,18 @@
               </mat-card-content>
 
               <mat-card-content>
-                <p> Distanz der Fahrt: {{this.route.geoJson.features[0].properties.summary.distance | meterToKm}}</p>
-                <p> Dauer der Fahrt: {{this.route.geoJson.features[0].properties.summary.duration | secondsToTime}}</p>
-                <p> Preis der Fahrt: {{ (this.route.geoJson.features[0].properties.summary.distance / 1000) * (carPrice(this.tripOffer.tripRequest.carType!)) | euro }}</p>
+                <p> Distanz der Fahrt: {{ this.route.geoJson.features[0].properties.summary.distance | meterToKm }}</p>
+                <p> Dauer der
+                  Fahrt: {{ this.route.geoJson.features[0].properties.summary.duration | secondsToTime }}</p>
+                <p> Preis der
+                  Fahrt: {{ (this.route.geoJson.features[0].properties.summary.distance / 1000) * (carPrice(this.tripOffer.tripRequest.carType!)) | euro }}</p>
 
-              <mat-divider></mat-divider>
+                <mat-divider></mat-divider>
 
                 <div class="button-row-container">
                   @if (rerouteLocked) {
-                    <button mat-flat-button (click)="onCancel()">Abbrechen</button>
-                    <button mat-flat-button (click)="updateRoute()">Fahrt ändern</button>
+                    <button mat-flat-button (click)="onCancel()" [disabled]="fooDisabled">Abbrechen</button>
+                    <button mat-flat-button (click)="updateRoute()" [disabled]="fooDisabled">Fahrt ändern</button>
                   }
                 </div>
               </mat-card-content>
@@ -54,27 +56,29 @@
           </form>
         </div>
 
-        <mat-card class="search-container" appearance="outlined" *ngIf="showCard">
-          <mat-card-title style="text-align: center">
-            Wähle eine Adresse
-          </mat-card-title>
+        @if (showCard) {
+          <mat-card class="search-container" appearance="outlined">
+            <mat-card-title style="text-align: center">
+              Wähle eine Adresse
+            </mat-card-title>
 
-          <mat-divider></mat-divider>
+            <mat-divider></mat-divider>
 
-          <div class="scroll-container">
-            @if (suggestedLocations.length === 0) {
-              <mat-card-content>
-                <span>Keine gültigen Adressen gefunden</span>
-              </mat-card-content>
-            }
-            @for (location of suggestedLocations; track idx; let idx = $index) {
-              <div class="location-box" (click)="clickCard(idx)" [class.selected]="idx === selectedIndex">
-                <span class="display-name">{{ location.displayName }}</span>
-              </div>
-            }
-          </div>
-          <button mat-flat-button class="confirm-button" (click)="onConfirm()">OK</button>
-        </mat-card>
+            <div class="scroll-container">
+              @if (suggestedLocations.length === 0) {
+                <mat-card-content>
+                  <span>Keine gültigen Adressen gefunden</span>
+                </mat-card-content>
+              }
+              @for (location of suggestedLocations; track idx; let idx = $index) {
+                <div class="location-box" (click)="clickCard(idx)" [class.selected]="idx === selectedIndex">
+                  <span class="display-name">{{ location.displayName }}</span>
+                </div>
+              }
+            </div>
+            <button mat-flat-button class="confirm-button" (click)="onConfirm()">OK</button>
+          </mat-card>
+        }
       }
     </div>
   </div>

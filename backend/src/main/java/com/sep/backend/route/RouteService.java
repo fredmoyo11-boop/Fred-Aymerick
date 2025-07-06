@@ -127,17 +127,15 @@ public class RouteService {
         //Gets all coordinates and creates new list with only visited coordinates
         List<Coordinate> currentRouteCoordinates = routeEntity.getGeoJSON().getFeatures().getFirst().getGeometry().getCoordinates().stream().map(Coordinate::from).toList();
         List<Coordinate> alreadyVisitedCoordinates = getVisitedCoordinates(currentRouteCoordinates, currentCoordinate);
-//        log.debug("List of visited coordinates: {}", alreadyVisitedCoordinates);
 
         //Out of the visited coordinates, gets all visited Locations
         List<Location> currentRouteStops = routeEntity.getStops().stream().map(Location::from).toList();
-//        log.debug("List of all stops: {}", currentRouteStops);
+        log.debug("List of all stops: {}", currentRouteStops);
         List<Location> alreadyVisitedStops = getVisitedLocations(currentRouteStops, alreadyVisitedCoordinates);
-//        log.debug("List of visited stops: {}", alreadyVisitedStops);
-//        log.debug("Size of alreadyVisitedStops: {}", alreadyVisitedStops.size());
+        log.debug("List of visited stops: {}", alreadyVisitedStops);
+        log.debug("Size of alreadyVisitedStops: {}", alreadyVisitedStops.size());
         return alreadyVisitedStops.size();
     }
-
 
 
     public List<Coordinate> getVisitedCoordinates (List<Coordinate> coordinates, Coordinate currentCoordinate) {
@@ -160,8 +158,6 @@ public class RouteService {
             return routeStops;
         }
         return routeStops.subList(0, lastVisitedLocationIndex);
-
-        //!visitedCoordinates.contains(Coordinate.from(routeStops.get(i)))
     }
 
     private boolean isCoordinateVisited(Coordinate stopCoordinate, List<Coordinate> visitedCoordinates) {

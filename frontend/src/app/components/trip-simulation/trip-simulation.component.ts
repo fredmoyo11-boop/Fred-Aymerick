@@ -156,12 +156,10 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
 
         let coordinates = feature.geometry.coordinates as number[][];
         this.coordinates = this.interpolateCoordinates(coordinates).map(coordinate => [coordinate[1], coordinate[0]]) as number[][];
-        if (this.animationIndex != 0) {
-          this.animationIndex = this.findClosestAnimationIndex(this.currentCoordinateAtReroute, this.coordinates)
-        }
+        console.log("Interpolated coordinates", this.coordinates)
 
         this.route = route;
-        console.log("Route subscription: " + this.route)
+        console.log("Route subscription: ", this.route)
         this.stops = this.route.stops;
       }
     })
@@ -258,6 +256,7 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
     } else if (simulationAction.actionType === "LOCK") {
       this._animationLocked$.next(true)
     } else if (simulationAction.actionType === "UNLOCK") {
+      console.log("Route when unlock", this.route)
       this._animationLocked$.next(false)
     } else if (simulationAction.actionType === "REROUTE_LOCK") {
       this._rerouteLocked$.next(true)
@@ -270,7 +269,7 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
           next: newRoute => {
             // on success, get new route and send ACK
             this._route$.next(newRoute)
-
+            console.log("Route when driver acknowledges ", newRoute)
             this.sendAckDriverReroute()
           }, error: err => {
             console.log(err)
@@ -452,6 +451,7 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
     let updateMarkerPosition = () => {
       if (this.animationPaused || currentIndex >= this.coordinates.length - 1) {
         this.animationIndex = currentIndex
+        console.log("Animation is paused")
         return;
       }
 
@@ -466,6 +466,7 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
 
       console.log("Current index:", currentIndex)
       console.log("Current position:", currentPosition)
+      console.log("foo coordinates", this.coordinates)
 
       this.positionMarker.setLatLng(currentPosition as LatLngExpression);
 
@@ -493,12 +494,18 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
       this.lock()
       this.routeService.updateRoute(this.route.routeId, routeUpdateRequestBody).subscribe({
         next: updatedRoute => {
+          console.log("Animation index on update Route before calculation:", this.animationIndex)
           this.currentCoordinateAtReroute = currentCoordinate
-          this.route = structuredClone(updatedRoute)
-          console.log("Route beim CUSTOMER: " +  this.route)
-          this._route$.next(structuredClone(updatedRoute))
-          this.animationInitialized = true
+          this.route = updatedRoute
           this.lastVisitedIndex += 1
+
+          let coordinates = this.route.geoJson.features[0].geometry.coordinates as number [][]
+          let foo =
+          this.animationIndex = this.findClosestAnimationIndex(currentCoordinate, this.interpolateCoordinates(coordinates))
+          console.log("Closest animation index in new route: ", this.animationIndex)
+
+          this.animationInitialized = true
+          this._route$.next(this.route)
 
           this.sendDriverReroute()
         },
@@ -700,8 +707,8 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
     this.routeService.lastVisitedIndex(this.route.routeId, routeUpdateRequestBody).subscribe({
       next: index => {
         this.lastVisitedIndex = index
-        console.log("Aktuelle Position: " + routeUpdateRequestBody.currentCoordinate.latitude + ", " + routeUpdateRequestBody.currentCoordinate.longitude)
-        console.log("LastvisitedIndex: " + this.lastVisitedIndex)
+        console.log("Aktuelle Position: ", routeUpdateRequestBody.currentCoordinate.latitude + ", " + routeUpdateRequestBody.currentCoordinate.longitude)
+        console.log("LastvisitedIndex: ", this.lastVisitedIndex)
       },
       error: err => {
         console.log(err)
@@ -715,9 +722,14 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
     let minDistance = Infinity
 
     newCoordinates.forEach((coordinate, idx) => {
+      if (!coordinate || coordinate.length < 2) {
+        console.warn(`Invalid coordinate at index ${idx}:`, coordinate);
+        return; // skip invalid entry
+      }
+
       const coord: Coordinate = {
-        longitude: this.coordinates[idx][1],
-        latitude: this.coordinates[idx][0]
+        longitude: coordinate[0],
+        latitude: coordinate[1]
       }
 
       const distance = this.distanceBetween(coord, animationIndexCoordinates)

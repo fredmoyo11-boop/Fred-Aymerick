@@ -49,6 +49,7 @@ model/otpRequest.ts
 model/outboundChatMessage.ts
 model/registrationDTO.ts
 model/route.ts
+model/routeUpdateRequestBody.ts
 model/simulationAction.ts
 model/simulationActionParameters.ts
 model/stringResponse.ts

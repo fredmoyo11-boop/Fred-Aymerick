@@ -39,6 +39,7 @@ export class TripVisualizerComponent implements OnInit, OnChanges {
 
     this.routeLayer.addTo(this.map);
     this.animationLayerGroup.addTo(this.map)
+    console.log("Route during init", this.route)
 
     this.updateMap();
   }

@@ -155,21 +155,6 @@ export class TripRequestComponent implements OnInit {
     }
   }
 
-//---------------------------------Start of location suggestion
-//   search(): void {
-//     this.nominatimService.search(this.form.value.query!).subscribe({
-//       next: response => {
-//         const query = this.form.value.query
-//         this.suggestedLocations = response
-//         this.showCard = response.length > 0 && !!query && query.trim().length > 0
-//       },
-//       error: err => {
-//         console.error(err)
-//         this.showCard = false
-//       }
-//     })
-//   }
-
   clickCard(index: number): void {
     console.log("Chosen card: ", index)
     this.selectedIndex = index

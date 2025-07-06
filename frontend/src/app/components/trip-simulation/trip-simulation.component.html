@@ -6,12 +6,10 @@
 
     <div class="card-overlay">
       @if (animationPaused && role === "CUSTOMER") {
-        <div class="reroute-container">
+        <div>
           <form [formGroup]="form">
-            <mat-card>
-              <mat-card-title style="text-align: center">Fahradressen ändern</mat-card-title>
-
-              <mat-divider></mat-divider>
+            <mat-card appearance="outlined" class="reroute-container">
+              <mat-card-title style="text-align: center" class="center-title">Fahradressen ändern</mat-card-title>
 
               <mat-form-field>
                 <mat-label>Adresse eingeben</mat-label>
@@ -21,14 +19,20 @@
               <mat-card-content>
                 <div cdkDropList class="address-droplist-container" (cdkDropListDropped)="drop($event)">
                   @for (stop of this.route.stops; track idx; let idx = $index) {
-                    <div class="example-box" cdkDrag [cdkDragDisabled]="idx < lastVisitedIndex || this.fooDisabled">
-                      <span cdkDragHandle class="handle">☰</span>
+                    <div class="example-box" cdkDrag [cdkDragDisabled]="idx < lastVisitedIndex || this.disableWhileWaitingForGeoJSON">
+                      @if (canDeleteStop(idx)) {
+                        <span cdkDragHandle class="handle">☰</span>
+                      }
                       <div>
                         {{ idx + 1 }}. {{ stop.displayName }}
                       </div>
                       @if (canDeleteStop(idx)) {
-                        <button mat-icon-button (click)="remove(idx)" [disabled]="this.fooDisabled">
+                        <button mat-icon-button (click)="remove(idx)" [disabled]="this.disableWhileWaitingForGeoJSON">
                           <mat-icon>delete</mat-icon>
+                        </button>
+                      } @else {
+                        <button mat-icon-button (click)="lockedBecauseVisited(idx)">
+                          <mat-icon>lock</mat-icon>
                         </button>
                       }
                     </div>
@@ -43,12 +47,11 @@
                 <p> Preis der
                   Fahrt: {{ (this.route.geoJson.features[0].properties.summary.distance / 1000) * (carPrice(this.tripOffer.tripRequest.carType!)) | euro }}</p>
 
-                <mat-divider></mat-divider>
-
                 <div class="button-row-container">
                   @if (rerouteLocked) {
-                    <button mat-flat-button (click)="onCancel()" [disabled]="fooDisabled">Abbrechen</button>
-                    <button mat-flat-button (click)="updateRoute()" [disabled]="fooDisabled">Fahrt ändern</button>
+                    <mat-divider></mat-divider>
+                    <button mat-flat-button (click)="onCancel()" [disabled]="disableWhileWaitingForGeoJSON">Abbrechen</button>
+                    <button mat-flat-button (click)="updateRoute()" [disabled]="disableWhileWaitingForGeoJSON">Fahrt ändern</button>
                   }
                 </div>
               </mat-card-content>
@@ -87,7 +90,9 @@
     <div class="floating-content">
       <mat-card style="width: fit-content; min-width: 200px">
         <mat-card-content>
-          <span class="title">Simulations-Steuerung</span>
+          <div class="title">
+            <span >Simulations-Steuerung</span>
+          </div>
           @if (tripOffer.status !== "COMPLETED") {
             @if (animationLocked) {
               <p style="font-weight: bold">Die Simulation ist momentan blockiert!</p>

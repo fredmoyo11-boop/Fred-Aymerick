@@ -13,6 +13,7 @@ import {TripRequestComponent} from './components/trip-request/trip-request.compo
 import {TripOfferComponent} from './components/trip-offer/trip-offer.component';
 import {tripOfferResolver} from './resolvers/trip-offer.resolver';
 import {BalanceComponent} from './components/balance/balance.component';
+import {StatsComponent} from './components/stats/stats.component';
 
 export const routes: Routes = [
   {path: "register", component: RegisterComponent},
@@ -69,6 +70,12 @@ export const routes: Routes = [
         component: BalanceComponent,
         canActivate: [authGuard],
         data: {roles: ["CUSTOMER", "DRIVER"]}
+      },
+      {
+        path:"statistiken",
+        component: StatsComponent,
+        canActivate:[authGuard],
+        data:{roles: ["CUSTOMER", "DRIVER"]}
       }
     ]
   },

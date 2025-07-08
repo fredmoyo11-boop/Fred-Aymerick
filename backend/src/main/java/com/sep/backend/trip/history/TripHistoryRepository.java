@@ -16,9 +16,9 @@ import java.util.Optional;
 @Repository
 public interface TripHistoryRepository extends JpaRepository<TripHistoryEntity, Long> {
 
-//    List<TripHistoryEntity> findByCustomer(CustomerEntity customer);
-////
-//    List<TripHistoryEntity>findByDriver(DriverEntity driverEntity);
+    List<TripHistoryEntity> findByCustomer(CustomerEntity customer);
+
+    List<TripHistoryEntity>findByDriver(DriverEntity driverEntity);
 
     List<TripHistoryEntity> findByCustomer_Id(Long id);
 

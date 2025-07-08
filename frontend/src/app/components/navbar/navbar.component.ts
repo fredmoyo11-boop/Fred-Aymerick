@@ -88,4 +88,12 @@ export class NavbarComponent implements OnInit {
   onBalance(): void {
     this.router.navigate(["/balance"])
   }
+
+  onHistory(): void {
+    this.router.navigate(["/history"])
+  }
+
+  onStatistics(): void {
+    this.router.navigate(["/statistics"])
+  }
 }

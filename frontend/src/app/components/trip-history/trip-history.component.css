@@ -8,12 +8,11 @@
   color: gold;
 }
 
-.search-form-field {
-  width: 500px;
-  height: auto;
-}
-
 .profile-link:hover {
   cursor: pointer;
   text-decoration: underline;
+}
+.search-form-field {
+  width: 500px;
+  height: auto;
 }

@@ -6,7 +6,6 @@ api/account.service.ts
 api/api.ts
 api/auth.service.ts
 api/balance.service.ts
-api/chat.service.ts
 api/nominatim.service.ts
 api/notification.service.ts
 api/oRS.service.ts
@@ -27,7 +26,7 @@ model/coordinate.ts
 model/driver.ts
 model/driverStatistics.ts
 model/errorResponse.ts
-model/inboundChatAction.ts
+model/leaderboard.ts
 model/location.ts
 model/loginRequest.ts
 model/models.ts
@@ -46,7 +45,6 @@ model/oRSSegment.ts
 model/oRSStep.ts
 model/oRSSummary.ts
 model/otpRequest.ts
-model/outboundChatMessage.ts
 model/registrationDTO.ts
 model/route.ts
 model/simulationAction.ts

@@ -99,6 +99,18 @@ export class StatsComponent implements OnInit {
           }
         }
 
+        if (this.selectedType == this.DISTANCE){
+          for (let i= 0; i < this.chartData.length; i++){
+            this.chartData[i] = this.chartData[i] /1000;
+          }
+        }
+        if (this.selectedType == this.TIME){
+          for (let i= 0; i < this.chartData.length; i++){
+            this.chartData[i] = this.chartData[i] /60;
+          }
+        }
+
+
         this.chartLabels = ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'];
         this.chartTitle = `Jahresstatistik für die ` + this.typeTranslator(this.selectedType);
       });
@@ -114,11 +126,22 @@ export class StatsComponent implements OnInit {
             this.chartData[i - 1] = 0;
           }
         }
+        if (this.selectedType == this.DISTANCE){
+          for (let i= 0; i < this.chartData.length; i++){
+            this.chartData[i] = this.chartData[i] /1000;
+          }
+        }
+        if (this.selectedType == this.TIME){
+          for (let i= 0; i < this.chartData.length; i++){
+            this.chartData[i] = this.chartData[i] /60;
+          }
+        }
 
         this.chartTitle = `Monatsstatistik für die ` + this.typeTranslator(this.selectedType);
 
       });
     }
+
 
 
   }

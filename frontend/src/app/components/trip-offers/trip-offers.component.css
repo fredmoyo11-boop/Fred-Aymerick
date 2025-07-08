@@ -23,7 +23,7 @@ mat-header-row {
 }
 
 .actions-cell {
-  min-width: 260px;
+  min-width: 120px;
   white-space: nowrap;
 }
 

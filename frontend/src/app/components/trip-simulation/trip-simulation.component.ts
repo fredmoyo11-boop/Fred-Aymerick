@@ -130,6 +130,7 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
   orsFeatureCollection: ORSFeatureCollection | null = null;
   lastVisitedIndex = 0
   currentPosition: number[] | null = null
+  alreadyChangedOnceAtSameLocation: boolean = false
 
   disableWhileWaitingForGeoJSON = false
 
@@ -280,6 +281,7 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
       }
     } else if (simulationAction.actionType === "ACK_REROUTE_DRIVER") {
       if (this.role === "CUSTOMER") {
+        this.snackBar.open("Der Kunde hat seine Fahrziele verändert", "OK")
         this.routeService.getRoute(this.tripOffer.tripRequest.route.routeId).subscribe({
           next: value => {
             this._route$.next(value)
@@ -514,6 +516,11 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
 
   //updates route in database
   updateRoute() {
+    if (this.alreadyChangedOnceAtSameLocation) {
+      this.snackBar.open("Am selben Ort können nicht mehrmals neue Routen hinzugefügt werden. Bitte weiter fahren.", "OK")
+      return
+    }
+
     if (this.stops.length < 2) return;
     const animationCoordinate = this.coordinates[this.animationIndex];
 
@@ -538,6 +545,7 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
         this.unlock()
       }
     })
+    this.alreadyChangedOnceAtSameLocation = true
     this.disableWhileWaitingForGeoJSON = false
   }
 
@@ -599,6 +607,7 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
   resumeAnimation() {
     if (!this.animationPaused) return;
     this.animationPaused = false;
+    this.alreadyChangedOnceAtSameLocation = false;
     this.animateRoute()
   }
 

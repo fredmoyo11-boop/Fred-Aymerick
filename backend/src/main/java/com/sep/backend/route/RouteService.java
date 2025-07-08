@@ -10,6 +10,7 @@ import com.sep.backend.nominatim.NominatimService;
 import com.sep.backend.nominatim.data.NominatimFeatureCollection;
 import com.sep.backend.ors.ORSService;
 import com.sep.backend.ors.data.ORSFeatureCollection;
+import com.sep.backend.trip.request.TripRequestService;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -106,6 +107,7 @@ public class RouteService {
             throw new RuntimeException("Current coordinate is invalid.");
         }
         var currentLocation = Location.from(currentLocationGeoJSON.getFeatures().getFirst());
+
         routeEntity.getStops().add(prefixLength, locationService.saveLocation(currentLocation));
         log.debug("Updated list with current location: {}", routeEntity.getStops());
         //Saves new locations in repository and adds them to the list
@@ -116,6 +118,11 @@ public class RouteService {
         //Gets coordinates of all stops and requests a new geoJSON by ORS
         List<Coordinate> newRoute = routeEntity.getStops().stream().map(Coordinate::from).toList();
         var geoJSON = orsService.getRouteDirections(newRoute);
+
+        double distance = geoJSON.getFeatures().getFirst().getProperties().getSummary().getDistance();
+        double newPrice = TripRequestService.getRoutePrice(distance, routeEntity.getTripRequest().getCarType());
+
+        routeEntity.getTripRequest().setPrice(newPrice);
         routeEntity.setGeoJSON(geoJSON);
 
         return routeRepository.save(routeEntity);

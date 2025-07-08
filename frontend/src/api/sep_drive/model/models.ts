@@ -7,6 +7,7 @@ export * from './driver';
 export * from './driverStatistics';
 export * from './errorResponse';
 export * from './inboundChatAction';
+export * from './leaderboard';
 export * from './location';
 export * from './loginRequest';
 export * from './nominatimFeature';

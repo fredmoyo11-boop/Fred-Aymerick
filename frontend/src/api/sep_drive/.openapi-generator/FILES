@@ -11,6 +11,7 @@ api/nominatim.service.ts
 api/notification.service.ts
 api/oRS.service.ts
 api/route.service.ts
+api/statistics.service.ts
 api/tripHistory.service.ts
 api/tripOffer.service.ts
 api/tripRequest.service.ts
@@ -28,6 +29,7 @@ model/driver.ts
 model/driverStatistics.ts
 model/errorResponse.ts
 model/inboundChatAction.ts
+model/leaderboard.ts
 model/location.ts
 model/loginRequest.ts
 model/models.ts

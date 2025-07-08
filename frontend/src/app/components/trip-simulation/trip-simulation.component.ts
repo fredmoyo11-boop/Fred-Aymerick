@@ -538,6 +538,7 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
     this.disableWhileWaitingForGeoJSON = true
     this.routeService.updateRoute(this.route.routeId, body).subscribe({
       next: updatedRoute => {
+        this.originalRoute = updatedRoute
         this.lastVisitedIndex += 1
         this.sendDriverReroute()
       }, error: err => {

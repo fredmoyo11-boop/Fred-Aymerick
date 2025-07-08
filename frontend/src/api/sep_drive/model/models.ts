@@ -26,6 +26,7 @@ export * from './oRSSummary';
 export * from './otpRequest';
 export * from './registrationDTO';
 export * from './route';
+export * from './routeUpdateRequestBody';
 export * from './simulationAction';
 export * from './simulationActionParameters';
 export * from './stringResponse';

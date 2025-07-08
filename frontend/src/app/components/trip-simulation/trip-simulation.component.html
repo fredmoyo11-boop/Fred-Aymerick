@@ -3,43 +3,129 @@
   <div class="background-content">
     <app-trip-visualizer [route]="route"
                          [animationLayerGroup]="animationLayer"></app-trip-visualizer>
-  </div>
-  <div class="floating-content">
-    <mat-card style="width: fit-content; min-width: 200px">
-      <mat-card-content>
-        <span class="title">Simulations-Steuerung</span>
-        @if (tripOffer.status !== "COMPLETED") {
-          @if (animationLocked) {
-            <p style="font-weight: bold">Die Simulation ist momentan blockiert!</p>
-          } @else {
-            <div class="control-container">
-              @if (!animationInitialized || animationPaused) {
-                <button mat-icon-button (click)="start()" [disabled]="animationCompleted">
-                  <mat-icon>play_arrow</mat-icon>
-                </button>
-              } @else if (!animationPaused) {
-                <button mat-icon-button (click)="stop()" [disabled]="animationCompleted">
-                  <mat-icon>pause</mat-icon>
-                </button>
-              }
 
-              <div class="slider-container">
-                <mat-slider style="min-width: 200px" min="3" max="30" step="1">
-                  <input matSliderThumb [(ngModel)]="sliderDuration" (valueChange)="onSliderChange($event)"
-                         [disabled]="animationCompleted">
-                </mat-slider>
-                <div class="slider-detail-container">
-                  <span>3s</span>
-                  <span>Dauer</span>
-                  <span>30s</span>
+    <div class="card-overlay">
+      @if (animationPaused && role === "CUSTOMER") {
+        <div>
+          <form [formGroup]="form">
+            <mat-card appearance="outlined" class="reroute-container">
+              <mat-card-title style="text-align: center" class="center-title">Fahradressen ändern</mat-card-title>
+
+              <mat-form-field>
+                <mat-label>Adresse eingeben</mat-label>
+                <input matInput placeholder="Suche einen Ort..." formControlName="query" (input)="onInputChange()">
+              </mat-form-field>
+
+              <mat-card-content>
+                <div cdkDropList class="address-droplist-container" (cdkDropListDropped)="drop($event)">
+                  @for (stop of this.route.stops; track idx; let idx = $index) {
+                    <div class="example-box" cdkDrag [cdkDragDisabled]="idx < lastVisitedIndex || this.disableWhileWaitingForGeoJSON">
+                      @if (canDeleteStop(idx)) {
+                        <span cdkDragHandle class="handle">☰</span>
+                      }
+                      <div>
+                        {{ idx + 1 }}. {{ stop.displayName }}
+                      </div>
+                      @if (canDeleteStop(idx)) {
+                        <button mat-icon-button (click)="remove(idx)" [disabled]="this.disableWhileWaitingForGeoJSON">
+                          <mat-icon>delete</mat-icon>
+                        </button>
+                      } @else {
+                        <button mat-icon-button (click)="lockedBecauseVisited(idx)">
+                          <mat-icon>lock</mat-icon>
+                        </button>
+                      }
+                    </div>
+                  }
+                </div>
+              </mat-card-content>
+
+              <mat-card-content>
+                <p> Distanz der Fahrt: {{ this.route.geoJson.features[0].properties.summary.distance | meterToKm }}</p>
+                <p> Dauer der
+                  Fahrt: {{ this.route.geoJson.features[0].properties.summary.duration | secondsToTime }}</p>
+                <p> Preis der
+                  Fahrt: {{ (this.route.geoJson.features[0].properties.summary.distance / 1000) * (carPrice(this.tripOffer.tripRequest.carType!)) | euro }}</p>
+
+                <div class="button-row-container">
+                  @if (rerouteLocked) {
+                    <mat-divider></mat-divider>
+                    <button mat-flat-button (click)="onCancel()" [disabled]="disableWhileWaitingForGeoJSON">Abbrechen</button>
+                    <button mat-flat-button (click)="updateRoute()" [disabled]="disableWhileWaitingForGeoJSON">Fahrt ändern</button>
+                  }
+                </div>
+              </mat-card-content>
+            </mat-card>
+          </form>
+        </div>
+
+        @if (showCard) {
+          <mat-card class="search-container" appearance="outlined">
+            <mat-card-title style="text-align: center">
+              Wähle eine Adresse
+            </mat-card-title>
+
+            <mat-divider></mat-divider>
+
+            <div class="scroll-container">
+              @if (suggestedLocations.length === 0) {
+                <mat-card-content>
+                  <span>Keine gültigen Adressen gefunden</span>
+                </mat-card-content>
+              }
+              @for (location of suggestedLocations; track idx; let idx = $index) {
+                <div class="location-box" (click)="clickCard(idx)" [class.selected]="idx === selectedIndex">
+                  <span class="display-name">{{ location.displayName }}</span>
+                </div>
+              }
+            </div>
+            <button mat-flat-button class="confirm-button" (click)="onConfirm()">OK</button>
+          </mat-card>
+        }
+      }
+    </div>
+  </div>
+
+  @if (!rerouteLocked && !showCard) {
+    <div class="floating-content">
+      <mat-card style="width: fit-content; min-width: 200px">
+        <mat-card-content>
+          <div class="title">
+            <span >Simulations-Steuerung</span>
+          </div>
+          @if (tripOffer.status !== "COMPLETED") {
+            @if (animationLocked) {
+              <p style="font-weight: bold">Die Simulation ist momentan blockiert!</p>
+            } @else {
+              <div class="control-container">
+                @if (!animationInitialized || animationPaused) {
+                  <button mat-icon-button (click)="start()" [disabled]="animationCompleted">
+                    <mat-icon>play_arrow</mat-icon>
+                  </button>
+                } @else if (!animationPaused) {
+                  <button mat-icon-button (click)="stop()" [disabled]="animationCompleted">
+                    <mat-icon>pause</mat-icon>
+                  </button>
+                }
+
+                <div class="slider-container">
+                  <mat-slider style="min-width: 200px" min="3" max="30" step="1">
+                    <input matSliderThumb [(ngModel)]="sliderDuration" (valueChange)="onSliderChange($event)"
+                           [disabled]="animationCompleted">
+                  </mat-slider>
+                  <div class="slider-detail-container">
+                    <span>3s</span>
+                    <span>Dauer</span>
+                    <span>30s</span>
+                  </div>
                 </div>
               </div>
-            </div>
+            }
+          } @else {
+            <p>Diese Fahrt wurde bereits simuliert!</p>
           }
-        } @else {
-          <p>Diese Fahrt wurde bereits simuliert!</p>
-        }
-      </mat-card-content>
-    </mat-card>
-  </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  }
 </div>

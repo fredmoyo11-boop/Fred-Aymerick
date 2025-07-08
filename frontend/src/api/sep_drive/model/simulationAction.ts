@@ -28,6 +28,10 @@ export namespace SimulationAction {
     export const ActionTypeEnum = {
         Start: 'START',
         Stop: 'STOP',
+        RerouteLock: 'REROUTE_LOCK',
+        RerouteUnlock: 'REROUTE_UNLOCK',
+        RerouteDriver: 'REROUTE_DRIVER',
+        AckRerouteDriver: 'ACK_REROUTE_DRIVER',
         ChangeVelocity: 'CHANGE_VELOCITY',
         Complete: 'COMPLETE',
         Info: 'INFO',

@@ -9,6 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -21,6 +23,10 @@ public class Coordinate {
 
     @Schema(description = "The longitude.", requiredMode = Schema.RequiredMode.REQUIRED)
     private double longitude;
+
+    public double   distanceTo(Coordinate coordinate) {
+        return Math.sqrt(Math.pow(this.latitude - coordinate.latitude, 2) + Math.pow(this.longitude - coordinate.longitude, 2));
+    }
 
     public static Coordinate from(Location location) {
         return location.getCoordinate();
@@ -39,6 +45,16 @@ public class Coordinate {
         double  lon = feature.getGeometry().getCoordinates().getFirst();
         coordinate.setLatitude(lat);
         coordinate.setLongitude(lon);
+        return coordinate;
+    }
+
+    public static Coordinate from(List<Double> coordinateList) throws IllegalArgumentException {
+        if (coordinateList.size() != 2) {
+            throw new IllegalArgumentException("Coordinate must have exactly 2 elements.");
+        }
+        var coordinate = new Coordinate();
+        coordinate.setLongitude(coordinateList.getFirst());
+        coordinate.setLatitude(coordinateList.getLast());
         return coordinate;
     }
 }

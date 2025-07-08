@@ -1,0 +1,57 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  height: 500px;
+}
+
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  flex-grow: 1;
+}
+
+.message {
+  max-width: 80%;
+  min-width: 60%;
+  padding: 10px 15px;
+  margin: 5px;
+  border-radius: 16px;
+  font-family: sans-serif;
+  font-size: 14px;
+}
+
+mat-card-footer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: right;
+  gap: 5px;
+}
+
+.left {
+  align-self: flex-start;
+  background-color: #f1f0f0;
+}
+
+.right {
+  align-self: flex-end;
+  background-color: #dcf8c6;
+}
+
+.seen {
+  color: blue;
+}
+
+.unseen {
+  color: gray;
+}
+
+.click-icon {
+  cursor: pointer;
+}
+
+mat-form-field {
+  width: 100%;
+}

@@ -48,6 +48,10 @@
   cursor: pointer;
 }
 
+.active-link {
+  font-weight: bold;
+}
+
 .login-btn {
   background: none;
   border: none;
@@ -105,4 +109,5 @@
   .initials {
     color: white;
   }
+
 }

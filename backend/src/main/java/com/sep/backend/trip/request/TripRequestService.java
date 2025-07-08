@@ -164,7 +164,7 @@ public class TripRequestService {
     }
 
     @Transactional
-    public List<AvailableTripRequestDTO> getAvailableRequests(@Valid Location driverLocation) {
+    public List<AvailableTripRequestDTO> getAvailableRequests(@Valid Location driverLocation){
 
         List<TripRequestEntity> activeRequests = tripRequestRepository.findByStatus(TripRequestStatus.ACTIVE);
 
@@ -187,7 +187,7 @@ public class TripRequestService {
                     .getFirst();
 
 
-            double distanceToTripStart = orsService.getRouteDirections(List.of(Coordinate.from(driverLocation), Coordinate.from(tripStart)))
+            double distanceToTripStart = orsService.getRouteDirections(List.of(driverLocation.getCoordinate(), Coordinate.from(tripStart)))
                     .getFeatures()
                     .getFirst()
                     .getProperties()

@@ -4,15 +4,15 @@ import {Router, RouterModule} from '@angular/router';
 import {MatIconModule} from '@angular/material/icon';
 import {AngularAuthService} from '../../services/angular-auth.service';
 import {AccountDTO, AccountService} from '../../../api/sep_drive';
+import {NgStyle} from '@angular/common';
 import {MatMenu, MatMenuItem, MatMenuTrigger} from '@angular/material/menu';
 import {MatPrefix, MatSuffix} from '@angular/material/input';
-import {NgStyle} from '@angular/common';
 
 
 @Component({
   selector: 'app-navbar',
   imports: [
-    MatIconModule, RouterModule, MatMenu, MatMenuTrigger, MatMenuItem, MatSuffix, NgStyle,
+    MatIconModule, RouterModule, NgStyle, MatMenu, MatMenuTrigger, MatMenuItem, MatSuffix
   ],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.css'
@@ -89,7 +89,11 @@ export class NavbarComponent implements OnInit {
     this.router.navigate(["/balance"])
   }
 
-  onStats() {
-    this.router.navigate(["/statistiken"])
+  onHistory(): void {
+    this.router.navigate(["/history"])
+  }
+
+  onStatistics(): void {
+    this.router.navigate(["/statistics"])
   }
 }

@@ -118,7 +118,7 @@
 }
 
 .delete-button:hover {
-  background-color: #b71c1c;
+  background-color: #b71c1c !important;
 }
 
 .confirm-button {

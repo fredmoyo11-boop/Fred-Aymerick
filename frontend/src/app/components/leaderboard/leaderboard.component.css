@@ -1,0 +1,18 @@
+.rating-stars mat-icon {
+  font-size: 20px;
+  color: lightgray;
+  vertical-align: middle;
+}
+
+.rating-stars mat-icon.filled {
+  color: gold;
+}
+
+.profile-link:hover {
+  cursor: pointer;
+  text-decoration: underline;
+}
+.search-form-field {
+  width: 500px;
+  height: auto;
+}

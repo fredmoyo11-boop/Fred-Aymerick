@@ -1,0 +1,79 @@
+
+<div class="filter-container">
+  <mat-form-field class="search-form-field">
+    <mat-label>Nach Fahrername filtern</mat-label>
+    <input matInput (keyup)="applyFilter($event)" #input>
+  </mat-form-field>
+</div>
+
+<table mat-table [dataSource]="dataSource" matSort>
+
+  <!-- driverUsername Column -->
+  <ng-container matColumnDef="driverUsername">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by driverUsername">
+      Fahrerbenutzername
+    </th>
+    <td mat-cell *matCellDef="let row">
+       <span  class="profile-link"
+              (click)="navigateToProfile(row.driverUsername)">{{ row.driverUsername }}</span></td>
+  </ng-container>
+
+  <!-- driverName Column -->
+  <ng-container matColumnDef="driverName">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by driverName">
+      Fahrername
+    </th>
+    <td mat-cell *matCellDef="let row">{{ row.driverName}}</td>
+  </ng-container>
+
+  <!-- totalDrivenDistance Column -->
+  <ng-container matColumnDef="totalDrivenDistance">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by totalDrivenDistance">
+      Gesamtgefahrene Distanz
+    </th>
+    <td mat-cell *matCellDef="let row"> {{ row.totalDrivenDistance | meterToKm }}</td>
+  </ng-container>
+
+  <!-- averageRating Column -->
+  <ng-container matColumnDef="averageRating">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by averageRating">
+      Durchnittliche Bewertung
+    </th>
+    <td mat-cell *matCellDef="let row">
+      <div class="rating-stars">
+        <ng-container *ngFor="let star of getStars(); let i = index">
+          <mat-icon [ngClass]="{'filled': i < row.averageRating}">star</mat-icon>
+        </ng-container>
+      </div>
+    </td>
+  </ng-container>
+
+  <!-- totalDriveTime Column -->
+  <ng-container matColumnDef="totalDriveTime">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by totalDriveTime">
+      Gesamte Fahrzeit
+    </th>
+    <td mat-cell *matCellDef="let row"> {{ row.totalDriveTime | secondsToTime }}</td>
+  </ng-container>
+
+  <!-- totalNumberOfDrivenTrip Column -->
+  <ng-container matColumnDef="totalNumberOfDrivenTrip">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by totalNumberOfDrivenTrip">
+      Durchegeführten Fahrten
+    </th>
+    <td mat-cell *matCellDef="let row"> {{ row.totalNumberOfDrivenTrip }}</td>
+  </ng-container>
+
+  <!-- totalEarnings Column -->
+  <ng-container matColumnDef="totalEarnings">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by totalEarnings">
+      Verdientes Geld
+    </th>
+    <td mat-cell *matCellDef="let row"> {{ row.totalEarnings | euro }}</td>
+  </ng-container>
+
+
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+</table>

@@ -1,8 +1,8 @@
 import {Component, inject, OnInit} from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { BaseChartDirective } from 'ng2-charts';
-import { NgIf } from '@angular/common';
-import { StatisticsService } from '../../../api/sep_drive';
+import {FormsModule} from '@angular/forms';
+import {BaseChartDirective} from 'ng2-charts';
+import {NgIf} from '@angular/common';
+import {StatisticsService} from '../../../api/sep_drive';
 
 import {
   Chart,
@@ -41,7 +41,7 @@ export class StatsComponent implements OnInit {
     );
   }
 
-  showWholeAlone = true;
+  showWholeYear = true;
 
   selectedType = 'DISTANCE';
   selectedYear = new Date().getFullYear();
@@ -52,18 +52,17 @@ export class StatsComponent implements OnInit {
   chartTitle = '';
 
   chartType: ChartType = "bar"
-  chartOptions = { responsive: true };
+  chartOptions = {responsive: true};
 
+  validInput: boolean = true;
 
-  validInput:boolean =  true;
+  REVENUE = "REVENUE";
 
- REVENUE = "REVENUE";
+  DISTANCE = "DISTANCE";
 
- DISTANCE = "DISTANCE";
+  TIME = "TIME";
 
-TIME = "TIME";
-
-RATING = "RATING";
+  RATING = "RATING";
 
 
   statisticsService = inject(StatisticsService);
@@ -73,23 +72,23 @@ RATING = "RATING";
   }
 
   switchShow() {
-    this.showWholeAlone = !this.showWholeAlone;
+    this.showWholeYear = !this.showWholeYear;
     this.loadChart();
 
   }
 
   loadChart() {
-    this.yearValidator(this.selectedYear)
-    if(!this.validInput){
+    this.yearInputValidator(this.selectedYear)
+    if (!this.validInput) {
       return;
     }
-    this.monthValidator(this.selectedMonth)
-    if(!this.validInput){
+    this.monthInputValidator(this.selectedMonth)
+    if (!this.validInput) {
       return;
     }
 
 
-    if (this.showWholeAlone) {
+    if (this.showWholeYear) {
       this.statisticsService.getStatisticsForYear(this.selectedType, this.selectedYear).subscribe(data => {
         this.chartData = data;
 
@@ -101,7 +100,7 @@ RATING = "RATING";
         }
 
         this.chartLabels = ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'];
-        this.chartTitle = `Jahresstatistik für ` + this.typeConverter(this.selectedType);
+        this.chartTitle = `Jahresstatistik für die ` + this.typeTranslator(this.selectedType);
       });
 
     } else {
@@ -116,28 +115,28 @@ RATING = "RATING";
           }
         }
 
-        this.chartTitle = `Monatsstatistik für ` + this.typeConverter(this.selectedType);
+        this.chartTitle = `Monatsstatistik für die ` + this.typeTranslator(this.selectedType);
 
       });
     }
 
 
-
   }
-  yearValidator(year: number):boolean{
-    if (!year){
+
+  yearInputValidator(year: number): boolean {
+    if (!year) {
       this.validInput = false;
       return false;
     }
-    if (isNaN(year)){ //diffrence Number, number
+    if (isNaN(year)) {
       this.validInput = false;
       return false;
     }
-    if(year < 2000 ){
+    if (year < 2000) {
       this.validInput = false;
       return false;
     }
-    if( year > 20000 ){
+    if (year > 20000) {
       this.validInput = false;
       return false;
     }
@@ -147,16 +146,16 @@ RATING = "RATING";
   }
 
 
-  monthValidator(month: number):boolean{
-    if (!month){
+  monthInputValidator(month: number): boolean {
+    if (!month) {
       this.validInput = false;
       return false;
     }
-    if (isNaN(month)){ //diffrence Number, number
+    if (isNaN(month)) {
       this.validInput = false;
       return false;
     }
-    if(month > 12 || month < 1){
+    if (month > 12 || month < 1) {
       this.validInput = false;
       return false;
     }
@@ -164,18 +163,20 @@ RATING = "RATING";
     return true;
 
   }
-  typeConverter(type:String):String{
-    if (type === this.DISTANCE){
+
+  typeTranslator(type: String): String {
+
+    if (type === this.DISTANCE) {
       return "Entfernung";
     }
-    if (type === this.REVENUE){
+    if (type === this.REVENUE) {
       return "Einnahmen";
     }
-    if (type === this.RATING){
-      return "Bewertung";
+    if (type === this.RATING) {
+      return "Bewertungen";
     }
 
-      return "Fahrdauer";
+    return "Fahrdauer";
 
 
   }

@@ -15,7 +15,7 @@
   <input type="number" [(ngModel)]="selectedYear" (change)="loadChart()" />
 </div>
 
-<div *ngIf="!showWholeAlone">
+<div *ngIf="!showWholeYear">
   <label>Monat:</label>
   <input type="number" [(ngModel)]="selectedMonth" (change)="loadChart()" min="1" max="12" />
 </div>

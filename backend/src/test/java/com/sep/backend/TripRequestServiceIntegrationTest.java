@@ -2,6 +2,8 @@ package com.sep.backend;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.sep.backend.account.Leaderboard.Leaderboard;
 import com.sep.backend.trip.history.TripHistoryDTO;
 import com.sep.backend.trip.history.TripHistoryRepository;
 import com.sep.backend.trip.history.TripHistoryService;
@@ -124,13 +126,9 @@ public class TripRequestServiceIntegrationTest {
 
 
         body.setLocations(List.of(start, end));
-        System.out.println(orsService);
         body.setGeojson(orsService.getRouteDirections(List.of(Coordinate.from(start), Coordinate.from(end))));
-        // Principal simulieren
-        Principal principal = () -> testEmail;
 
-
-        var trip = tripRequestService.createCurrentActiveTripRequest(body, principal);
+        var trip = tripRequestService.createCurrentActiveTripRequest(body, () -> testEmail);
 
 
         TripOfferEntity tripOfferEntity = new TripOfferEntity();
@@ -205,7 +203,6 @@ public class TripRequestServiceIntegrationTest {
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
-        String user = "userrrr";
 
         TripRequestDTO trips = mapper.readValue(result, TripRequestDTO.class);
         assertNotNull(trips);
@@ -219,8 +216,8 @@ public class TripRequestServiceIntegrationTest {
     }
 
 
-    @WithMockUser(username = "testuser@example.com", roles = "CUSTOMER")
     @Test
+    @WithMockUser(username = "testuser@example.com", roles = "CUSTOMER")
     void testGetAvailableTrips_Success() throws Exception {
 
         Location start = new Location();
@@ -231,17 +228,16 @@ public class TripRequestServiceIntegrationTest {
         start.setDisplayName("Kölner Dom");
         start.setGeoJSON(nominatimService.reverse("50.9413", "6.9583").getFeatures().getFirst());
 
-        String json = new ObjectMapper().writeValueAsString(start);
+        String string = new ObjectMapper().writeValueAsString(start);
 
         String response = mockMvc.perform(post("/api/trip/request/available")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(json))
+                        .content(string))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
+        ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
         List<AvailableTripRequestDTO> trips = mapper.readValue(response, mapper.getTypeFactory().constructCollectionType(List.class, AvailableTripRequestDTO.class));
 
@@ -264,8 +260,8 @@ public class TripRequestServiceIntegrationTest {
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
+        ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
+
         List<TripHistoryDTO> history = mapper.readValue(response, mapper.getTypeFactory().constructCollectionType(List.class, TripHistoryDTO.class));
 
         assertNotNull(history);
@@ -278,5 +274,32 @@ public class TripRequestServiceIntegrationTest {
         assertEquals(3, history.getFirst().getDriverRating());
 
 
+    }
+
+    @Test
+    @WithMockUser(username = "aymerickooo@gmail.com", roles = Roles.DRIVER)
+    void testGetDriverLeaderBoard_Success() throws Exception {
+        String response = mockMvc.perform(get("/api/driver-leaderboard")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
+
+        List<Leaderboard> leaderboards = mapper.readValue(response, mapper.getTypeFactory().constructCollectionType(List.class, Leaderboard.class));
+        DriverEntity driver = driverRepository.findAll().getFirst();
+        Leaderboard leaderboard = leaderboards.getFirst();
+        TripHistoryEntity tripHistory = tripHistoryRepository.findByDriver(driver).getFirst();
+        Double distance = tripHistory.getDistance();
+        Integer duration = tripHistory.getDuration();
+        Double earnings = driver.getBalance()-50;
+        assertEquals(driver.getUsername(), leaderboard.getDriverUsername());
+        assertEquals(driver.getFirstName() + " " + driver.getLastName(),leaderboard.getDriverName());
+        assertEquals(2, leaderboard.getAverageRating());
+        assertEquals(1,leaderboard.getTotalNumberOfDrivenTrip());
+        assertEquals(earnings,leaderboard.getTotalEarnings());
+        assertEquals(distance ,leaderboard.getTotalDrivenDistance());
+        assertEquals(duration,leaderboard.getTotalDriveTime());
     }
 }

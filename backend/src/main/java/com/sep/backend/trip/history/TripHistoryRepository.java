@@ -26,4 +26,6 @@ public interface TripHistoryRepository extends JpaRepository<TripHistoryEntity, 
     boolean existsByCustomer(CustomerEntity customerEntity);
 
     Optional<TripHistoryEntity> findByTripOfferId(Long tripOfferId);
+
+    List<TripHistoryEntity> findByDriver_Email(String email);
 }

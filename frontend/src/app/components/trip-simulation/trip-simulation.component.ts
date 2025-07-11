@@ -714,6 +714,9 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
     if (index === this.stops.length - 1) {
       this.snackBar.open("Die Zieladresse kann nicht entfernt werden ohne ein neues Ziel zu haben.", "OK")
       return
+    } else if (index >= this.lastVisitedIndex) {
+      this.snackBar.open("Fahre weiter um diese Adresse zu bearbeiten", "OK")
+      return
     }
     this.snackBar.open("Diese Adresse wurde bereits befahren und kann nicht mehr entfernt werden.", "OK")
   }

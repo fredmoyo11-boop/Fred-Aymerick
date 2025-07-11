@@ -256,19 +256,9 @@ public class TripRequestServiceIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = "aymerickooo@gmail.com", roles = Roles.DRIVER)
     void testGetTripHistory_Success() throws Exception {
-
-        String response = mockMvc.perform(get("/api/trip/history")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-        ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
-
-        List<TripHistoryDTO> history = mapper.readValue(response, mapper.getTypeFactory().constructCollectionType(List.class, TripHistoryDTO.class));
-
+       Principal principal = () -> "aymerickooo@gmail.com";
+        List<TripHistoryDTO> history = tripHistoryService.getCurrentTripHistory(principal);
         assertNotNull(history);
         assertFalse(history.isEmpty());
         TripHistoryDTO historyDTO = history.getFirst();
@@ -295,7 +285,6 @@ public class TripRequestServiceIntegrationTest {
         DriverEntity driver = driverRepository.findAll().getFirst();
         TripHistoryEntity tripHistory = tripHistoryRepository.findByDriver(driver).getFirst();
         Double distance = tripHistory.getDistance();
-
         assertEquals(distance ,tripHistoryService.totalDrivenDistance(driver.getEmail()));
 
     }

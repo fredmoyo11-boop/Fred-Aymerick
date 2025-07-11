@@ -11,22 +11,24 @@
             <mat-card appearance="outlined" class="reroute-container">
               <mat-card-title style="text-align: center" class="center-title">Fahradressen ändern</mat-card-title>
 
-              <mat-form-field>
-                <mat-label>Adresse eingeben</mat-label>
-                <input matInput placeholder="Suche einen Ort..." formControlName="query" (input)="onInputChange()">
-              </mat-form-field>
+              @if (!alreadyChangedOnceAtSameLocation) {
+                <mat-form-field>
+                  <mat-label>Adresse eingeben</mat-label>
+                  <input matInput placeholder="Suche einen Ort..." formControlName="query" (input)="onInputChange()" >
+                </mat-form-field>
+              }
 
               <mat-card-content>
                 <div cdkDropList class="address-droplist-container" (cdkDropListDropped)="drop($event)">
                   @for (stop of this.route.stops; track idx; let idx = $index) {
-                    <div class="example-box" cdkDrag [cdkDragDisabled]="idx < lastVisitedIndex || this.disableWhileWaitingForGeoJSON">
-                      @if (canDeleteStop(idx)) {
+                    <div class="example-box" cdkDrag [cdkDragDisabled]="idx < lastVisitedIndex || this.disableWhileWaitingForGeoJSON || this.alreadyChangedOnceAtSameLocation">
+                      @if (canDeleteStop(idx) && !alreadyChangedOnceAtSameLocation) {
                         <span cdkDragHandle class="handle">☰</span>
                       }
                       <div>
                         {{ idx + 1 }}. {{ stop.displayName }}
                       </div>
-                      @if (canDeleteStop(idx)) {
+                      @if (canDeleteStop(idx) && !alreadyChangedOnceAtSameLocation) {
                         <button mat-icon-button (click)="remove(idx)" [disabled]="this.disableWhileWaitingForGeoJSON">
                           <mat-icon>delete</mat-icon>
                         </button>

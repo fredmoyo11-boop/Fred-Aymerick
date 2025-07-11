@@ -29,6 +29,7 @@ import {
 })
 export class StatsComponent implements OnInit {
 
+
   constructor() {
     Chart.register(
       BarController,
@@ -52,7 +53,11 @@ export class StatsComponent implements OnInit {
   chartTitle = '';
 
   chartType: ChartType = "bar"
-  chartOptions = {responsive: true};
+  y_achse: string = "";
+  x_achse: string = "";
+  chartOptions = {responsive: true, scales: {y: {title: {display: true, text: ""}}, x: {title: {display: true, text: ""}}}};
+
+
 
   validInput: boolean = true;
 
@@ -99,20 +104,21 @@ export class StatsComponent implements OnInit {
           }
         }
 
-        if (this.selectedType == this.DISTANCE){
-          for (let i= 0; i < this.chartData.length; i++){
-            this.chartData[i] = this.chartData[i] /1000;
+        if (this.selectedType == this.DISTANCE) {
+          for (let i = 0; i < this.chartData.length; i++) {
+            this.chartData[i] = this.chartData[i] / 1000;
           }
         }
-        if (this.selectedType == this.TIME){
-          for (let i= 0; i < this.chartData.length; i++){
-            this.chartData[i] = this.chartData[i] /60;
+        if (this.selectedType == this.TIME) {
+          for (let i = 0; i < this.chartData.length; i++) {
+            this.chartData[i] = this.chartData[i] / 3600;
           }
         }
 
 
         this.chartLabels = ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'];
         this.chartTitle = `Jahresstatistik für die ` + this.typeTranslator(this.selectedType);
+        this.chartOptions = {responsive: true, scales: {y: {title: {display: true, text: this.y_achse}},x: {title: {display: true, text: this.x_achse}}}};
       });
 
     } else {
@@ -126,22 +132,22 @@ export class StatsComponent implements OnInit {
             this.chartData[i - 1] = 0;
           }
         }
-        if (this.selectedType == this.DISTANCE){
-          for (let i= 0; i < this.chartData.length; i++){
-            this.chartData[i] = this.chartData[i] /1000;
+        if (this.selectedType == this.DISTANCE) {
+          for (let i = 0; i < this.chartData.length; i++) {
+            this.chartData[i] = this.chartData[i] / 1000;
           }
         }
-        if (this.selectedType == this.TIME){
-          for (let i= 0; i < this.chartData.length; i++){
-            this.chartData[i] = this.chartData[i] /60;
+        if (this.selectedType == this.TIME) {
+          for (let i = 0; i < this.chartData.length; i++) {
+            this.chartData[i] = this.chartData[i] / 60;
           }
         }
 
         this.chartTitle = `Monatsstatistik für die ` + this.typeTranslator(this.selectedType);
+        this.chartOptions = {responsive: true, scales: {y: {title: {display: true, text: this.y_achse}},x: {title: {display: true, text: this.x_achse}}}};
 
       });
     }
-
 
 
   }
@@ -187,21 +193,32 @@ export class StatsComponent implements OnInit {
 
   }
 
-  typeTranslator(type: String): String {
+  typeTranslator(type: string): string {
+
+    if (this.showWholeYear){
+      this.x_achse = "Jahr"
+    }else {
+      this.x_achse = "Monat"
+    }
 
     if (type === this.DISTANCE) {
+      this.y_achse = "Kilometer"
       return "Entfernung";
     }
     if (type === this.REVENUE) {
+      this.y_achse = "Euro"
       return "Einnahmen";
     }
     if (type === this.RATING) {
+      this.y_achse = "Bewertung von 1-5"
       return "Bewertungen";
     }
-
+    this.y_achse = "Stunden"
     return "Fahrdauer";
 
 
   }
+
+
 }
 

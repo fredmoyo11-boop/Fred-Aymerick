@@ -35,9 +35,7 @@ public class LeaderboardService {
 
                     int totalNumberOfDrivenTrip = tripHistoryService.totalNumberOfDrivenTrip(email);
 
-                    Double totalEarnings = transactionRepository.findByDriver_EmailIgnoreCaseAndTransactionType(email, TransactionTypes.TRANSFER).stream()
-                            .mapToDouble(TransactionEntity::getAmount)
-                            .sum();
+                    Double totalEarnings =tripHistoryService.averageCustomerRating(email);
 
                     return new Leaderboard(
                             driverUsername,

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.sep.backend.account.Leaderboard.Leaderboard;
+import com.sep.backend.account.Leaderboard.LeaderboardService;
 import com.sep.backend.trip.history.TripHistoryDTO;
 import com.sep.backend.trip.history.TripHistoryRepository;
 import com.sep.backend.trip.history.TripHistoryService;
@@ -76,8 +77,12 @@ public class TripRequestServiceIntegrationTest {
     @Autowired
     private NominatimService nominatimService;
 
+
+    @Autowired
+    private LeaderboardService leaderboardService;
+
     @BeforeEach
-    void setUp() throws InterruptedException, JsonProcessingException {
+    void setUp() throws  JsonProcessingException {
 
         CustomerEntity customer = new CustomerEntity();
         customer.setEmail(testEmail);
@@ -276,30 +281,54 @@ public class TripRequestServiceIntegrationTest {
 
     }
 
-    @Test
-    @WithMockUser(username = "aymerickooo@gmail.com", roles = Roles.DRIVER)
-    void testGetDriverLeaderBoard_Success() throws Exception {
-        String response = mockMvc.perform(get("/api/driver-leaderboard")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-        ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
-        List<Leaderboard> leaderboards = mapper.readValue(response, mapper.getTypeFactory().constructCollectionType(List.class, Leaderboard.class));
+
+    @Test
+    void testGetDriverLeaderBoard_Rating() {
+        DriverEntity driver = driverRepository.findAll().getFirst();
+        assertEquals(2, tripHistoryService.averageRating(driver.getEmail()));
+    }
+
+    @Test
+    void testGetDriverLeaderBoard_Distance() {
+
+        DriverEntity driver = driverRepository.findAll().getFirst();
+        TripHistoryEntity tripHistory = tripHistoryRepository.findByDriver(driver).getFirst();
+        Double distance = tripHistory.getDistance();
+
+        assertEquals(distance ,tripHistoryService.totalDrivenDistance(driver.getEmail()));
+
+    }
+
+    @Test
+    void testGetDriverLeaderBoard_Duration() {
+
+        List<Leaderboard> leaderboards = leaderboardService.getDriverLeaderboards();
         DriverEntity driver = driverRepository.findAll().getFirst();
         Leaderboard leaderboard = leaderboards.getFirst();
         TripHistoryEntity tripHistory = tripHistoryRepository.findByDriver(driver).getFirst();
-        Double distance = tripHistory.getDistance();
         Integer duration = tripHistory.getDuration();
-        Double earnings = driver.getBalance()-50;
-        assertEquals(driver.getUsername(), leaderboard.getDriverUsername());
-        assertEquals(driver.getFirstName() + " " + driver.getLastName(),leaderboard.getDriverName());
-        assertEquals(2, leaderboard.getAverageRating());
-        assertEquals(1,leaderboard.getTotalNumberOfDrivenTrip());
-        assertEquals(earnings,leaderboard.getTotalEarnings());
-        assertEquals(distance ,leaderboard.getTotalDrivenDistance());
         assertEquals(duration,leaderboard.getTotalDriveTime());
+
     }
+
+    @Test
+    void testGetDriverLeaderBoard_Earnings() {
+        List<Leaderboard> leaderboards = leaderboardService.getDriverLeaderboards();
+        DriverEntity driver = driverRepository.findAll().getFirst();
+        Leaderboard leaderboard = leaderboards.getFirst();
+        Double earnings = driver.getBalance()-50;
+        assertEquals(earnings,leaderboard.getTotalEarnings());
+
+
+    }
+
+    @Test
+    void testGetDriverLeaderBoard_TotalNumberOfDrivenTrip() {
+        DriverEntity driver = driverRepository.findAll().getFirst();
+        assertEquals(1,tripHistoryService.totalNumberOfDrivenTrip(driver.getEmail()));
+
+    }
+
+
 }

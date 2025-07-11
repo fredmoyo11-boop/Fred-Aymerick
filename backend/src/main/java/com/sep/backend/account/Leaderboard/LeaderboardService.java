@@ -1,9 +1,6 @@
 package com.sep.backend.account.Leaderboard;
 
 import com.sep.backend.account.DriverRepository;
-import com.sep.backend.account.balance.TransactionRepository;
-import com.sep.backend.account.balance.TransactionTypes;
-import com.sep.backend.entity.TransactionEntity;
 import com.sep.backend.trip.history.TripHistoryService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,7 +11,6 @@ import java.util.List;
 @Service
 public class LeaderboardService {
     private final TripHistoryService tripHistoryService;
-    private final TransactionRepository transactionRepository;
     private final DriverRepository driverRepository;
 
 

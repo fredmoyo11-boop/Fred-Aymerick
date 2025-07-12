@@ -7,8 +7,8 @@
   <select [(ngModel)]="selectedType" (change)="loadChart()">
     <option value="DISTANCE">Entfernung</option>
     <option value="TIME">Zeit</option>
-    <option value="REVENUE">Einnahmen</option>
-    <option value="RATING">Bewertung</option>
+    <option value="REVENUE">Einnahmen </option>
+    <option value="RATING">Bewertung </option>
   </select>
 </div>
 
@@ -28,7 +28,7 @@
 @if (this.validInput){
   <div class="chart-container">
     <canvas baseChart
-            [data]="{ labels: chartLabels, datasets: [{ label: selectedType,data: chartData }] }"
+            [data]="{ labels: chartLabels, datasets: [{ label: typeTranslator(selectedType), data: chartData, backgroundColor: 'rgba(54, 162, 235)' }] }"
             [type]="chartType"
             [options]="chartOptions">
     </canvas>

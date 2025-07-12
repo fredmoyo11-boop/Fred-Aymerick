@@ -98,17 +98,20 @@ export class TripRequestComponent implements OnInit {
 
   acceptedTripOffer: TripOffer | null = null
 
+  tripOffers: TripOffer[] = []
 
   ngOnInit(): void {
     this.angularNotificationService.latestNotification$.subscribe({
       next: notification => {
         if (notification) {
           void this.getCurrentActiveTripRequest()
+          void this.getCurrentTripOffers()
         }
       }
     })
 
     void this.getCurrentActiveTripRequest()
+    void this.getCurrentTripOffers()
 
     //On changes in search bar, get new suggestions list
     this.form.get('query')!.valueChanges.pipe(
@@ -139,6 +142,15 @@ export class TripRequestComponent implements OnInit {
     } catch (error) {
       console.error(error)
       this.tripRequestDTO = null
+    }
+  }
+
+  async getCurrentTripOffers() {
+    try {
+      const tripOffers = await firstValueFrom(this.tripOfferService.getCurrentTripOffers())
+      this.tripOffers = tripOffers
+    } catch (e) {
+      console.error(e)
     }
   }
 
@@ -306,6 +318,7 @@ export class TripRequestComponent implements OnInit {
     this.showCard = false
     this.updateRoute()
   }
+
 //----------------------------------Navigation
 
   navigateToSimulation(): void {

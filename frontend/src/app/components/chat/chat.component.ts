@@ -14,6 +14,7 @@ import {MatFormField, MatInput, MatLabel, MatSuffix} from '@angular/material/inp
 import {MatIconButton} from '@angular/material/button';
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {AngularAuthService} from '../../services/angular-auth.service';
+import {IsoDateShortPipe} from '../../pipes/iso-date.pipe';
 
 @Component({
   selector: 'app-chat',
@@ -28,6 +29,7 @@ import {AngularAuthService} from '../../services/angular-auth.service';
     ReactiveFormsModule,
     MatInput,
     MatSuffix,
+    IsoDateShortPipe,
   ],
   templateUrl: './chat.component.html',
   styleUrl: './chat.component.css'
@@ -88,7 +90,6 @@ export class ChatComponent implements OnInit, OnDestroy {
 
     this.chatService.getAllMessages(Number(this.tripOfferId)).subscribe({
       next: value => {
-        console.log("Value", value)
         if (value) {
           this.chatMessages = value;
           // mark messages as seen after "opening" chat

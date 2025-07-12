@@ -36,8 +36,11 @@
               <div style="text-align: right">
                 @if (!acceptedTripOffer) {
                   <div class="button-row">
-                    <button mat-flat-button class="delete-button" (click)="deleteTripRequest()">Löschen</button>
-                    <button mat-flat-button class="offers-button" (click)="toggleOffersCard()">Angebote anzeigen</button>
+                    @if (tripOffers.length === 0) {
+                      <button mat-flat-button class="delete-button" (click)="deleteTripRequest()">Löschen</button>
+                    }
+                    <button mat-flat-button class="offers-button" (click)="toggleOffersCard()">Angebote anzeigen
+                    </button>
                   </div>
                 } @else {
                   <button mat-flat-button (click)="navigateToSimulation()">Simulieren
@@ -49,7 +52,7 @@
           </section>
         </mat-card>
       </div>
-    } @else if (!showOffers){
+    } @else if (!showOffers) {
       <!--  Fahranfrage erstellen-->
       <div>
         <form [formGroup]="form">
@@ -90,7 +93,7 @@
                     }
                   </div>
                   @if (this.stops.length === 1) {
-                    <span>Füge ein Ziel hinzu.</span>
+                    <span style="padding: 5px; color: red; font-weight: bold">Füge ein Ziel hinzu.</span>
                   }
                 }
               </mat-card-content>

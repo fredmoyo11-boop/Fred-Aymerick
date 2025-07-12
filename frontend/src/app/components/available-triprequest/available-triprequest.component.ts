@@ -36,11 +36,12 @@ import {MatDivider} from '@angular/material/divider';
 import {TripOfferStatusPipe} from '../../pipes/trip-offer-status.pipe';
 import {HttpErrorResponse} from '@angular/common/http';
 import {MatSnackBar} from '@angular/material/snack-bar';
+import {ChatComponent} from '../chat/chat.component';
 
 @Component({
   selector: 'app-available-triprequest',
   standalone: true,
-  imports: [CommonModule, MatTable, FormsModule, MatFormField, MatIcon, MatIconButton, MatInput, MatLabel, MatOption, MatSelect, MatSuffix, MatTooltip, ReactiveFormsModule, MatButton, MatSortHeader, MatSort, MatColumnDef, MatHeaderCell, MatCell, MatHeaderCellDef, MatCellDef, MatHeaderRow, MatRow, MatHeaderRowDef, MatRowDef, SecondsToTimePipe, MeterToKmPipe, CarTypePipe, EuroPipe, MatCard, MatCardTitle, MatDivider, MatCardContent, TripOfferStatusPipe],
+  imports: [CommonModule, MatTable, FormsModule, MatFormField, MatIcon, MatIconButton, MatInput, MatLabel, MatOption, MatSelect, MatSuffix, MatTooltip, ReactiveFormsModule, MatButton, MatSortHeader, MatSort, MatColumnDef, MatHeaderCell, MatCell, MatHeaderCellDef, MatCellDef, MatHeaderRow, MatRow, MatHeaderRowDef, MatRowDef, SecondsToTimePipe, MeterToKmPipe, CarTypePipe, EuroPipe, MatCard, MatCardTitle, MatDivider, MatCardContent, TripOfferStatusPipe, ChatComponent],
   templateUrl: './available-triprequest.component.html',
   styleUrl: './available-triprequest.component.css'
 })
@@ -250,8 +251,8 @@ export class AvailableTriprequestComponent implements OnInit, AfterViewInit, OnD
     })
   }
 
-  navigateToSimulation(): void {
-    if (this.activeTripOffer && this.activeTripOffer.status === "ACCEPTED") {
+  navigateToActiveOffer(): void {
+    if (this.activeTripOffer) {
       this.router.navigate(["/offer", this.activeTripOffer.id])
     }
   }

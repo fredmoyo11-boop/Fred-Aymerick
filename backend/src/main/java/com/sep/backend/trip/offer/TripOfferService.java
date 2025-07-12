@@ -14,6 +14,7 @@ import com.sep.backend.trip.request.TripRequestRepository;
 import com.sep.backend.trip.request.TripRequestStatus;
 import com.sep.backend.notification.*;
 import jakarta.transaction.Transactional;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
 
@@ -31,7 +32,7 @@ public class TripOfferService {
     private final NotificationService notificationService;
     private final TripHistoryService tripHistoryService;
 
-    public TripOfferService(TripOfferRepository tripOfferRepository, DriverRepository driverRepository, TripRequestRepository tripRequestRepository, NotificationService notificationService, TripHistoryService tripHistoryService) {
+    public TripOfferService(TripOfferRepository tripOfferRepository, DriverRepository driverRepository, TripRequestRepository tripRequestRepository, NotificationService notificationService, @Lazy TripHistoryService tripHistoryService) {
         this.tripOfferRepository = tripOfferRepository;
         this.driverRepository = driverRepository;
         this.tripRequestRepository = tripRequestRepository;

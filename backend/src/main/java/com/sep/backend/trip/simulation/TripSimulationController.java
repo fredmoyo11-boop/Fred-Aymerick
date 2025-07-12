@@ -50,8 +50,18 @@ public class TripSimulationController {
             responses = {
                     @ApiResponse(responseCode = HttpStatus.OK, description = "Simulation actions retrieved successfully.",
                             content = @Content(array = @ArraySchema(schema = @Schema(implementation = SimulationAction.class))))})
-    private List<SimulationAction> getSimulationActions(@PathVariable("tripOfferId") Long tripOfferId) {
+    public List<SimulationAction> getSimulationActions(@PathVariable("tripOfferId") Long tripOfferId) {
         return tripSimulationService.getSimulationActions(tripOfferId);
+    }
+
+    @GetMapping("/index/{tripOfferId}")
+    @Operation(description = "Returns the last animation index.",
+            tags = {Tags.TRIP_SIMULATION},
+            responses = {
+                    @ApiResponse(responseCode = HttpStatus.OK, description = "Index retrieved successfully.",
+                            content = @Content(schema = @Schema(implementation = Integer.class)))})
+    public Integer getSimulationIndex(@PathVariable("tripOfferId") Long tripOfferId) {
+        return tripSimulationService.getLastSimulationIndex(tripOfferId);
     }
 
 }

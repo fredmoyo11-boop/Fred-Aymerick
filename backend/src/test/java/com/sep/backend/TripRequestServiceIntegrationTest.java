@@ -309,7 +309,6 @@ public class TripRequestServiceIntegrationTest {
         Double earnings = driver.getBalance()-50;
         assertEquals(earnings,leaderboard.getTotalEarnings());
 
-
     }
 
     @Test

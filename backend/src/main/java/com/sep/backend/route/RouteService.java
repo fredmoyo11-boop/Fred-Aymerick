@@ -68,7 +68,17 @@ public class RouteService {
         return routeRepository.findById(routeId).orElseThrow(() -> new NotFoundException("Route not found"));
     }
 
-    public RouteEntity updateRoute(Long routeId, List<Location> updatedRouteStops, Coordinate currentCoordinate) throws NotFoundException, JsonProcessingException {
+
+    /**
+     * Updates the route in the routeRepository with a new route and price.
+     *
+     * @param routeId Route id of the route.
+     * @param updatedRouteStops List of all new route stops.
+     * @param currentCoordinate Current location on where the route is getting updated.
+     * @return A route Entity with updated route and price.
+     * @throws NotFoundException When route is not found.
+     */
+    public RouteEntity updateRoute(Long routeId, List<Location> updatedRouteStops, Coordinate currentCoordinate) throws NotFoundException {
         var routeEntity = getRoute(routeId);
 
         //Gets all coordinates and creates new list with only visited coordinates
@@ -128,6 +138,14 @@ public class RouteService {
         return routeRepository.save(routeEntity);
     }
 
+    /**
+     * Calculates the last visited location Index based on the current coordinate in the route.
+     *
+     * @param routeId Route id of current route.
+     * @param currentCoordinate Current coordinate of the simulation.
+     * @return Index value of the last visited location
+     * @throws NotFoundException When Route not found.
+     */
     public Integer getLastVisitedLocationIndex(Long routeId, Coordinate currentCoordinate) throws NotFoundException {
         var routeEntity = getRoute(routeId);
 
@@ -144,7 +162,13 @@ public class RouteService {
         return alreadyVisitedStops.size();
     }
 
-
+    /**
+     * Gets a list of all visited coordinates.
+     *
+     * @param coordinates All coordinates of route.
+     * @param currentCoordinate Current coordinate of the simulation.
+     * @return List of all visited coordinates.
+     */
     public List<Coordinate> getVisitedCoordinates (List<Coordinate> coordinates, Coordinate currentCoordinate) {
         int lastVisitedCoordinateIndex = IntStream.range(0, coordinates.size())
                 .boxed()
@@ -156,6 +180,13 @@ public class RouteService {
         return coordinates.subList(0, lastVisitedCoordinateIndex + 1);
     }
 
+    /**
+     * Gets a list of all visited locations
+     *
+     * @param routeStops All stops in the route.
+     * @param visitedCoordinates A list of all visited coordinates in the route.
+     * @return List of all visited coordinates.
+     */
     public List<Location> getVisitedLocations (List<Location> routeStops, List<Coordinate> visitedCoordinates) {
         int lastVisitedLocationIndex = IntStream.range(0, routeStops.size())
                 .filter(i -> !isCoordinateVisited(Coordinate.from(routeStops.get(i)), visitedCoordinates))
@@ -167,6 +198,13 @@ public class RouteService {
         return routeStops.subList(0, lastVisitedLocationIndex);
     }
 
+    /**
+     * Helping method, to determine if a coordinate is visited
+     *
+     * @param stopCoordinate Current coordinate you are testing on.
+     * @param visitedCoordinates List of all visited coordinates.
+     * @return True if coordinate is visited, false if not
+     */
     private boolean isCoordinateVisited(Coordinate stopCoordinate, List<Coordinate> visitedCoordinates) {
         double threshold = 0.005; //500 m threshold
         return visitedCoordinates.stream().anyMatch(visited -> stopCoordinate.distanceTo(visited) < threshold);

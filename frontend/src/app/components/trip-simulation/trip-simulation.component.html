@@ -19,7 +19,8 @@
               <mat-card-content>
                 <div cdkDropList class="address-droplist-container" (cdkDropListDropped)="drop($event)">
                   @for (stop of this.route.stops; track idx; let idx = $index) {
-                    <div class="example-box" cdkDrag [cdkDragDisabled]="idx < lastVisitedIndex || this.disableWhileWaitingForGeoJSON">
+                    <div class="example-box" cdkDrag
+                         [cdkDragDisabled]="idx < lastVisitedIndex || this.disableWhileWaitingForGeoJSON">
                       @if (canDeleteStop(idx)) {
                         <span cdkDragHandle class="handle">☰</span>
                       }
@@ -51,8 +52,7 @@
                   @if (rerouteLocked) {
                     <mat-divider></mat-divider>
                     <button mat-flat-button (click)="onCancel()" [disabled]="disableWhileWaitingForGeoJSON">Abbrechen</button>
-                    <button mat-flat-button (click)="updateRoute()" [disabled]="disableWhileWaitingForGeoJSON
-">Fahrt ändern</button>
+                    <button mat-flat-button (click)="updateRoute()" [disabled]="disableWhileWaitingForGeoJSON">Fahrt ändern</button>
                   }
                 </div>
               </mat-card-content>
@@ -92,7 +92,7 @@
       <mat-card style="width: fit-content; min-width: 200px">
         <mat-card-content>
           <div class="title">
-            <span >Simulations-Steuerung</span>
+            <span>Simulations-Steuerung</span>
           </div>
           @if (tripOffer.status !== "COMPLETED") {
             @if (animationLocked) {

@@ -19,18 +19,20 @@
         <p>Status der Anfrage: {{ activeTripOffer.status | tripOfferStatus }}</p>
         @if (activeTripOffer.status === "ACCEPTED") {
           <div style="text-align: center">
-            <button mat-flat-button (click)="navigateToSimulation()">Simulieren
+            <button mat-flat-button (click)="navigateToActiveOffer()">Simulieren
               <mat-icon iconPositionEnd>play_arrow</mat-icon>
             </button>
           </div>
         } @else {
           <div style="text-align: center">
             <button mat-flat-button (click)="revokeTripOffer(activeTripOffer!.id)">Zurückziehen</button>
+            <button mat-icon-button (click)="navigateToActiveOffer()">
+              <mat-icon>chat</mat-icon>
+            </button>
           </div>
         }
       </mat-card-content>
     </mat-card>
-
   } @else {
     <mat-card class="start-location-container">
       <mat-card-title style="text-align: center">Fahranfrage suchen</mat-card-title>

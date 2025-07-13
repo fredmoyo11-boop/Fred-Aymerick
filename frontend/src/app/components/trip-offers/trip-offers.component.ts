@@ -19,6 +19,7 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
 import {MeterToKmPipe} from '../../pipes/meter-to-km.pipe';
 import {AngularNotificationService} from '../../services/angular-notification.service';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-trip-offers',
@@ -35,8 +36,9 @@ import {AngularNotificationService} from '../../services/angular-notification.se
   styleUrls: ['./trip-offers.component.css'],
 })
 export class TripOffersComponent implements OnInit, AfterViewInit {
-  private tripOfferService = inject(TripOfferService);
-  private angularNotificationService = inject(AngularNotificationService)
+  private readonly tripOfferService = inject(TripOfferService);
+  private readonly angularNotificationService = inject(AngularNotificationService)
+  private readonly router = inject(Router)
 
   @ViewChild(MatSort) sort!: MatSort;
   tripOffers: TripOffer[] = []
@@ -97,6 +99,10 @@ export class TripOffersComponent implements OnInit, AfterViewInit {
 
   declineOffer(tripOfferId: number) {
     this.tripOfferService.rejectTripOffer(tripOfferId).subscribe(() => this.refresh())
+  }
+
+  navigateToTripOffer(id: number) {
+    this.router.navigate(["/offer", id])
   }
 
   refresh() {

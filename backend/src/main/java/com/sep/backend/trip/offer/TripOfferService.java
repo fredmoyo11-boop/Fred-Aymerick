@@ -9,10 +9,12 @@ import com.sep.backend.notification.NotificationService;
 import com.sep.backend.entity.DriverEntity;
 import com.sep.backend.account.DriverRepository;
 import com.sep.backend.entity.TripRequestEntity;
+import com.sep.backend.trip.history.TripHistoryService;
 import com.sep.backend.trip.request.TripRequestRepository;
 import com.sep.backend.trip.request.TripRequestStatus;
 import com.sep.backend.notification.*;
 import jakarta.transaction.Transactional;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,12 +30,14 @@ public class TripOfferService {
     private final TripRequestRepository tripRequestRepository;
     private final TripOfferRepository tripOfferRepository;
     private final NotificationService notificationService;
+    private final TripHistoryService tripHistoryService;
 
-    public TripOfferService(TripOfferRepository tripOfferRepository, DriverRepository driverRepository, TripRequestRepository tripRequestRepository, NotificationService notificationService) {
+    public TripOfferService(TripOfferRepository tripOfferRepository, DriverRepository driverRepository, TripRequestRepository tripRequestRepository, NotificationService notificationService, @Lazy TripHistoryService tripHistoryService) {
         this.tripOfferRepository = tripOfferRepository;
         this.driverRepository = driverRepository;
         this.tripRequestRepository = tripRequestRepository;
         this.notificationService = notificationService;
+        this.tripHistoryService = tripHistoryService;
     }
 
     public TripOffer getAcceptedTripOffer(Long tripRequestId) throws NotFoundException {
@@ -283,9 +287,9 @@ public class TripOfferService {
         driverStatistics.setDriverUsername(driverEntity.getUsername());
         driverStatistics.setDriverFirstName(driverEntity.getFirstName());
         driverStatistics.setDriverLastName(driverEntity.getLastName());
-        driverStatistics.setAverageRating(tripOfferRepository.getAvgRatingByDriver_TripHistory(driverEntity.getId()));
-        driverStatistics.setTotalTrips(tripOfferRepository.getTotalDriveCountByDriver_TripHistory(driverEntity.getId()));
-        driverStatistics.setTotalDistance(tripOfferRepository.getTotalDriveDistanceByDriver_TripHistory(driverEntity.getId()));
+        driverStatistics.setAverageRating(tripHistoryService.averageRating(driverEntity.getEmail()));
+        driverStatistics.setTotalTrips(tripHistoryService.totalNumberOfDrivenTrip(driverEntity.getEmail()));
+        driverStatistics.setTotalDistance(tripHistoryService.totalDrivenDistance(driverEntity.getEmail()));
         return driverStatistics;
     }
 

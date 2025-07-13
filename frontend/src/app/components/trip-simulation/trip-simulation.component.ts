@@ -166,9 +166,11 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
       .subscribe(message => {
         console.log("Received from socket:", message)
         if (message && message.actionType) {
-          this.handleSimulationAction(message as SimulationAction)
+          this.handleSimulationAction(message)
         }
       })
+
+    this.info()
 
     this.angularAuthService.role$.subscribe({
       next: role => {
@@ -231,6 +233,30 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
     this.subscription.unsubscribe();
   }
 
+
+  resetSimulation(): void {
+    this.stop()
+    if (this.role === "DRIVER") {
+      this.driverPresent = false
+      interval(1000)
+        .pipe(
+          takeWhile(() => !this.driverPresent),
+          tap(() => {
+            this.sendDriverPresent()
+          })
+        )
+        .subscribe()
+    }
+
+    this.positionMarkerAnimationTimer = 0
+    this.animationPaused = false
+    this.animationCompleted = false
+    this.animationInitialized = false
+    this.animationIndex = 0
+    this.sliderDuration = 15
+    this._animationDuration$.next(this.sliderDuration * 1000)
+  }
+
   //Simulation actions and handling
   handleSimulationAction(simulationAction: SimulationAction): void {
     this.animationIndex = simulationAction.parameters.startIndex;
@@ -241,12 +267,14 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
       } else {
         this.initializeAnimation()
       }
+      this.alreadyChangedOnceAtSameLocation = false
     } else if (simulationAction.actionType === "STOP") {
       this.pauseAnimation()
     } else if (simulationAction.actionType === "INFO") {
-      console.log("Info received")
+      // INFO called on init, if init happens after start on partner lost connection -> restarting simulation
+      this.resetSimulation()
     } else if (simulationAction.actionType === "CHANGE_VELOCITY") {
-      this.sliderDuration = simulationAction.parameters!.velocity!
+      this.sliderDuration = simulationAction.parameters.velocity!
       this._animationDuration$.next(this.sliderDuration * 1000)
       if (!this.animationPaused && this.animationInitialized) {
         this.pauseAnimation()
@@ -546,7 +574,7 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
         this.unlock()
       }
     })
-    this.alreadyChangedOnceAtSameLocation = true
+    this.alreadyChangedOnceAtSameLocation = true;
     this.disableWhileWaitingForGeoJSON = false
   }
 
@@ -608,7 +636,6 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
   resumeAnimation() {
     if (!this.animationPaused) return;
     this.animationPaused = false;
-    this.alreadyChangedOnceAtSameLocation = false;
     this.animateRoute()
   }
 
@@ -713,6 +740,9 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
   lockedBecauseVisited(index: number) {
     if (index === this.stops.length - 1) {
       this.snackBar.open("Die Zieladresse kann nicht entfernt werden ohne ein neues Ziel zu haben.", "OK")
+      return
+    } else if (index >= this.lastVisitedIndex) {
+      this.snackBar.open("Fahre weiter um diese Adresse zu bearbeiten", "OK")
       return
     }
     this.snackBar.open("Diese Adresse wurde bereits befahren und kann nicht mehr entfernt werden.", "OK")

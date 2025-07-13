@@ -4,6 +4,8 @@ import com.sep.backend.ErrorMessages;
 import com.sep.backend.NotFoundException;
 import com.sep.backend.Roles;
 import com.sep.backend.account.AccountService;
+import com.sep.backend.account.balance.TransactionRepository;
+import com.sep.backend.account.balance.TransactionTypes;
 import com.sep.backend.entity.*;
 import com.sep.backend.trip.offer.TripOfferService;
 import jakarta.validation.Valid;
@@ -20,11 +22,12 @@ public class TripHistoryService {
     private final TripHistoryRepository tripHistoryRepository;
     private final AccountService accountService;
     private final TripOfferService tripOfferService;
-
-    public TripHistoryService(TripHistoryRepository tripHistoryRepository, AccountService accountService, TripOfferService tripOfferService) {
+    private final TransactionRepository transactionRepository;
+    public TripHistoryService(TripHistoryRepository tripHistoryRepository, AccountService accountService, TripOfferService tripOfferService, TransactionRepository transactionRepository) {
         this.tripHistoryRepository = tripHistoryRepository;
         this.accountService = accountService;
         this.tripOfferService = tripOfferService;
+        this.transactionRepository = transactionRepository;
     }
 
     /**
@@ -126,6 +129,11 @@ public class TripHistoryService {
                 .mapToInt(TripHistoryEntity::getCustomerRating)
                 .average()
                 .orElse(0.0);
+    }
+    public Double averageCustomerRating(String email) {
+        return transactionRepository.findByDriver_EmailIgnoreCaseAndTransactionType(email, TransactionTypes.TRANSFER).stream()
+                .mapToDouble(TransactionEntity::getAmount)
+                .sum();
     }
 
     public Integer totalNumberOfDrivenTrip(String email) {

@@ -19,18 +19,21 @@
                 }
 
                 <mat-card-footer>
-                  @if (chatMessage.edited) {
-                    <span>Bearbeitet</span>
-                  }
-                  @if (!chatMessage.seen) {
-                    <mat-icon class="click-icon" (click)="delete(chatMessage.chatMessageId)">delete</mat-icon>
-                    @if (editMessageId === chatMessage.chatMessageId) {
-                      <mat-icon class="click-icon" (click)="resetEditMessageId()">close</mat-icon>
-                    } @else {
-                      <mat-icon class="click-icon" (click)="setEditMessageId(chatMessage.chatMessageId)">edit</mat-icon>
+                  @if (!chatMessage.deleted) {
+                    @if (chatMessage.edited) {
+                      <span>Bearbeitet</span>
+                    }
+                    @if (!chatMessage.seen) {
+                      <mat-icon class="click-icon" (click)="delete(chatMessage.chatMessageId)">delete</mat-icon>
+                      @if (editMessageId === chatMessage.chatMessageId) {
+                        <mat-icon class="click-icon" (click)="resetEditMessageId()">close</mat-icon>
+                      } @else {
+                        <mat-icon class="click-icon" (click)="setEditMessageId(chatMessage.chatMessageId)">edit
+                        </mat-icon>
+                      }
                     }
                   }
-                  <span>{{ chatMessage.createdTimestamp }}</span>
+                  <span>{{ chatMessage.createdTimestamp | isoDateShort }}</span>
                   <mat-icon [ngClass]="chatMessage.seen ? 'seen' : 'unseen'">done_all</mat-icon>
                 </mat-card-footer>
               </mat-card>
@@ -45,7 +48,7 @@
                   @if (chatMessage.edited) {
                     <span>Bearbeitet</span>
                   }
-                  <span>{{ chatMessage.createdTimestamp }}</span>
+                  <span>{{ chatMessage.createdTimestamp | isoDateShort }}</span>
                 </mat-card-footer>
               </mat-card>
             }

@@ -1,4 +1,4 @@
-<div class="profil-info">
+<div class="profil-info" xmlns="http://www.w3.org/1999/html">
   <img
     [src]="account.profilePictureUrl || 'https://th.bing.com/th/id/OIP.Y-oQ-cmHGUVYt2R-y85gbwHaDt?rs=1&pid=ImgDetMain'"
     [alt]="account.username.charAt(0).toUpperCase()"/>
@@ -38,10 +38,6 @@
     <p class="wert">{{ account.ratings | number: '1.2-2' }}</p>
   </div>
 
-  <div class="info-zeile">
-    <p class="beschreibung">Konto:</p>
-    <p class="wert">{{ account.balance | euro }}</p>
-  </div>
 
   <div class="info-zeile">
     <p class="beschreibung">Gesamtanzahl der Fahrten:</p>
@@ -56,6 +52,9 @@
   }
 
 </div>
+
+
+
 
 
 

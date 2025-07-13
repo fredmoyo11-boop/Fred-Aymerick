@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -33,4 +34,32 @@ public class ActionStore {
         return actionsByTrip.getOrDefault(tripOfferId, List.of());
     }
 
+    /**
+     * Returns an optional containing the last simulation action if action exist, else empty optional
+     *
+     * @param tripOfferId The id of the trip offer
+     * @return The optional containing the last simulation action if exists, else empty optional
+     */
+    public Optional<SimulationAction> getLastSimulationAction(Long tripOfferId) {
+        List<SimulationAction> simulationActions = actionsByTrip.get(tripOfferId);
+        if (simulationActions.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(simulationActions.getLast());
+    }
+
+    /**
+     * Returns the last animation index for a simulation.
+     *
+     * @param tripOfferId The id of the trip offer.
+     * @return The animation index.
+     */
+    public Integer getLastAnimationIndex(Long tripOfferId) {
+        Optional<SimulationAction> action = getLastSimulationAction(tripOfferId);
+        if (action.isPresent()) {
+            return action.get().getParameters().getStartIndex();
+        } else {
+            return 0;
+        }
+    }
 }

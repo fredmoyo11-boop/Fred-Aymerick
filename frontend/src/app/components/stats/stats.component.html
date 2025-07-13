@@ -1,3 +1,5 @@
+
+
 <button (click)="switchShow()">Monat/Jahr wechseln</button>
 
 <div>
@@ -5,8 +7,8 @@
   <select [(ngModel)]="selectedType" (change)="loadChart()">
     <option value="DISTANCE">Entfernung</option>
     <option value="TIME">Zeit</option>
-    <option value="REVENUE">Einnahmen</option>
-    <option value="RATING">Bewertung</option>
+    <option value="REVENUE">Einnahmen </option>
+    <option value="RATING">Bewertung </option>
   </select>
 </div>
 
@@ -15,7 +17,7 @@
   <input type="number" [(ngModel)]="selectedYear" (change)="loadChart()" />
 </div>
 
-<div *ngIf="!showWholeAlone">
+<div *ngIf="!showWholeYear">
   <label>Monat:</label>
   <input type="number" [(ngModel)]="selectedMonth" (change)="loadChart()" min="1" max="12" />
 </div>
@@ -24,11 +26,15 @@
 
 
 @if (this.validInput){
-<canvas baseChart
-        [data]="{ labels: chartLabels, datasets: [{ data: chartData, label: selectedType }] }"
-        [options]="chartOptions"
-        [type]="chartType">
-</canvas>
+  <div class="chart-container">
+    <canvas baseChart
+            [data]="{ labels: chartLabels, datasets: [{ label: typeTranslator(selectedType), data: chartData, backgroundColor: 'rgba(54, 162, 235)' }] }"
+            [type]="chartType"
+            [options]="chartOptions">
+    </canvas>
+  </div>
+
 } @else {
   <h4>Die Eingabe ist ungültig</h4>
 }
+

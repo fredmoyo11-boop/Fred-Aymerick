@@ -129,4 +129,14 @@ public class TripSimulationService {
     public List<SimulationAction> getSimulationActions(Long tripOfferId) {
         return actionStore.getActionsByTrip(tripOfferId);
     }
+
+    /**
+     * Returns the last simulation index for the simulation with the specified id.
+     *
+     * @param tripOfferId The id of the trip offer.
+     * @return The simulation index.
+     */
+    public Integer getLastSimulationIndex(Long tripOfferId) {
+        return actionStore.getLastAnimationIndex(tripOfferId);
+    }
 }

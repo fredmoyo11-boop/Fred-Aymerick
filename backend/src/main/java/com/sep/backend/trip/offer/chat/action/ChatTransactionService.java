@@ -129,6 +129,7 @@ public class ChatTransactionService {
             var timestamp = LocalDateTime.now();
             log.debug("EDIT: Updating timestamp of chat message with id {} to {}.", chatMessageId, timestamp);
             chatMessageEntity.setTimestamp(timestamp);
+            chatMessageEntity.setEdited(true);
             chatMessageRepository.save(chatMessageEntity);
             log.debug("EDIT: Updated chat message with id {}", chatMessageId);
 

@@ -139,7 +139,7 @@ export class StatsComponent implements OnInit {
         }
         if (this.selectedType == this.TIME) {
           for (let i = 0; i < this.chartData.length; i++) {
-            this.chartData[i] = this.chartData[i] / 60;
+            this.chartData[i] = this.chartData[i] / 3600;
           }
         }
 

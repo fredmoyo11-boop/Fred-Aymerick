@@ -5,7 +5,7 @@
                          [animationLayerGroup]="animationLayer"></app-trip-visualizer>
 
     <div class="card-overlay">
-      @if (animationPaused && role === "CUSTOMER") {
+      @if (animationPaused && role === "CUSTOMER" && animationIndex > 0) {
         <div>
           <form [formGroup]="form">
             <mat-card appearance="outlined" class="reroute-container">

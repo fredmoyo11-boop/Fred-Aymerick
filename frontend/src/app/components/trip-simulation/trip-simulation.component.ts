@@ -132,7 +132,7 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
   currentPosition: number[] | null = null
   alreadyChangedOnceAtSameLocation: boolean = false
 
-  disableWhileWaitingForGeoJSON = false
+  updating = false
 
   ngOnInit(): void {
     this.originalRoute = structuredClone(this.tripOffer.tripRequest.route)
@@ -314,7 +314,7 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
           next: value => {
             this._route$.next(value)
             this.unlock()
-            this.reroute_unlock()
+            this.rerouteUnlock()
           }, error: err => {
             console.log(err)
           }
@@ -400,7 +400,7 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
     this.sendSimulationAction(action)
   }
 
-  reroute_lock(): void {
+  rerouteLock(): void {
     const action: SimulationAction = {
       actionType: "REROUTE_LOCK", timestamp: new Date().toISOString(),
       parameters: {startIndex: this.animationIndex}
@@ -408,7 +408,7 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
     this.stompService.send(`/app/simulation/${this.tripOfferId}`, action)
   }
 
-  reroute_unlock(): void {
+  rerouteUnlock(): void {
     const action: SimulationAction = {
       actionType: "REROUTE_UNLOCK", timestamp: new Date().toISOString(),
       parameters: {startIndex: this.animationIndex}
@@ -563,7 +563,7 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
     }
 
     this.lock()
-    this.disableWhileWaitingForGeoJSON = true
+    this.updating = true
     this.routeService.updateRoute(this.route.routeId, body).subscribe({
       next: updatedRoute => {
         this.originalRoute = updatedRoute
@@ -575,7 +575,7 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
       }
     })
     this.alreadyChangedOnceAtSameLocation = true;
-    this.disableWhileWaitingForGeoJSON = false
+    this.updating = false
   }
 
   //Updates the map without having to save new routeEntity
@@ -591,7 +591,7 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
 
       console.log(stopCoordinates)
 
-      this.disableWhileWaitingForGeoJSON = true
+      this.updating = true
       this.orsService.getRouteDirections(stopCoordinates).subscribe({
         next: value => {
           this.orsFeatureCollection = value
@@ -605,7 +605,7 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
           console.log(err)
         }
       })
-      this.disableWhileWaitingForGeoJSON = false
+      this.updating = false
     }
   }
 
@@ -685,7 +685,7 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
     this.showCard = query !== null && query!.trim().length > 0
   }
 
-  onConfirm() {
+  onStopAddConfirm() {
     const selected = this.suggestedLocations[this.selectedIndex]
 
     //Ensures that the newest added location is not the same as the last location
@@ -698,12 +698,17 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
     this.form.get('query')?.setValue('')
     this.suggestedLocations = []
     this.showCard = false
-    this.reroute_lock()
+    this.rerouteLock()
     this.updateLocalRoute()
   }
 
   //Drop list
-  drop(event: CdkDragDrop<string[]>) {
+  dropStop(event: CdkDragDrop<string[]>) {
+    // Disable drag and drop if updating or route has already changed at current location
+    if (this.updating || this.alreadyChangedOnceAtSameLocation) {
+      return;
+    }
+
     //Ensures that stops before the lastVisitedIndex are not moveable
     if (event.previousIndex < this.lastVisitedIndex || event.currentIndex < this.lastVisitedIndex) {
       return;
@@ -719,13 +724,14 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
       }
     }
     moveItemInArray(this.stops, event.previousIndex, event.currentIndex)
+    this.rerouteLock()
     this.updateLocalRoute();
   }
 
-  remove(index: number) {
+  removeStop(index: number) {
     if (!this.canDeleteStop(index)) return
     this.stops.splice(index, 1)
-    this.reroute_lock()
+    this.rerouteLock()
     this.updateLocalRoute()
   }
 
@@ -764,7 +770,7 @@ export class TripSimulationComponent implements OnInit, OnDestroy {
   onCancel() {
     this.route = structuredClone(this.originalRoute!)
     this.stops = this.route.stops
-    this.reroute_unlock()
+    this.rerouteUnlock()
     this._route$.next(this.route)
   }
 
